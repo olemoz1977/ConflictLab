@@ -1,21 +1,38 @@
     KAS FORMUOJA REAKCIJĄ?
     (metodologinis karkasas)
+Žmogus reaguoja ne į objektyvią realybę, o į savo tos realybės interpretaciją.
+ConflictLab tikslas nėra nustatyti, kas yra objektyviai teisinga. Jo tikslas – padėti žmogui suprasti, kaip susiformuoja jo situacijos interpretacija, kaip ji veikia emocijas ir elgesį, ir kaip šį procesą galima keisti konstruktyvesne kryptimi.
+
 
 
 GENETIKA
     ↓
+_____
+
 ANKSTYVOSIOS PATIRTYS
     ↓
+_____
+
 IŠMOKTI ELGESIO MODELIAI
     ↓
+______
+
 DABARTINĖ APLINKA
     ↓
+_______
+
 STIMULAS
     ↓
+________
+
 SITUACIJOS SUVOKIMAS
     ↓
+_________
+
 INTERPRETACIJOS FILTRAS
     ↓
+_________
+
 SUBJEKTYVI SITUACIJOS PRASMĖ
     ↓
 _____
@@ -53,17 +70,29 @@ Atsakomybės taškas (Point of Responsibility) – tai momentas tarp emocijos ir
 reaguoti;
 nereaguoti;
 arba pasirinkti kitokį reagavimo būdą.
-    ↓
+    Kas vyksta?
+Žmogus įvertina galimas pasekmes ir priima sprendimą.
+Kas jį veikia?
+Emocijų intensyvumas.
+Savireguliacija.
+Patirtis.
+Vykdomosios funkcijos.
+Kokios teorijos?
+(Kol kas paliekame tuščią – dar tyrinėsime.)
+ConflictLab požiūris
+Tai vieta, kur žmogus gali sąmoningai perimti atsakomybę už savo reakciją.
+Ko dar nežinome?
+Kokios sąlygos labiausiai padeda žmogui sustoti prieš impulsyvią reakciją?↓
 _____
 
 ELGESYS
     ↓
+______
+
 PASEKMĖ
 
 ______
 
-Žmogus reaguoja ne į objektyvią realybę, o į savo tos realybės interpretaciją.
-ConflictLab tikslas nėra nustatyti, kas yra objektyviai teisinga. Jo tikslas – padėti žmogui suprasti, kaip susiformuoja jo situacijos interpretacija, kaip ji veikia emocijas ir elgesį, ir kaip šį procesą galima keisti konstruktyvesne kryptimi.
 
         TEORINIAI PAGRINDAI
 
