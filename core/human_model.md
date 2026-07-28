@@ -1,5 +1,6 @@
-    KAS FORMUOJA REAKCIJĄ?
-    (metodologinis karkasas)
+ KAS FORMUOJA REAKCIJĄ?
+(metodologinis karkasas)
+        
 Žmogus reaguoja ne į objektyvią realybę, o į savo tos realybės interpretaciją.
 ConflictLab tikslas nėra nustatyti, kas yra objektyviai teisinga. Jo tikslas – padėti žmogui suprasti, kaip susiformuoja jo situacijos interpretacija, kaip ji veikia emocijas ir elgesį, ir kaip šį procesą galima keisti konstruktyvesne kryptimi.
 
@@ -27,8 +28,6 @@ Kaip tiksliai genetika sąveikauja su aplinka formuojant konkretų reagavimo sti
 Kokie įgimti skirtumai labiausiai lemia emocinį reaktyvumą?
 Kur baigiasi genetinis polinkis ir prasideda išmoktas elgesys?
 
-    ↓
-_____
 
 #ANKSTYVOSIOS PATIRTYS
 Kas vyksta?
