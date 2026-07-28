@@ -18,7 +18,28 @@ INTERPRETACIJOS FILTRAS
     ↓
 SUBJEKTYVI SITUACIJOS PRASMĖ
     ↓
-EMOCIJA
+_____
+
+#EMOCIJA
+Kas vyksta?
+Žmogus patiria emocinį atsaką į subjektyvią situacijos prasmę, o ne į patį stimulą. Emocija paruošia organizmą galimai reakcijai.
+Kas ją veikia?
+Nervų sistemos ypatumai.
+Ankstesnė patirtis.
+Fiziologinė būsena (miegas, nuovargis, alkis ir kt.).
+Dabartinė emocinė būsena.
+Situacijos interpretacija.
+Kokios teorijos tai aiškina?
+Lazarus Cognitive Appraisal Theory.
+Gross Process Model of Emotion Regulation.
+Basic Emotion Theory (Ekman).
+Constructionist Theory of Emotion (Lisa Feldman Barrett) (jei vėliau nuspręsime ją įtraukti).
+ConflictLab požiūris
+ConflictLab laiko emociją tarpiniu procesu, o ne galutine priežastimi. Žmogaus elgesį lemia ne vien emocija, bet ir tai, ar jis sugeba ją atpažinti, prognozuoti galimas pasekmes ir sąmoningai pasirinkti reakciją.
+Ko dar nežinome?
+Kodėl du žmonės toje pačioje situacijoje patiria skirtingo intensyvumo emocijas?
+Kada emocija tampa dominuojančiu veiksniu, o kada ją nusveria sąmoningas sprendimas?
+Kokį vaidmenį čia atlieka ankstyvosios patirtys ir prisirišimo stilius?
     ,
 _____
 
