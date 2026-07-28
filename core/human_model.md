@@ -1,73 +1,64 @@
-Kas veikia žmogaus reakciją?
+               CONFLICTLAB HUMAN MODEL
+
+        KAS FORMUOJA REAKCIJĄ?
+        (metodologinis karkasas)
+
 
 GENETIKA
-        ↘
-____
-
+    ↓
 ANKSTYVOSIOS PATIRTYS
-        ↘
-____
-
+    ↓
 IŠMOKTI ELGESIO MODELIAI
-        ↘
-____
-
+    ↓
 DABARTINĖ APLINKA
-        ↓
-____
-
-#STIMULAS - Aplinkos psichologija
-        ↓
-
+    ↓
+STIMULAS
+    ↓
+SITUACIJOS SUVOKIMAS
+    ↓
 INTERPRETACIJOS FILTRAS
-
-- Ankstesnė patirtis
-- Prisirišimo stilius
-- Vertybės
-- Įsitikinimai
-- Dabartinė emocinė būsena
-- Fiziologinė būsena
-- Tikslai ir lūkesčiai
-- Socialinis kontekstas
-
-↓
-
+    ↓
 SUBJEKTYVI SITUACIJOS PRASMĖ
-
-↓
-
+    ↓
 REAKCIJOS PASIRINKIMAS
-____
-
-#SITUACIJOS SUVOKIMAS - Kognityvinė psichologija 
-        ↓
-____
-
-#VIDINIS DIALOGAS - Berne, CBT
-        ↓
-____
-
-#EMOCIJA
-
-Kas vyksta? - Žmogus patiria emocinį atsaką į situacijos interpretaciją. Kas ją veikia? - Nervų sistema, ankstesnė patirtis, fiziologinė būsena. Kokios teorijos? - Emocijų reguliavimas, Lazarus, Gross... Ko nežinome? - Kodėl du žmonės toje pačioje situacijoje patiria skirtingo intensyvumo emocijas?
-        ↓
-____
-
-#REAKCIJOS PASIRINKIMAS - Karpman, TA
-        ↓
-____
-
-#ELGESYS - Socialinio mokymosi teorija
-        ↓
-____
+↓
+ATSAKOMYBĖS TAŠKAS
+    ↓
+ELGESYS
+    ↓
 PASEKMĖ
-        ↓
-____
 
-#SAVIREFLEKSIJA -Metakognicija
-        ↓
-____
 
-NAUJAS MOKYMASIS
+        TEORINIAI PAGRINDAI
 
-_____ 
+Genetika:
+- biologinė psichologija
+- temperamentas
+
+Ankstyvosios patirtys:
+- prisirišimo teorija (Bowlby)
+- raidos psichologija
+
+Išmokti elgesio modeliai:
+- socialinio mokymosi teorija
+- elgesio psichologija
+
+Stimulas / aplinka:
+- aplinkos psichologija
+
+Situacijos suvokimas:
+- kognityvinė psichologija
+
+Interpretacijos filtras:
+- kognityviniai iškraipymai
+- schema teorija
+- vertybės ir įsitikinimai
+
+Emocinė reakcija:
+- emocijų teorijos
+- GERT / emocijų atpažinimas
+
+Socialinis elgesys:
+- Berne transakcinė analizė
+- Karpmano trikampis
+ 
