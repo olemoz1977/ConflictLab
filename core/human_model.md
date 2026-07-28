@@ -77,17 +77,21 @@ KAS FORMUOJA REAKCIJĄ? (Metodologinis karkasas)
 ​ConflictLab požiūris: Tai svarbiausias pokyčio taškas visame karkase. Čia nutrūksta automatinė reakcijos grandinė ir atveriama erdvė sąmoningam elgesio valdymui bei asmeninei atsakomybei už pasirinkimą.
 ​Ko dar nežinome? Kiek sekundžių ar milisekundžių trunka šio lango atvėrimas streso sąlygomis; kokie konkretūs mikropraktikos įrankiai geriausiai išplečia šį tašką akimirkos metu.
 ​Teorinės sąsajos: Integracinis mazgas, esantis po Galimų pasekmių prognozės, reikalaujantis peržengti impulsą tam, kad susiformuotų galutinis Elgesys ir to pasekoje – Pasekmė.
-
-_______
-
-ELGESYS
-    ↓
-______
-
-PASEKMĖ
-
-______
-
+12. ELGESYS
+Kas vyksta?
+Pasirinktas atsakas tampa konkrečiu veiksmu, komunikacija arba neveikimu.
+Kas jį veikia?
+ankstesni modeliai;
+emocijų reguliacija;
+socialiniai įgūdžiai;
+situacijos apribojimai.
+Teorijos:
+elgesio psichologija;
+socialinių įgūdžių teorijos;
+komunikacijos modeliai.
+ConflictLab požiūris: Elgesys yra ne emocijos rezultatas tiesiogiai, o pasirinkimo taško rezultatas.
+13. PASEKMĖ IR MOKYMASIS
+Žmogus po kiekvieno konflikto save „perprogramuoja“.
 
         TEORINIAI PAGRINDAI
 
