@@ -137,3 +137,11 @@ Planuojami moduliai:
 ConflictLab Karpmano dramos trikampį vertina kaip naudingą konfliktų analizės modelį, tačiau nelaiko jo universaliu žmogaus elgesio paaiškinimu.
 
 Modelio paskirtis platformoje – skatinti savirefleksiją, o ne nustatyti žmogaus tapatybę.
+
+# ConflictLab sprendimas
+
+Ką mes perimame iš šios teorijos?
+
+Ko sąmoningai atsisakome?
+
+Kodėl?
