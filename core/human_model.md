@@ -20,10 +20,18 @@ SUBJEKTYVI SITUACIJOS PRASMĖ
     ↓
 EMOCIJA
     ,
+_____
+
 REAKCIJOS PASIRINKIMAS
 ↓
-ATSAKOMYBĖS TAŠKAS
+#ATSAKOMYBĖS TAŠKAS 
+Atsakomybės taškas (Point of Responsibility) – tai momentas tarp emocijos ir elgesio, kuriame žmogus gali sąmoningai įvertinti galimas savo reakcijos pasekmes ir pasirinkti:
+reaguoti;
+nereaguoti;
+arba pasirinkti kitokį reagavimo būdą.
     ↓
+_____
+
 ELGESYS
     ↓
 PASEKMĖ
