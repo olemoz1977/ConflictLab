@@ -22,7 +22,8 @@ EMOCIJA
     ,
 _____
 
-REAKCIJOS PASIRINKIMAS
+
+GALIMŲ PASEKMIŲ PROGNOZĖ
 ↓
 _____
 
