@@ -1,7 +1,5 @@
-               CONFLICTLAB HUMAN MODEL
-
-        KAS FORMUOJA REAKCIJĄ?
-        (metodologinis karkasas)
+    KAS FORMUOJA REAKCIJĄ?
+    (metodologinis karkasas)
 
 
 GENETIKA
