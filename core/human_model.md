@@ -18,6 +18,25 @@ ____
 
 #STIMULAS - Aplinkos psichologija
         ↓
+
+INTERPRETACIJOS FILTRAS
+
+- Ankstesnė patirtis
+- Prisirišimo stilius
+- Vertybės
+- Įsitikinimai
+- Dabartinė emocinė būsena
+- Fiziologinė būsena
+- Tikslai ir lūkesčiai
+- Socialinis kontekstas
+
+↓
+
+SUBJEKTYVI SITUACIJOS PRASMĖ
+
+↓
+
+REAKCIJOS PASIRINKIMAS
 ____
 
 #SITUACIJOS SUVOKIMAS - Kognityvinė psichologija 
