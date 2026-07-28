@@ -62,7 +62,7 @@ KAS FORMUOJA REAKCIJĄ? (Metodologinis karkasas)
 ​Kokios teorijos tai aiškina? Lazarus Cognitive Appraisal Theory, Gross Process Model of Emotion Regulation, Basic Emotion Theory (Ekman), Constructionist Theory of Emotion (Lisa Feldman Barrett).  
 ​ConflictLab požiūris: Emocija yra tarpinis procesas, o ne galutinė priežastis. Elgesį lemia ir gebėjimas atpažinti emociją bei sąmoningai pasirinkti atsaką.  
 ​Ko dar nežinome? Kodėl emocijų intensyvumas skiriasi; kada emocija nusveria sąmoningą sprendimą; kokį vaidmenį atlieka prisirišimo stilius.  
-​Teorinės sąsajos: Kyla iš Subjektyvios prasmės ir nukreipia asmenį į kognityvinį vertinimą Galimų pasekmių prognozėje.
+​Teorinės sąsajos: Emocija veikia dėmesį, sprendimų priėmimą ir galimų reakcijų vertinimą.
 ​10. GALIMŲ PASEKMIŲ PROGNOZĖ
 ​Kas vyksta? Mintinis įvertinimas, kas nutiks pasirinkus vieną ar kitą reakciją. Būdas numatyti rezultatus prieš veikiant.  
 ​Kas ją veikia? Praeities patirtis, rizikos suvokimas, emocijų intensyvumas, mąstymo aiškumas, konflikto kontekstas.  
