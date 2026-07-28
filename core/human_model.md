@@ -24,6 +24,8 @@ _____
 
 REAKCIJOS PASIRINKIMAS
 ↓
+_____
+
 #ATSAKOMYBĖS TAŠKAS 
 Atsakomybės taškas (Point of Responsibility) – tai momentas tarp emocijos ir elgesio, kuriame žmogus gali sąmoningai įvertinti galimas savo reakcijos pasekmes ir pasirinkti:
 reaguoti;
