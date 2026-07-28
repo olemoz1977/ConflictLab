@@ -18,6 +18,8 @@ INTERPRETACIJOS FILTRAS
     ↓
 SUBJEKTYVI SITUACIJOS PRASMĖ
     ↓
+EMOCIJA
+    ,
 REAKCIJOS PASIRINKIMAS
 ↓
 ATSAKOMYBĖS TAŠKAS
@@ -26,6 +28,10 @@ ELGESYS
     ↓
 PASEKMĖ
 
+______
+
+Žmogus reaguoja ne į objektyvią realybę, o į savo tos realybės interpretaciją.
+ConflictLab tikslas nėra nustatyti, kas yra objektyviai teisinga. Jo tikslas – padėti žmogui suprasti, kaip susiformuoja jo situacijos interpretacija, kaip ji veikia emocijas ir elgesį, ir kaip šį procesą galima keisti konstruktyvesne kryptimi.
 
         TEORINIAI PAGRINDAI
 
