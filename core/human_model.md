@@ -1,8 +1,12 @@
- KAS FORMUOJA REAKCIJĄ?
-(metodologinis karkasas)
-        
-Žmogus reaguoja ne į objektyvią realybę, o į savo tos realybės interpretaciją.
+#KAS FORMUOJA REAKCIJĄ?
+    (metodologinis karkasas)
+
+Žmogus reaguoja ne į objektyvią realybę, o į savo tos realybės interpretaciją.  
 ConflictLab tikslas nėra nustatyti, kas yra objektyviai teisinga. Jo tikslas – padėti žmogui suprasti, kaip susiformuoja jo situacijos interpretacija, kaip ji veikia emocijas ir elgesį, ir kaip šį procesą galima keisti konstruktyvesne kryptimi.
+
+GENETIKA
+    ↓
+_____
 
 #GENETIKA
 Kas vyksta?
@@ -28,6 +32,12 @@ Kaip tiksliai genetika sąveikauja su aplinka formuojant konkretų reagavimo sti
 Kokie įgimti skirtumai labiausiai lemia emocinį reaktyvumą?
 Kur baigiasi genetinis polinkis ir prasideda išmoktas elgesys?
 
+    ↓
+_____
+
+ANKSTYVOSIOS PATIRTYS
+    ↓
+_____
 
 #ANKSTYVOSIOS PATIRTYS
 Kas vyksta?
@@ -57,6 +67,10 @@ Kiek ankstyvos patirtys gali būti pakeistos vėlesnėje raidoje?
     ↓
 _____
 
+IŠMOKTI ELGESIO MODELIAI
+    ↓
+_____
+
 #IŠMOKTI ELGESIO MODELIAI
 Kas vyksta?
 Žmogus išmoksta, kokie elgesio būdai jo aplinkoje veikė anksčiau. Tai gali būti vengimas, puolimas, prisitaikymas, tylėjimas, derybos ar kontrolė. Išmokti modeliai dažnai tampa automatiniais reagavimo įpročiais.
@@ -82,6 +96,10 @@ Kaip greitai žmogus gali pakeisti įsišaknijusį elgesio modelį?
 Kokios aplinkybės sustiprina seną modelį, o kokios padeda išmokti naują?
 Kiek elgesio modelį lemia sąmoningas pasirinkimas, o kiek automatinis įprotis?
 
+    ↓
+_____
+
+DABARTINĖ APLINKA
     ↓
 _____
 
@@ -321,85 +339,7 @@ Impulsų valdymo tyrimai.
 
 ConflictLab požiūris
 
-GENETIKA
-    ↓
-_____
-
-ANKSTYVOSIOS PATIRTYS
-    ↓
-_____
-
-IŠMOKTI ELGESIO MODELIAI
-    ↓
-______
-
-DABARTINĖ APLINKA
-    ↓
 _______
-
-STIMULAS
-    ↓
-________
-
-SITUACIJOS SUVOKIMAS
-    ↓
-_________
-
-INTERPRETACIJOS FILTRAS
-    ↓
-_________
-
-SUBJEKTYVI SITUACIJOS PRASMĖ
-    ↓
-_____
-
-#EMOCIJA
-Kas vyksta?
-Žmogus patiria emocinį atsaką į subjektyvią situacijos prasmę, o ne į patį stimulą. Emocija paruošia organizmą galimai reakcijai.
-Kas ją veikia?
-Nervų sistemos ypatumai.
-Ankstesnė patirtis.
-Fiziologinė būsena (miegas, nuovargis, alkis ir kt.).
-Dabartinė emocinė būsena.
-Situacijos interpretacija.
-Kokios teorijos tai aiškina?
-Lazarus Cognitive Appraisal Theory.
-Gross Process Model of Emotion Regulation.
-Basic Emotion Theory (Ekman).
-Constructionist Theory of Emotion (Lisa Feldman Barrett) (jei vėliau nuspręsime ją įtraukti).
-ConflictLab požiūris
-ConflictLab laiko emociją tarpiniu procesu, o ne galutine priežastimi. Žmogaus elgesį lemia ne vien emocija, bet ir tai, ar jis sugeba ją atpažinti, prognozuoti galimas pasekmes ir sąmoningai pasirinkti reakciją.
-Ko dar nežinome?
-Kodėl du žmonės toje pačioje situacijoje patiria skirtingo intensyvumo emocijas?
-Kada emocija tampa dominuojančiu veiksniu, o kada ją nusveria sąmoningas sprendimas?
-Kokį vaidmenį čia atlieka ankstyvosios patirtys ir prisirišimo stilius?
-    ,
-_____
-
-
-GALIMŲ PASEKMIŲ PROGNOZĖ
-↓
-_____
-
-#ATSAKOMYBĖS TAŠKAS 
-Atsakomybės taškas (Point of Responsibility) – tai momentas tarp emocijos ir elgesio, kuriame žmogus gali sąmoningai įvertinti galimas savo reakcijos pasekmes ir pasirinkti:
-reaguoti;
-nereaguoti;
-arba pasirinkti kitokį reagavimo būdą.
-    Kas vyksta?
-Žmogus įvertina galimas pasekmes ir priima sprendimą.
-Kas jį veikia?
-Emocijų intensyvumas.
-Savireguliacija.
-Patirtis.
-Vykdomosios funkcijos.
-Kokios teorijos?
-(Kol kas paliekame tuščią – dar tyrinėsime.)
-ConflictLab požiūris
-Tai vieta, kur žmogus gali sąmoningai perimti atsakomybę už savo reakciją.
-Ko dar nežinome?
-Kokios sąlygos labiausiai padeda žmogui sustoti prieš impulsyvią reakciją?↓
-_____
 
 ELGESYS
     ↓
