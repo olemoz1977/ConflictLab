@@ -2,10 +2,13 @@ Kas veikia žmogaus reakciją?
 
 GENETIKA
         ↘
+____
 ANKSTYVOSIOS PATIRTYS
         ↘
+____
 IŠMOKTI ELGESIO MODELIAI
         ↘
+____
 DABARTINĖ APLINKA
         ↓
 #STIMULAS - Aplinkos psichologija
