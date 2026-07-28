@@ -60,4 +60,56 @@ Jeigu sistema pateikia įžvalgą, ji turi paaiškinti, kokiais duomenimis ir pr
 
 Svarbiausias pokytis yra asmeninis augimas.
 
-Platforma siekia parodyti, kaip keičiasi žmogaus reakcijos laik
+Platforma siekia parodyti, kaip keičiasi žmogaus reakcijos laikui bėgant, o ne lyginti jį su kitais.
+
+---
+
+# 8. Technologija yra priemonė, o ne tikslas
+
+Dirbtinis intelektas, garsas, vaizdas ar testai nėra projekto esmė.
+
+Jie naudojami tik tada, kai padeda žmogui geriau suprasti save.
+
+---
+
+# 9. Etika yra svarbiau už funkcionalumą
+
+Jeigu funkcija gali klaidinti vartotoją arba sudaryti nepagrįsto tikslumo įspūdį, ji nebus diegiama.
+
+ConflictLab sąžiningai nurodo savo galimybių ribas.
+
+---
+
+# 10. ConflictLab nuolat mokosi
+
+Projektas nėra baigtinis.
+
+Kiekviena nauja mokslinė įžvalga, tyrimas ar patikrinta hipotezė gali papildyti arba pakeisti esamą modelį.
+
+Tikslas nėra būti neklystančiu.
+
+Tikslas – nuolat gerėti.
+
+---
+
+#11. Falsifikavimo principas
+
+Jeigu nauji duomenys paneigia mūsų hipotezę, mes keičiame hipotezę, o ne ignoruojame duomenis.
+
+# Kūrimo taisyklė
+
+Kiekviena nauja funkcija prieš pradedant programuoti turi atsakyti į penkis klausimus:
+
+1. Kokią problemą ji sprendžia?
+2. Kokia teorija arba hipotezė ją pagrindžia?
+3. Kaip ji padeda žmogui geriau suprasti save?
+4. Kaip bus įvertintas jos naudingumas?
+5. Ar ji atitinka šiuos principus?
+
+Jeigu bent į vieną klausimą nėra aiškaus atsakymo, funkcijos kūrimas atidedamas.
+
+---
+
+> **ConflictLab nėra sukurtas tam, kad pateiktų galutinius atsakymus.**
+
+> **Jis sukurtas tam, kad padėtų žmonėms užduoti geresnius klausimus apie save.**
