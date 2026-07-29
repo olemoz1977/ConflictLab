@@ -64,7 +64,10 @@ Duomenų struktūroje sugeneruojamos sub-hipotezės:
       "dominant_response": "avoidance_and_withdrawal"
     }
   }
-'''json
+}
+
+_______
+
 
 
 '''text
@@ -72,4 +75,4 @@ Duomenų struktūroje sugeneruojamos sub-hipotezės:
 Prieštaravimas sistemoje NĖRA traktuojamas kaip klaida. Tai yra vertingiausia informacija apie žmogaus vidinius konfliktus.
 Gauta išvestis reframinama per atspindėjimo principą:
 „Pastebėjome įdomų dėsningumą: kai matai vizualinį neapibrėžtumą, tavo pirmoji reakcija per 1.1 sek. yra siekis perimti kontrolę. Tačiau kai išgirsti šaltą balso toną, renkiesi atsitraukti. Ar pastebi, kad tavo elgesį labiau valdo ne pati situacija, o trigerio forma?“
-}
+
