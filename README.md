@@ -1,6 +1,6 @@
 # ConflictLab
 
-**ConflictLab** – tai adaptyvus kognityvinės elgsenos modeliavimo ir „aklojo plano“ (*Blind Spots*) diagnostikos karkasas. 
+**ConflictLab** – tai adaptyvus kognityvinės elgsenos modeliavimo ir „aklojo taško“ (*Blind Spot*) diagnostikos karkasas. 
 
 Skirtingai nuo tradicinių testų ar stacionarių anketų, sistema remiasi ne žmogaus deklaracijomis (kurioms būdinga racionalizacija ir gynybinis šališkumas), o **pasikartojančiais spontaniškų reakcijų dėsningumais**, išgaunamais per multimodalinius mikro-stimulus.
 
