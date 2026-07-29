@@ -7,6 +7,7 @@
 
 ## 🏗️ Algoritmo Schema (System Data Flow)
 
+
 $$\begin{aligned}
 \text{Multimodal Stimulus } (\text{/stimuli}) &\longrightarrow \text{Micro-Reaction } (\text{Latency + Choice}) \\
 &\longrightarrow \text{Perception Layer } (\text{/perception}) \\
