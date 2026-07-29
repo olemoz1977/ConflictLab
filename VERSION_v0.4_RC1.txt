@@ -1,0 +1,4 @@
+ConflictLab v0.4.0-RC1
+Previous files preserved.
+Archive folders retained.
+Branch: v0.4.0-RC1
