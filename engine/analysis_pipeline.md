@@ -1,92 +1,82 @@
-# ConflictLab Analizės Algoritmas (Analysis Pipeline)
+# ConflictLab Analizės Algoritmas (Analysis Pipeline Spec)
 
-**Versija:** 1.0  
-**Paskirtis:** Apibrėžti nuoseklų algoritminį procesą, kaip vartotojo pateiktas tekstas (konflikto aprašymas) apdorojamas per `human_model.md` ir pasitelkiant `/theories` modelius sugeneruojama struktūrizuota įžvalga bei transformacijos planas.
-
----
-
-## 🏗️ Algoritmo schema (Data Flow Overview)
-
-$$\text{Input Text} \longrightarrow \text{Phase 1: Parsing} \longrightarrow \text{Phase 2: Mapping} \longrightarrow \text{Phase 3: Synthesis} \longrightarrow \text{Output JSON/MD}$$
+**Versija:** 2.0 (Adaptyvi Multimodalinė Architektūra)  
+**Paskirtis:** Apibrėžti nuoseklų algoritminį procesą, kaip spontaniškos vartotojo mikro-reakcijos į multimodalinius stimulus apdorojamos per `/perception`, `/adaptive` ir `/theories` sluoksnius, sugeneruojant patikrintas elgsenos įžvalgas ir transformacijos kelią.
 
 ---
 
-## 🔄 Algoritmo Etapai (Pipeline Stages)
+## 🏗️ Algoritmo Schema (System Data Flow)
 
-### Etapas 1: Situacijos ir Įvykio Parsavimas (Situation Parsing)
-**Vykdo:** `engine/situation_parser.md`  
-**Atitinka `human_model.md` etapus:** 1–3 (Impulsas, Ankstyvosios patirtys, Fizinė būsena).
 
-1. **Faktų atskyrimas nuo interpretacijų:**
-   - Išskiriami objektyvūs įvykiai (*Trigger / Stimulus*) be vertinamųjų žodžių.
-   - Nustatomas konfliktinės situacijos intensyvumo lygis (pagal Glasl modelį).
-2. **Fiziologinio ir emociškai palaikomo fono detektavimas:**
-   - Išteklių stoka: nuovargis, al alkis, laiko spaudimas, chroniškas stresas.
-
----
-
-### Etapas 2: Trigerių ir Emocijų Indikavimas (Emotion & Trigger Detection)
-**Vykdo:** `engine/evidence_mapper.md`  
-**Atitinka `human_model.md` etapus:** 4–6 (Nervų sistema, Trigeris, Pirminė reakcija).
-
-1. **Nervų sistemos būsenos nustatymas (Polivagalinė teorija):**
-   - *Ventral vagal* (saugumas / ryšys), *Sympathetic* (kova / bėgimas), *Dorsal vagal* (sustingimas / atsiribojimas).
-2. **Kūno pojūčių ir afekto granuliarumas (Constructed Emotion Theory):**
-   - Bazinio afekto (valentingumas + sužadinimas) išvertimas į tikslias emocijų sąvokas.
-3. **Pirminio trigerio atpažinimas (SCARF Modelis):**
-   - *Status*, *Certainty*, *Autonomy*, *Relatedness*, *Fairness* grėsmės identifikavimas.
+[ Multimodal Stimulus (/stimuli) ]
+               │
+               ▼
+[ Micro-Reaction (Latency + Choice) ]
+               │
+               ▼
+[ Perception Layer (/perception) ]
+               │
+               ▼
+[ Adaptive Loop (/adaptive) ] ─── (Eksperimento Ciklas)
+               │
+               ▼
+[ Theory & Hypothesis Engine (/theories) ]
+               │
+               ▼
+[ Triangulated Insight (/engine/synthesis.md) ]
 
 ---
 
-### Etapas 3: Interpretacijos Filtro ir Mąstymo Klaidų Diagnostika (Theory Mapping)
-**Vykdo:** `engine/theory_selector.md` ir `engine/hypothesis_generator.md`  
-**Atitinka `human_model.md` etapus:** 7–10 (Interpretacijos filtras, Mąstymo klaidos, Antrinės emocijos, Elgesio modelis).
+  ## 🔄 Algoritmo Etapai (Pipeline Stages)
 
-1. **Kognityvinių iškraipymų fiksavimas (Cognitive Distortions):**
-   - Nustatomos konkrečios mąstymo klaidos (katastrofizavimas, proto skaitymas, privalomumai).
-2. **Giliųjų schemų ir prisirišimo aktyvavimo tikrinimas (Schema & Attachment Theory):**
-   - Tikrinamos hipotezės **H001**, **H002**, **H004** (ar reaguojama į dabartį, ar į aktyvuotą vaikystės/praeities schemą).
-3. **Socialinio vaidmens nustatymas (Karpman & TA):**
-   - Vaidmens trikampyje identifikavimas: Auka, Persekiojojas, Gelbėtojas.
-   - Ego būsenos nustatymas: Vaikas, Tėvas, Suaugęs.
+  
+**Etapas 1:** Mikro-Stimulo Pateikimas ir Atsako Fiksavimas (Perception Capture)
+Vykdo: perception/feature_extraction.md
+Atitinka human_model.md etapus: 1–5 (Impulsas, Ankstyvosios patirtys, Fizinė būsena, Nervų sistema, Trigeris).
+Stimulo Tipas (/stimuli):Vizualinis vaizdas, audio su pseudokalbos intonacija arba 2-sekundžių scenarijus.
+Duomenų Išgavimas (Feature Extraction):
+Reakcijos greitis (Latency $\Delta t$):$\Delta t < 1.5\text{ s} \implies$
+Spontaniškas autonominės nervų sistemos atsakas (Amigdala / Polyvagal).$\Delta t > 4.0\text{ s} \implies$
+Kognityvinė racionalizacija ir gynybinis filtras.
+Pasirinkimo Vektorius:
+Pasirinkta reakcija (kova, bėgimas, sustingimas, kontrolė, atsitraukimas).
+
+
+**Etapas 2:** Pasikartojančių Dėsningumų Diagnostika (Pattern Detection)
+Vykdo: perception/feature_extraction.md ir hypotheses/Atitinka human_model.md etapus: 6–8 (Pirminė reakcija, Interpretacijos filtras, Mąstymo klaidos).Vektorių Grupavimas:Sistema lygina naują reakciją su ankstesnių sąveikų istorija.Hipotezės Aktyvavimas (/hypotheses):Tikrinamos hipotezės (pvz., H002 neigiamas šališkumas ar H001 autonomijos praradimas).Apskaičiuojamas hipotezės pasitikėjimo laipsnis ($Confidence\ Score$).
+
+
+**Etapas 3:** Adaptyvusis Hipotezės Tikrinimas (Adaptive Targeted Loop)Vykdo: adaptive/stimulus_selector.mdAtitinka human_model.md etapus: Adaptyvusis interviu.Hipotezės Tikrinimo Taisyklė (Decision Matrix):Jei $Confidence < 0.80$: /adaptive modulis generuoja kitą tikslinį stimulą kitoje medijos formoje (pvz., jei prieš tai buvo vaizdas, dabar pateikiama pseudokalbos intonacija).Trianguliacijos Patikra:Siekiama patvirtinti dėsningumą per 3 skirtingas medijos formas (Vizualinė $\rightarrow$ Garsinė $\rightarrow$ Tekstinis pasirinkimas).
+
+
+**Etapas 4:** Teorinis Susiejimas ir Transformacija (Theory Synthesis)Vykdo: engine/theory_selector.md ir engine/synthesis.mdAtitinka human_model.md etapus: 9–12 (Antrinės emocijos, Elgesio modelis, Atsakomybės taškas, Sąmoningas atsakas).Mokslinis Žemėlapis (/theories):Kai $Confidence \ge 0.80$, reiškinys susiejamas su teorijomis: Polyvagal (polyvagal_theory.md), SCARF (scarf_model.md), Karpman trikampiu (karpman.md) ar Valdymo lokusu (locus_of_control.md).Valdymo Lokuso Perjungimas (Reframing):Reakcija paverčiama vidinio lokuso teiginiu: nuo „mane suerzino intonacija“ iki „aš pajutau grėsmę statusui, kai balso tonas tapo šaltas“.Elgesio Eksperimento Suformavimas:Sukuriamas mažas, saugus elgesio testas realybėje, plečiantis reagavimo ribas.
 
 ---
 
-### Etapas 4: Atsakomybės Taškas ir Pervertinimas (Transformation & Synthesis)
-**Vykdo:** `engine/synthesis.md` ir `core/transformation_path.md`  
-**Atitinka `human_model.md` etapus:** 11–12 (Atsakomybės taškas, Sąmoningas atsakas).
+JSON
 
-1. **Valdymo lokuso perjungimas (Locus of Control & Hypothesis H003):**
-   - Išorinio lokuso teiginių („jis mane supykdė“) reframe'inimas į vidinį lokusą („aš jaučiu pyktį, nes interpretavau...“).
-2. **Dėmesio ir refreimingo taikymas (Gross Emotion Regulation):**
-   - Kognityvinis situacijos pervertinimas (*reappraisal*).
-3. **Konstruktyvaus atsako suformavimas (NVC / Nonviolent Communication):**
-   - Formulė: **Faktai** $\rightarrow$ **Jausmai** $\rightarrow$ **Poreikiai** $\rightarrow$ **Prašymas**.
-
----
-
-## 📊 Išvesties Struktūra (Output Contract / Schema)
-
-Kiekviena analitinė išvestis privalo atitikti šį struktūrizuotą formatą:
-
-```json
 {
-  "parsed_situation": {
-    "objective_facts": "Kolega per susirinkimą pasakė, kad ataskaitoje yra 2 klaidos.",
-    "perceived_trigger": "Viešas kompetencijos užginčijimas"
+  "session_id": "sess_982341",
+  "observation": {
+    "stimulus_id": "STIM_AUDIO_004",
+    "stimulus_type": "audio_fake_language",
+    "response_latency_ms": 1180,
+    "is_spontaneous": true,
+    "selected_option": "passive_withdrawal"
   },
-  "neuro_emotional_state": {
-    "polyvagal_state": "Sympathetic (Kova / Gynyba)",
-    "scarf_threat": ["Status", "Fairness"],
-    "identified_emotions": ["Gėda", "Nesaugumas"]
+  "triangulation_state": {
+    "active_hypothesis": "H002",
+    "media_vectors_confirmed": ["visual", "audio"],
+    "confidence_score": 0.83
   },
-  "cognitive_filter": {
-    "cognitive_distortions": ["Mind Reading", "Catastrophizing"],
-    "activated_schema": "Gėdos / Defektyvumo schema",
-    "karpman_role": "Auka / Atsakomojo persekiojamojo vaidmuo"
+  "theoretical_mapping": {
+    "polyvagal_state": "Sympathetic / Freeze",
+    "scarf_threat": "Relatedness / Status",
+    "activated_schema": "Abandonment / Rejection Sensitivity"
   },
-  "transformation": {
-    "locus_shift": "Nuo 'Jis mane žemina' link 'Aš jaučiu grėsmę savo statusui'",
-    "nvc_response": "Kai susirinkimo metu paminėjai klaidas (Faktas), aš pajutau nepatogumą (Jausmas), nes man svarbus profesionalumas (Poreikis). Ar galėtume kitą kartą klaidas peržvelgti prieš susitikimą? (Prašymas)"
+  "reflection_mirror": {
+    "locus_shift": "Nuo 'šaltas tonas mane atstumia' link 'aš automatiškai traukiuosi, kai pajaučiu neapibrėžtumą'",
+    "mirror_insight": "Pastarosiose 3 situacijose (vaizde ir garso įraše) tavo reakcijos laikas buvo < 1.3 s., ir tu abu kartus pasirinkai atsitraukimą. Ar pastebi šį dėsningumą kasdienybėje?",
+    "suggested_experiment": "Kito pokalbio metu, pajutęs norą atsitraukti, padaryk 3 sekundžių pauzę ir paklausk neutralaus patikslinančio klausimo."
   }
 }
