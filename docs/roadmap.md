@@ -44,7 +44,8 @@ Rezultatas:
 
 Statusas:
 
-⚪ Nepradėta
+🟢 Vykdoma
+
 
 ---
 
@@ -66,7 +67,8 @@ Rezultatas:
 
 Statusas:
 
-⚪ Nepradėta
+🟢 Vykdoma
+
 
 ---
 
@@ -91,8 +93,7 @@ Rezultatas:
 Pirmasis ConflictLab modelis.
 
 Statusas:
-
-⚪ Nepradėta
+🟢 Vykdoma
 
 ---
 
