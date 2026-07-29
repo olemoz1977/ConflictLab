@@ -54,7 +54,7 @@ Vykdo: perception/feature_extraction.md ir hypotheses/Atitinka human_model.md et
 ---
 
 JSON
-'''text
+
 {
   "session_id": "sess_982341",
   "observation": {
