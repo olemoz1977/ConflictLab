@@ -3,996 +3,589 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ConflictLab — Savirefleksijos platforma</title>
+  <title>ConflictLab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0F0F12;
-      --bg-card:   #16161A;
-      --bg-hover:  #1E1E24;
-      --border:    #2A2A32;
-      --text:      #E8E4DC;
-      --text-dim:  #8A8680;
-      --text-faint:#4A4A52;
-      --accent:    #7C9E8F;
-      --accent-dim:#3D5E53;
-      --warn:      #C4956A;
-      --radius:    10px;
-      --transition: 220ms ease;
+      --bg:      #0D0D10;
+      --card:    #131318;
+      --border:  #222228;
+      --text:    #E4E0D8;
+      --dim:     #7A7670;
+      --faint:   #3A3A42;
+      --accent:  #7C9E8F;
+      --accent2: #2E4D44;
+      --warn:    #B8895A;
+      --r:       12px;
     }
 
-    html { font-size: 16px; }
-    body {
+    html, body {
+      height: 100%;
       background: var(--bg);
       color: var(--text);
       font-family: 'Inter', sans-serif;
       font-weight: 400;
       line-height: 1.6;
-      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── LAYOUT ── */
     .shell {
-      max-width: 720px;
+      max-width: 480px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 20px 60px;
     }
 
-    /* ── HEADER ── */
     header {
-      padding: 48px 0 32px;
+      padding: 40px 0 28px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 48px;
+      margin-bottom: 40px;
     }
     .logo {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
+      font-size: 0.7rem;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     header h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-size: clamp(1.5rem, 5vw, 1.9rem);
       font-weight: 300;
-      line-height: 1.25;
-      color: var(--text);
-      margin-bottom: 16px;
+      line-height: 1.2;
+      margin-bottom: 12px;
     }
     header p {
-      color: var(--text-dim);
-      font-size: 0.95rem;
-      max-width: 520px;
-      line-height: 1.7;
+      color: var(--dim);
+      font-size: 0.88rem;
+      line-height: 1.65;
     }
 
     /* ── SCREENS ── */
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* ── SCENARIO CARD ── */
-    .scenario-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px;
-      margin-bottom: 24px;
-    }
-    .scenario-meta {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .tag {
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 4px;
-      background: var(--accent-dim);
-      color: var(--accent);
-    }
-    .tag.warn { background: rgba(196,149,106,0.15); color: var(--warn); }
-    .scenario-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 500;
-      margin-bottom: 12px;
-      line-height: 1.3;
-    }
-    .scenario-desc {
-      color: var(--text-dim);
-      font-size: 0.92rem;
-      line-height: 1.75;
-    }
-
-    /* ── STIMULUS ── */
-    .stimulus-block {
-      margin: 32px 0;
-    }
-    .stimulus-label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      margin-bottom: 8px;
-    }
-    .stimulus-content {
-      background: var(--bg-hover);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      font-size: 0.95rem;
-      line-height: 1.7;
-      color: var(--text);
-    }
-    .modality-icon {
-      display: inline-block;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--accent-dim);
-      color: var(--accent);
-      font-size: 0.75rem;
-      text-align: center;
-      line-height: 28px;
-      margin-right: 8px;
-      vertical-align: middle;
-      font-weight: 600;
-    }
-
-    /* ── CHOICES ── */
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 24px;
-    }
-    .choice-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      text-align: left;
-      cursor: pointer;
-      transition: border-color var(--transition), background var(--transition);
-      position: relative;
-    }
-    .choice-btn:hover {
-      border-color: var(--accent);
-      background: var(--bg-hover);
-    }
-    .choice-btn.selected {
-      border-color: var(--accent);
-      background: rgba(124,158,143,0.08);
-    }
-    .choice-btn.selected::after {
-      content: '✓';
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--accent);
-      font-size: 0.9rem;
-    }
-
-    /* ── SIGNAL TRACE ── */
-    .signal-trace {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin: 32px 0;
-    }
-    .signal-trace-title {
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      margin-bottom: 16px;
-    }
-    .trace-nodes {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .trace-node {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-    .trace-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-    }
-    .trace-line {
-      width: 1px;
-      height: 16px;
+    /* ── PROGRESS ── */
+    .prog {
+      height: 1px;
       background: var(--border);
-      margin-left: 3px;
-    }
-    .axis-bar-wrap {
-      margin-top: 20px;
-    }
-    .axis-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .axis-name {
-      font-size: 0.78rem;
-      color: var(--text-faint);
-      width: 160px;
-      flex-shrink: 0;
-    }
-    .axis-track {
-      flex: 1;
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
-      position: relative;
-    }
-    .axis-fill {
-      position: absolute;
-      top: 0;
-      height: 4px;
-      border-radius: 2px;
-      background: var(--accent);
-      transition: width 600ms ease, left 600ms ease;
-    }
-    .axis-val {
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      width: 42px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    /* ── UNCERTAINTY ── */
-    .uncertainty-block {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      margin-bottom: 36px;
       overflow: hidden;
-      margin: 24px 0;
     }
-    .uncertainty-header {
-      background: var(--bg-hover);
-      padding: 12px 20px;
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-    }
-    .uncertainty-dims {
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .dim-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .dim-name {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      width: 180px;
-      flex-shrink: 0;
-    }
-    .dim-bar-wrap {
-      flex: 1;
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-    }
-    .dim-bar-fill {
-      height: 3px;
-      border-radius: 2px;
-      transition: width 600ms ease;
-    }
-    .dim-val {
-      font-size: 0.78rem;
-      color: var(--text-faint);
-      width: 36px;
-      text-align: right;
+    .prog-fill {
+      height: 1px;
+      background: var(--accent);
+      transition: width 500ms ease;
     }
 
-    /* ── REFLECTION ── */
-    .reflection-box {
-      background: var(--bg-card);
-      border: 1px solid var(--accent-dim);
-      border-radius: var(--radius);
-      padding: 32px;
-      margin: 32px 0;
+    /* ── VIDEO PLAYER ── */
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: var(--r);
+      overflow: hidden;
+      background: #000;
+      margin-bottom: 28px;
+      aspect-ratio: 9/14;
     }
-    .reflection-section {
-      margin-bottom: 24px;
+    .video-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    .reflection-section:last-child { margin-bottom: 0; }
-    .reflection-label {
-      font-size: 0.68rem;
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(13,13,16,0.85) 100%);
+      pointer-events: none;
+    }
+    .video-label {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 0.65rem;
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .reflection-text {
-      font-size: 0.92rem;
-      line-height: 1.75;
-      color: var(--text-dim);
-    }
-    .reflection-question {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 400;
-      line-height: 1.5;
-      color: var(--text);
-      padding-top: 8px;
-    }
-    .scope-note {
-      font-size: 0.8rem;
-      color: var(--text-faint);
-      font-style: italic;
-      line-height: 1.6;
-    }
-    .framework-pill {
-      display: inline-block;
-      font-size: 0.75rem;
-      padding: 3px 10px;
-      border: 1px solid var(--accent-dim);
-      border-radius: 4px;
-      color: var(--accent);
-      margin-bottom: 8px;
+      color: rgba(255,255,255,0.5);
+      background: rgba(0,0,0,0.4);
+      padding: 4px 10px;
+      border-radius: 20px;
     }
 
-    /* ── FEEDBACK ── */
-    .feedback-row {
-      display: flex;
-      gap: 12px;
-      margin-top: 32px;
-    }
-    .feedback-btn {
-      flex: 1;
-      padding: 14px;
-      border-radius: var(--radius);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
+    /* ── STIMULUS LABEL ── */
+    .stim-label {
+      font-size: 0.7rem;
       font-weight: 500;
-      cursor: pointer;
-      transition: opacity var(--transition), border-color var(--transition);
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 6px;
     }
-    .feedback-btn:hover { opacity: 0.85; border-color: var(--text-dim); }
-    .feedback-btn.resonated {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .feedback-btn.disagreed {
-      border-color: var(--warn);
-      color: var(--warn);
-    }
-    .feedback-detail {
-      display: none;
-      margin-top: 16px;
-    }
-    .feedback-detail.visible { display: block; }
-    textarea.feedback-text {
-      width: 100%;
-      background: var(--bg-hover);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .stim-q {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 400;
       color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+
+    /* ── CHOICES ── */
+    .choices { display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
+    .choice {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 15px 18px;
+      color: var(--dim);
       font-family: 'Inter', sans-serif;
       font-size: 0.88rem;
-      padding: 14px;
-      resize: vertical;
-      min-height: 100px;
-      line-height: 1.6;
+      line-height: 1.5;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 180ms, color 180ms, background 180ms;
+      position: relative;
     }
-    textarea.feedback-text:focus {
-      outline: none;
+    .choice:hover { border-color: var(--accent2); color: var(--text); }
+    .choice.on {
       border-color: var(--accent);
+      background: rgba(124,158,143,0.07);
+      color: var(--text);
+    }
+    .choice.on::after {
+      content: '';
+      position: absolute;
+      right: 16px; top: 50%;
+      transform: translateY(-50%);
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
     }
 
     /* ── BUTTONS ── */
-    .btn-primary {
-      display: inline-block;
-      padding: 14px 28px;
-      background: var(--accent);
-      color: #0F0F12;
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border-radius: var(--r);
       font-family: 'Space Grotesk', sans-serif;
       font-size: 0.9rem;
       font-weight: 500;
       border: none;
-      border-radius: var(--radius);
       cursor: pointer;
-      transition: opacity var(--transition);
+      transition: opacity 180ms;
+      text-align: center;
     }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #0D0D10; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
     .btn-ghost {
-      display: inline-block;
-      padding: 14px 28px;
       background: transparent;
-      color: var(--text-dim);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
+      color: var(--dim);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: border-color var(--transition);
     }
-    .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--dim); }
 
-    /* ── PROGRESS ── */
-    .progress-bar {
-      width: 100%;
-      height: 2px;
-      background: var(--border);
-      border-radius: 1px;
-      margin-bottom: 40px;
-      overflow: hidden;
+    /* ── INTRO CARD ── */
+    .intro-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-bottom: 20px;
     }
-    .progress-fill {
-      height: 2px;
-      background: var(--accent);
-      border-radius: 1px;
-      transition: width 400ms ease;
+    .intro-card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin-bottom: 10px;
     }
+    .intro-card p { color: var(--dim); font-size: 0.88rem; line-height: 1.65; }
+    .steps { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .step { display: flex; gap: 12px; align-items: flex-start; }
+    .step-n {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent);
+      width: 20px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .step-t { font-size: 0.85rem; color: var(--dim); line-height: 1.5; }
 
-    /* ── DISCLAIMER ── */
-    .disclaimer {
-      background: rgba(196,149,106,0.06);
-      border: 1px solid rgba(196,149,106,0.2);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      font-size: 0.82rem;
+    .warn-box {
+      border: 1px solid rgba(184,137,90,0.25);
+      background: rgba(184,137,90,0.05);
+      border-radius: var(--r);
+      padding: 14px 16px;
+      font-size: 0.8rem;
       color: var(--warn);
       line-height: 1.6;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
     }
 
-    /* ── FOOTER ── */
+    /* ── REFLECTION ── */
+    .r-section { margin-bottom: 24px; }
+    .r-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 7px;
+    }
+    .r-text { font-size: 0.88rem; color: var(--dim); line-height: 1.75; }
+    .r-question {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .r-box {
+      background: var(--card);
+      border: 1px solid var(--accent2);
+      border-radius: var(--r);
+      padding: 28px 24px;
+      margin-bottom: 28px;
+    }
+    .fw-pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border: 1px solid var(--accent2);
+      border-radius: 20px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .scope-note { font-size: 0.78rem; color: var(--faint); font-style: italic; line-height: 1.6; }
+
+    /* ── FEEDBACK ── */
+    .fb-row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .fb-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--dim);
+      transition: border-color 180ms, color 180ms;
+    }
+    .fb-btn.res { border-color: var(--accent); color: var(--accent); }
+    .fb-btn.dis { border-color: var(--warn); color: var(--warn); }
+    .fb-detail { display: none; margin-top: 12px; }
+    .fb-detail.show { display: block; }
+    textarea.fb-text {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      padding: 14px;
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+    textarea.fb-text:focus { outline: none; border-color: var(--accent); }
+
+    /* ── THANKS ── */
+    .thanks-box {
+      text-align: center;
+      padding: 48px 24px;
+      background: var(--card);
+      border: 1px solid var(--accent2);
+      border-radius: var(--r);
+      margin-bottom: 20px;
+    }
+    .thanks-icon { font-size: 2rem; margin-bottom: 16px; }
+    .thanks-box h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+    .thanks-box p { color: var(--dim); font-size: 0.88rem; line-height: 1.65; }
+
     footer {
       border-top: 1px solid var(--border);
-      padding: 32px 0;
-      margin-top: 64px;
-      font-size: 0.8rem;
-      color: var(--text-faint);
+      padding: 24px 0;
+      margin-top: 48px;
+      font-size: 0.75rem;
+      color: var(--faint);
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    /* ── STEP NAV ── */
-    .step-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-top: 32px;
-      flex-wrap: wrap;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 480px) {
-      .axis-name, .dim-name { width: 120px; font-size: 0.72rem; }
-      .feedback-row { flex-direction: column; }
-      .scenario-card { padding: 20px; }
     }
   </style>
 </head>
 <body>
 <div class="shell">
-
   <header>
     <div class="logo">ConflictLab</div>
     <h1>Savirefleksijos platforma</h1>
-    <p>Sistema fiksuoja signalus — ne asmenybę. Kiekviena refleksija yra klausimas, ne išvada.</p>
+    <p>Sistema fiksuoja signalus — ne asmenybę.<br>Kiekviena refleksija yra klausimas, ne išvada.</p>
   </header>
 
-  <!-- ═══════════════════════════════════════════
-       SCREEN 0 — INTRO
-  ═══════════════════════════════════════════ -->
-  <div class="screen active" id="screen-intro">
-
-    <div class="disclaimer">
-      ⚠ ConflictLab nėra psichologinės diagnostikos sistema. Ji neapibrėžia asmenybės tipo, nenustato diagnozių. Visos refleksijos yra tentative ir galioja tik konkrečioje pateiktoje situacijoje.
+  <!-- ── INTRO ── -->
+  <div class="screen active" id="s-intro">
+    <div class="warn-box">
+      ConflictLab nėra diagnostikos sistema. Ji neapibrėžia asmenybės tipo ir nenustato diagnozių.
     </div>
 
-    <div class="scenario-card">
-      <div class="scenario-meta">
-        <span class="tag">V001</span>
-        <span class="tag">H002</span>
-        <span class="tag warn">Darbo aplinka</span>
-      </div>
-      <div class="scenario-title">Neatsakyta žinutė</div>
-      <div class="scenario-desc">
-        Išsiuntei svarbų pasiūlymą kolegai. Jis peržiūri žinutę — matosi "skaitytas" statusas — bet neatsako 4 valandas.<br><br>
-        Sistema pateiks tris skirtingus stimulus. Reaguok instinktyviai — pirmas atsakymas dažnai yra pats informatyviausias.
+    <div class="intro-card">
+      <h2>Neatsakyta žinutė</h2>
+      <p>Išsiuntei svarbų pasiūlymą kolegai. Jis peržiūri žinutę, bet neatsako 4 valandas.</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">01</div><div class="step-t">Pamatysi tris trumpus vaizdo įrašus</div></div>
+        <div class="step"><div class="step-n">02</div><div class="step-t">Pasirink pirmą reakciją — instinktyviai</div></div>
+        <div class="step"><div class="step-n">03</div><div class="step-t">Gausi refleksijos klausimą — ne išvadą</div></div>
+        <div class="step"><div class="step-n">04</div><div class="step-t">Tavo nesutarimas yra vertingiausia informacija</div></div>
       </div>
     </div>
 
-    <div class="scenario-card" style="border-color: var(--accent-dim);">
-      <div style="font-size:0.78rem; color:var(--text-faint); margin-bottom:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:500;">Kaip tai veikia</div>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div style="display:flex; gap:12px; align-items:flex-start; font-size:0.88rem; color:var(--text-dim);">
-          <span style="color:var(--accent); font-weight:600; flex-shrink:0;">01</span>
-          <span>Tris stimulus — audio, vizualinis, scenarijus</span>
-        </div>
-        <div style="display:flex; gap:12px; align-items:flex-start; font-size:0.88rem; color:var(--text-dim);">
-          <span style="color:var(--accent); font-weight:600; flex-shrink:0;">02</span>
-          <span>Sistema sukuria Signal Trace — matomas kelias nuo stebėjimo iki refleksijos</span>
-        </div>
-        <div style="display:flex; gap:12px; align-items:flex-start; font-size:0.88rem; color:var(--text-dim);">
-          <span style="color:var(--accent); font-weight:600; flex-shrink:0;">03</span>
-          <span>Gauni refleksijos klausimą — ne atsakymą apie tave</span>
-        </div>
-        <div style="display:flex; gap:12px; align-items:flex-start; font-size:0.88rem; color:var(--text-dim);">
-          <span style="color:var(--accent); font-weight:600; flex-shrink:0;">04</span>
-          <span>Tavo nesutarimas yra vertingiausias grįžtamasis ryšys sistemai</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="step-actions">
-      <button class="btn-primary" onclick="startScenario()">Pradėti scenarijų</button>
-    </div>
+    <button class="btn btn-primary" onclick="go('s-v1')">Pradėti</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       SCREEN 1 — STIMULUS 1: AUDIO
-  ═══════════════════════════════════════════ -->
-  <div class="screen" id="screen-s1">
-    <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+  <!-- ── STIMULUS 1 ── -->
+  <div class="screen" id="s-v1">
+    <div class="prog"><div class="prog-fill" style="width:15%"></div></div>
 
-    <div class="stimulus-label">
-      <span class="modality-icon">A</span> Stimulas 1 iš 3 — Audio
+    <div class="video-wrap">
+      <video autoplay loop muted playsinline>
+        <source src="media/s1_figure_walks_away.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay"></div>
+      <div class="video-label">Stimulas 1 · Scena</div>
     </div>
 
-    <div class="stimulus-block">
-      <div class="stimulus-content">
-        Įsivaizduok, kad išgirsti šią frazę iš kolegos balso įraše — šaltą, lygų, be emocijų:<br><br>
-        <em style="color:var(--text); font-size:1.05rem;">"Taip. Gerai. Supratau."</em><br><br>
-        Trijų žodžių atsakymas po 4 valandų tylos.
-      </div>
+    <div class="stim-label">Ką matai šioje scenoje?</div>
+    <div class="stim-q">Kaip interpretuoji tai, kas vyksta?</div>
+
+    <div class="choices" id="c1">
+      <button class="choice" onclick="pick(1,0,+0.30)">Vienas žmogus sąmoningai traukiasi — yra distancija</button>
+      <button class="choice" onclick="pick(1,1,-0.15)">Žmogus tiesiog eina savo reikalų — nieko ypatingo</button>
+      <button class="choice" onclick="pick(1,2,+0.05)">Negaliu pasakyti — situacija neaiški</button>
     </div>
 
-    <div style="font-size:0.82rem; color:var(--text-faint); margin-bottom:16px;">Kaip interpretuoji šį toną?</div>
-    <div class="choices" id="choices-s1">
-      <button class="choice-btn" onclick="selectChoice('s1', 0, +0.30)">
-        Žmogus pyksta arba yra nepatenkintas mano pasiūlymu
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s1', 1, -0.15)">
-        Žmogus tiesiog užsiėmęs arba pavargęs
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s1', 2, +0.10)">
-        Negaliu pasakyti — tono nepakanka
-      </button>
-    </div>
-
-    <div class="step-actions">
-      <button class="btn-primary" id="next-s1" onclick="nextScreen('screen-s2')" disabled>Toliau</button>
-    </div>
+    <button class="btn btn-primary" id="n1" onclick="go('s-v2')" disabled>Toliau</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       SCREEN 2 — STIMULUS 2: VISUAL
-  ═══════════════════════════════════════════ -->
-  <div class="screen" id="screen-s2">
-    <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+  <!-- ── STIMULUS 2 ── -->
+  <div class="screen" id="s-v2">
+    <div class="prog"><div class="prog-fill" style="width:45%"></div></div>
 
-    <div class="stimulus-label">
-      <span class="modality-icon">V</span> Stimulas 2 iš 3 — Vizualinis
+    <div class="video-wrap">
+      <video autoplay loop muted playsinline>
+        <source src="media/s2_figures_approach.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay"></div>
+      <div class="video-label">Stimulas 2 · Scena</div>
     </div>
 
-    <div class="stimulus-block">
-      <div class="stimulus-content" style="font-size:1.5rem; letter-spacing:0.1em; text-align:center; padding:32px; color:var(--text);">
-        ◉ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;◎
-        <div style="font-size:0.78rem; color:var(--text-faint); margin-top:16px; letter-spacing:0.05em;">Figūra A artėja. Figūra B neutrali.</div>
-      </div>
+    <div class="stim-label">Ką jauti žiūrėdamas?</div>
+    <div class="stim-q">Kas vyksta tarp šių dviejų?</div>
+
+    <div class="choices" id="c2">
+      <button class="choice" onclick="pick(2,0,+0.25)">Vienas artėja, kitas vengia — yra įtampa</button>
+      <button class="choice" onclick="pick(2,1,-0.10)">Abu tiesiog juda — nematau konflikto</button>
+      <button class="choice" onclick="pick(2,2,+0.05)">Dviprasmiška — negaliu nuspręsti</button>
     </div>
 
-    <div style="font-size:0.82rem; color:var(--text-faint); margin-bottom:16px;">Ką rodo Figūros B elgesys?</div>
-    <div class="choices" id="choices-s2">
-      <button class="choice-btn" onclick="selectChoice('s2', 0, +0.25)">
-        Figūra B sąmoningai vengia kontakto — yra distancija
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s2', 1, -0.10)">
-        Figūra B tiesiog nesureagavo — situacija neaiški
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s2', 2, +0.05)">
-        Figūra B laukia — neutrali pozicija
-      </button>
-    </div>
-
-    <div class="step-actions">
-      <button class="btn-primary" id="next-s2" onclick="nextScreen('screen-s3')" disabled>Toliau</button>
-    </div>
+    <button class="btn btn-primary" id="n2" onclick="go('s-v3')" disabled>Toliau</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       SCREEN 3 — STIMULUS 3: SCENARIO
-  ═══════════════════════════════════════════ -->
-  <div class="screen" id="screen-s3">
-    <div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div>
+  <!-- ── STIMULUS 3 ── -->
+  <div class="screen" id="s-v3">
+    <div class="prog"><div class="prog-fill" style="width:72%"></div></div>
 
-    <div class="stimulus-label">
-      <span class="modality-icon">S</span> Stimulas 3 iš 3 — Scenarijus
+    <div class="video-wrap">
+      <video autoplay loop muted playsinline>
+        <source src="media/s3_phone_notification.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay"></div>
+      <div class="video-label">Stimulas 3 · Scenarijus</div>
     </div>
 
-    <div class="stimulus-block">
-      <div class="stimulus-content">
-        Kolega peržiūrėjo tavo pasiūlymą 4 valandas atgal. Atsiuntė trijų žodžių atsakymą. Dabar jau 6 valanda vakaro.<br><br>
-        <strong style="color:var(--text);">Ką darai?</strong>
-      </div>
+    <div class="stim-label">Telefonas ant stalo. 6 valanda vakaro.</div>
+    <div class="stim-q">Ką darai?</div>
+
+    <div class="choices" id="c3">
+      <button class="choice" onclick="pick(3,0,-0.20)">Nieko — lauksiu rytojaus</button>
+      <button class="choice" onclick="pick(3,1,+0.15)">Parašau: „Ar viskas gerai?"</button>
+      <button class="choice" onclick="pick(3,2,+0.35)">Siūlau susitikti rytoj aptarti</button>
+      <button class="choice" onclick="pick(3,3,-0.30)">Pradėju galvoti, kas galėjo suklysti</button>
     </div>
 
-    <div class="choices" id="choices-s3">
-      <button class="choice-btn" onclick="selectChoice('s3', 0, -0.20)">
-        Nieko nedarau — lauksiu rytojaus
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s3', 1, +0.15)">
-        Parašau patikslinantį klausimą — ar viskas gerai?
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s3', 2, +0.35)">
-        Siūlau susitikimą rytoj aptarti
-      </button>
-      <button class="choice-btn" onclick="selectChoice('s3', 3, -0.30)">
-        Pradedu galvoti, kas galėjo suklysti
-      </button>
-    </div>
-
-    <div class="step-actions">
-      <button class="btn-primary" id="next-s3" onclick="computeAndShow()" disabled>Žiūrėti refleksiją</button>
-    </div>
+    <button class="btn btn-primary" id="n3" onclick="compute()" disabled>Žiūrėti refleksiją</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       SCREEN 4 — REFLECTION
-  ═══════════════════════════════════════════ -->
-  <div class="screen" id="screen-reflection">
-    <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+  <!-- ── REFLECTION ── -->
+  <div class="screen" id="s-ref">
+    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
 
-    <!-- Signal Trace -->
-    <div class="signal-trace">
-      <div class="signal-trace-title">Signal Trace — kas buvo stebėta</div>
-      <div class="trace-nodes" id="trace-nodes"></div>
-
-      <div class="axis-bar-wrap" style="margin-top:24px;">
-        <div style="font-size:0.72rem; color:var(--text-faint); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px;">Signalų kryptys</div>
-        <div class="axis-row">
-          <div class="axis-name">approach / withdrawal</div>
-          <div class="axis-track"><div class="axis-fill" id="axis-aw" style="width:0%;left:50%"></div></div>
-          <div class="axis-val" id="axis-aw-val">0.00</div>
-        </div>
-        <div class="axis-row">
-          <div class="axis-name">control / release</div>
-          <div class="axis-track"><div class="axis-fill" id="axis-cr" style="width:0%;left:50%"></div></div>
-          <div class="axis-val" id="axis-cr-val">0.00</div>
-        </div>
-        <div class="axis-row">
-          <div class="axis-name">certainty seeking</div>
-          <div class="axis-track"><div class="axis-fill" id="axis-cs" style="width:0%;left:50%"></div></div>
-          <div class="axis-val" id="axis-cs-val">0.00</div>
-        </div>
+    <div class="r-box">
+      <div class="r-section">
+        <div class="r-label">Kas buvo stebėta</div>
+        <div class="r-text" id="r-obs"></div>
+      </div>
+      <div class="r-section">
+        <div class="r-label">Ko sistema negali žinoti</div>
+        <div class="r-text" id="r-unc"></div>
+      </div>
+      <div class="r-section">
+        <div class="r-label">Teorinis rėmelis</div>
+        <div class="fw-pill" id="r-fw"></div>
+        <div class="r-text" id="r-bs"></div>
+      </div>
+      <div class="r-section">
+        <div class="r-label">Kur ši refleksija galioja</div>
+        <div class="scope-note" id="r-sc"></div>
+      </div>
+      <div class="r-section" style="margin-bottom:0">
+        <div class="r-label">Refleksijos klausimas</div>
+        <div class="r-question" id="r-q"></div>
       </div>
     </div>
 
-    <!-- Uncertainty -->
-    <div class="uncertainty-block">
-      <div class="uncertainty-header">Neapibrėžtumo profilis — 5 dimensijos</div>
-      <div class="uncertainty-dims" id="uncertainty-dims"></div>
+    <div style="font-size:0.8rem; color:var(--dim); margin-bottom:12px;">Kaip jautėsi ši refleksija?</div>
+    <div class="fb-row">
+      <button class="fb-btn res" onclick="fb('res')">✓ Rezonuoja</button>
+      <button class="fb-btn dis" onclick="fb('dis')">✕ Nesutinku</button>
+    </div>
+    <div class="fb-detail" id="fb-d">
+      <div style="font-size:0.8rem;color:var(--dim);margin-bottom:8px;">Ką galėtum pasakyti? Tai vertingiausia informacija sistemai.</div>
+      <textarea class="fb-text" id="fb-t" placeholder="pvz. 'Tai buvo tiesiog nuovargis, ne vengimas'..."></textarea>
+      <button class="btn btn-primary" style="margin-top:10px" onclick="submit()">Išsaugoti</button>
     </div>
 
-    <!-- Reflection Contract -->
-    <div class="reflection-box" id="reflection-box">
-      <div class="reflection-section">
-        <div class="reflection-label">Kas buvo stebėta</div>
-        <div class="reflection-text" id="r-observation"></div>
-      </div>
-      <div class="reflection-section">
-        <div class="reflection-label">Ko sistema negali žinoti</div>
-        <div class="reflection-text" id="r-uncertainty"></div>
-      </div>
-      <div class="reflection-section">
-        <div class="reflection-label">Teorinis rėmelis</div>
-        <div class="framework-pill" id="r-framework"></div>
-        <div class="reflection-text" id="r-blind-spot"></div>
-      </div>
-      <div class="reflection-section">
-        <div class="reflection-label">Kur ši refleksija galioja</div>
-        <div class="scope-note" id="r-scope"></div>
-      </div>
-      <div class="reflection-section">
-        <div class="reflection-label">Refleksijos klausimas</div>
-        <div class="reflection-question" id="r-question"></div>
-      </div>
-    </div>
-
-    <!-- Feedback -->
-    <div style="font-size:0.82rem; color:var(--text-faint); margin-bottom:12px;">Kaip jautėsi ši refleksija?</div>
-    <div class="feedback-row">
-      <button class="feedback-btn resonated" onclick="giveFeedback('resonated')">✓ Rezonuoja</button>
-      <button class="feedback-btn disagreed" onclick="giveFeedback('disagreed')">✕ Nesutinku</button>
-    </div>
-    <div class="feedback-detail" id="feedback-detail">
-      <div style="font-size:0.82rem; color:var(--text-faint); margin:16px 0 8px;">Tavo nesutarimas yra vertingiausia informacija sistemai. Ką galėtum pasakyti?</div>
-      <textarea class="feedback-text" id="feedback-text" placeholder="pvz. 'Tai buvo tiesiog nuovargis, ne atmetimo baimė' arba 'Kita teorija tikslesnė'..."></textarea>
-      <div class="step-actions" style="margin-top:12px;">
-        <button class="btn-primary" onclick="submitFeedback()">Išsaugoti grįžtamąjį ryšį</button>
-      </div>
-    </div>
-
-    <div class="step-actions" style="margin-top:48px;">
-      <button class="btn-ghost" onclick="resetAll()">↺ Pradėti iš naujo</button>
-    </div>
+    <button class="btn btn-ghost" style="margin-top:32px" onclick="reset()">↺ Pradėti iš naujo</button>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       SCREEN 5 — THANK YOU
-  ═══════════════════════════════════════════ -->
-  <div class="screen" id="screen-thanks">
-    <div class="scenario-card" style="border-color:var(--accent-dim); text-align:center; padding:48px 32px;">
-      <div style="font-size:2rem; margin-bottom:16px;">◎</div>
-      <div class="scenario-title" style="margin-bottom:12px;" id="thanks-title">Ačiū</div>
-      <div class="scenario-desc" id="thanks-msg"></div>
+  <!-- ── THANKS ── -->
+  <div class="screen" id="s-thanks">
+    <div class="thanks-box">
+      <div class="thanks-icon">◎</div>
+      <h2 id="t-title">Ačiū</h2>
+      <p id="t-msg"></p>
     </div>
-    <div class="step-actions" style="justify-content:center; margin-top:24px;">
-      <button class="btn-ghost" onclick="resetAll()">↺ Bandyti dar kartą</button>
-    </div>
+    <button class="btn btn-ghost" onclick="reset()">↺ Bandyti dar kartą</button>
   </div>
 
   <footer>
     <span>ConflictLab v0.4.0-RC1</span>
     <span>Epistemic Reflection Framework</span>
   </footer>
-
 </div>
 
 <script>
-// ── STATE ──
-const state = {
-  choices: { s1: null, s2: null, s3: null },
-  weights: { s1: 0, s2: 0, s3: 0 },
-  latency: { s1: 0, s2: 0, s3: 0 },
-  startTimes: {},
-  feedback: null,
-  feedbackText: '',
-};
+const S = { w: [0,0,0], c: [null,null,null], t: [0,0,0], ts: {} };
 
-const MODALITY_LABELS = {
-  s1: { mod: 'AUDIO',    ref: 'STIM_AUD_001', label: 'Balso tonas (3 žodžiai po 4 val.)' },
-  s2: { mod: 'VISUAL',   ref: 'STIM_VIS_001', label: 'Vizualinis — figūrų distancija' },
-  s3: { mod: 'SCENARIO', ref: 'STIM_SCEN_001',label: 'Scenarijus — ką darau vakare?' },
-};
-
-const CHOICE_LABELS = [
-  ['Interpretuoja kaip nepatenkinimą/atmetimą', 'Siūlo neutralų paaiškinimą', 'Atideda sprendimą'],
-  ['Mato vengiamą distanciją', 'Mato neutralumą', 'Mato laukimą'],
-  ['Nieko nedaro', 'Rašo patikslinimą', 'Siūlo susitikimą', 'Pradeda abejoti savimi'],
+const LABELS = [
+  ['Interpretavo kaip atsitraukimą/vengimą','Matė neutralų judesį','Atidėjo vertinimą'],
+  ['Matė artėjimo ir vengimo įtampą','Nematė konflikto','Neįvertino'],
+  ['Laukė','Parašė patikslinimą','Siūlė susitikimą','Pradėjo abejoti savimi'],
 ];
 
-// ── NAVIGATION ──
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Autoplay video
+  const v = document.querySelector('#'+id+' video');
+  if(v) { v.currentTime=0; v.play(); }
+  // Record start time for next stimulus
+  const map = {'s-v1':'s1','s-v2':'s2','s-v3':'s3'};
+  if(map[id]) S.ts[map[id]] = Date.now();
 }
 
-function startScenario() {
-  state.startTimes.s1 = Date.now();
-  showScreen('screen-s1');
+function pick(stim, idx, w) {
+  const key = stim-1;
+  S.c[key]=idx; S.w[key]=w;
+  S.t[key] = S.ts['s'+stim] ? (Date.now()-S.ts['s'+stim])/1000 : 0;
+  document.querySelectorAll('#c'+stim+' .choice').forEach((b,i)=>b.classList.toggle('on',i===idx));
+  const nb = document.getElementById('n'+stim);
+  if(nb) nb.disabled=false;
 }
 
-function nextScreen(id) {
-  const key = id.replace('screen-', '').replace('s', 's');
-  const nextKey = id.includes('s2') ? 's2' : 's3';
-  state.startTimes[nextKey] = Date.now();
-  showScreen(id);
-}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
-// ── CHOICES ──
-function selectChoice(stimulus, idx, weight) {
-  state.choices[stimulus] = idx;
-  state.weights[stimulus] = weight;
-  state.latency[stimulus] = Date.now() - (state.startTimes[stimulus] || Date.now());
+function compute() {
+  const [w1,w2,w3] = S.w;
 
-  const btns = document.querySelectorAll(`#choices-${stimulus} .choice-btn`);
-  btns.forEach((b, i) => b.classList.toggle('selected', i === idx));
+  // Dynamic reflection based on choices
+  const signal = w1+w2 > 0.3 ? 'atsitraukimo' : w1+w2 < 0 ? 'artėjimo' : 'neutralaus';
+  const s3act = ['laukimo','patikslinimo','iniciatyvos','savikritikos'][S.c[2]||0];
 
-  const nextBtn = document.getElementById(`next-${stimulus}`);
-  if (nextBtn) nextBtn.disabled = false;
-}
+  document.getElementById('r-obs').textContent =
+    `Pirmame ir antrame vaizdo įraše pastebėtas ${signal} signalo interpretavimas. `+
+    `Trečiame – pasirinkta ${s3act} strategija (reakcijos laikas: ${S.t[2].toFixed(0)}s).`;
 
-// ── COMPUTE ──
-function computeAndShow() {
-  const w1 = state.weights.s1;
-  const w2 = state.weights.s2;
-  const w3 = state.weights.s3;
+  document.getElementById('r-unc').textContent =
+    'Refleksija paremta trimis stebėjimais iš vienos sesijos. '+
+    'Sistema negali žinoti, ar tai pasikartojantis dėsningumas ar situacinis atsakas. '+
+    'Nuovargis, kontekstas ir santykių istorija šioje sesijoje nebuvo stebėti.';
 
-  // SignalOrientation
-  const aw = clamp((w1 * -1.1 + w2 * -0.9) / 2, -1, 1);
-  const cr = clamp(w3 * 0.8, -1, 1);
-  const cs = clamp((Math.abs(w1) * 1.2 + Math.abs(w2) * 0.8) / 2, 0, 1) * (w1 > 0 ? 1 : -1);
+  document.getElementById('r-fw').textContent = 'AT-001 — Attachment Theory';
+  document.getElementById('r-bs').textContent =
+    'Ši teorija nepaaiškina nuovargio, darbo kultūros ar situacinio spaudimo.';
 
-  // Uncertainty
-  const totalW = [w1, w2, w3];
-  const pos = totalW.filter(w => w > 0).length;
-  const neg = totalW.filter(w => w < 0).length;
-  const conflict = Math.min(pos, neg) / 3;
+  document.getElementById('r-sc').textContent =
+    'Galioja: šios sesijos trys stimulai. '+
+    'Negalioja: asmens bendras elgesys, santykiai su kolega ar kiti kontekstai.';
 
-  const uncertainty = {
-    data_insufficiency: 0.50,
-    signal_conflict: conflict > 0.3 ? 0.65 : conflict > 0.1 ? 0.40 : 0.15,
-    source_diversity_gap: 0.10,
-    temporal_instability: 0.20,
-    model_assumption_gap: 0.15,
-  };
-
-  // Build reflection dynamically
-  const dominantSignal = w1 + w2 > 0.3 ? 'atsitraukimo' : w1 + w2 < -0.1 ? 'artėjimo' : 'neutralaus';
-  const s3action = ['laukimo', 'patikslinimo', 'iniciatyvos', 'savikritikos'][state.choices.s3 || 0];
-
-  const observation = `Audio ir vizualiniame stimuluose užfiksuotas ${dominantSignal} signalas. Scenarijuje pasirinkta ${s3action} strategija (reakcijos laikas: ${(state.latency.s3/1000).toFixed(1)} s).`;
-
-  const question = w1 > 0.15
-    ? 'Kai pastebėjai impulsą interpretuoti tylą kaip atmetimą — kas tuo metu vyko tavyje ir kas nulėmė, kaip pasielgei?'
-    : w1 < -0.05
-    ? 'Kaip nusprendei, kad neutralus tono vertinimas yra tinkamesnis atsakymas šioje situacijoje?'
+  const q = w1 > 0.15
+    ? 'Kai pastebėjai impulsą interpretuoti situaciją kaip atsitraukimą — kas tuo metu vyko tavyje?'
+    : w1 < 0
+    ? 'Kaip nusprendei, kad neutralus vertinimas yra tinkamesnis atsakymas šioje situacijoje?'
     : 'Ką reiškia tau neapibrėžtumas šioje situacijoje — ir kaip paprastai į jį reaguoji?';
 
-  // Render
-  renderSignalTrace(aw, cr, cs);
-  renderUncertainty(uncertainty);
-  renderReflection(observation, question, dominantSignal);
-
-  showScreen('screen-reflection');
+  document.getElementById('r-q').textContent = q;
+  go('s-ref');
 }
 
-function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-// ── RENDER SIGNAL TRACE ──
-function renderSignalTrace(aw, cr, cs) {
-  const nodesEl = document.getElementById('trace-nodes');
-  nodesEl.innerHTML = '';
-  ['s1','s2','s3'].forEach((key, i) => {
-    const m = MODALITY_LABELS[key];
-    const cLabel = CHOICE_LABELS[i][state.choices[key] || 0];
-    const lat = (state.latency[key] / 1000).toFixed(1);
-    nodesEl.innerHTML += `
-      <div class="trace-node">
-        <div class="trace-dot"></div>
-        <div>[${m.mod}] ${m.label} → <em style="color:var(--text)">${cLabel}</em> (${lat}s)</div>
-      </div>
-      ${i < 2 ? '<div class="trace-line" style="margin-left:3px;"></div>' : ''}
-    `;
-  });
-
-  // Axes
-  setAxis('aw', aw);
-  setAxis('cr', cr);
-  setAxis('cs', cs);
-}
-
-function setAxis(id, val) {
-  const fill = document.getElementById(`axis-${id}`);
-  const valEl = document.getElementById(`axis-${id}-val`);
-  const pct = Math.abs(val) * 50;
-  if (val >= 0) {
-    fill.style.left = '50%';
-    fill.style.width = pct + '%';
+function fb(type) {
+  if(type==='dis') {
+    document.getElementById('fb-d').classList.add('show');
   } else {
-    fill.style.left = (50 - pct) + '%';
-    fill.style.width = pct + '%';
-  }
-  valEl.textContent = (val >= 0 ? '+' : '') + val.toFixed(2);
-}
-
-// ── RENDER UNCERTAINTY ──
-function renderUncertainty(u) {
-  const el = document.getElementById('uncertainty-dims');
-  const labels = {
-    data_insufficiency:   'Duomenų pakankamumas',
-    signal_conflict:      'Signalų konfliktas',
-    source_diversity_gap: 'Modalijų įvairovumas',
-    temporal_instability: 'Laiko stabilumas',
-    model_assumption_gap: 'Modelio prielaidos',
-  };
-  const colors = [
-    v => v > 0.6 ? '#C4956A' : v > 0.35 ? '#7C9E8F' : '#3D5E53'
-  ];
-  el.innerHTML = Object.entries(u).map(([key, val]) => `
-    <div class="dim-row">
-      <div class="dim-name">${labels[key]}</div>
-      <div class="dim-bar-wrap">
-        <div class="dim-bar-fill" style="width:${val*100}%; background:${val > 0.6 ? '#C4956A' : '#7C9E8F'}"></div>
-      </div>
-      <div class="dim-val">${val.toFixed(2)}</div>
-    </div>
-  `).join('');
-}
-
-// ── RENDER REFLECTION ──
-function renderReflection(observation, question, signal) {
-  document.getElementById('r-observation').textContent = observation;
-  document.getElementById('r-uncertainty').textContent =
-    'Refleksija paremta 3 stebėjimais iš vienos sesijos. Sistema negali žinoti, ar tai pasikartojantis dėsningumas ar situacinis atsakas. Attachment Theory prielaidos apie santykių istoriją gali netikti šiam kontekstui.';
-  document.getElementById('r-framework').textContent = 'AT-001 — Attachment Theory (high confidence)';
-  document.getElementById('r-blind-spot').textContent =
-    'Ši teorija nepaaiškina nuovargio, situacinio spaudimo ar darbo kultūros konteksto.';
-  document.getElementById('r-scope').textContent =
-    'Galioja: trys stimulai šioje sesijoje. Negalioja: asmens bendras elgesio modelis, santykiai su šiuo kolega ar kiti kontekstai.';
-  document.getElementById('r-question').textContent = question;
-}
-
-// ── FEEDBACK ──
-function giveFeedback(type) {
-  state.feedback = type;
-  if (type === 'disagreed') {
-    document.getElementById('feedback-detail').classList.add('visible');
-  } else {
-    showThanks('resonated');
+    thanks('res');
   }
 }
 
-function submitFeedback() {
-  state.feedbackText = document.getElementById('feedback-text').value;
-  showThanks('disagreed');
+function submit() { thanks('dis'); }
+
+function thanks(type) {
+  document.getElementById('t-title').textContent =
+    type==='res' ? 'Ačiū — rezonuoja' : 'Ačiū — nesutarimas užregistruotas';
+  document.getElementById('t-msg').textContent =
+    type==='res'
+      ? 'Tai naudinga informacija. Refleksija atspindėjo stebėtus signalus tiksliai.'
+      : 'Tavo nesutarimas padės sistemai suprasti, kokiuose kontekstuose teoriniai rėmeliai neveikia.';
+  go('s-thanks');
 }
 
-function showThanks(type) {
-  if (type === 'resonated') {
-    document.getElementById('thanks-title').textContent = 'Ačiū — rezonuoja';
-    document.getElementById('thanks-msg').textContent =
-      'Tai naudinga informacija. Refleksija atspindėjo stebėtus signalus tiksliai. Sistema mokosi iš tokių patvirtinimų.';
-  } else {
-    document.getElementById('thanks-title').textContent = 'Ačiū — nesutarimas užregistruotas';
-    document.getElementById('thanks-msg').textContent =
-      'Tavo nesutarimas yra vertingiausias signalas sistemai. Jis padės patikslinti, kokiuose kontekstuose teoriniai rėmeliai neveikia.';
-  }
-  showScreen('screen-thanks');
+function reset() {
+  S.w=[0,0,0]; S.c=[null,null,null]; S.t=[0,0,0]; S.ts={};
+  document.querySelectorAll('.choice').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.btn-primary[id^="n"]').forEach(b=>b.disabled=true);
+  document.getElementById('fb-d').classList.remove('show');
+  document.getElementById('fb-t').value='';
+  go('s-intro');
 }
 
-// ── RESET ──
-function resetAll() {
-  state.choices = { s1: null, s2: null, s3: null };
-  state.weights = { s1: 0, s2: 0, s3: 0 };
-  state.latency = { s1: 0, s2: 0, s3: 0 };
-  state.feedback = null;
-  state.feedbackText = '';
-  document.getElementById('feedback-detail').classList.remove('visible');
-  document.getElementById('feedback-text').value = '';
-  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelectorAll('.btn-primary[id^="next"]').forEach(b => b.disabled = true);
-  showScreen('screen-intro');
-}
+// Start timer for first stimulus on load
+S.ts['s1'] = Date.now();
 </script>
 </body>
 </html>
