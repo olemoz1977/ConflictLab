@@ -1,84 +1,62 @@
 # ConflictLab
 
-> **Mes negalime pakeisti to, ko nepastebime.**
+**ConflictLab** – tai adaptyvus kognityvinės elgsenos modeliavimo ir „aklojo plano“ (*Blind Spots*) diagnostikos karkasas. 
 
-## Kas yra ConflictLab?
-
-ConflictLab yra atviro vystymo savirefleksijos projektas, kurio tikslas – padėti žmonėms geriau suprasti savo emocinių reakcijų ir elgesio dėsningumus sudėtingose gyvenimo situacijose.
-
-Tai nėra psichologinės diagnostikos sistema.
-
-Tai nėra medicininis ar klinikinis įrankis.
-
-Tai savirefleksijos platforma, kuri padeda žmogui pastebėti pasikartojančius reakcijų modelius ir sąmoningiau pasirinkti savo elgesį.
+Skirtingai nuo tradicinių testų ar stacionarių anketų, sistema remiasi ne žmogaus deklaracijomis (kurioms būdinga racionalizacija ir gynybinis šališkumas), o **pasikartojančiais spontaniškų reakcijų dėsningumais**, išgaunamais per multimodalinius mikro-stimulus.
 
 ---
 
-# Projekto misija
+## 🎯 Esminė Filosofija ir Principas
 
-Padėti žmogui suprasti savo automatines reakcijas, kad ateityje jis galėtų rinktis konstruktyvesnį elgesį konfliktuose, įtemptose situacijose ir kasdieniuose santykiuose.
+> *„Žmonės dažnai negali patikimai papasakoti, kodėl elgiasi vienaip ar kitaip. Todėl sistema remiasi ne pasakojimais apie elgesį, o spontaniškų reakcijų stebėjimu per skirtingas medijos formas.“*
 
----
-
-# Projekto vizija
-
-Sukurti modernią, mokslo įžvalgomis paremtą savirefleksijos platformą, kuri sujungia psichologijos teorijas, dirbtinį intelektą ir interaktyvias situacijų simuliacijas.
+Kai žmogus atsako į tekstinį klausimą, jame įsijungia kognityviniai filtrai ir gynybiniai mechanizmai. Naudojant **ne-tekstinius stimulus (vaizdus, pseudokalbos intonacijas, mikro-pasirinkimus laike)**, sistema fiksuoja grynąją pirminę reakciją, praleisdama ją pro smegenų amigdalos ir autonominės nervų sistemos lygmenį.
 
 ---
 
-# Pagrindiniai principai
+## 🏗️ Architektūra ir Duomenų Srautas
 
-- Žmogus nėra jo reakcija.
-- Elgesys priklauso nuo situacijos ir konteksto.
-- Savirefleksija yra svarbiau už etiketes.
-- Sistema nerodo absoliučios tiesos – ji padeda pastebėti dėsningumus.
-- Žmogus lyginamas pirmiausia su savimi, o ne su kitais.
-
----
-
-# Ko šis projektas nedaro
-
-ConflictLab:
-
-- nenustato psichologinių diagnozių;
-- nenustato traumų;
-- nepakeičia psichologo ar psichoterapeuto;
-- neteigia galintis 100 % tikslumu paaiškinti žmogaus elgesį.
-
----
-
-# Kaip vystomas projektas?
-
-Projektas kuriamas etapais.
-
-Pirmiausia kuriamas teorinis pagrindas.
-
-Tik po to kuriami algoritmai, testai ir dirbtinio intelekto moduliai.
-
-Kiekviena nauja funkcija turi atsakyti į tris klausimus:
-
-1. Kokią problemą ji sprendžia?
-2. Kokia teorija ar hipoteze ji remiasi?
-3. Kaip ji padeda žmogui geriau suprasti save?
+Sistema veikia per 4 sąveikaujančius sluoksnius:
+[ Multimodaliniai Stimulai ] (/stimuli)
+├─ Vizualiniai trigeriai
+├─ Audio / Pseudokalbos intonacijos
+└─ Micro-scenarijai (greiti pasirinkimai)
+│
+▼
+[ Stebėjimo Sluoksnis ] (/perception)
+├─ Reakcijos greitis (Latency < 1.5s)
+└─ Pasirinkimo šališkumo fiksavimas
+│
+▼
+[ Adaptyvusis Variklis ] (/adaptive)
+├─ Hipotezių tikrinimas (A/B testing ant elgesio)
+└─ Kito tikslinio stimulo parinkimas
+│
+▼
+[ Kognityvinis Variklis ] (/theories & /core)
+├─ Teorijų atitikimas (SCARF, Polyvagal, Karpman ir kt.)
+└─ Blind Spots identifikavimas & Transformacija
 
 ---
 
-# Projekto struktūra
+## 📁 Projekto Struktūra
 
-/docs – manifesto, filosofijos ir projekto dokumentai
-
-/theories – psichologinės teorijos ir jų analizė
-
-/hypotheses – projekto hipotezės
-
-/research – eksperimentai, literatūra ir stebėjimai
-
-/ideas – naujų idėjų saugykla
+- **`/core`**: Pagrindinis žmogaus reagavimo grandinės modelis (`human_model.md`), interpretacijos filtrai ir transformacijos kelias.
+- **`/stimuli`**: Multimodalinių trigerių katalogas (vizualiniai atstumai, kūno kalba, balso intonacijos, greitojo pasirinkimo situacijos).
+- **`/perception`**: Mikro-reakcijų ir pasąmoninių dėsningumų fiksavimo mechanizmas (objektyvus stebėjimas be teisimo).
+- **`/adaptive`**: Dinaminis interviu / patirties generatorius, parenkantis kitą stimulą pagal iškeltą hipotezę.
+- **`/theories`**: 15 mokslinių teorijų bazė (neurologinės, kognityvinės, socialinės-santykių).
+- **`/hypotheses`**: Patikrinamų elgsenos hipotezių katalogas (H001–H004 ir kt.).
+- **`/engine`**: Analizės pipeline, sintezės ir išvesčių schemos.
 
 ---
 
-# Projekto būsena
+## ⚖️ Bešališkumo Garantija (Trianguliacija)
 
-🟢 Ankstyvas tyrimų ir projektavimo etapas.
+Sistema neklijuoja etikečių pagal 1 ar 2 atsakymus. Hipotezė patvirtinama tik atlikus **trianguliaciją tarp 3 skirtingų medijos formų**:
+1. Abstraktus vaizdas / vizualinė situacija.
+2. Garso intonacija (pseudokalba).
+3. Sąmoningas elgesio pasirinkimas scenarijuje.
 
-Šiuo metu kuriamas teorinis pagrindas ir savirefleksijos modelis.
+Gauta išvada pateikiama ne kaip verdiktas, o kaip **veidrodis refleksijai**:  
+*„3 skirtingose situacijose pasirinkai atsitraukimą, kai išgirdai neaiškų balso toną. Ar pastebi šį dėsningumą savo kasdienybėje?“*
