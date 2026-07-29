@@ -97,26 +97,25 @@ Statusas:
 
 ---
 
-# 5 etapas – Stimulų biblioteka
+# 5 etapas – Stimulų biblioteka (multimodalinė)
+
+> ⚙️ Atnaujinta pagal V2 architektūrą (žr. `README.md`, `docs/manifesto.md`).
 
 Tikslas:
 
-Sukurti realių gyvenimo situacijų katalogą.
+Sukurti multimodalinių mikro-stimulų katalogą (/stimuli), skirtą fiksuoti spontaniškas reakcijas, o ne tekstinius aprašymus.
 
-Pavyzdžiai:
+Formos:
 
-- kritika;
-- atstūmimas;
-- netektis;
-- neteisybė;
-- kontrolė;
-- nežinomybė;
-- vienatvė;
-- išdavystė.
+- vizualiniai trigeriai (`stimuli/visual_patterns.md`);
+- audio / pseudokalbos intonacijos (`stimuli/audio_intonations.md`);
+- greiti mikro-scenarijai (`stimuli/micro_scenarios.md`).
+
+Kiekvienas stimulas turi būti susietas su konkrečia hipoteze (`/hypotheses`), kurią jis padeda patikrinti.
 
 Rezultatas:
 
-Pirmoji stimulų duomenų bazė.
+Pirmoji multimodalinių stimulų duomenų bazė.
 
 Statusas:
 
@@ -124,18 +123,35 @@ Statusas:
 
 ---
 
-# 6 etapas – MVP
+# 6 etapas – Suvokimo ir Adaptyvusis sluoksniai
 
 Tikslas:
 
-Sukurti pirmą veikiančią ConflictLab versiją.
+Įgyvendinti `/perception` (mikro-reakcijų fiksavimas: latency, pasirinkimo vektorius) ir `/adaptive` (kito stimulo parinkimas pagal Confidence Score) modulius, aprašytus `engine/analysis_pipeline.md`.
+
+Veiksmai:
+
+- detalizuoti `perception/feature_extraction.md` ir `adaptive/stimulus_selector.md` (šiuo metu juodraščiai);
+- pagrįsti arba empiriškai patikrinti latency ir Confidence Score slenksčius (žr. `research/experiments.md`);
+- apibrėžti duomenų schemą tarp sluoksnių.
+
+Statusas:
+
+⚪ Nepradėta
+
+---
+
+# 7 etapas – MVP
+
+Tikslas:
+
+Sukurti pirmą veikiančią ConflictLab versiją pagal V2 architektūrą.
 
 Galimos funkcijos:
 
-- situacijų analizė;
-- adaptyvūs klausimai;
-- savirefleksijos ataskaita;
-- rekomendacijos.
+- multimodalinio stimulo pateikimas ir atsako fiksavimas;
+- adaptyvus hipotezės tikrinimo ciklas (trianguliacija per 3 medijos formas);
+- veidrodinė įžvalga (be etikečių, be diagnozės) vartotojui.
 
 Rezultatas:
 
@@ -147,22 +163,19 @@ Statusas:
 
 ---
 
-# 7 etapas – Eksperimentiniai moduliai
+# 8 etapas – Eksperimentiniai moduliai
 
 Galimos kryptys:
 
-- balso stimulai;
-- garso simuliacijos;
-- vaizdo stimulai;
-- reakcijos laiko analizė;
-- DI pokalbiai;
-- emocijų atpažinimas.
+- DI pokalbiai / dinaminis interviu;
+- balso emocijų atpažinimas;
+- ilgalaikio dėsningumų sekimo (longitudinal) ataskaitos.
 
 Visi moduliai kuriami tik po teorinio pagrindimo.
 
 ---
 
-# 8 etapas – Tyrimai
+# 9 etapas – Tyrimai
 
 Tikslas:
 
