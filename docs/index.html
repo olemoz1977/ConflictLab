@@ -273,9 +273,14 @@
         <div class="r-lbl">Kur ši refleksija galioja</div>
         <div class="scope">Galioja: šios sesijos pasirinkimams. Negalioja: asmens bendram elgesiui, santykiams su kolega ar kitiems kontekstams.</div>
       </div>
-      <div class="r-sec">
-        <div class="r-lbl">Refleksijos klausimas</div>
-        <div class="r-q" id="r-q"></div>
+      <div class="r-sec" style="background:rgba(124,158,143,0.06);border:1px solid var(--a2);border-radius:10px;padding:16px 18px;margin-bottom:0;">
+        <div class="r-lbl" style="margin-bottom:10px;">Kodėl šis klausimas?</div>
+        <div style="font-size:0.82rem;color:var(--dim);line-height:1.8;">
+          <div>Pasirinktas vaizdas: <span id="r-trace-photo" style="color:var(--text);font-weight:500;"></span></div>
+          <div>Pirma mintis: <span id="r-trace-reaction" style="color:var(--text);font-style:italic;"></span></div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">Iš šios kombinacijos kilo:</div>
+        </div>
+        <div class="r-q" id="r-q" style="margin-top:8px;"></div>
       </div>
     </div>
 
@@ -383,10 +388,43 @@ function selectPhoto(idx) {
   document.getElementById('btn-react').disabled = true;
 }
 
+// 15 unique questions — one per photo+reaction combination
+const QUESTIONS = [
+  // P0: phone on table
+  [
+    'Telefonas nutylęs, bet mintyse jis vis dar „kalba". Kas nutinka tavyje toje tylos erdvėje — prieš ką nors darant?',
+    'Kai nusprendei, kad tai normalu — kaip greitai ta mintis atėjo, ir ar ji iš tikrųjų nuramino?',
+    'Tarp „nieko nedaryti" ir „kažką daryti" yra momentas. Kas tame momente paprastai nulemia kryptį?',
+  ],
+  // P1: window silhouette
+  [
+    'Noras atsitraukti dažnai yra signalas — ne silpnybė. Ką tu paprastai „paliksi lauke", kai atsitraukia?',
+    'Mintis „gal tiesiog užsiėmęs" — ar ji nuramino, ar tik sustabdė kitą mintį?',
+    'Laukimas be veiksmo turi savo svorį. Kaip tu paprastai žinai, kada laukti, o kada judėti?',
+  ],
+  // P2: chat screen
+  [
+    'Tuščia erdvė po žinute — ji reiškia skirtingus dalykus skirtingiems žmonėms. Ką ji reiškia tau šioje situacijoje?',
+    '„Faktas, nieko daugiau" — ar tai buvo tikra mintis, ar mintis, kurią norėjai turėti?',
+    'Klausimas rašyti ar ne kyla ne tik iš situacijos — kas tavyje jį kelia greičiau nei logika?',
+  ],
+  // P3: empty table
+  [
+    'Tuštuma, kuri primena laukimą — kuo ji skiriasi nuo tuštumą, kuri primena ramybę?',
+    'Erdvė be žmonių jautėsi rami. Kada tyla yra atgaiva, o kada — signalas?',
+    'Mintis nukrypo kitur — tai dažnai ne atsitiktinumas. Kur ji nuėjo, ir ar norėjai ten eiti?',
+  ],
+  // P4: person laptop
+  [
+    'Noras „tiesiog dirbti" — ar tai buvo pasirinkimas, ar gynybinis instinktas, kuris atsirado greičiau nei sprendimas?',
+    'Mintis „gal ir man reikia tiesiog dirbti" — ar tai buvo palengvėjimas, ar atsakomybės perkėlimas?',
+    'Telefonas šalia, bet ekranas nukreiptas žemyn — kas nutinka, kai kažką sąmoningai „padedi į šalį"?',
+  ],
+];
+
 function buildReflection() {
   const p = PHOTOS[S.photo];
   const r = REACTIONS[S.photo][S.reaction];
-  const totalW = (p.signal + S.reactionW) / 2;
 
   document.getElementById('r-obs').textContent =
     `Dėmesys krypo į: "${p.label}". ` +
@@ -395,14 +433,12 @@ function buildReflection() {
   document.getElementById('r-fw').textContent = p.fw;
   document.getElementById('r-bs').textContent = p.bs;
 
-  let q;
-  if (totalW > 0.25) {
-    q = 'Kai tavo dėmesys sustojo ties šiuo vaizdu — kas tuo metu vyko tavyje, ir ar tai atpažįsti iš kitų situacijų?';
-  } else if (totalW < -0.10) {
-    q = 'Pastebėjai norą atsitraukti arba nekreipti dėmesio — kada tau tai padeda, ir kada trukdo?';
-  } else {
-    q = 'Šioje situacijoje tavo dėmesys buvo neutralus. Kas paprastai nulemia, kada kažkas patraukia tavo dėmesį stipriau?';
-  }
+  // Signal Trace — visible connection
+  document.getElementById('r-trace-photo').textContent = `"${p.label}"`;
+  document.getElementById('r-trace-reaction').textContent = `"${r.text}"`;
+
+  // Unique question per combination
+  const q = QUESTIONS[S.photo][S.reaction];
   document.getElementById('r-q').textContent = q;
 }
 
