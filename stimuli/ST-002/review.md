@@ -4,7 +4,7 @@
 **Peržiūros data:** 2026-07-30
 **Recenzentas:** Claude (ConflictLab v0.6 auditas)
 **Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0.1
-**Statusas po peržiūros:** beta_po_pataisymo
+**Statusas po peržiūros:** beta
 
 ---
 
@@ -13,10 +13,10 @@
 *Vertinamas tik vaizdas. Variantai ir signalai dar nevertinami.*
 
 ### V1.1 Neutralumas
-**Įvertinimas:** 3/5
-**Paaiškinimas:** Vaizdas leidžia kelias interpretacijas: derybos, konfliktas, susitikimas, atsitiktinis susidūrimas. Tačiau du žmonės veidu į veidą koridoriuje sukuria stiprų "konfrontacijos" lūkestį — viena interpretacija gali dominuoti.
-**Rastos problemos:** Konfrontacijos interpretacija gali viršyti 50% — ribinė neutralumo zona.
-**Rekomendacija:** Priimti su žyma `interpretacijos_skersvėjas: konfrontacija`
+**Įvertinimas:** 4/5
+**Paaiškinimas:** ✓ Pataisyta v2 vaizdu. Abstrakčios figūros be konteksto leidžia platesnes interpretacijas: susitikimas, konfrontacija, pokalbyje, tyla, laukimas. Koridoriaus kontekstas pašalintas — nebėra biuro naratyvo.
+**Rastos problemos:** Du humanoidai veidu į veidą vis dar turi artėjimo/konfrontacijos reikšmę — bet tai yra tiksliai tai ką aw ašis matuoja.
+**Rekomendacija:** Priimti
 
 ### V1.2 AI artefaktai
 **Įvertinimas:** 4/5
@@ -25,22 +25,22 @@
 **Rekomendacija:** Priimti
 
 ### V1.3 Kultūrinis šališkumas
-**Įvertinimas:** 3/5
-**Paaiškinimas:** Biuro koridoriaus aplinka yra pakankamai universali, tačiau specifinė darbo kontekstui. Distancija tarp figūrų (apie 1 metras) turi kultūrinę reikšmę — Vakarų kultūroje tai "asmeninė erdvė", kitur gali būti kitaip.
-**Rastos problemos:** Asmeninės erdvės koncepcija kultūriškai specifinė.
-**Rekomendacija:** Priimti su žyma `cultural_flag: asmenine_erdve`
+**Įvertinimas:** 4/5
+**Paaiškinimas:** ✓ Pataisyta v2 vaizdu. Juodas neutralus fonas, jokios aplinkos detalių — kultūrinis kontekstas pašalintas. Distancija tarp figūrų vis dar turi kultūrinę reikšmę, bet abstrakčios figūros mažina šią priklausomybę.
+**Rastos problemos:** Minimali — fizinė distancija tarp figūrų gali skirtingai interpretuojama skirtingose kultūrose.
+**Rekomendacija:** Priimti
 
 ### V1.4 Lyties / amžiaus / statuso signalai
-**Įvertinimas:** 2/5
-**Paaiškinimas:** Nuotraukoje matomi vyras ir moteris veidu į veidą. Lyties signalas yra tikra problema, tačiau nepriklausomo audito metu nustatytas dar svarbesnis reiškinys — žr. Naratyvinio šališkumo pastabą žemiau.
-**Rastos problemos:** Lyties signalas gali aktyvuoti lyčių dinamikos schemas nesusijusias su aw konstruktu.
-**Rekomendacija:** Taisyti stimulą — ne review.
+**Įvertinimas:** 5/5
+**Paaiškinimas:** ✓ Pataisyta v2 vaizdu. Dvi abstrakčios figūros be lyties, amžiaus ar statuso požymių. Jokios drabužių detalių, jokio veido. Figūros identifikuojamos tik kaip "du subjektai".
+**Rastos problemos:** Nėra.
+**Rekomendacija:** Priimti
 
 ### V1.4a Naratyvinis šališkumas (FC-001)
 **Įvertinimas:** ⚠ Pastaba (ne Protocol kriterijus — žr. `future_considerations.md`)
-**Paaiškinimas:** Vaizdas labai skatina žiūrovą kurti santykių istoriją: vadovas/darbuotojas, kolegos, pora, derybos, konfliktas. Šis naratyvinis sluoksnis gali nustelbti aw signalą — žmogus reaguoja į tariamą santykį, o ne į artėjimo/atsitraukimo dimensiją. Tai skiriasi nuo lyties signalo — problema atsiras net su neutraliomis figūromis jei jos yra aiškioje socialinėje situacijoje.
-**Rastos problemos:** Santykio neapibrėžtumas (relationship ambiguity) gali dominuoti prieš aw konstruktą.
-**Rekomendacija:** Taisyti stimulą — figūros turėtų būti mažiau individualizuotos, be aiškių santykio užuominų.
+**Paaiškinimas:** ✓ Dalinai išspręsta v2 vaizdu. Abstrakčios figūros be drabužių ir veido drastiškai sumažina santykio naratyvo kūrimo galimybę. Tačiau du humanoidai veidu į veidą visada turės tam tikrą santykio neapibrėžtumą — tai gali būti priimtinas lygis aw stimului.
+**Rastos problemos:** Minimalus likutinis naratyvinis šališkumas — priimtinas.
+**Rekomendacija:** Priimti
 
 ### V1.5 Neapibrėžtumo lygis
 **Įvertinimas:** 20–70% (optimalus, bet ribinis)
@@ -185,29 +185,27 @@
 
 | Kriterijus | Objektas | Svoris | Balas | Svertinis |
 |---|---|---|---|---|
-| V1.1 Neutralumas | IMAGE | 15% | 3/5 | 9 |
+| V1.1 Neutralumas | IMAGE | 15% | 4/5 | 12 |
 | V1.2 AI artefaktai | IMAGE | 10% | 4/5 | 8 |
-| V1.3 Kultūrinis neutralumas | IMAGE | 10% | 3/5 | 6 |
-| V1.4 Lyties/statuso neutralumas | IMAGE | 10% | 2/5 | 4 |
+| V1.3 Kultūrinis neutralumas | IMAGE | 10% | 4/5 | 8 |
+| V1.4 Lyties/statuso neutralumas | IMAGE | 10% | 5/5 | 10 |
 | V2.1 Reakcija, ne nuomonė | CHOICES | 15% | 4/5 | 12 |
 | V2.2 Socialinis neutralumas | CHOICES | 15% | 4/5 | 12 |
 | V3.1 Pirminė ašis | SIGNALS | 10% | 5/5 | 10 |
 | V3.4 Svorių simetrija | SIGNALS | 10% | 4/5 | 8 |
 | V4 Teorijų validacija | VISI | 5% | 4/5 | 4 |
-| **VISO** | | **100%** | | **73/100** |
+| **VISO** | | **100%** | | **84/100** |
 
 **Minimalus balas: 70/100**
-**Gautas balas: 73/100** ✓
+**Gautas balas: 84/100** ✓ (buvo 73/100 su senu vaizdu)
 
-**Sprendimas:** 🟡 Beta po pataisymo
+**Sprendimas:** ✅ Beta
 
 **Žymos:**
-- `taisyti_stimula: naratyvinis_sališkumas` — figūros per daug individualizuotos, santykio neapibrėžtumas nustelbia aw
-- `taisyti_stimula: lyties_signalas` — rekomenduoti abstraktūs siluetai
-- `cultural_flag: asmenine_erdve` — kultūriškai specifinė distancija
-- `teorinis_abejonimas: SCARF_status` — SCARF abejoja dominuojančiu konstruktu
+- `teorinis_abejonimas: SCARF_status` — SCARF abejoja dominuojančiu konstruktu (stebima)
+- `fc_001_stebima` — Naratyvinis šališkumas minimalus, stebimas
 - `replaces: L02` — archyvuojamas senas stimulas
-- `fc_001_stebima` — Naratyvinis šališkumas užregistruotas future_considerations.md
+- `image_v2` — vaizdas pakeistas po audito
 
 ---
 
@@ -220,7 +218,7 @@
 - ✓ Naujas signalų derinys: aw+ su cs+/cr+ (artėjimas + struktūros lūkestis)
 - ⚠ Taisytina: naratyvinis šališkumas + lyties signalas
 
-**Sprendimas:** 🟡 Beta po pataisymo — stimulas praturtina biblioteką, bet reikia geresnio vaizdo
+**Sprendimas:** ✅ Beta — stimulas praturtina biblioteką, vaizdas pataisytas po audito
 
 ---
 

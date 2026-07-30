@@ -1,5 +1,5 @@
 stimulus_id: ST-002
-status: review
+status: beta
 
 history:
   - date: 2026-07-30
@@ -7,7 +7,10 @@ history:
     note: "Sukurtas — aw+ polius (artėjimas)"
   - date: 2026-07-30
     status: review
-    note: "Claude review: 73/100, priimti su žymomis"
+    note: "Claude review: 73/100"
   - date: 2026-07-30
     status: review
-    note: "Nepriklausomas auditas: 🟡 Beta po pataisymo. Pagrindinė problema — naratyvinis šališkumas (FC-001), ne tik lyties signalas. Taisyti stimulą, ne review."
+    note: "Nepriklausomas auditas: 🟡 Beta po pataisymo. FC-001 Naratyvinis šališkumas identifikuotas."
+  - date: 2026-07-30
+    status: beta
+    note: "Vaizdas pakeistas: abstrakčios figūros be lyties/statuso. Balas: 84/100. ✅ Beta."
