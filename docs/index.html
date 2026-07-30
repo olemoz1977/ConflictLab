@@ -325,29 +325,29 @@ const PHOTOS = [
 
 // Reaction choices per photo
 const REACTIONS = [
-  [ // phone table
-    { text: 'Pagalvojau apie žinutę — ar ji buvo perskaityta', w: +0.35 },
-    { text: 'Pastebėjau kad telefonas nutylęs — tai normalu', w: -0.10 },
-    { text: 'Susimąsčiau ką daryti toliau', w: +0.20 },
+  [ // telefonas ant stalo
+    { text: 'Iš karto pagalvojau apie žinutę', w: +0.35 },
+    { text: 'Telefonas nutylęs — tai normalu', w: -0.10 },
+    { text: 'Pradėjau galvoti ką daryti toliau', w: +0.20 },
   ],
-  [ // window silhouette
-    { text: 'Pajutau norą atsitraukti ir negalvoti', w: -0.35 },
-    { text: 'Pagalvojau — gal kolega tiesiog užsiėmęs', w: -0.05 },
-    { text: 'Susimąsčiau apie laukimą', w: +0.15 },
+  [ // žmogus prie lango
+    { text: 'Norėjosi atsitraukti ir negalvoti', w: -0.35 },
+    { text: 'Gal kolega tiesiog užsiėmęs', w: -0.05 },
+    { text: 'Pagalvojau apie laukimą', w: +0.15 },
   ],
-  [ // chat screen
-    { text: 'Tuščia erdvė po žinute sukėlė nerimą', w: +0.50 },
-    { text: 'Žinutė perskaityta — tai faktas, nieko daugiau', w: -0.10 },
-    { text: 'Pagalvojau ar rašyti dar kartą', w: +0.30 },
+  [ // pokalbio ekranas
+    { text: 'Tuščia vieta po žinute — neramina', w: +0.50 },
+    { text: 'Žinutė perskaityta — faktas, tiek to', w: -0.10 },
+    { text: 'Pagalvojau rašyti dar kartą', w: +0.30 },
   ],
-  [ // empty table
+  [ // tuščias stalas
     { text: 'Tuštuma priminė laukimą', w: +0.25 },
-    { text: 'Erdvė be žmonių — tai ramu', w: -0.20 },
-    { text: 'Pagalvojau apie kažką kita', w: 0.0 },
+    { text: 'Erdvė be žmonių — ramu', w: -0.20 },
+    { text: 'Mintys nukeliavo kitur', w: 0.0 },
   ],
-  [ // laptop
+  [ // žmogus prie kompiuterio
     { text: 'Norėjosi tiesiog dirbti ir nekreipti dėmesio', w: -0.25 },
-    { text: 'Pagalvojau — gal ir man reikia tiesiog dirbti', w: +0.10 },
+    { text: 'Gal ir man reikia tiesiog dirbti', w: +0.10 },
     { text: 'Pastebėjau telefoną šalia — jis stebimas', w: +0.35 },
   ],
 ];
@@ -389,36 +389,37 @@ function selectPhoto(idx) {
 }
 
 // 15 unique questions — one per photo+reaction combination
+// Principle: each question starts from what the person chose
 const QUESTIONS = [
-  // P0: phone on table
+  // P0: telefonas ant stalo
   [
-    'Telefonas nutylęs, bet mintyse jis vis dar „kalba". Kas nutinka tavyje toje tylos erdvėje — prieš ką nors darant?',
-    'Kai nusprendei, kad tai normalu — kaip greitai ta mintis atėjo, ir ar ji iš tikrųjų nuramino?',
-    'Tarp „nieko nedaryti" ir „kažką daryti" yra momentas. Kas tame momente paprastai nulemia kryptį?',
+    'Pasirinkti telefoną — ir iš karto pagalvoti apie žinutę. Ar ta mintis atėjo pati, ar tu ją pasikvietei?',
+    'Pasirinkti telefoną — ir nuspręsti, kad tai normalu. Kiek laiko prireikė tam sprendimui?',
+    'Pasirinkti telefoną — ir pradėti galvoti ką daryti. Kas paprastai nustumia nuo galvojimo prie veiksmo?',
   ],
-  // P1: window silhouette
+  // P1: žmogus prie lango
   [
-    'Noras atsitraukti dažnai yra signalas — ne silpnybė. Ką tu paprastai „paliksi lauke", kai atsitraukia?',
-    'Mintis „gal tiesiog užsiėmęs" — ar ji nuramino, ar tik sustabdė kitą mintį?',
-    'Laukimas be veiksmo turi savo svorį. Kaip tu paprastai žinai, kada laukti, o kada judėti?',
+    'Pasirinkti žmogų prie lango — ir pajusti norą atsitraukti. Ką tu paprastai pasiimi su savimi, kai atsitraukia?',
+    'Pasirinkti žmogų prie lango — ir pagalvoti, kad kolega tiesiog užsiėmęs. Ar ta mintis nuramino?',
+    'Pasirinkti žmogų prie lango — ir susimąstyti apie laukimą. Laukimas yra pasirinkimas ar būsena?',
   ],
-  // P2: chat screen
+  // P2: pokalbio ekranas
   [
-    'Tuščia erdvė po žinute — ji reiškia skirtingus dalykus skirtingiems žmonėms. Ką ji reiškia tau šioje situacijoje?',
-    '„Faktas, nieko daugiau" — ar tai buvo tikra mintis, ar mintis, kurią norėjai turėti?',
-    'Klausimas rašyti ar ne kyla ne tik iš situacijos — kas tavyje jį kelia greičiau nei logika?',
+    'Pasirinkti pokalbio ekraną — ir pajusti nerimą matant tuščią vietą. Kas toje tuštumoje neramina labiausiai?',
+    'Pasirinkti pokalbio ekraną — ir nuspręsti, kad tai tik faktas. Ar pavyko tuo patikėti?',
+    'Pasirinkti pokalbio ekraną — ir pagalvoti rašyti dar kartą. Kas tame momente stabdo greičiau nei logika?',
   ],
-  // P3: empty table
+  // P3: tuščias stalas
   [
-    'Tuštuma, kuri primena laukimą — kuo ji skiriasi nuo tuštumą, kuri primena ramybę?',
-    'Erdvė be žmonių jautėsi rami. Kada tyla yra atgaiva, o kada — signalas?',
-    'Mintis nukrypo kitur — tai dažnai ne atsitiktinumas. Kur ji nuėjo, ir ar norėjai ten eiti?',
+    'Pasirinkti tuščią stalą — ir pajusti, kad jis primena laukimą. Kuo skiriasi laukimas, kuris slegia, nuo to, kuris nepastebimas?',
+    'Pasirinkti tuščią stalą — ir pajusti ramybę. Kada erdvė be žmonių yra atgaiva, o kada — signalas?',
+    'Pasirinkti tuščią stalą — ir mintimis nukeliauti kitur. Kur nuėjai, ir ar norėjai ten eiti?',
   ],
-  // P4: person laptop
+  // P4: žmogus prie kompiuterio
   [
-    'Noras „tiesiog dirbti" — ar tai buvo pasirinkimas, ar gynybinis instinktas, kuris atsirado greičiau nei sprendimas?',
-    'Mintis „gal ir man reikia tiesiog dirbti" — ar tai buvo palengvėjimas, ar atsakomybės perkėlimas?',
-    'Telefonas šalia, bet ekranas nukreiptas žemyn — kas nutinka, kai kažką sąmoningai „padedi į šalį"?',
+    'Pasirinkti žmogų prie kompiuterio — ir norėti tiesiog dirbti. Ar tai buvo sprendimas, ar instinktas, kuris atėjo pirmiau?',
+    'Pasirinkti žmogų prie kompiuterio — ir pagalvoti, kad gal ir pačiam reikia tiesiog dirbti. Ar ta mintis palengvino?',
+    'Pasirinkti žmogų prie kompiuterio — ir pastebėti telefoną šalia. Kas nutinka, kai kažką sąmoningai padedi į šalį?',
   ],
 ];
 
