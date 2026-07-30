@@ -1,0 +1,50 @@
+stimulus_id: ST-003
+image: image.png
+primary_axis: cs
+
+question: "Kas pirmiausia šovė į galvą žiūrint į šį vaizdą?"
+
+choices:
+  - id: A
+    text: "Galimybė — čia galima rašyti bet ką"
+    signals:
+      aw: +0.10
+      cs: -0.45
+      cr: -0.20
+    mixed_signal_justification: >
+      cr- (-0.20) yra antrinis ir pagrįstas: galimybė be struktūros
+      natūraliai susijusi su kontrolės atleidimu (cr-).
+      Antrinė ašis neviršija pirminės (cs: -0.45).
+
+  - id: B
+    text: "Nerimas — nežinau nuo ko pradėti"
+    signals:
+      aw: -0.10
+      cs: +0.55
+      cr: +0.30
+    mixed_signal_justification: >
+      cr+ (+0.30) yra antrinis ir pagrįstas: nerimas dėl neapibrėžtumo
+      dažnai aktyvuoja kontrolės siekimą (cr+).
+      Antrinė ašis neviršija pirminės (cs: +0.55).
+
+  - id: C
+    text: "Tyla — nieko nereikia daryti"
+    signals:
+      aw: -0.20
+      cs: -0.50
+      cr: -0.45
+    mixed_signal_justification: >
+      cr- (-0.45) yra reikšmingas ir pagrįstas: tyla ir neveiklumas
+      yra stiprus kontrolės paleidimo signalas. Kartu su cs- (-0.50)
+      abu matuoja neapibrėžtumo toleranciją — skirtingomis dimensijomis.
+      Abi ašys matuoja tą patį konstruktą iš dviejų pusių.
+
+metadata:
+  context: vidine_erdve
+  cultural_flag: null
+  demographic_flag: >
+    Tuščias lapas kaip neapibrėžtumo simbolis gali būti stipresnis
+    žmonėms su akademiniu ar kūrybiniu kontekstu. Rekomenduojama
+    stebėti demografinius skirtumus empirinėje validacijoje.
+  created: 2026-07-30
+  version: "1.0"

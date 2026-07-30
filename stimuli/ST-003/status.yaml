@@ -1,0 +1,10 @@
+stimulus_id: ST-003
+status: review
+
+history:
+  - date: 2026-07-30
+    status: draft
+    note: "Sukurtas — cs- polius (neapibrėžtumo tolerancija)"
+  - date: 2026-07-30
+    status: review
+    note: "Pateiktas peržiūrai pagal Protocol v1.0.1"
