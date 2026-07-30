@@ -4,7 +4,7 @@
 **Peržiūros data:** 2026-07-30
 **Recenzentas:** Claude (ConflictLab v0.6 auditas)
 **Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0.1
-**Statusas po peržiūros:** review
+**Statusas po peržiūros:** beta_po_pataisymo
 
 ---
 
@@ -32,9 +32,15 @@
 
 ### V1.4 Lyties / amžiaus / statuso signalai
 **Įvertinimas:** 2/5
-**Paaiškinimas:** **Kritinė problema.** Nuotraukoje matomi vyras ir moteris veidu į veidą. Tai gali aktyvuoti lyčių dinamikos schemas: galios, romantikos, diskriminacijos — visos nesusijusios su matuojamu aw konstruktu. Tai yra ST-002 silpniausia vieta.
-**Rastos problemos:** Lyties signalas gali dominuoti prieš aw konstruktą.
-**Rekomendacija:** Priimti su žyma, bet rekomenduoti pakeisti ateityje abstrakčiais siluetais (kaip ST-001).
+**Paaiškinimas:** Nuotraukoje matomi vyras ir moteris veidu į veidą. Lyties signalas yra tikra problema, tačiau nepriklausomo audito metu nustatytas dar svarbesnis reiškinys — žr. Naratyvinio šališkumo pastabą žemiau.
+**Rastos problemos:** Lyties signalas gali aktyvuoti lyčių dinamikos schemas nesusijusias su aw konstruktu.
+**Rekomendacija:** Taisyti stimulą — ne review.
+
+### V1.4a Naratyvinis šališkumas (FC-001)
+**Įvertinimas:** ⚠ Pastaba (ne Protocol kriterijus — žr. `future_considerations.md`)
+**Paaiškinimas:** Vaizdas labai skatina žiūrovą kurti santykių istoriją: vadovas/darbuotojas, kolegos, pora, derybos, konfliktas. Šis naratyvinis sluoksnis gali nustelbti aw signalą — žmogus reaguoja į tariamą santykį, o ne į artėjimo/atsitraukimo dimensiją. Tai skiriasi nuo lyties signalo — problema atsiras net su neutraliomis figūromis jei jos yra aiškioje socialinėje situacijoje.
+**Rastos problemos:** Santykio neapibrėžtumas (relationship ambiguity) gali dominuoti prieš aw konstruktą.
+**Rekomendacija:** Taisyti stimulą — figūros turėtų būti mažiau individualizuotos, be aiškių santykio užuominų.
 
 ### V1.5 Neapibrėžtumo lygis
 **Įvertinimas:** 20–70% (optimalus, bet ribinis)
@@ -193,13 +199,15 @@
 **Minimalus balas: 70/100**
 **Gautas balas: 73/100** ✓
 
-**Sprendimas:** Priimti su žymomis
+**Sprendimas:** 🟡 Beta po pataisymo
 
 **Žymos:**
-- `cultural_flag: lyties_signalas` — V1.4 kritinė pastaba, rekomenduojama ateityje keisti
+- `taisyti_stimula: naratyvinis_sališkumas` — figūros per daug individualizuotos, santykio neapibrėžtumas nustelbia aw
+- `taisyti_stimula: lyties_signalas` — rekomenduoti abstraktūs siluetai
 - `cultural_flag: asmenine_erdve` — kultūriškai specifinė distancija
 - `teorinis_abejonimas: SCARF_status` — SCARF abejoja dominuojančiu konstruktu
 - `replaces: L02` — archyvuojamas senas stimulas
+- `fc_001_stebima` — Naratyvinis šališkumas užregistruotas future_considerations.md
 
 ---
 
@@ -207,11 +215,12 @@
 
 **Kas naujo bibliotekoje po ST-002:**
 - ✓ Naujas kontekstas: `tarpasmeniniai` (ST-001 buvo `vidine_erdve`)
-- ✓ Naujas aw polius: `aw+` (artėjimas) — ST-001 buvo `aw-` (atsitraukimas)
-- ✓ Naujas signalų derinys: aw+ su cs+ ir cr+ (artėjimas + struktūros lūkestis)
-- ⚠ Potenciali problema: lyties signalas — stebėti empirinėje validacijoje
+- ✓ Naujas situacijų klasė: dviejų žmonių dinamika (ST-001 buvo vienas žmogus)
+- ✓ Naujas aw polius: `aw+` (artėjimas)
+- ✓ Naujas signalų derinys: aw+ su cs+/cr+ (artėjimas + struktūros lūkestis)
+- ⚠ Taisytina: naratyvinis šališkumas + lyties signalas
 
-**Sprendimas:** Priimti
+**Sprendimas:** 🟡 Beta po pataisymo — stimulas praturtina biblioteką, bet reikia geresnio vaizdo
 
 ---
 

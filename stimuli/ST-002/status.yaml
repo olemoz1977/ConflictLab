@@ -7,4 +7,7 @@ history:
     note: "Sukurtas — aw+ polius (artėjimas)"
   - date: 2026-07-30
     status: review
-    note: "Pateiktas peržiūrai pagal Protocol v1.0.1"
+    note: "Claude review: 73/100, priimti su žymomis"
+  - date: 2026-07-30
+    status: review
+    note: "Nepriklausomas auditas: 🟡 Beta po pataisymo. Pagrindinė problema — naratyvinis šališkumas (FC-001), ne tik lyties signalas. Taisyti stimulą, ne review."
