@@ -137,11 +137,15 @@
     </div>
     <div class="ref-box">
       <div class="ref-section">
-        <div class="ref-label">Pasirodė</div>
+        <div class="ref-label">Pastebėjimas</div>
         <div class="ref-text" id="r-traj"></div>
       </div>
       <div class="ref-section">
-        <div class="ref-label">Ko sesija nematė</div>
+        <div class="ref-label">Ką tiksliai pastebėjome</div>
+        <div class="ref-text" id="r-detail"></div>
+      </div>
+      <div class="ref-section">
+        <div class="ref-label">Kodėl tai rodome</div>
         <div class="ref-limit" id="r-limits"></div>
       </div>
       <div class="ref-section">
@@ -652,7 +656,8 @@ async function generateReflection(){
   // Fallback path — no API call, Voice v1.0 text
   if (!aha.hasInsight) {
     document.getElementById('r-traj').textContent='Šiandien aiškaus dėsningumo neatsirado.';
-    document.getElementById('r-limits').textContent='Sesija nematė konteksto ar to, kas šiandien iš tikrųjų svarbu.';
+    document.getElementById('r-detail').textContent='';
+    document.getElementById('r-limits').textContent='Tai nėra nesėkmė — sistema tyli kai neturi ko konkrečiai pasakyti.';
     document.getElementById('r-q').textContent='Ar yra kažkas, apie ką šiandien galvoji labiau nei paprastai?';
     go('s-ref'); return;
   }
@@ -669,11 +674,12 @@ Tipas: ${aha.pattern.type} | Duomenų pagrindas: ${aha.evidence} | Kelių sesij�
 VERTIMO ŠABLONAS: ${aha.tmpl.text}
 VIDINIS KLAUSIMAS (ne rodyti): ${aha.tmpl.why}
 
-1. "trajectory" — 1-2 sakiniai. Remkis: "${aha.evidence}"
-2. "limits" — 1 sakinys ko sesija nematė
-3. "question" — vienas atviras klausimas, palieka erdvę atsakyti "ne"
+1. "trajectory" — 1 sakinys. Konkretus pastebėjimas. Pvz: "Keliose sesijose pastebėjome tą pačią reakcijos kryptį."
+2. "detail" — 1-2 sakiniai. Ką tiksliai matėme, žmogaus kalba. Remkis: "${aha.evidence}". Pvz: "Kai situacija buvo neaiški, pirmasis impulsas dažniau buvo ieškoti aiškumo nei laukti."
+3. "limits" — 1 sakinys. Kodėl tai rodome + kvietimas pasitikrinti. Pvz: "Ši kryptis pasikartojo keliose skirtingose sesijose — tai kvietimas pasitikrinti, ar atpažįsti tai savo kasdienybėje."
+4. "question" — vienas atviras klausimas. Palieka erdvę atsakyti "ne".
 
-JSON tik: {"trajectory":"...","limits":"...","question":"..."}`;
+JSON tik: {"trajectory":"...","detail":"...","limits":"...","question":"..."}`;
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
@@ -682,11 +688,13 @@ JSON tik: {"trajectory":"...","limits":"...","question":"..."}`;
     const d=await r.json();
     const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
     document.getElementById('r-traj').textContent=res.trajectory;
+    document.getElementById('r-detail').textContent=res.detail||'';
     document.getElementById('r-limits').textContent=res.limits;
     document.getElementById('r-q').textContent=res.question;
   }catch{
     document.getElementById('r-traj').textContent=aha.tmpl.text;
-    document.getElementById('r-limits').textContent='Sesija nematė konteksto ar to, kas šiandien iš tikrųjų svarbu.';
+    document.getElementById('r-detail').textContent=aha.evidence||'';
+    document.getElementById('r-limits').textContent='Ši kryptis atsirado iš šios sesijos pasirinkimų — tai kvietimas pasitikrinti, ar atpažįsti tai savo kasdienybėje.';
     document.getElementById('r-q').textContent='Ar tai tau pažįstama?';
   }
   go('s-ref');
