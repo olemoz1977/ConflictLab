@@ -1,7 +1,8 @@
 # ConflictLab — Behavior Translation Architecture v1.0
 
 **Data:** 2026-07-31
-**Statusas:** Pasiūlymas — laukia patvirtinimo prieš implementaciją
+**Versija:** v1.1 — P9 Trajectory, vidinis klausimas, filosofinis teiginys
+**Statusas:** Patvirtinta — laukia implementacijos
 **Paskirtis:** Architektūrinis dokumentas. Ne kodas.
 **ADR:** ADR-009 — Behavior Translation Engine
 
@@ -148,6 +149,19 @@ skirtingomis dienomis.
 Neutralūs signalai visuose trijuose ašyse per kelias sesijas.
 Tai nėra "nėra duomenų" — tai yra duomenys.
 
+**P9 — Trajektorija (pokytis)**
+Signalas nuosekliai juda viena kryptimi per sesijas.
+```
+Pvz: S1: aw-0.40 → S2: aw-0.10 → S3: aw+0.25
+→ Žmogus juda nuo atsitraukimo link artėjimo
+```
+Tai NĖRA tas pats kaip P5 (pasikartojimas).
+P5 matuoja stabilumą. P9 matuoja judėjimą.
+Trajektorija gali būti svarbesnė nei bet kuris atskiras taškas —
+nes rodo ne kas žmogus yra, o kas su juo vyksta.
+
+Minimali trajektorijai: 3 sesijos, nuoseklus pokytis ≥ 0.20 per sesiją.
+
 ### Išvestis
 ```json
 {
@@ -205,6 +219,32 @@ Kiekvienas pattern turi savo vertimo šabloną. Šablonai nėra galutiniai — j
 | P5 cs+ repeat | "Tris sesijas iš eilės pasirodė tas pats impulsas — žinoti kas vyksta..." |
 | P6 contrast | "Pirmoje sesijoje viena kryptis, šioje — kita. Kas pasikeitė?" |
 | P8 stable | "Trijose sesijose signalas buvo neutralus. Tai gali reikšti pusiausvyrą — arba kad stimulai nepasiekė to, kas šiandien svarbu." |
+
+### Vidinis klausimas prieš vertimą
+
+Prieš kiekvieną pattern vertimą sistema turi atsakyti į:
+
+> **"Kodėl šis dėsningumas galėtų būti svarbus šiam žmogui?"**
+
+Šis klausimas nėra rodomas vartotojui.
+Jis yra AHA Detection atrankos pagrindas.
+
+```
+Pattern: P5 cs+ × 3 sesijos
+Vidinis klausimas: Kodėl nuolatinis aiškumo siekimas gali būti svarbu?
+  → Galbūt žmogus šiuo metu patiria daug neapibrėžtumo?
+  → Galbūt tai yra giliau įsišaknijęs impulsas?
+  → Ar tai sutampa su disagreement duomenimis?
+Jei atsakymas nėra konkretus → AHA Detection atmes
+
+Pattern: P9 trajectory aw- → aw+
+Vidinis klausimas: Kodėl pokytis nuo atsitraukimo link artėjimo gali būti svarbu?
+  → Žmogus keičiasi — tai pats retas ir vertingiausias signalas
+  → Ar pokytis nuoseklus ar atsitiktinis?
+```
+
+Šis vidinis klausimas verčia sistemą ieškoti prasmės,
+o ne mechaniškai taikyti šablonus.
 
 ### Draudžiami vertimo keliai
 
@@ -299,9 +339,13 @@ Jei ne → kontrastas (P6).
 Rezultatas: stebėjimas + konteksto pastaba.
 
 **Sesija 3 → Pattern candidate**
-Jei pattern matomas 2 iš 3 sesijų → AHA kandidatas.
+Jei pattern matomas 2 iš 3 sesijų → AHA kandidatas (P5).
+Jei signalas kinta kryptingai → Trajectory kandidatas (P9).
 Jei pattern nestabilus → "Trys sesijos parodė skirtingas kryptis."
 Rezultatas: pirmasis multi-session insight (jei AHA praeina filtrus).
+
+> P9 Trajectory yra prioritetinis pattern — nes judėjimas
+> dažnai yra informatyvesnis nei stabilumas.
 
 **Sesija 4+ → Pattern confirmation / evolution**
 Sistema seka ar pattern stiprėja, silpnėja, ar keičiasi.
@@ -487,6 +531,14 @@ Jei architektūra patvirtinama, rekomenduojama tvarka:
 
 > Geriau viena tiksli įžvalga negu penkios universalios.
 > Geriau "nėra ką rodyti" negu Barnum efektas.
+
+**Projekto filosofija (ADR-009 pagrindas):**
+> *Better no insight than Barnum.*
+
+Ši eilutė yra ne tik techninis sprendimas.
+Ji apibrėžia sistemos santykį su žmogumi:
+sistema gerbia žmogų pakankamai, kad tylėtų
+kai neturi ką pasakyti.
 
 ---
 
