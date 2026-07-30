@@ -120,7 +120,6 @@
       <div class="photo-card" id="pc3" onclick="selectPhoto(3)"><img src="media/p4_empty_table.png" alt=""><div class="check">✓</div></div>
       <div class="photo-card" id="pc4" onclick="selectPhoto(4)" style="grid-column:span 2;aspect-ratio:3/2"><img src="media/p5_person_laptop.png" alt=""><div class="check">✓</div></div>
     </div>
-    <button class="btn btn-p" id="btn-grid" onclick="go('s-attention')" disabled>Toliau</button>
   </div>
 
   <div class="screen" id="s-attention">
@@ -236,6 +235,7 @@ function startScenario(num) {
   });
 
   go('s-grid');
+  S.gridShownAt=Date.now();
 }
 
 const PHOTOS=[
@@ -260,25 +260,35 @@ const FALLBACK=[
   ['Pasirinkti žmogų prie kompiuterio — ir norėti tiesiog dirbti. Ar tai buvo sprendimas, ar instinktas, kuris atėjo pirmiau?','Pasirinkti žmogų prie kompiuterio — ir pagalvoti, kad gal ir pačiam reikia tiesiog dirbti. Ar ta mintis palengvino?','Pasirinkti žmogų prie kompiuterio — ir pastebėti telefoną šalia. Kas nutinka, kai kažką sąmoningai padedi į šalį?'],
 ];
 
-const S={photo:null,reaction:null,reactionW:0};
+const S={photo:null,reaction:null,reactionW:0,photoLatency:0,reactionLatency:0,gridShownAt:0,attentionShownAt:0};
 
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 
 function selectPhoto(idx){
   S.photo=idx;
+  S.photoLatency=Date.now()-S.gridShownAt;  // record time to photo selection
   const sc=SCENARIOS[currentScenario];
   document.querySelectorAll('.photo-card').forEach((c,i)=>c.classList.toggle('selected',i===idx));
-  document.getElementById('btn-grid').disabled=false;
   document.getElementById('selected-img').src=sc.photos[idx].src;
+
   const wrap=document.getElementById('choices-wrap');
   wrap.innerHTML='';
   sc.reactions[idx].forEach((r,i)=>{
     const b=document.createElement('button');
     b.className='choice';b.textContent=r.text;
-    b.onclick=()=>{S.reaction=i;S.reactionW=r.w;wrap.querySelectorAll('.choice').forEach((c,j)=>c.classList.toggle('on',j===i));document.getElementById('btn-react').disabled=false;};
+    b.onclick=()=>{
+      S.reaction=i;
+      S.reactionW=r.w;
+      S.reactionLatency=Date.now()-S.attentionShownAt;  // record reaction latency
+      wrap.querySelectorAll('.choice').forEach((c,j)=>c.classList.toggle('on',j===i));
+      document.getElementById('btn-react').disabled=false;
+    };
     wrap.appendChild(b);
   });
   document.getElementById('btn-react').disabled=true;
+
+  // Auto-advance to attention screen after brief delay
+  setTimeout(()=>{ go('s-attention'); S.attentionShownAt=Date.now(); }, 300);
 }
 
 async function generateReflection(){
@@ -290,8 +300,8 @@ async function generateReflection(){
 SITUACIJA: ${SCENARIOS[currentScenario].situation}
 
 STEBĖJIMAI:
-- Pasirinktas vaizdas: "${p.label}"
-- Pirma mintis: "${r.text}"
+- Pasirinktas vaizdas: "${p.label}" (laikas iki pasirinkimo: ${Math.round(S.photoLatency/1000)}s)
+- Pirma mintis: "${r.text}" (reakcijos laikas: ${Math.round(S.reactionLatency/1000)}s)
 - Teorinis rėmelis: ${p.fw_name} (${p.fw})
 
 TAISYKLĖS:
@@ -328,7 +338,7 @@ function fillReflection(p,r,unc,q){
 
 function fb(type){if(type==='dis'){document.getElementById('fb-d').classList.add('show');}else{thanks('res');}}
 function thanks(type){document.getElementById('t-title').textContent=type==='res'?'Ačiū — rezonuoja':'Ačiū — nesutarimas užregistruotas';document.getElementById('t-msg').textContent=type==='res'?'Refleksija atspindėjo stebėtus signalus tiksliai.':'Tavo nesutarimas padės sistemai suprasti, kokiuose kontekstuose teoriniai rėmeliai neveikia.';go('s-thanks');}
-function reset(){S.photo=null;S.reaction=null;S.reactionW=0;document.querySelectorAll('.photo-card').forEach(c=>c.classList.remove('selected'));document.getElementById('btn-grid').disabled=true;document.getElementById('fb-d').classList.remove('show');document.getElementById('fb-t').value='';go('s-intro');}
+function reset(){S.photo=null;S.reaction=null;S.reactionW=0;S.photoLatency=0;S.reactionLatency=0;document.querySelectorAll('.photo-card').forEach(c=>c.classList.remove('selected'));document.getElementById('fb-d').classList.remove('show');document.getElementById('fb-t').value='';go('s-intro');}
 </script>
 </body>
 </html>
