@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConflictLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #0C0C0F;
+      --card:   #121215;
+      --border: #1E1E24;
+      --text:   #E2DED6;
+      --dim:    #6E6A64;
+      --faint:  #32323A;
+      --accent: #7C9E8F;
+      --a2:     #2A4840;
+      --warn:   #B08050;
+      --r: 14px;
+    }
+    html, body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100%; -webkit-font-smoothing: antialiased; }
+
+    .shell { max-width: 460px; margin: 0 auto; padding: 0 18px 64px; }
+
+    header { padding: 36px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+    .logo { font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 300; line-height: 1.2; margin-bottom: 10px; }
+    header p { color: var(--dim); font-size: 0.87rem; line-height: 1.65; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* PROGRESS */
+    .prog { height: 1px; background: var(--border); margin-bottom: 32px; }
+    .prog-fill { height: 1px; background: var(--accent); transition: width 500ms ease; }
+
+    /* SITUATION */
+    .situation {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--r);
+      padding: 20px 22px;
+      margin-bottom: 28px;
+    }
+    .sit-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .sit-text { font-size: 0.92rem; line-height: 1.7; color: var(--text); }
+
+    /* PHOTO GRID */
+    .grid-q { font-family: 'Space Grotesk', sans-serif; font-size: 1.0rem; font-weight: 400; color: var(--text); line-height: 1.4; margin-bottom: 20px; }
+    .grid-sub { font-size: 0.78rem; color: var(--dim); margin-bottom: 20px; margin-top: -12px; }
+
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+    .photo-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 200ms, transform 200ms;
+      aspect-ratio: 3/4;
+      background: var(--faint);
+    }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 200ms; }
+    .photo-card:hover { transform: scale(1.01); }
+    .photo-card.selected { border-color: var(--accent); }
+    .photo-card.selected::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(124,158,143,0.12);
+      pointer-events: none;
+    }
+    .photo-card .check {
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: #0C0C0F;
+      font-weight: 700;
+    }
+    .photo-card.selected .check { display: flex; }
+
+    /* SINGLE PHOTO (attention phase) */
+    .single-photo {
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 24px;
+      border: 2px solid var(--accent);
+      aspect-ratio: 3/4;
+      background: var(--faint);
+    }
+    .single-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-caption { font-size: 0.78rem; color: var(--dim); text-align: center; margin-bottom: 28px; font-style: italic; }
+
+    /* REACTION */
+    .react-q { font-family: 'Space Grotesk', sans-serif; font-size: 1.0rem; font-weight: 400; color: var(--text); line-height: 1.4; margin-bottom: 20px; }
+    .choices { display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
+    .choice {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 15px 18px;
+      color: var(--dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 180ms, color 180ms, background 180ms;
+      position: relative;
+    }
+    .choice:hover { border-color: var(--a2); color: var(--text); }
+    .choice.on { border-color: var(--accent); background: rgba(124,158,143,0.07); color: var(--text); }
+    .choice.on::after { content: ''; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    /* BUTTONS */
+    .btn { display: block; width: 100%; padding: 15px; border-radius: var(--r); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; border: none; cursor: pointer; transition: opacity 180ms; }
+    .btn:disabled { opacity: 0.25; cursor: not-allowed; }
+    .btn-p { background: var(--accent); color: #0C0C0F; }
+    .btn-p:hover:not(:disabled) { opacity: 0.88; }
+    .btn-g { background: transparent; color: var(--dim); border: 1px solid var(--border); margin-top: 12px; }
+    .btn-g:hover { color: var(--text); border-color: var(--dim); }
+
+    /* REFLECTION */
+    .r-box { background: var(--card); border: 1px solid var(--a2); border-radius: var(--r); padding: 26px 22px; margin-bottom: 24px; }
+    .r-sec { margin-bottom: 22px; }
+    .r-sec:last-child { margin-bottom: 0; }
+    .r-lbl { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
+    .r-txt { font-size: 0.87rem; color: var(--dim); line-height: 1.75; }
+    .r-q { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 400; color: var(--text); line-height: 1.5; }
+    .fw-pill { display: inline-block; font-size: 0.7rem; padding: 3px 10px; border: 1px solid var(--a2); border-radius: 20px; color: var(--accent); margin-bottom: 7px; }
+    .scope { font-size: 0.76rem; color: var(--faint); font-style: italic; line-height: 1.6; }
+
+    /* FEEDBACK */
+    .fb-lbl { font-size: 0.8rem; color: var(--dim); margin-bottom: 10px; }
+    .fb-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .fb-btn { flex: 1; padding: 13px; border-radius: var(--r); font-family: 'Inter', sans-serif; font-size: 0.84rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--dim); transition: border-color 180ms, color 180ms; }
+    .fb-btn.res { border-color: var(--accent); color: var(--accent); }
+    .fb-btn.dis { border-color: var(--warn); color: var(--warn); }
+    .fb-detail { display: none; }
+    .fb-detail.show { display: block; }
+    textarea { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; padding: 13px; resize: vertical; min-height: 85px; line-height: 1.6; margin-bottom: 10px; }
+    textarea:focus { outline: none; border-color: var(--accent); }
+
+    /* THANKS */
+    .thanks { text-align: center; padding: 44px 20px; background: var(--card); border: 1px solid var(--a2); border-radius: var(--r); margin-bottom: 16px; }
+    .thanks-icon { font-size: 1.8rem; margin-bottom: 14px; }
+    .thanks h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 400; margin-bottom: 10px; }
+    .thanks p { color: var(--dim); font-size: 0.86rem; line-height: 1.65; }
+
+    /* INTRO */
+    .warn-box { border: 1px solid rgba(176,128,80,0.2); background: rgba(176,128,80,0.05); border-radius: var(--r); padding: 13px 16px; font-size: 0.79rem; color: var(--warn); line-height: 1.6; margin-bottom: 20px; }
+    .intro-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 22px; margin-bottom: 20px; }
+    .intro-card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 500; margin-bottom: 9px; }
+    .intro-card p { color: var(--dim); font-size: 0.87rem; line-height: 1.65; }
+    .steps { display: flex; flex-direction: column; gap: 9px; margin-top: 16px; }
+    .step { display: flex; gap: 12px; }
+    .step-n { font-size: 0.7rem; font-weight: 600; color: var(--accent); flex-shrink: 0; padding-top: 3px; }
+    .step-t { font-size: 0.84rem; color: var(--dim); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 40px; font-size: 0.73rem; color: var(--faint); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="logo">ConflictLab</div>
+    <h1>Savirefleksijos platforma</h1>
+    <p>Sistema stebi dėmesio kryptį — ne emocijų pavadinimą.</p>
+  </header>
+
+  <!-- INTRO -->
+  <div class="screen active" id="s-intro">
+    <div class="warn-box">ConflictLab nėra diagnostikos sistema. Ji nesteigia išvadų apie asmenybę.</div>
+    <div class="intro-card">
+      <h2>Neatsakyta žinutė</h2>
+      <p>Išsiuntei svarbų pasiūlymą kolegai. Jis peržiūri žinutę, bet neatsako 4 valandas.</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">01</div><div class="step-t">Pamatysi kelias nuotraukas. Pasirink kurią norėtum matyti ilgiau.</div></div>
+        <div class="step"><div class="step-n">02</div><div class="step-t">Atsakyk į vieną klausimą apie savo reakciją.</div></div>
+        <div class="step"><div class="step-n">03</div><div class="step-t">Gausi refleksijos klausimą — ne atsakymą apie tave.</div></div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="go('s-grid')">Pradėti</button>
+  </div>
+
+  <!-- PHOTO GRID -->
+  <div class="screen" id="s-grid">
+    <div class="prog"><div class="prog-fill" style="width:20%"></div></div>
+
+    <div class="situation">
+      <div class="sit-label">Situacija</div>
+      <div class="sit-text">Išsiuntei svarbų pasiūlymą kolegai. Praėjo 4 valandos. Jis peržiūrėjo — bet neatsako.</div>
+    </div>
+
+    <div class="grid-q">Prie kurio vaizdo tavo dėmesys natūraliai sustoja?</div>
+    <div class="grid-sub">Pasirink vieną.</div>
+
+    <div class="photo-grid">
+      <div class="photo-card" id="pc0" onclick="selectPhoto(0)">
+        <img src="media/p1_phone_table.png" alt="">
+        <div class="check">✓</div>
+      </div>
+      <div class="photo-card" id="pc1" onclick="selectPhoto(1)">
+        <img src="media/p2_window_silhouette.png" alt="">
+        <div class="check">✓</div>
+      </div>
+      <div class="photo-card" id="pc2" onclick="selectPhoto(2)">
+        <img src="media/p3_chat_screen.png" alt="">
+        <div class="check">✓</div>
+      </div>
+      <div class="photo-card" id="pc3" onclick="selectPhoto(3)">
+        <img src="media/p4_empty_table.png" alt="">
+        <div class="check">✓</div>
+      </div>
+      <div class="photo-card" id="pc4" onclick="selectPhoto(4)" style="grid-column: span 2; aspect-ratio: 3/2;">
+        <img src="media/p5_person_laptop.png" alt="">
+        <div class="check">✓</div>
+      </div>
+    </div>
+
+    <button class="btn btn-p" id="btn-grid" onclick="go('s-attention')" disabled>Toliau</button>
+  </div>
+
+  <!-- ATTENTION PHASE -->
+  <div class="screen" id="s-attention">
+    <div class="prog"><div class="prog-fill" style="width:55%"></div></div>
+
+    <div class="situation">
+      <div class="sit-label">Situacija</div>
+      <div class="sit-text">Išsiuntei svarbų pasiūlymą kolegai. Praėjo 4 valandos. Jis peržiūrėjo — bet neatsako.</div>
+    </div>
+
+    <div class="single-photo">
+      <img id="selected-img" src="" alt="">
+    </div>
+    <div class="photo-caption">Vaizdas kurį pasirinkote</div>
+
+    <div class="react-q" id="react-q">Kas pirmiausia šovė į galvą žiūrint į šį vaizdą?</div>
+
+    <div class="choices" id="choices-wrap"></div>
+
+    <button class="btn btn-p" id="btn-react" onclick="go('s-ref')" disabled>Žiūrėti refleksiją</button>
+  </div>
+
+  <!-- REFLECTION -->
+  <div class="screen" id="s-ref">
+    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
+
+    <div class="r-box">
+      <div class="r-sec">
+        <div class="r-lbl">Kas buvo stebėta</div>
+        <div class="r-txt" id="r-obs"></div>
+      </div>
+      <div class="r-sec">
+        <div class="r-lbl">Ko sistema negali žinoti</div>
+        <div class="r-txt">Refleksija paremta vienu dėmesio pasirinkimu ir vienu reakcijos pasirinkimu. Sistema negali žinoti priežasties — kodėl šis vaizdas patraukė dėmesį. Nuovargis, kontekstas, asociacijos — visa tai lieka nematoma.</div>
+      </div>
+      <div class="r-sec">
+        <div class="r-lbl">Teorinis rėmelis</div>
+        <div class="fw-pill" id="r-fw"></div>
+        <div class="r-txt" id="r-bs"></div>
+      </div>
+      <div class="r-sec">
+        <div class="r-lbl">Kur ši refleksija galioja</div>
+        <div class="scope">Galioja: šios sesijos pasirinkimams. Negalioja: asmens bendram elgesiui, santykiams su kolega ar kitiems kontekstams.</div>
+      </div>
+      <div class="r-sec" style="background:rgba(124,158,143,0.06);border:1px solid var(--a2);border-radius:10px;padding:16px 18px;margin-bottom:0;">
+        <div class="r-lbl" style="margin-bottom:10px;">Kodėl šis klausimas?</div>
+        <div style="font-size:0.82rem;color:var(--dim);line-height:1.8;">
+          <div>Pasirinktas vaizdas: <span id="r-trace-photo" style="color:var(--text);font-weight:500;"></span></div>
+          <div>Pirma mintis: <span id="r-trace-reaction" style="color:var(--text);font-style:italic;"></span></div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">Iš šios kombinacijos kilo:</div>
+        </div>
+        <div class="r-q" id="r-q" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="fb-lbl">Kaip jautėsi ši refleksija?</div>
+    <div class="fb-row">
+      <button class="fb-btn res" onclick="fb('res')">✓ Rezonuoja</button>
+      <button class="fb-btn dis" onclick="fb('dis')">✕ Nesutinku</button>
+    </div>
+    <div class="fb-detail" id="fb-d">
+      <div style="font-size:0.78rem;color:var(--dim);margin-bottom:8px;">Tavo nesutarimas yra vertingiausia informacija sistemai.</div>
+      <textarea id="fb-t" placeholder="Kas neatitiko?"></textarea>
+      <button class="btn btn-p" onclick="thanks('dis')">Išsaugoti</button>
+    </div>
+    <button class="btn btn-g" onclick="reset()">↺ Pradėti iš naujo</button>
+  </div>
+
+  <!-- THANKS -->
+  <div class="screen" id="s-thanks">
+    <div class="thanks">
+      <div class="thanks-icon">◎</div>
+      <h2 id="t-title"></h2>
+      <p id="t-msg"></p>
+    </div>
+    <button class="btn btn-g" onclick="reset()">↺ Bandyti dar kartą</button>
+  </div>
+
+  <footer>
+    <span>ConflictLab v0.4.0-RC1</span>
+    <span>Epistemic Reflection Framework</span>
+  </footer>
+</div>
+
+<script>
+// Photo metadata — attention signal per photo
+const PHOTOS = [
+  { src: 'media/p1_phone_table.png',       signal: +0.40, label: 'Telefonas ant stalo',     fw: 'AT-001', bs: 'Ši teorija nepaaiškina situacinio konteksto ar nuovargio.' },
+  { src: 'media/p2_window_silhouette.png',  signal: -0.30, label: 'Žmogus prie lango',       fw: 'ER-001', bs: 'Ši teorija nepaaiškina tarpasmeninių dinamikų.' },
+  { src: 'media/p3_chat_screen.png',        signal: +0.55, label: 'Pokalbio ekranas',         fw: 'CD-001', bs: 'Ši teorija nepaaiškina biologinių ar situacinių veiksnių.' },
+  { src: 'media/p4_empty_table.png',        signal: -0.20, label: 'Tuščias stalas',           fw: 'SC-001', bs: 'Ši teorija geriau tinka organizaciniams kontekstams.' },
+  { src: 'media/p5_person_laptop.png',      signal: +0.10, label: 'Žmogus prie kompiuterio', fw: 'DP-001', bs: 'Ši teorija nepaaiškina emocinio ar santykių konteksto.' },
+];
+
+// Reaction choices per photo
+const REACTIONS = [
+  [ // telefonas ant stalo
+    { text: 'Iš karto pagalvojau apie žinutę', w: +0.35 },
+    { text: 'Telefonas nutylęs — tai normalu', w: -0.10 },
+    { text: 'Pradėjau galvoti ką daryti toliau', w: +0.20 },
+  ],
+  [ // žmogus prie lango
+    { text: 'Norėjosi atsitraukti ir negalvoti', w: -0.35 },
+    { text: 'Gal kolega tiesiog užsiėmęs', w: -0.05 },
+    { text: 'Pagalvojau apie laukimą', w: +0.15 },
+  ],
+  [ // pokalbio ekranas
+    { text: 'Tuščia vieta po žinute — neramina', w: +0.50 },
+    { text: 'Žinutė perskaityta — faktas, tiek to', w: -0.10 },
+    { text: 'Pagalvojau rašyti dar kartą', w: +0.30 },
+  ],
+  [ // tuščias stalas
+    { text: 'Tuštuma priminė laukimą', w: +0.25 },
+    { text: 'Erdvė be žmonių — ramu', w: -0.20 },
+    { text: 'Mintys nukeliavo kitur', w: 0.0 },
+  ],
+  [ // žmogus prie kompiuterio
+    { text: 'Norėjosi tiesiog dirbti ir nekreipti dėmesio', w: -0.25 },
+    { text: 'Gal ir man reikia tiesiog dirbti', w: +0.10 },
+    { text: 'Pastebėjau telefoną šalia — jis stebimas', w: +0.35 },
+  ],
+];
+
+const S = { photo: null, reaction: null, reactionW: 0, ts: Date.now() };
+
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectPhoto(idx) {
+  S.photo = idx;
+  document.querySelectorAll('.photo-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
+  document.getElementById('btn-grid').disabled = false;
+
+  // Prepare attention screen
+  const p = PHOTOS[idx];
+  document.getElementById('selected-img').src = p.src;
+
+  // Build reaction choices
+  const wrap = document.getElementById('choices-wrap');
+  wrap.innerHTML = '';
+  REACTIONS[idx].forEach((r, i) => {
+    const b = document.createElement('button');
+    b.className = 'choice';
+    b.textContent = r.text;
+    b.onclick = () => {
+      S.reaction = i;
+      S.reactionW = r.w;
+      wrap.querySelectorAll('.choice').forEach((c, j) => c.classList.toggle('on', j === i));
+      document.getElementById('btn-react').disabled = false;
+      buildReflection();
+    };
+    wrap.appendChild(b);
+  });
+  document.getElementById('btn-react').disabled = true;
+}
+
+// 15 unique questions — one per photo+reaction combination
+// Principle: each question starts from what the person chose
+const QUESTIONS = [
+  // P0: telefonas ant stalo
+  [
+    'Pasirinkti telefoną — ir iš karto pagalvoti apie žinutę. Ar ta mintis atėjo pati, ar tu ją pasikvietei?',
+    'Pasirinkti telefoną — ir nuspręsti, kad tai normalu. Kiek laiko prireikė tam sprendimui?',
+    'Pasirinkti telefoną — ir pradėti galvoti ką daryti. Kas paprastai nustumia nuo galvojimo prie veiksmo?',
+  ],
+  // P1: žmogus prie lango
+  [
+    'Pasirinkti žmogų prie lango — ir pajusti norą atsitraukti. Ką tu paprastai pasiimi su savimi, kai atsitraukia?',
+    'Pasirinkti žmogų prie lango — ir pagalvoti, kad kolega tiesiog užsiėmęs. Ar ta mintis nuramino?',
+    'Pasirinkti žmogų prie lango — ir susimąstyti apie laukimą. Laukimas yra pasirinkimas ar būsena?',
+  ],
+  // P2: pokalbio ekranas
+  [
+    'Pasirinkti pokalbio ekraną — ir pajusti nerimą matant tuščią vietą. Kas toje tuštumoje neramina labiausiai?',
+    'Pasirinkti pokalbio ekraną — ir nuspręsti, kad tai tik faktas. Ar pavyko tuo patikėti?',
+    'Pasirinkti pokalbio ekraną — ir pagalvoti rašyti dar kartą. Kas tame momente stabdo greičiau nei logika?',
+  ],
+  // P3: tuščias stalas
+  [
+    'Pasirinkti tuščią stalą — ir pajusti, kad jis primena laukimą. Kuo skiriasi laukimas, kuris slegia, nuo to, kuris nepastebimas?',
+    'Pasirinkti tuščią stalą — ir pajusti ramybę. Kada erdvė be žmonių yra atgaiva, o kada — signalas?',
+    'Pasirinkti tuščią stalą — ir mintimis nukeliauti kitur. Kur nuėjai, ir ar norėjai ten eiti?',
+  ],
+  // P4: žmogus prie kompiuterio
+  [
+    'Pasirinkti žmogų prie kompiuterio — ir norėti tiesiog dirbti. Ar tai buvo sprendimas, ar instinktas, kuris atėjo pirmiau?',
+    'Pasirinkti žmogų prie kompiuterio — ir pagalvoti, kad gal ir pačiam reikia tiesiog dirbti. Ar ta mintis palengvino?',
+    'Pasirinkti žmogų prie kompiuterio — ir pastebėti telefoną šalia. Kas nutinka, kai kažką sąmoningai padedi į šalį?',
+  ],
+];
+
+function buildReflection() {
+  const p = PHOTOS[S.photo];
+  const r = REACTIONS[S.photo][S.reaction];
+
+  document.getElementById('r-obs').textContent =
+    `Dėmesys krypo į: "${p.label}". ` +
+    `Pirma mintis: "${r.text.toLowerCase()}".`;
+
+  document.getElementById('r-fw').textContent = p.fw;
+  document.getElementById('r-bs').textContent = p.bs;
+
+  // Signal Trace — visible connection
+  document.getElementById('r-trace-photo').textContent = `"${p.label}"`;
+  document.getElementById('r-trace-reaction').textContent = `"${r.text}"`;
+
+  // Unique question per combination
+  const q = QUESTIONS[S.photo][S.reaction];
+  document.getElementById('r-q').textContent = q;
+}
+
+function fb(type) {
+  if (type === 'dis') {
+    document.getElementById('fb-d').classList.add('show');
+  } else {
+    thanks('res');
+  }
+}
+
+function thanks(type) {
+  document.getElementById('t-title').textContent =
+    type === 'res' ? 'Ačiū — rezonuoja' : 'Ačiū — nesutarimas užregistruotas';
+  document.getElementById('t-msg').textContent =
+    type === 'res'
+      ? 'Refleksija atspindėjo stebėtus signalus tiksliai. Tai naudinga informacija.'
+      : 'Tavo nesutarimas padės sistemai suprasti, kokiuose kontekstuose teoriniai rėmeliai neveikia.';
+  go('s-thanks');
+}
+
+function reset() {
+  S.photo = null; S.reaction = null; S.reactionW = 0; S.ts = Date.now();
+  document.querySelectorAll('.photo-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn-grid').disabled = true;
+  document.getElementById('fb-d').classList.remove('show');
+  document.getElementById('fb-t').value = '';
+  go('s-intro');
+}
+</script>
+</body>
+</html>
