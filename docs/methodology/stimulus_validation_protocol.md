@@ -1,8 +1,8 @@
 # ConflictLab — Stimulus Validation Protocol
-**Versija:** v1.0
+**Versija:** v1.0.1
 **Statusas:** Aktyvus standartas
 **Data:** 2026-07-30
-**Peržiūros ciklas:** Kas 12 mėnesių arba po didelio bibliotekos atnaujinimo
+**Pakeitimas:** Redakcinis — trys komponentai apibrėžti protokolo pradžioje, sekcijos pergrupuotos pagal objektą. Kriterijai, taisyklės ir slenksčiai nepakito.
 
 ---
 
@@ -17,25 +17,42 @@ Jei Review prieštarauja Protocol — taisomas Review, o ne Protocol.
 
 ---
 
+## Stimulo komponentai
+
+Kiekvieną ConflictLab stimulą sudaro **trys neatskiriami komponentai:**
+
+| Komponentas | Aprašas | Saugomas |
+|---|---|---|
+| **IMAGE** | Vizualinis stimulas — nuotrauka | `stimulus.yaml → image` |
+| **CHOICES** | Momentinės reakcijos variantai — tekstai | `stimulus.yaml → choices[].text` |
+| **SIGNALS** | Vidinis aw/cs/cr modelis | `stimulus.yaml → choices[].signals` |
+
+Visi trys komponentai validuojami **atskirai**. Vėlesni etapai vertina jų tarpusavio suderinamumą.
+
+Šie trys komponentai taip pat atspindi **kūrimo seką:**
+pirmiausia sukuriamas vaizdas (IMAGE), tada parašomi variantai (CHOICES), tada priskiriami signalai (SIGNALS).
+
+---
+
 ## Validacijos proceso apžvalga
 
-Kiekvienas naujas stimulas privalo praeiti šešis validacijos etapus **eilės tvarka**.
-
-| Etapas | Pavadinimas | Privalomas |
-|---|---|---|
-| V1 | Vizualinė validacija | Taip |
-| V2 | Psichologinė validacija | Taip |
-| V3 | Konstrukto validacija | Taip |
-| V4 | Daugiateorinė validacija | Taip |
-| V5 | Bibliotekos validacija | Taip |
-| V6 | Empirinė validacija | Prieš pilną naudojimą |
+| Etapas | Objektas | Pavadinimas | Privalomas |
+|---|---|---|---|
+| V1 | IMAGE | Vaizdo validacija | Taip |
+| V2 | CHOICES | Variantų validacija | Taip |
+| V3 | SIGNALS | Signalų validacija | Taip |
+| V4 | IMAGE + CHOICES + SIGNALS | Daugiateorinė validacija | Taip |
+| V5 | SIGNALS + kontekstas | Bibliotekos validacija | Taip |
+| V6 | Visi trys | Empirinė validacija | Prieš pilną naudojimą |
 
 V1–V5 atliekami prieš stimulą įtraukiant į beta biblioteką.
 V6 atliekamas per pirmuosius 30 dienų nuo naudojimo.
 
 ---
 
-## V1. Vizualinė validacija
+## V1. IMAGE — Vaizdo validacija
+
+Šis etapas vertina tik nuotrauką — dar prieš variantus ar signalus.
 
 ### V1.1 Neutralumas
 
@@ -77,11 +94,13 @@ V6 atliekamas per pirmuosius 30 dienų nuo naudojimo.
 |---|---|---|
 | < 20% | Visi supranta vienodai | ⛔ Atmesti |
 | 20–70% | Kelios pagrįstos interpretacijos | ✓ Priimti |
-| > 70% | Per abstraktus | ◆ Peržiūrėti |
+| > 70% | Per abstraktus, žmonės negali susijungti | ◆ Peržiūrėti |
 
 ---
 
-## V2. Psichologinė validacija
+## V2. CHOICES — Variantų validacija
+
+Šis etapas vertina tik tris variantų tekstus — nepriklausomai nuo vaizdo ar signalų.
 
 ### V2.1 Reakcija, ne nuomonė
 
@@ -125,7 +144,9 @@ V6 atliekamas per pirmuosius 30 dienų nuo naudojimo.
 
 ---
 
-## V3. Konstrukto validacija
+## V3. SIGNALS — Signalų validacija
+
+Šis etapas vertina tik aw/cs/cr svorius — nepriklausomai nuo vaizdo ar variantų tekstų.
 
 ### V3.1 Pirminė ašis
 
@@ -150,9 +171,9 @@ V6 atliekamas per pirmuosius 30 dienų nuo naudojimo.
 
 **Taisyklė:** Mišrūs signalai leistini kai psichologiškai pagrįsti. Antrinė ašis negali viršyti pirminės.
 
-- ✓ Priimti: `"Rašyti dar kartą"` → cs+(0.50) + cr+(0.60). Logiškai pagrįsta.
-- ⛔ Atmesti: cs stimulas su cr dominuojančiu svoriu.
-- ◆ Mišraus signalo pagrindimas turi būti dokumentuojamas `stimulus.yaml` faile.
+- ✓ Priimti: cs stimulas, variantas: cs+(0.50) + cr+(0.60) — pagrįsta ir dokumentuota.
+- ⛔ Atmesti: cs stimulas su cr dominuojančiu svoriu be pagrindimo.
+- ◆ Mišraus signalo pagrindimas turi būti dokumentuojamas `stimulus.yaml → mixed_signal_justification`.
 
 ### V3.4 Variantų svorių simetrija
 
@@ -164,6 +185,8 @@ V6 atliekamas per pirmuosius 30 dienų nuo naudojimo.
 ---
 
 ## V4. Daugiateorinė validacija
+
+Šis etapas vertina IMAGE + CHOICES + SIGNALS kartu — per teorinių lęšių perspektyvą.
 
 **Esminis principas:** Teorijos validuoja stimulą — ne žmogų.
 
@@ -178,14 +201,11 @@ Kiekviena teorija yra "lęšis" per kurį žiūrima į stimulą. Klausimas:
 
 - ⛔ Teorijos nėra naudojamos žmogaus reakcijos interpretacijai.
 - ⛔ Teorijos nėra naudojamos stimulo rezultatų aiškinimui vartotojui.
-- ⛔ Teorija nėra "teisingesnė" už kitą.
+- ⛔ Teorija nėra "teisingesnė" už kitą — kiekviena mato skirtingus aspektus.
 
 ### V4.3 Minimalus teorijų skaičius
 
 **Taisyklė:** Kiekvienas stimulas turi būti peržiūrėtas per bent 3 nepriklausomas teorijas.
-
-- ✓ Priimti: 3+ teorijų peržiūra su dokumentuotais rezultatais.
-- ⛔ Atmesti: 1 teorijos peržiūra.
 
 ### V4.4 Teorinių prieštaravimų valdymas
 
@@ -195,12 +215,15 @@ Prieštaravimai tarp teorijų yra SIGNALAS, ne klaida. Stimulas gali būti priim
 
 ## V5. Bibliotekos validacija
 
+Šis etapas vertina ar stimulas tinka bibliotekai kaip visumai.
+
 ### V5.1 Dublikatų tikrinimas
 
 **Taisyklė:** Naujas stimulas neturi dubliuoti esamo vizualiai AR konstruktyviai.
 
-- ✓ Priimti: Naujas koridoriaus vaizdas su skirtingais variantais.
+- ✓ Priimti: Naujas koridoriaus vaizdas su skirtingais variantais ir skirtinga ašimi.
 - ⛔ Atmesti: Du vaizdai rodantys tuščią salę su identiškais variantais.
+- ◆ Vizualinis panašumas toleruojamas jei konstruktai skiriasi. Konstruktų dubliavimas netoleruojamas.
 
 ### V5.2 Ašių balansas
 
@@ -224,13 +247,15 @@ Prieštaravimai tarp teorijų yra SIGNALAS, ne klaida. Stimulas gali būti priim
 
 ## V6. Empirinė validacija
 
+Šis etapas vertina visus tris komponentus kartu su realiais žmonėmis.
+
 ### V6.1 Minimalus testavimo protokolas
 
 | Etapas | Imtis | Tikslas |
 |---|---|---|
-| Beta | 5–10 žmonių | Grubūs defektai |
-| Pilotinis | 30–50 žmonių | Statistinis pasiskirstymas |
-| Patvirtinimas | 100+ žmonių | Subgrupių analizė |
+| Beta | 5–10 žmonių | Grubūs defektai. Suprantamumas. |
+| Pilotinis | 30–50 žmonių | Statistinis pasiskirstymas. Socialinio pageidaujamumo tikrinimas. |
+| Patvirtinimas | 100+ žmonių | Subgrupių analizė. Demografinis neutralumas. |
 
 ### V6.2 Gero stimulo rodikliai
 
@@ -242,39 +267,47 @@ Prieštaravimai tarp teorijų yra SIGNALAS, ne klaida. Stimulas gali būti priim
 
 ### V6.3 Pašalinimo kriterijai
 
-- ⛔ Vienas variantas >70% atvejų.
+- ⛔ Vienas variantas >70% atvejų — stimulas nediferencijuoja.
 - ⛔ Statistiškai reikšmingi demografiniai skirtumai.
-- ⛔ Reakcijos laikas >15 sekundžių.
-- ⛔ >30% sako "nesuprantu vaizdo".
-- ⛔ >10% patiria emocinį diskomfortą.
+- ⛔ Reakcijos laikas >15 sekundžių — reikalauja refleksijos, ne reakcijos.
+- ⛔ >30% sako "nesuprantu vaizdo" — per aukštas neapibrėžtumas.
+- ⛔ >10% patiria emocinį diskomfortą — etinė rizika.
 
 ---
 
 ## Stimulo vertinimo kortelė
 
-| Kriterijus | Svoris | Min. balas |
-|---|---|---|
-| V1.1 Neutralumas | 15% | 3/5 |
-| V1.2 AI artefaktai | 10% | 5/5 |
-| V1.3 Kultūrinis neutralumas | 10% | 3/5 |
-| V1.4 Lyties/statuso neutralumas | 10% | 4/5 |
-| V2.1 Reakcija, ne nuomonė | 15% | 4/5 |
-| V2.2 Socialinis neutralumas | 15% | 4/5 |
-| V3.1 Pirminė ašis | 10% | 4/5 |
-| V3.4 Svorių simetrija | 10% | 3/5 |
-| V4 Teorijų validacija | 5% | 3/5 |
+| Kriterijus | Objektas | Svoris | Min. balas |
+|---|---|---|---|
+| V1.1 Neutralumas | IMAGE | 15% | 3/5 |
+| V1.2 AI artefaktai | IMAGE | 10% | 5/5 |
+| V1.3 Kultūrinis neutralumas | IMAGE | 10% | 3/5 |
+| V1.4 Lyties/statuso neutralumas | IMAGE | 10% | 4/5 |
+| V2.1 Reakcija, ne nuomonė | CHOICES | 15% | 4/5 |
+| V2.2 Socialinis neutralumas | CHOICES | 15% | 4/5 |
+| V3.1 Pirminė ašis | SIGNALS | 10% | 4/5 |
+| V3.4 Svorių simetrija | SIGNALS | 10% | 3/5 |
+| V4 Teorijų validacija | VISI | 5% | 3/5 |
 
 **Minimali bendra reikšmė priėmimui: 70/100**
 
-Bet kurio kriterijaus "Min. balas" nepassiekimas → automatinis atmetimas nepriklausomai nuo bendro balo.
+Bet kurio kriterijaus "Min. balas" nepasiekimas → automatinis atmetimas nepriklausomai nuo bendro balo.
 
 ---
 
-## Dokumento valdymas
+## Versijavimo taisyklės
 
-| Laukas | Reikšmė |
+| Versija | Keičiama kai |
 |---|---|
-| Versija | 1.0 |
-| Statusas | Aktyvus standartas |
-| Peržiūros ciklas | Kas 12 mėnesių |
-| Galioja nuo | Bibliotekos versija 1.0 |
+| v1.0.x | Redakciniai pakeitimai: struktūra, formuluotės, skyrių grupavimas. Kriterijai nepakinta. |
+| v1.x | Metodologiniai pakeitimai: nauji kriterijai, pakeisti balai, naujos taisyklės. |
+| v2.0 | Esminiai architektūriniai pakeitimai. |
+
+---
+
+## Pakeitimų istorija
+
+| Versija | Data | Pakeitimas |
+|---|---|---|
+| v1.0 | 2026-07-30 | Pirminis standartas |
+| v1.0.1 | 2026-07-30 | Redakcinis: IMAGE/CHOICES/SIGNALS komponentai apibrėžti, sekcijos pergrupuotos pagal objektą |

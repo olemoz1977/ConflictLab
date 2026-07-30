@@ -3,7 +3,7 @@
 **Stimulo ID:** ST-001
 **Peržiūros data:** 2026-07-30
 **Recenzentas:** Claude (ConflictLab v0.6 auditas)
-**Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0
+**Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0.1
 **Statusas po peržiūros:** review
 
 ---
@@ -13,7 +13,9 @@
 
 ---
 
-## V1. Vizualinė validacija
+## IMAGE — Vaizdo validacija (V1)
+
+*Vertinamas tik vaizdas. Variantai ir signalai dar nevertinami.*
 
 ### V1.1 Neutralumas
 **Įvertinimas:** 3/5
@@ -47,7 +49,9 @@
 
 ---
 
-## V2. Psichologinė validacija
+## CHOICES — Variantų validacija (V2)
+
+*Vertinami tik trijų variantų tekstai. Signalai dar nevertinami.*
 
 ### V2.1 Reakcija, ne nuomonė
 **Įvertinimas:** 3/5
@@ -81,7 +85,9 @@
 
 ---
 
-## V3. Konstrukto validacija
+## SIGNALS — Signalų validacija (V3)
+
+*Vertinami tik aw/cs/cr svoriai. Vaizdas ir tekstai jau įvertinti.*
 
 ### V3.1 Pirminė ašis
 **Deklaruota ašis:** aw (approach_withdrawal)
@@ -110,7 +116,9 @@
 
 ---
 
-## V4. Daugiateorinė validacija
+## Daugiateorinė validacija (V4)
+
+*Vertinami IMAGE + CHOICES + SIGNALS kartu per teorijų lęšius.*
 
 ### Teorija 1: Dual Process Theory (Kahneman)
 **Validacijos klausimas:** Ar stimulas sukelia momentinę (System 1) reakciją? Ar variantai nereikalauja ilgos refleksijos?
@@ -134,7 +142,7 @@
 
 ---
 
-## V5. Bibliotekos validacija
+## Bibliotekos validacija (V5)
 
 ### V5.1 Dublikatai
 **Ar yra panašių stimulų:** Taip — L01 (identiškas stimulas senoje bibliotekoje)
@@ -157,7 +165,7 @@
 
 ---
 
-## V6. Empirinė validacija
+## Empirinė validacija (V6)
 
 *(Nepildyta — stimulas dar nebuvo testuotas su realiais žmonėmis)*
 
@@ -174,7 +182,7 @@
 
 ## Galutinis vertinimas
 
-| Kriterijus | Svoris | Balas | Svertinis |
+| Kriterijus | Objektas | Svoris | Balas | Svertinis |
 |---|---|---|---|
 | V1.1 Neutralumas | 15% | 3/5 | 9 |
 | V1.2 AI artefaktai | 10% | 5/5 | 10 |

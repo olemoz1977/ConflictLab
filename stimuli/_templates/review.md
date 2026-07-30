@@ -2,18 +2,20 @@
 
 **Stimulo ID:** ST-XXX
 **Peržiūros data:** YYYY-MM-DD
-**Recenzentas:** [vardas arba "Claude v0.x"]
-**Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0
+**Recenzentas:** [vardas arba įrankis]
+**Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0.1
 **Statusas po peržiūros:** [draft | review | beta | approved | archived]
 
 ---
 
-> ⚠ Šis review užpildomas tik pagal Validation Protocol v1.0.
-> Jei review prieštarauja Protocol — taisomas review, o ne Protocol.
+> ⚠ Šis review užpildomas tik pagal Validation Protocol.
+> Protocol > Review. Jei prieštaravimas — taisomas Review.
 
 ---
 
-## V1. Vizualinė validacija
+## IMAGE — Vaizdo validacija (V1)
+
+*Vertinamas tik vaizdas. Variantai ir signalai dar nevertinami.*
 
 ### V1.1 Neutralumas
 **Įvertinimas:** [1–5]
@@ -47,7 +49,9 @@
 
 ---
 
-## V2. Psichologinė validacija
+## CHOICES — Variantų validacija (V2)
+
+*Vertinami tik trijų variantų tekstai. Signalai dar nevertinami.*
 
 ### V2.1 Reakcija, ne nuomonė
 **Įvertinimas:** [1–5]
@@ -81,7 +85,9 @@
 
 ---
 
-## V3. Konstrukto validacija
+## SIGNALS — Signalų validacija (V3)
+
+*Vertinami tik aw/cs/cr svoriai. Vaizdas ir tekstai jau įvertinti.*
 
 ### V3.1 Pirminė ašis
 **Deklaruota ašis:** [aw | cs | cr]
@@ -92,51 +98,52 @@
 
 ### V3.2 aw/cs/cr diferenciacija
 **Įvertinimas:** [1–5]
-**Paaiškinimas:** *(ar ašys nesupainiotos, ar aw- ≠ cr-)*
+**Paaiškinimas:** *(ar aw- ≠ cr-, ar ašys nesupainiotos)*
 **Rastos problemos:**
 **Rekomendacija:** [Priimti | Atmesti | Koreguoti]
 
 ### V3.3 Mišrūs signalai
 **Ar yra mišrūs signalai:** [Taip | Ne]
-**Paaiškinimas:** *(jei taip — ar pagrįsti)*
+**Paaiškinimas:** *(jei taip — ar pagrįsti, ar dokumentuoti yaml)*
 **Rastos problemos:**
 **Rekomendacija:** [Priimti | Atmesti | Dokumentuoti pagrindimą]
 
 ### V3.4 Variantų svorių simetrija
 **Įvertinimas:** [1–5]
-**Paaiškinimas:** *(ar yra X+ ir X- variantai)*
+**Paaiškinimas:** *(ar yra X+ ir X- variantai pirminei ašiai)*
 **Rastos problemos:**
 **Rekomendacija:** [Priimti | Atmesti | Koreguoti svorius]
 
 ---
 
-## V4. Daugiateorinė validacija
+## Daugiateorinė validacija (V4)
 
-*(Remtis tik kaip teorija validuoja stimulą — ne žmogų)*
+*Vertinami IMAGE + CHOICES + SIGNALS kartu per teorijų lęšius.*
+*Teorijos validuoja stimulą — ne žmogų.*
 
 ### Teorija 1: [pavadinimas]
-**Validacijos klausimas pagal Protocol:**
+**Validacijos klausimas:**
 **Įvertinimas:** [Patvirtina | Abejoja | Prieštarauja]
 **Paaiškinimas:**
 
 ### Teorija 2: [pavadinimas]
-**Validacijos klausimas pagal Protocol:**
+**Validacijos klausimas:**
 **Įvertinimas:** [Patvirtina | Abejoja | Prieštarauja]
 **Paaiškinimas:**
 
 ### Teorija 3: [pavadinimas]
-**Validacijos klausimas pagal Protocol:**
+**Validacijos klausimas:**
 **Įvertinimas:** [Patvirtina | Abejoja | Prieštarauja]
 **Paaiškinimas:**
 
 ### Teoriniai prieštaravimai
-**Ar yra prieštaravimų:** [Taip | Ne]
+**Ar yra:** [Taip | Ne]
 **Aprašymas:**
 **Rekomendacija:** [Priimti su žyma | Atmesti | Peržiūrėti]
 
 ---
 
-## V5. Bibliotekos validacija
+## Bibliotekos validacija (V5)
 
 ### V5.1 Dublikatai
 **Ar yra panašių stimulų:** [Taip | Ne]
@@ -144,41 +151,38 @@
 **Ar konstruktai skiriasi:** [Taip | Ne]
 **Rekomendacija:** [Priimti | Atmesti | Priimti su diferenciacija]
 
-### V5.2 Ašių balansas
-**Ašių pasiskirstymas po pridėjimo:**
-- aw stimulai: X / N (X%)
-- cs stimulai: X / N (X%)
-- cr stimulai: X / N (X%)
+### V5.2 Ašių balansas po pridėjimo
+- aw stimulai: X/N (X%)
+- cs stimulai: X/N (X%)
+- cr stimulai: X/N (X%)
 
 **Ar laikomasi 25–40% ribų:** [Taip | Ne]
-**Rekomendacija:** [Priimti | Atidėti kol balansuosis]
+**Rekomendacija:** [Priimti | Atidėti]
 
 ### V5.3 Kontekstų įvairovė
-**Stimulo kontekstas:** [darbo aplinka | tarpasmeniniai | vidinė erdvė | gamta | technologinis]
-**Ar kontekstas jau per daug reprezentuotas:** [Taip | Ne]
+**Stimulo kontekstas:** [darbo_aplinka | tarpasmeniniai | vidine_erdve | gamta | technologinis]
+**Ar per daug reprezentuotas:** [Taip | Ne]
 **Rekomendacija:** [Priimti | Atidėti]
 
 ---
 
-## V6. Empirinė validacija
+## Empirinė validacija (V6)
 
 *(Pildoma po testavimo su realiais žmonėmis)*
 
-### V6.1 Beta testavimas (5–10 žmonių)
+### Beta (5–10 žmonių)
 **Data:**
-**Imtis:**
 **Variantų pasiskirstymas:** A: X% | B: X% | C: X%
 **Vidutinis reakcijos laikas:** X sek.
 **Rastos problemos:**
 
-### V6.2 Pilotinis testavimas (30–50 žmonių)
+### Pilotinis (30–50 žmonių)
 **Data:**
-**Imtis:**
 **Variantų pasiskirstymas:** A: X% | B: X% | C: X%
 **Rezonansas:** X%
 **Rastos problemos:**
 
-### V6.3 Pašalinimo kriterijai — patikrinimas
+### Pašalinimo kriterijai
 - [ ] Nė vienas variantas >60%
 - [ ] Reakcijos laikas <8 sek.
 - [ ] >70% supranta vaizdą
@@ -189,24 +193,24 @@
 
 ## Galutinis vertinimas
 
-| Kriterijus | Svoris | Balas | Svertinis |
-|---|---|---|---|
-| V1.1 Neutralumas | 15% | /5 | |
-| V1.2 AI artefaktai | 10% | /5 | |
-| V1.3 Kultūrinis neutralumas | 10% | /5 | |
-| V1.4 Lyties/statuso neutralumas | 10% | /5 | |
-| V2.1 Reakcija, ne nuomonė | 15% | /5 | |
-| V2.2 Socialinis neutralumas | 15% | /5 | |
-| V3.1 Pirminė ašis | 10% | /5 | |
-| V3.4 Svorių simetrija | 10% | /5 | |
-| V4 Teorijų validacija | 5% | /5 | |
-| **VISO** | **100%** | | **/100** |
+| Kriterijus | Objektas | Svoris | Balas | Svertinis |
+|---|---|---|---|---|
+| V1.1 Neutralumas | IMAGE | 15% | /5 | |
+| V1.2 AI artefaktai | IMAGE | 10% | /5 | |
+| V1.3 Kultūrinis neutralumas | IMAGE | 10% | /5 | |
+| V1.4 Lyties/statuso neutralumas | IMAGE | 10% | /5 | |
+| V2.1 Reakcija, ne nuomonė | CHOICES | 15% | /5 | |
+| V2.2 Socialinis neutralumas | CHOICES | 15% | /5 | |
+| V3.1 Pirminė ašis | SIGNALS | 10% | /5 | |
+| V3.4 Svorių simetrija | SIGNALS | 10% | /5 | |
+| V4 Teorijų validacija | VISI | 5% | /5 | |
+| **VISO** | | **100%** | | **/100** |
 
 **Minimalus balas: 70/100**
 **Gautas balas:**
 **Sprendimas:** [Priimti | Atmesti | Grąžinti perrašymui]
-**Žymos:** *(jei priimama su žymomis)*
+**Žymos:**
 
 ---
 
-*Review užpildyta pagal: `docs/methodology/stimulus_validation_protocol.md` v1.0*
+*Review užpildyta pagal: `docs/methodology/stimulus_validation_protocol.md` v1.0.1*
