@@ -137,15 +137,15 @@
     </div>
     <div class="ref-box">
       <div class="ref-section">
-        <div class="ref-label">Pastebėjimas</div>
+        <div class="ref-label">Pastebėjome</div>
         <div class="ref-text" id="r-traj"></div>
       </div>
       <div class="ref-section">
-        <div class="ref-label">Ką tiksliai pastebėjome</div>
+        <div class="ref-label">Kas kartojosi?</div>
         <div class="ref-text" id="r-detail"></div>
       </div>
       <div class="ref-section">
-        <div class="ref-label">Kodėl tai rodome</div>
+        <div class="ref-label">Kodėl tai rodome?</div>
         <div class="ref-limit" id="r-limits"></div>
       </div>
       <div class="ref-section">
@@ -658,7 +658,7 @@ async function generateReflection(){
     document.getElementById('r-traj').textContent='Šiandien aiškaus dėsningumo neatsirado.';
     document.getElementById('r-detail').textContent='';
     document.getElementById('r-limits').textContent='Tai nėra nesėkmė — sistema tyli kai neturi ko konkrečiai pasakyti.';
-    document.getElementById('r-q').textContent='Ar yra kažkas, apie ką šiandien galvoji labiau nei paprastai?';
+    document.getElementById('r-q').textContent='Ar šiandien buvo situacija, kur panaši reakcija pasirodė realiame gyvenime?';
     go('s-ref'); return;
   }
 
@@ -674,10 +674,15 @@ Tipas: ${aha.pattern.type} | Duomenų pagrindas: ${aha.evidence} | Kelių sesij�
 VERTIMO ŠABLONAS: ${aha.tmpl.text}
 VIDINIS KLAUSIMAS (ne rodyti): ${aha.tmpl.why}
 
-1. "trajectory" — 1 sakinys. Konkretus pastebėjimas. Pvz: "Keliose sesijose pastebėjome tą pačią reakcijos kryptį."
-2. "detail" — 1-2 sakiniai. Ką tiksliai matėme, žmogaus kalba. Remkis: "${aha.evidence}". Pvz: "Kai situacija buvo neaiški, pirmasis impulsas dažniau buvo ieškoti aiškumo nei laukti."
-3. "limits" — 1 sakinys. Kodėl tai rodome + kvietimas pasitikrinti. Pvz: "Ši kryptis pasikartojo keliose skirtingose sesijose — tai kvietimas pasitikrinti, ar atpažįsti tai savo kasdienybėje."
-4. "question" — vienas atviras klausimas. Palieka erdvę atsakyti "ne".
+1. "trajectory" — 1 sakinys. Neutralus pastebėjimas be išvados. Pvz: "Keliose skirtingose situacijose pasikartojo ta pati pirmoji reakcijos kryptis."
+
+2. "detail" — 1-2 sakiniai. Kas konkrečiai kartojosi, žmogaus kalba. Remkis: "${aha.evidence}". Pvz: "Kai situacija buvo neaiški, pirmasis impulsas dažniau buvo ieškoti aiškumo nei laukti, kol jo atsiras savaime."
+
+3. "limits" — 1-2 sakiniai. Kas mus nustebino + kodėl tai rodome. Tai yra vieta kur žmogus PATS padaro išvadą — NE sistema. Pvz: "Tai pasikartojo skirtinguose vaizduose, kurie tarpusavyje nebuvo panašūs. Tai nėra išvada apie tave — tik kvietimas pasitikrinti."
+
+4. "question" — vienas atviras klausimas. Ne apie sesiją — apie realų gyvenimą. Pvz: "Kur paskutinį kartą panaši reakcija pasireiškė ne ekrane, o realioje situacijoje?"
+
+SVARBU: sistema neprimeta išvados. Ji tik rodo pastebėjimą ir palieka žmogui erdvę pačiam nustebti.
 
 JSON tik: {"trajectory":"...","detail":"...","limits":"...","question":"..."}`;
 
@@ -695,7 +700,7 @@ JSON tik: {"trajectory":"...","detail":"...","limits":"...","question":"..."}`;
     document.getElementById('r-traj').textContent=aha.tmpl.text;
     document.getElementById('r-detail').textContent=aha.evidence||'';
     document.getElementById('r-limits').textContent='Ši kryptis atsirado iš šios sesijos pasirinkimų — tai kvietimas pasitikrinti, ar atpažįsti tai savo kasdienybėje.';
-    document.getElementById('r-q').textContent='Ar tai tau pažįstama?';
+    document.getElementById('r-q').textContent='Kur paskutinį kartą panaši reakcija pasireiškė ne ekrane?';
   }
   go('s-ref');
 }
