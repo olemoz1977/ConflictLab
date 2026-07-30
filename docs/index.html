@@ -11,45 +11,30 @@
     :root{--bg:#0C0C0F;--card:#121215;--border:#1E1E24;--text:#E2DED6;--dim:#6E6A64;--faint:#32323A;--accent:#7C9E8F;--a2:#2A4840;--warn:#B08050;--r:14px}
     html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100%;-webkit-font-smoothing:antialiased}
     .shell{max-width:460px;margin:0 auto;padding:0 18px 72px}
-
-    /* HEADER */
     header{padding:40px 0 28px;border-bottom:1px solid var(--border);margin-bottom:40px}
     .logo{font-family:'Space Grotesk',sans-serif;font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
     header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,5vw,2rem);font-weight:300;line-height:1.2;margin-bottom:10px}
     header p{color:var(--dim);font-size:.88rem;line-height:1.7}
-
-    /* SCREENS */
     .screen{display:none}.screen.active{display:block}
-
-    /* PROGRESS DOTS */
     .prog-wrap{margin-bottom:32px}
-    .prog-dots{display:flex;gap:7px;margin-bottom:0}
+    .prog-dots{display:flex;gap:7px}
     .prog-dot{width:5px;height:5px;border-radius:50%;background:var(--faint);transition:background 400ms}
     .prog-dot.done{background:var(--accent)}
     .prog-dot.active{background:var(--accent);box-shadow:0 0 0 3px var(--a2)}
-
-    /* STIMULUS */
     .stim-img-wrap{border-radius:var(--r);overflow:hidden;margin-bottom:28px;background:var(--faint)}
     .stim-img-wrap img{width:100%;display:block;object-fit:cover;aspect-ratio:3/4}
     .choices{display:flex;flex-direction:column;gap:9px;margin-bottom:28px}
     .choice{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;color:var(--dim);font-family:'Inter',sans-serif;font-size:.9rem;line-height:1.55;text-align:left;cursor:pointer;transition:border-color 180ms,color 180ms,background 180ms;position:relative;-webkit-tap-highlight-color:transparent}
     .choice.on{border-color:var(--accent);background:rgba(124,158,143,.07);color:var(--text)}
     .choice.on::after{content:'';position:absolute;right:18px;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--accent)}
-
-    /* BUTTONS */
     .btn{display:block;width:100%;padding:16px;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:500;border:none;cursor:pointer;transition:opacity 180ms;-webkit-tap-highlight-color:transparent}
     .btn:disabled{opacity:.2;cursor:not-allowed}
     .btn-p{background:var(--accent);color:#0C0C0F}
     .btn-p:active{opacity:.8}
     .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border);margin-top:10px}
-    .btn-g:hover{color:var(--text);border-color:var(--dim)}
-
-    /* LOADING */
     .loading-wrap{display:flex;align-items:center;justify-content:center;padding:80px 0}
     .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* DIRECTION INDICATOR (replaces numbers) */
     .dir-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:24px}
     .dir-title{font-size:.65rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
     .dir-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
@@ -57,10 +42,7 @@
     .dir-label{font-size:.8rem;color:var(--dim);width:110px;flex-shrink:0;line-height:1.3}
     .dir-track{flex:1;height:3px;background:var(--faint);border-radius:2px;position:relative}
     .dir-center{position:absolute;left:50%;top:-4px;width:1px;height:11px;background:var(--border)}
-    .dir-fill{position:absolute;top:0;height:3px;border-radius:2px;background:var(--accent);transition:all 700ms ease}
     .dir-dot{position:absolute;top:-4px;width:11px;height:11px;border-radius:50%;background:var(--accent);transform:translateX(-50%);transition:left 700ms ease}
-
-    /* REFLECTION */
     .ref-box{background:var(--card);border:1px solid var(--a2);border-radius:var(--r);padding:28px 24px;margin-bottom:20px}
     .ref-section{margin-bottom:22px}
     .ref-section:last-child{margin-bottom:0}
@@ -68,8 +50,6 @@
     .ref-text{font-size:.88rem;color:var(--dim);line-height:1.8}
     .ref-question{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:400;color:var(--text);line-height:1.55}
     .ref-limit{font-size:.8rem;color:var(--faint);font-style:italic;line-height:1.65}
-
-    /* FEEDBACK */
     .fb-label{font-size:.82rem;color:var(--dim);margin-bottom:12px}
     .fb-row{display:flex;gap:10px;margin-bottom:12px}
     .fb-btn{flex:1;padding:14px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--dim);transition:border-color 180ms,color 180ms}
@@ -80,13 +60,10 @@
     textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:14px;resize:vertical;min-height:80px;line-height:1.65;margin-bottom:10px}
     textarea:focus{outline:none;border-color:var(--accent)}
     textarea::placeholder{color:var(--faint)}
-
-    /* INTRO */
     .intro-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px}
     .intro-card p{color:var(--dim);font-size:.88rem;line-height:1.75}
+    .notice{border:1px solid rgba(176,128,80,.2);background:rgba(176,128,80,.05);border-radius:var(--r);padding:12px 16px;font-size:.8rem;color:var(--warn);line-height:1.65;margin-bottom:20px}
     .sess-note{font-size:.78rem;color:var(--faint);text-align:center;margin-top:12px}
-
-    /* HISTORY */
     .hist-wrap{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
     .hist-title{font-size:.7rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
     .hist-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px}
@@ -95,16 +72,17 @@
     .hist-dir span{color:var(--accent)}
     .hist-clear{display:block;width:100%;padding:10px;border-radius:var(--r);background:transparent;color:var(--faint);border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:.78rem;cursor:pointer;margin-top:8px;transition:color 180ms,border-color 180ms}
     .hist-clear:hover{color:var(--warn);border-color:var(--warn)}
-
-    /* PATTERN */
     .pattern-card{background:var(--card);border:1px solid var(--accent);border-radius:var(--r);padding:28px 24px;margin-bottom:20px}
     .pattern-label{font-size:.65rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
     .pattern-text{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.65;margin-bottom:16px}
     .pattern-note{font-size:.78rem;color:var(--faint);font-style:italic;line-height:1.65}
-
-    /* NOTICE */
-    .notice{border:1px solid rgba(176,128,80,.2);background:rgba(176,128,80,.05);border-radius:var(--r);padding:12px 16px;font-size:.8rem;color:var(--warn);line-height:1.65;margin-bottom:20px}
-
+    /* FEEDBACK MODULE */
+    .fb-module{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px}
+    .fb-module-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);margin-bottom:6px}
+    .fb-module-sub{font-size:.82rem;color:var(--dim);margin-bottom:20px;line-height:1.6}
+    .fb-q{font-size:.82rem;color:var(--dim);margin-bottom:8px;margin-top:16px}
+    .fb-q:first-of-type{margin-top:0}
+    textarea.fb-small{min-height:60px}
     footer{border-top:1px solid var(--border);padding:24px 0;margin-top:40px;font-size:.72rem;color:var(--faint);display:flex;justify-content:space-between}
   </style>
 </head>
@@ -129,52 +107,34 @@
 
   <!-- STIMULUS -->
   <div class="screen" id="s-stim">
-    <div class="prog-wrap">
-      <div class="prog-dots" id="prog-dots"></div>
-    </div>
-    <div class="stim-img-wrap">
-      <img id="stim-img" src="" alt="">
-    </div>
+    <div class="prog-wrap"><div class="prog-dots" id="prog-dots"></div></div>
+    <div class="stim-img-wrap"><img id="stim-img" src="" alt=""></div>
     <div class="choices" id="stim-choices"></div>
     <button class="btn btn-p" id="btn-next" onclick="nextStim()" disabled>Toliau</button>
   </div>
 
   <!-- LOADING -->
   <div class="screen" id="s-loading">
-    <div class="loading-wrap">
-      <div class="spinner"></div>
-    </div>
+    <div class="loading-wrap"><div class="spinner"></div></div>
   </div>
 
   <!-- REFLECTION -->
   <div class="screen" id="s-ref">
-
-    <!-- Direction indicator — no numbers, just position -->
     <div class="dir-box">
       <div class="dir-title">Šios sesijos kryptis</div>
       <div class="dir-row">
         <div class="dir-label">atsitraukimas ↔ artėjimas</div>
-        <div class="dir-track">
-          <div class="dir-center"></div>
-          <div class="dir-dot" id="dot-aw"></div>
-        </div>
+        <div class="dir-track"><div class="dir-center"></div><div class="dir-dot" id="dot-aw"></div></div>
       </div>
       <div class="dir-row">
         <div class="dir-label">neapibrėžtumas ↔ aiškumas</div>
-        <div class="dir-track">
-          <div class="dir-center"></div>
-          <div class="dir-dot" id="dot-cs"></div>
-        </div>
+        <div class="dir-track"><div class="dir-center"></div><div class="dir-dot" id="dot-cs"></div></div>
       </div>
       <div class="dir-row">
         <div class="dir-label">paleidimas ↔ kontrolė</div>
-        <div class="dir-track">
-          <div class="dir-center"></div>
-          <div class="dir-dot" id="dot-cr"></div>
-        </div>
+        <div class="dir-track"><div class="dir-center"></div><div class="dir-dot" id="dot-cr"></div></div>
       </div>
     </div>
-
     <div class="ref-box">
       <div class="ref-section">
         <div class="ref-label">Pasirodė</div>
@@ -188,7 +148,6 @@
         <div class="ref-question" id="r-q"></div>
       </div>
     </div>
-
     <div class="fb-label">Ar tai atspindi ką nors tikro?</div>
     <div class="fb-row">
       <button class="fb-btn yes" onclick="finishSession('yes')">Taip, kažką palietė</button>
@@ -201,11 +160,33 @@
     <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
   </div>
 
+  <!-- BETA FEEDBACK MODULE -->
+  <div class="screen" id="s-feedback">
+    <div class="fb-module">
+      <div class="fb-module-title">Prieš išeidamas</div>
+      <div class="fb-module-sub">5 klausimai. Anonimiška. Padeda suprasti kas veikia.</div>
+      <div class="fb-q">Kuris vaizdas labiausiai įstrigo?</div>
+      <textarea class="fb-small" id="fq1" placeholder="Aprašyk arba praleisk..."></textarea>
+      <div class="fb-q">Kur sustojote pagalvoti — ne pasirinkti, o tikrai sustojote?</div>
+      <textarea class="fb-small" id="fq2" placeholder="..."></textarea>
+      <div class="fb-q">Ar buvo momentas „čia apie mane"?</div>
+      <textarea class="fb-small" id="fq3" placeholder="..."></textarea>
+      <div class="fb-q">Kas labiausiai trukdė?</div>
+      <textarea class="fb-small" id="fq4" placeholder="..."></textarea>
+      <div class="fb-q">Ar grįžtumėte antrai sesijai?</div>
+      <div class="fb-row" style="margin-top:6px">
+        <button class="fb-btn yes" id="return-yes" onclick="selectReturn('yes')">Taip</button>
+        <button class="fb-btn" id="return-maybe" onclick="selectReturn('maybe')" style="flex:1;padding:14px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--dim)">Galbūt</button>
+        <button class="fb-btn no" id="return-no" onclick="selectReturn('no')">Ne</button>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="submitFeedback()">Baigti</button>
+    <button class="btn btn-g" onclick="skipFeedback()">Praleisti</button>
+  </div>
+
   <!-- PATTERN -->
   <div class="screen" id="s-pattern">
-    <div class="loading-wrap" id="pat-loading">
-      <div class="spinner"></div>
-    </div>
+    <div class="loading-wrap" id="pat-loading"><div class="spinner"></div></div>
     <div id="pat-content" style="display:none">
       <div class="pattern-card">
         <div class="pattern-label">Pastebėtas dėsningumas</div>
@@ -213,7 +194,7 @@
         <div class="pattern-note" id="pat-note"></div>
       </div>
     </div>
-    <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
+    <button class="btn btn-g" onclick="goFeedback()">Toliau →</button>
   </div>
 
   <!-- THANKS -->
@@ -222,110 +203,138 @@
       <div style="font-size:1.6rem;margin-bottom:16px">◎</div>
       <div class="ref-question" id="t-msg" style="margin-bottom:0"></div>
     </div>
+    <button class="btn btn-g" onclick="goFeedback()">Dar vienas klausimas →</button>
     <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
   </div>
 
   <footer>
-    <span>ConflictLab v0.6.0-beta</span>
+    <span>ConflictLab v0.6.1-beta</span>
     <span>Epistemic Reflection Framework</span>
   </footer>
 </div>
 
 <script>
 // ══════════════════════════════════════════
-// STIMULUS LIBRARY
-// Removed: L06 (chat screen), L08 (notebook) — AI text artifacts
+// STIMULUS LIBRARY WITH FAMILIES
+// Family = psichologinis momentas, ne vizualinis objektas
+// Rotation rule: tas pats stimulus negali kartotis
+// ankstesnėse 2 sesijose
 // ══════════════════════════════════════════
 const LIB = [
-  {id:'L01',src:'media/p2_window_silhouette.png',axis:'aw',
-   q:'Kas pirmiausia šovė į galvą?',
-   c:[{t:'Norėjosi pabūti vienam',aw:-.55,cs:-.20,cr:-.30},
-      {t:'Pagalvojau kas vyksta lauke',aw:+.25,cs:+.15,cr:+.10},
-      {t:'Laukimas — nieko ypatingo',aw:-.10,cs:-.30,cr:-.15}]},
-
-  {id:'L02',src:'media/ax_approach.png',axis:'aw',
-   q:'Ką jaučiau žiūrėdamas?',
-   c:[{t:'Kažkas čia vyksta',aw:+.50,cs:+.20,cr:+.15},
-      {t:'Per arti — nesmagu',aw:-.25,cs:+.35,cr:+.25},
-      {t:'Tiesiog du žmonės',aw:+.05,cs:-.10,cr:-.05}]},
-
-  {id:'L03',src:'media/v2_p2_corridor.png',axis:'aw',
-   q:'Ką norėjosi daryti?',
-   c:[{t:'Išeiti greičiau',aw:-.50,cs:-.10,cr:-.30},
-      {t:'Palaukti ir pasikalbėti',aw:+.40,cs:+.10,cr:+.15},
-      {t:'Eiti savo keliu',aw:-.10,cs:-.20,cr:+.20}]},
-
-  {id:'L04',src:'media/v2_p4_person_alone.png',axis:'aw',
-   q:'Kas pirmiausia šovė į galvą?',
-   c:[{t:'Norėjosi priartėti',aw:+.40,cs:+.20,cr:+.15},
-      {t:'Palikti ramybėje',aw:-.35,cs:-.20,cr:-.25},
-      {t:'Pagalvojau kaip ilgai čia sėdi',aw:+.10,cs:+.35,cr:+.10}]},
-
-  {id:'L05',src:'media/p1_phone_table.png',axis:'cs',
+  // FAMILY: waiting — laukimas be atsakymo
+  {id:'L05',family:'waiting',src:'media/p1_phone_table.png',axis:'cs',
    q:'Kas pirmiausia šovė į galvą?',
    c:[{t:'Ar atsakė?',aw:+.10,cs:+.65,cr:+.30},
       {t:'Telefonas nutylęs — nieko',aw:-.10,cs:-.40,cr:-.20},
       {t:'Pradėjau galvoti ką daryti',aw:+.20,cs:+.45,cr:+.55}]},
 
-  {id:'L07',src:'media/ax_uncertainty.png',axis:'cs',
-   q:'Kas pirmiausia šovė į galvą žiūrint į tuščią lapą?',
-   c:[{t:'Iš karto pagalvojau ką čia galėčiau daryti',aw:+.10,cs:-.45,cr:-.20},
-      {t:'Nežinau nuo ko pradėti',aw:-.10,cs:+.55,cr:+.30},
-      {t:'Nieko nekyla',aw:-.20,cs:-.50,cr:-.45}]},
-
-  {id:'L09',src:'media/p5_person_laptop.png',axis:'cr',
-   q:'Kas pirmiausia šovė į galvą?',
-   c:[{t:'Darbas — viskas gerai',aw:+.10,cs:+.25,cr:+.65},
-      {t:'Norėjosi to paties — dirbti ir nekreipti dėmesio',aw:-.20,cs:-.15,cr:-.35},
-      {t:'Pastebėjau telefoną šalia',aw:+.15,cs:+.40,cr:+.40}]},
-
-  {id:'L10',src:'media/v2_p1_empty_room.png',axis:'cr',
+  {id:'L10',family:'waiting',src:'media/v2_p1_empty_room.png',axis:'cr',
    q:'Ką jaučiau žiūrėdamas?',
    c:[{t:'Palengvėjimas — čia tuščia',aw:-.15,cs:-.30,cr:-.60},
       {t:'Tuoj prasidės kažkas',aw:+.15,cs:+.45,cr:+.50},
       {t:'Pagalvojau kas čia buvo',aw:+.20,cs:+.25,cr:-.10}]},
 
-  {id:'L11',src:'media/ax_release.png',axis:'cr',
+  {id:'L12',family:'waiting',src:'media/p4_empty_table.png',axis:'cr',
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Tuštuma — nieko nevyksta',aw:-.25,cs:-.30,cr:-.55},
+      {t:'Tvarka — viskas gerai',aw:+.10,cs:+.20,cr:+.60},
+      {t:'Pagalvojau kas čia sėdės',aw:+.30,cs:+.20,cr:+.15}]},
+
+  // FAMILY: withdrawal — atsitraukimas
+  {id:'L01',family:'withdrawal',src:'media/p2_window_silhouette.png',axis:'aw',
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Norėjosi pabūti vienam',aw:-.55,cs:-.20,cr:-.30},
+      {t:'Pagalvojau kas vyksta lauke',aw:+.25,cs:+.15,cr:+.10},
+      {t:'Laukimas — nieko ypatingo',aw:-.10,cs:-.30,cr:-.15}]},
+
+  {id:'L03',family:'withdrawal',src:'media/v2_p2_corridor.png',axis:'aw',
+   q:'Ką norėjosi daryti?',
+   c:[{t:'Išeiti greičiau',aw:-.50,cs:-.10,cr:-.30},
+      {t:'Palaukti ir pasikalbėti',aw:+.40,cs:+.10,cr:+.15},
+      {t:'Eiti savo keliu',aw:-.10,cs:-.20,cr:+.20}]},
+
+  // FAMILY: encounter — susitikimas/sąveika
+  {id:'L02',family:'encounter',src:'media/ax_approach.png',axis:'aw',
+   q:'Ką jaučiau žiūrėdamas?',
+   c:[{t:'Kažkas čia vyksta',aw:+.50,cs:+.20,cr:+.15},
+      {t:'Per arti — nesmagu',aw:-.25,cs:+.35,cr:+.25},
+      {t:'Tiesiog du žmonės',aw:+.05,cs:-.10,cr:-.05}]},
+
+  {id:'L04',family:'encounter',src:'media/v2_p4_person_alone.png',axis:'aw',
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Norėjosi priartėti',aw:+.40,cs:+.20,cr:+.15},
+      {t:'Palikti ramybėje',aw:-.35,cs:-.20,cr:-.25},
+      {t:'Pagalvojau kaip ilgai čia sėdi',aw:+.10,cs:+.35,cr:+.10}]},
+
+  // FAMILY: open_space — neapibrėžtumas/erdvė
+  {id:'L07',family:'open_space',src:'media/ax_uncertainty.png',axis:'cs',
+   q:'Kas pirmiausia šovė į galvą žiūrint į tuščią lapą?',
+   c:[{t:'Iš karto pagalvojau ką čia galėčiau daryti',aw:+.10,cs:-.45,cr:-.20},
+      {t:'Nežinau nuo ko pradėti',aw:-.10,cs:+.55,cr:+.30},
+      {t:'Nieko nekyla',aw:-.20,cs:-.50,cr:-.45}]},
+
+  {id:'L11',family:'open_space',src:'media/ax_release.png',axis:'cr',
    q:'Ką jaučiau žiūrėdamas į atidarytas duris?',
    c:[{t:'Laisvė — galima eiti',aw:+.10,cs:-.25,cr:-.65},
       {t:'Pagalvojau ar eiti ar likti',aw:+.10,cs:+.50,cr:+.35},
       {t:'Kažkas laukia ten',aw:+.40,cs:+.20,cr:-.10}]},
 
-  {id:'L12',src:'media/p4_empty_table.png',axis:'cr',
+  // FAMILY: work — darbas/koncentracija
+  {id:'L09',family:'work',src:'media/p5_person_laptop.png',axis:'cr',
    q:'Kas pirmiausia šovė į galvą?',
-   c:[{t:'Tuštuma — nieko nevyksta',aw:-.25,cs:-.30,cr:-.55},
-      {t:'Tvarka — viskas gerai',aw:+.10,cs:+.20,cr:+.60},
-      {t:'Pagalvojau kas čia sėdės',aw:+.30,cs:+.20,cr:+.15}]},
+   c:[{t:'Darbas — viskas gerai',aw:+.10,cs:+.25,cr:+.65},
+      {t:'Norėjosi to paties — dirbti ir nekreipti dėmesio',aw:-.20,cs:-.15,cr:-.35},
+      {t:'Pastebėjau telefoną šalia',aw:+.15,cs:+.40,cr:+.40}]},
 ];
 
 // ══════════════════════════════════════════
-// ADAPTIVE SELECTION
+// ROTATION ENGINE
+// Taisyklė: tas pats stimulus negali kartotis
+// ankstesnėse 2 sesijose (cooldown = 2)
+// Jei biblioteka per maža — trumpinti sesiją
 // ══════════════════════════════════════════
+const COOLDOWN = 2; // sesijų skaičius kol stimulas "atšąla"
+const SESSION_LENGTH = 4;
+
+function getAvailableStimuli(history) {
+  const recentSessions = history.slice(-COOLDOWN);
+  const recentIds = new Set(recentSessions.flatMap(h => h.stimuliUsed || []));
+  return LIB.filter(s => !recentIds.has(s.id));
+}
+
 function selectStimuli(history) {
+  const available = getAvailableStimuli(history);
+
+  // Jei per mažai — naudoti viską (geriau kartotis negu rodyti tik 2)
+  const pool = available.length >= SESSION_LENGTH ? available : LIB;
+
   if (history.length === 0) {
-    return [
-      LIB.find(s=>s.id==='L05'),
-      LIB.find(s=>s.id==='L01'),
-      LIB.find(s=>s.id==='L09'),
-      LIB.find(s=>s.id==='L07'),
-    ];
+    // Pirma sesija: po vieną iš skirtingų šeimų
+    const families = ['waiting','withdrawal','open_space','work'];
+    return families.map(f => pool.find(s => s.family === f)).filter(Boolean);
   }
+
+  // Adaptive: patvirtinti stipriausią ašį, tyrinėti silpniausią
   const last = history[history.length-1];
   const {aw,cs,cr} = last.axes;
   const absAw=Math.abs(aw), absCs=Math.abs(cs), absCr=Math.abs(cr);
+
   let confirmAxis='cs', probeAxis='cr';
   if(absAw>=absCs&&absAw>=absCr) confirmAxis='aw';
   else if(absCr>=absCs&&absCr>=absAw) confirmAxis='cr';
   if(absAw<=absCs&&absAw<=absCr) probeAxis='aw';
   else if(absCs<=absAw&&absCs<=absCr) probeAxis='cs';
-  const usedIds=new Set(history.flatMap(h=>h.stimuliUsed||[]));
+
   const pick=(axis,excl=[])=>{
-    const pool=LIB.filter(s=>s.axis===axis&&!usedIds.has(s.id)&&!excl.includes(s.id));
-    return pool.length>0?pool[Math.floor(Math.random()*pool.length)]
-      :LIB.filter(s=>s.axis===axis)[0];
+    const candidates=pool.filter(s=>s.axis===axis&&!excl.includes(s.id));
+    if(candidates.length===0) return pool.filter(s=>!excl.includes(s.id))[0];
+    return candidates[Math.floor(Math.random()*candidates.length)];
   };
-  const s1=pick(confirmAxis), s2=pick(probeAxis,[s1?.id]),
-        s3=pick(confirmAxis,[s1?.id]), s4=pick(probeAxis,[s2?.id]);
+
+  const s1=pick(confirmAxis,[]);
+  const s2=pick(probeAxis,[s1?.id]);
+  const s3=pick(confirmAxis,[s1?.id,s2?.id]);
+  const s4=pick(probeAxis,[s1?.id,s2?.id,s3?.id]);
   return [s1,s2,s3,s4].filter(Boolean);
 }
 
@@ -336,10 +345,17 @@ const KEY='cl_v3';
 function loadH(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch{return[];}}
 function saveH(s){const h=loadH();h.push(s);localStorage.setItem(KEY,JSON.stringify(h));}
 
+const FBKEY='cl_feedback';
+function saveFeedback(fb){
+  const all=JSON.parse(localStorage.getItem(FBKEY)||'[]');
+  all.push({ts:Date.now(),...fb});
+  localStorage.setItem(FBKEY,JSON.stringify(all));
+}
+
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
-const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null};
+const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null};
 
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -355,41 +371,34 @@ function renderIntro(){
   const badge=document.getElementById('sess-badge-wrap');
   const histWrap=document.getElementById('history-wrap');
   const btn=document.getElementById('btn-begin');
-
-  badge.innerHTML='';
-  histWrap.innerHTML='';
-
+  badge.innerHTML=''; histWrap.innerHTML='';
   if(h.length===0) return;
 
-  // Session count — no axes numbers shown
-  const sessText = h.length===1 ? '1 sesija' : `${h.length} sesijos`;
+  const sessText=h.length===1?'1 sesija':`${h.length} sesijos`;
   badge.innerHTML=`<div style="font-size:.78rem;color:var(--accent);margin-bottom:16px">${sessText} išsaugota</div>`;
-  btn.textContent = 'Tęsti';
+  btn.textContent='Tęsti';
 
-  // History — show direction words, not numbers
   const recent=h.slice(-3).reverse();
   let html=`<div class="hist-wrap"><div class="hist-title">Ankstesnės sesijos</div>`;
   recent.forEach(s=>{
     const d=new Date(s.ts).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
-    const awWord = s.axes.aw > 0.15 ? 'artėjimo' : s.axes.aw < -0.15 ? 'atsitraukimo' : 'neutrali';
-    const csWord = s.axes.cs > 0.15 ? 'aiškumo' : s.axes.cs < -0.15 ? 'neapibrėžtumo' : 'neutrali';
-    const crWord = s.axes.cr > 0.15 ? 'kontrolės' : s.axes.cr < -0.15 ? 'paleidimo' : 'neutrali';
-    html+=`<div class="hist-item">
-      <div class="hist-date">${d}</div>
-      <div class="hist-dir"><span>${awWord}</span> · <span>${csWord}</span> · <span>${crWord}</span></div>
-    </div>`;
+    const awW=dirWord(s.axes.aw,'atsitraukimo','artėjimo');
+    const csW=dirWord(s.axes.cs,'neapibrėžtumo','aiškumo');
+    const crW=dirWord(s.axes.cr,'paleidimo','kontrolės');
+    html+=`<div class="hist-item"><div class="hist-date">${d}</div>
+      <div class="hist-dir"><span>${awW}</span> · <span>${csW}</span> · <span>${crW}</span></div></div>`;
   });
-
   if(h.length>=3){
     html+=`<button class="btn btn-p" style="margin-top:8px" onclick="showPattern()">Žiūrėti dėsningumą →</button>`;
   } else {
     const need=3-h.length;
     html+=`<div class="sess-note">Dar ${need} sesij${need===1?'a':'os'} iki dėsningumo</div>`;
   }
-  html+=`<button class="hist-clear" onclick="confirmClear()">Ištrinti istoriją</button>`;
-  html+=`</div>`;
+  html+=`<button class="hist-clear" onclick="confirmClear()">Ištrinti istoriją</button></div>`;
   histWrap.innerHTML=html;
 }
+
+function dirWord(v,neg,pos){return v>0.15?pos:v<-0.15?neg:'neutrali';}
 
 function confirmClear(){
   if(confirm('Ištrinti visą sesijų istoriją?')){
@@ -399,7 +408,7 @@ function confirmClear(){
 }
 
 // ══════════════════════════════════════════
-// BEGIN SESSION
+// SESSION
 // ══════════════════════════════════════════
 function beginSession(){
   const h=loadH();
@@ -408,15 +417,10 @@ function beginSession(){
   showStim(0);
 }
 
-// ══════════════════════════════════════════
-// SHOW STIMULUS
-// ══════════════════════════════════════════
 function showStim(idx){
   S.idx=idx;
   const total=S.queue.length;
   const stim=S.queue[idx];
-
-  // Progress dots
   const dots=document.getElementById('prog-dots');
   dots.innerHTML='';
   for(let i=0;i<total;i++){
@@ -424,32 +428,25 @@ function showStim(idx){
     d.className='prog-dot'+(i<idx?' done':i===idx?' active':'');
     dots.appendChild(d);
   }
-
   document.getElementById('stim-img').src=stim.src;
   document.getElementById('btn-next').disabled=true;
   S.selected=null;
-
   const wrap=document.getElementById('stim-choices');
   wrap.innerHTML='';
   stim.c.forEach((c,i)=>{
     const b=document.createElement('button');
-    b.className='choice';
-    b.textContent=c.t;
+    b.className='choice'; b.textContent=c.t;
     b.addEventListener('click',()=>{
       wrap.querySelectorAll('.choice').forEach((el,j)=>el.classList.toggle('on',j===i));
-      S.selected={...c,stimId:stim.id,latency:Date.now()-S.stimShownAt};
+      S.selected={...c,stimId:stim.id,family:stim.family,latency:Date.now()-S.stimShownAt};
       document.getElementById('btn-next').disabled=false;
     });
     wrap.appendChild(b);
   });
-
   go('s-stim');
   S.stimShownAt=Date.now();
 }
 
-// ══════════════════════════════════════════
-// NEXT STIMULUS
-// ══════════════════════════════════════════
 function nextStim(){
   if(S.selected){
     S.responses.push(S.selected);
@@ -463,104 +460,267 @@ function nextStim(){
 }
 
 // ══════════════════════════════════════════
-// GENERATE REFLECTION
 // ══════════════════════════════════════════
+// REFLECTION ENGINE v0.7 — Signals → Patterns → AHA → Result
+// Claude receives pattern context, NOT raw signal numbers
+// ══════════════════════════════════════════
+
+// ── PATTERN DETECTION ─────────────────────
+function detectPatterns(currentSession, history) {
+  const axes = currentSession.axes;
+  const sessionPatterns = [];
+  const crossPatterns = [];
+  const LBLS = {
+    aw:{positive:'artėjimas',negative:'atsitraukimas'},
+    cs:{positive:'aiškumo siekimas',negative:'neapibrėžtumo tolerancija'},
+    cr:{positive:'kontrolė',negative:'paleidimas'},
+  };
+  const dir = v => v > 0.15 ? 'positive' : v < -0.15 ? 'negative' : 'neutral';
+
+  // P1 — Signal strength
+  for (const axis of ['aw','cs','cr']) {
+    const v = axes[axis]||0, d = dir(v);
+    if (d==='neutral') continue;
+    const conf = Math.min(1.0, Math.abs(v)/0.5);
+    sessionPatterns.push({type:'P1',axis,direction:d,
+      strength:Math.abs(v)>0.35?'strong':'medium',confidence:conf,
+      metadata:{value:v.toFixed(3),label:LBLS[axis][d]}});
+  }
+
+  // P2 — Axis conflict
+  for (const [a1,a2] of [['aw','cr'],['aw','cs'],['cs','cr']]) {
+    const v1=axes[a1]||0, v2=axes[a2]||0;
+    if (Math.abs(v1)>0.20 && Math.abs(v2)>0.20 && v1*v2<0) {
+      sessionPatterns.push({type:'P2',axis:[a1,a2].sort().join('+'),direction:null,strength:null,
+        confidence:Math.min(1.0,(Math.abs(v1)+Math.abs(v2))/1.0),
+        metadata:{label1:LBLS[a1][v1>0?'positive':'negative'],label2:LBLS[a2][v2>0?'positive':'negative'],
+          v1:v1.toFixed(3),v2:v2.toFixed(3)}});
+    }
+  }
+
+  // P3 — Hesitation (latency > 8s)
+  (currentSession.latencies||[]).forEach((ms,i) => {
+    const sec=ms/1000;
+    if (sec>8) sessionPatterns.push({type:'P3',axis:null,direction:null,strength:null,
+      confidence:Math.min(1.0,(sec-8)/10),
+      metadata:{stimulus_id:(currentSession.stimuliUsed||[])[i]||`stim_${i}`,latency_s:Math.round(sec*10)/10,type:'hesitation'}});
+  });
+
+  if (history.length<1) return {sessionPatterns,crossPatterns};
+  const allH = [...history,currentSession];
+
+  // P9 — Trajectory (PRIORITY over P5)
+  const p9axes = new Set();
+  if (allH.length>=3) {
+    const rec = allH.slice(-3);
+    for (const axis of ['aw','cs','cr']) {
+      const v = rec.map(s=>s.axes[axis]||0);
+      const d = [v[1]-v[0],v[2]-v[1]];
+      const allPos=d.every(x=>x>=0.15), allNeg=d.every(x=>x<=-0.15);
+      if (allPos||allNeg) {
+        const total=Math.abs(v[2]-v[0]), dd=allPos?'positive':'negative';
+        const fl=dir(v[0]), tl=dir(v[2]);
+        p9axes.add(axis);
+        crossPatterns.push({type:'P9',axis,direction:dd,strength:total>0.35?'strong':'medium',
+          confidence:Math.min(1.0,total/0.60),scope:'cross_session',
+          metadata:{from_value:v[0].toFixed(3),to_value:v[2].toFixed(3),total_change:total.toFixed(3),
+            from_label:LBLS[axis][fl]||'neutralu',to_label:LBLS[axis][tl]||'neutralu',sessions:3}});
+      }
+    }
+  }
+
+  // P5 — Repetition (only where no P9)
+  if (allH.length>=2) {
+    const rec=allH.slice(-3);
+    for (const axis of ['aw','cs','cr']) {
+      if (p9axes.has(axis)) continue;
+      const v=rec.map(s=>s.axes[axis]||0), dirs=v.map(dir);
+      for (const d of ['positive','negative']) {
+        const cnt=dirs.filter(x=>x===d).length;
+        if (cnt>=2 && cnt/dirs.length>=0.6) {
+          const avg=v.reduce((a,x)=>a+Math.abs(x),0)/v.length;
+          crossPatterns.push({type:'P5',axis,direction:d,
+            confidence:Math.min(1.0,(cnt/dirs.length)*avg*2),scope:'cross_session',
+            metadata:{sessions_checked:dirs.length,matching_count:cnt,avg_value:avg.toFixed(3)}});
+        }
+      }
+    }
+  }
+
+  // P6 — Contrast
+  if (allH.length>=2) {
+    const [prev,curr]=[allH[allH.length-2],allH[allH.length-1]];
+    for (const axis of ['aw','cs','cr']) {
+      const vp=prev.axes[axis]||0, vc=curr.axes[axis]||0;
+      const dp=dir(vp), dc=dir(vc);
+      if (dp!=='neutral'&&dc!=='neutral'&&dp!==dc)
+        crossPatterns.push({type:'P6',axis,direction:null,
+          confidence:Math.min(1.0,(Math.abs(vp)+Math.abs(vc))/1.0),scope:'cross_session',
+          metadata:{prev_label:LBLS[axis][dp],curr_label:LBLS[axis][dc],
+            prev_value:vp.toFixed(3),curr_value:vc.toFixed(3)}});
+    }
+  }
+
+  return {sessionPatterns,crossPatterns};
+}
+
+// ── AHA DETECTION ─────────────────────────
+function buildAHAContext(sessionPatterns, crossPatterns) {
+  const PRIORITY = {P9:0,P2:1,P5:2,P3:3,P1:4,P6:5};
+  const all = [...crossPatterns,...sessionPatterns]
+    .sort((a,b)=>(PRIORITY[a.type]??9)-(PRIORITY[b.type]??9)||b.confidence-a.confidence);
+
+  const T = {
+    'P9:aw':{text:'Per kelias sesijas tavo pirmoji reakcija palaipsniui kito — nuo vienos krypties link kitos.',why:'Judėjimas yra retas signalas.',aha:0.95},
+    'P9:cs':{text:'Per kelias sesijas reakcija į neapibrėžtumą palaipsniui kito.',why:'Kintantis santykis su neapibrėžtumu.',aha:0.90},
+    'P9:cr':{text:'Per kelias sesijas santykis su kontrole ir struktūra palaipsniui kito.',why:'Kintantis kontrolės poreikis.',aha:0.90},
+    'P2:aw+cr':{text:'Pasirodė įdomus momentas: norėjosi ir atsitraukti, ir kartu valdyti situaciją.',why:'Konfliktas tarp noro pabėgti ir kontroliuoti.',aha:0.85},
+    'P2:aw+cs':{text:'Šioje sesijoje kartu egzistavo du impulsai: atsitraukti ir žinoti kas vyksta.',why:'Noras ir išeiti, ir suprasti.',aha:0.80},
+    'P2:cr+cs':{text:'Šioje sesijoje pasirodė dvigubas impulsas: suprasti kas vyksta ir tuo pat metu kontroliuoti eigą.',why:'Aiškumo ir kontrolės poreikis kartu.',aha:0.75},
+    'P5:cs:positive':{text:'Keliose sesijose pasirodė tas pats impulsas — ieškoti aiškumo.',why:'Pasikartojantis aiškumo poreikis.',aha:0.75},
+    'P5:aw:negative':{text:'Keliose sesijose pirmoji reakcija krypo nuo situacijos.',why:'Pasikartojantis atsitraukimo impulsas.',aha:0.70},
+    'P5:cr:positive':{text:'Keliose sesijose impulsas krypo link kontrolės ir struktūros.',why:'Nuoseklus kontrolės siekimas.',aha:0.70},
+    'P3:hesitation':{text:'Prie vieno vaizdo tavo dėmesys sustojo ilgiau negu prie kitų.',why:'Žmogus pats nematuoja savo pauzių.',aha:0.85},
+    'P1:cs:positive':{text:'Šioje sesijoje pasirodė aiškus impulsas žinoti kas vyksta — ieškoti atsakymų.',why:'Aiškumo siekimas.',aha:0.70},
+    'P1:aw:negative':{text:'Šioje sesijoje pirmoji reakcija dažniau krypo nuo situacijos, o ne link jos.',why:'Atsitraukimo impulsas.',aha:0.60},
+    'P1:cr:negative':{text:'Šioje sesijoje pirmoji reakcija buvo leisti dalykams vystytis — be bandymo kontroliuoti.',why:'Paleidimo impulsas.',aha:0.55},
+    'P1:cr:positive':{text:'Šioje sesijoje impulsas krypo link: ką čia galėčiau padaryti — struktūros poreikis.',why:'Kontrolės siekimas.',aha:0.65},
+    'P6':{text:'Šioje sesijoje kryptis pasikeitė lyginant su ankstesne.',why:'Pokytis tarp sesijų.',aha:0.65},
+  };
+
+  const BARNUM=['kartais nori pabūti vienam','kartais su kitais','dažnai jautiesi'];
+  const FORBIDDEN=['tu esi','tu linkęs','tavo profilis','sistema nustatė','rezultatai rodo'];
+
+  for (const p of all) {
+    let key = null;
+    if (p.type==='P9') key=`P9:${p.axis}`;
+    else if (p.type==='P2') key=`P2:${p.axis}`;
+    else if (p.type==='P5') key=`P5:${p.axis}:${p.direction}`;
+    else if (p.type==='P3'&&p.metadata?.type==='hesitation') key='P3:hesitation';
+    else if (p.type==='P1') key=`P1:${p.axis}:${p.direction}`;
+    else if (p.type==='P6') key='P6';
+
+    const tmpl=T[key];
+    if (!tmpl) continue;
+
+    const k1th = p.type==='P3' ? 0.25 : 0.40;
+    if (p.confidence < k1th) continue;
+    if (BARNUM.some(b=>tmpl.text.toLowerCase().includes(b))) continue;
+    if (FORBIDDEN.some(f=>tmpl.text.toLowerCase().includes(f))) continue;
+
+    const isCross = p.scope==='cross_session';
+    const ahaScore = tmpl.aha * p.confidence * (p.type==='P3' ? 1.5 : 1.0);
+    if (!isCross && p.type!=='P3' && ahaScore<0.45) continue;
+    if (p.type==='P3' && ahaScore<0.30) continue;
+
+    const m=p.metadata||{};
+    let evidence='';
+    if (p.type==='P9') evidence=`${m.from_label} → ${m.to_label} per ${m.sessions} sesijas`;
+    else if (p.type==='P5') evidence=`${m.matching_count} iš ${m.sessions_checked} sesijų`;
+    else if (p.type==='P3') evidence=`Pauzė ${m.latency_s}s prie ${m.stimulus_id}`;
+    else if (p.type==='P2') evidence=`${m.label1} + ${m.label2} vienu metu`;
+    else if (p.type==='P1') evidence=`${m.label} (${m.value})`;
+    else if (p.type==='P6') evidence=`${m.prev_label} → ${m.curr_label}`;
+
+    return {hasInsight:true,pattern:p,tmpl,evidence,ahaScore,isCross};
+  }
+  return {hasInsight:false,reason:'Nėra kandidatų'};
+}
+
+// ── MAIN ──────────────────────────────────
 async function generateReflection(){
   go('s-loading');
   const n=S.responses.length;
-  const aw=clamp(S.axes.aw/n);
-  const cs=clamp(S.axes.cs/n);
-  const cr=clamp(S.axes.cr/n);
-
-  // Render direction dots (position only, no numbers)
+  const aw=clamp(S.axes.aw/n), cs=clamp(S.axes.cs/n), cr=clamp(S.axes.cr/n);
   setDot('aw',aw); setDot('cs',cs); setDot('cr',cr);
 
-  const summary=S.responses.map((r,i)=>`${i+1}. "${r.t}" (${Math.round(r.latency/1000)}s)`).join('\n');
+  const currentSession={axes:{aw,cs,cr},latencies:S.responses.map(r=>r.latency),
+    stimuliUsed:S.queue.map(s=>s.id),families:S.responses.map(r=>r.family)};
+  const history=loadH().map(h=>({axes:h.axes,latencies:h.latencies||[],stimuliUsed:h.stimuliUsed||[],families:h.families||[]}));
 
-  const prompt=`Tu esi ConflictLab. Kalbi su žmogumi pagal šiuos principus:
-- Visas dėmesys lieka žmogui, ne sistemai
-- Kalbi apie pastebėtą reakciją, ne apie žmogų
-- Trumpas klausimas, kuris lieka galvoje
-- DRAUDŽIAMA: "Sistema nustatė", "Tu esi", "Rezultatai rodo", diagnozės
-- Tonas: ramus, smalsus, kuklus
-- Lietuvių kalba
+  const {sessionPatterns,crossPatterns}=detectPatterns(currentSession,history);
+  const aha=buildAHAContext(sessionPatterns,crossPatterns);
 
-REAKCIJOS:
-${summary}
+  // Beta debug logging — stored in localStorage, never shown to user
+  const dbg={ts:Date.now(),axes:{aw,cs,cr},
+    sp:sessionPatterns.map(p=>({t:p.type,a:p.axis,c:p.confidence.toFixed(2)})),
+    cp:crossPatterns.map(p=>({t:p.type,a:p.axis,c:p.confidence.toFixed(2)})),
+    aha:aha.hasInsight?{pat:aha.pattern.type,ev:aha.evidence,score:aha.ahaScore}:{fallback:aha.reason}};
+  const logs=JSON.parse(localStorage.getItem('cl_debug_log')||'[]');
+  logs.push(dbg); localStorage.setItem('cl_debug_log',JSON.stringify(logs.slice(-50)));
 
-KRYPTYS: aw=${fmt(aw)}, cs=${fmt(cs)}, cr=${fmt(cr)}
+  // Fallback path — no API call, Voice v1.0 text
+  if (!aha.hasInsight) {
+    document.getElementById('r-traj').textContent='Šiandien aiškaus dėsningumo neatsirado.';
+    document.getElementById('r-limits').textContent='Sesija nematė konteksto ar to, kas šiandien iš tikrųjų svarbu.';
+    document.getElementById('r-q').textContent='Ar yra kažkas, apie ką šiandien galvoji labiau nei paprastai?';
+    go('s-ref'); return;
+  }
 
-Grąžink JSON:
-{
-  "trajectory": "1-2 sakiniai apie tai kas pasirodė. Subjektas = žmogaus dėmesys ar reakcija, ne sistema. Pvz: 'Šioje sesijoje tavo dėmesys krypo...'",
-  "limits": "Trumpas sakinys apie tai ko sesija nematė. Pvz: 'Sesija nematė konteksto ar nuovargio.'",
-  "question": "Vienas atviras klausimas. Pvz: 'Ar tai tau pažįstama?'"
-}`;
+  // Claude receives pattern context — NOT raw aw/cs/cr numbers
+  const prompt=`Tu esi ConflictLab. Veiki kaip vertėjas — ne psichologas.
+DRAUDŽIAMA: "Sistema nustatė", "Tu esi", "Rezultatai rodo", diagnozės, verdiktai
+SUBJEKTAS: žmogaus dėmesys ar reakcija — ne sistema
+TONAS: ramus, smalsus, kuklus. KALBA: lietuvių
+
+APTIKTAS DĖSNINGUMAS:
+Tipas: ${aha.pattern.type} | Duomenų pagrindas: ${aha.evidence} | Kelių sesijų: ${aha.isCross}
+
+VERTIMO ŠABLONAS: ${aha.tmpl.text}
+VIDINIS KLAUSIMAS (ne rodyti): ${aha.tmpl.why}
+
+1. "trajectory" — 1-2 sakiniai. Remkis: "${aha.evidence}"
+2. "limits" — 1 sakinys ko sesija nematė
+3. "question" — vienas atviras klausimas, palieka erdvę atsakyti "ne"
+
+JSON tik: {"trajectory":"...","limits":"...","question":"..."}`;
 
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,messages:[{role:'user',content:prompt}]})
-    });
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:prompt}]})});
     const d=await r.json();
-    const t=d.content[0].text.trim().replace(/```json|```/g,'').trim();
-    const res=JSON.parse(t);
+    const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
     document.getElementById('r-traj').textContent=res.trajectory;
     document.getElementById('r-limits').textContent=res.limits;
     document.getElementById('r-q').textContent=res.question;
   }catch{
-    // Fallback using Voice principles
-    const traj = aw<-0.15
-      ? 'Šioje sesijoje tavo dėmesys dažniau krypo nuo situacijos, o ne link jos.'
-      : cs>0.15
-      ? 'Šioje sesijoje pasirodė impulsas ieškoti aiškumo — žinoti kas vyksta.'
-      : cr>0.15
-      ? 'Šioje sesijoje tavo reakcijos krypo link struktūros ir veiksmo.'
-      : 'Šioje sesijoje ryškios krypties neatsirado.';
-    document.getElementById('r-traj').textContent=traj;
-    document.getElementById('r-limits').textContent='Sesija nematė konteksto, nuovargio ar to, kas šiandien iš tikrųjų svarbu.';
+    document.getElementById('r-traj').textContent=aha.tmpl.text;
+    document.getElementById('r-limits').textContent='Sesija nematė konteksto ar to, kas šiandien iš tikrųjų svarbu.';
     document.getElementById('r-q').textContent='Ar tai tau pažįstama?';
   }
   go('s-ref');
 }
 
+
 function setDot(id,val){
-  const dot=document.getElementById('dot-'+id);
-  // Map -1..+1 to 10%..90% of track width
-  const pct=50+(val*40);
-  dot.style.left=pct+'%';
+  document.getElementById('dot-'+id).style.left=(50+val*40)+'%';
 }
 function clamp(v){return Math.max(-1,Math.min(1,v));}
-function fmt(v){return (v>=0?'+':'')+v.toFixed(2);}
+function fmt(v){return(v>=0?'+':'')+v.toFixed(2);}
 
 // ══════════════════════════════════════════
 // FEEDBACK
 // ══════════════════════════════════════════
-function showDisagree(){
-  document.getElementById('fb-extra').classList.add('show');
-}
+function showDisagree(){document.getElementById('fb-extra').classList.add('show');}
 
 function finishSession(fb){
   const n=S.responses.length;
   const aw=clamp(S.axes.aw/n);
   const cs=clamp(S.axes.cs/n);
   const cr=clamp(S.axes.cr/n);
-
   saveH({
-    ts:Date.now(),
-    axes:{aw,cs,cr},
+    ts:Date.now(),axes:{aw,cs,cr},
     stimuliUsed:S.queue.map(s=>s.id),
+    families:S.responses.map(r=>r.family),
     feedback:fb,
     note:fb==='no'?document.getElementById('fb-text').value:'',
+    latencies:S.responses.map(r=>r.latency),
   });
-
   const h=loadH();
-  if(h.length>=3&&h.length%3===0){
-    showPattern();
-  } else {
-    const msg = fb==='yes'
-      ? 'Ačiū. Kita sesija gali atskleisti kažką kito.'
-      : 'Šį kartą mūsų matymas nesutapo. Tai irgi svarbu.';
+  if(h.length>=3&&h.length%3===0){ showPattern(); }
+  else{
+    const msg=fb==='yes'?'Kita sesija gali atskleisti kažką kito.':'Šį kartą mūsų matymas nesutapo. Tai irgi svarbu.';
     document.getElementById('t-msg').textContent=msg;
     go('s-thanks');
   }
@@ -573,29 +733,21 @@ async function showPattern(){
   go('s-pattern');
   document.getElementById('pat-loading').style.display='flex';
   document.getElementById('pat-content').style.display='none';
-
   const h=loadH();
   const summary=h.slice(-6).map((s,i)=>{
     const d=new Date(s.ts).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
-    const awW=s.axes.aw>0.15?'artėjimo':s.axes.aw<-0.15?'atsitraukimo':'neutrali';
-    const csW=s.axes.cs>0.15?'aiškumo':s.axes.cs<-0.15?'neapibrėžtumo':'neutrali';
-    const crW=s.axes.cr>0.15?'kontrolės':s.axes.cr<-0.15?'paleidimo':'neutrali';
-    return `Sesija ${i+1} (${d}): ${awW} · ${csW} · ${crW}`;
+    return `Sesija ${i+1} (${d}): ${dirWord(s.axes.aw,'atsitraukimo','artėjimo')} · ${dirWord(s.axes.cs,'neapibrėžtumo','aiškumo')} · ${dirWord(s.axes.cr,'paleidimo','kontrolės')}`;
   }).join('\n');
 
-  const prompt=`Tu esi ConflictLab. Kalbi su žmogumi pagal šiuos principus:
-- Visas dėmesys lieka žmogui
-- Subjektas = žmogaus dėmesys, ne sistema
-- DRAUDŽIAMA: "Sistema nustatė", diagnozės, verdiktai
-- Formulė: "X iš Y sesijų..."
-- Tonas: ramus, smalsus, kuklus
-- Lietuvių kalba
+  const prompt=`Tu esi ConflictLab.
+DRAUDŽIAMA: diagnozės, verdiktai, "Sistema nustatė"
+FORMULĖ: "X iš Y sesijų..."
+TONAS: ramus, smalsus, kuklus. Lietuvių kalba.
 
 SESIJŲ ISTORIJA:
 ${summary}
 
-JSON tik:
-{"insight":"1-2 sakiniai apie dėsningumą. Be sistemos kaip subjekto.","question":"Vienas atviras klausimas.","note":"Trumpa pastaba apie ribas."}`;
+JSON: {"insight":"1-2 sakiniai apie dėsningumą","question":"Vienas atviras klausimas","note":"Trumpa pastaba apie ribas"}`;
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
@@ -603,31 +755,59 @@ JSON tik:
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:prompt}]})
     });
     const d=await r.json();
-    const t=d.content[0].text.trim().replace(/```json|```/g,'').trim();
-    const res=JSON.parse(t);
+    const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
     document.getElementById('pat-text').textContent=res.insight+'\n\n'+res.question;
     document.getElementById('pat-note').textContent=res.note;
   }catch{
-    const h2=loadH();
-    const awAvg=h2.reduce((a,s)=>a+s.axes.aw,0)/h2.length;
-    const word=awAvg<-0.1?'atsitraukimo':awAvg>0.1?'artėjimo':'neutralios';
-    document.getElementById('pat-text').textContent=
-      `Keliose sesijose tavo dėmesys krypo ${word} kryptimi.\n\nAr tai tau pažįstama?`;
-    document.getElementById('pat-note').textContent=
-      'Tai stebėjimas iš kelių sesijų — ne išvada apie tave.';
+    document.getElementById('pat-text').textContent='Keliose sesijose pasirodė pasikartojanti kryptis. Ar tai tau pažįstama?';
+    document.getElementById('pat-note').textContent='Tai stebėjimas, ne išvada apie tave.';
   }
-
   document.getElementById('pat-loading').style.display='none';
   document.getElementById('pat-content').style.display='block';
 }
 
+function goFeedback(){go('s-feedback');}
+
 // ══════════════════════════════════════════
-// RESET
+// BETA FEEDBACK MODULE
 // ══════════════════════════════════════════
+function selectReturn(choice){
+  S.returnChoice=choice;
+  ['yes','maybe','no'].forEach(c=>{
+    const btn=document.getElementById('return-'+c);
+    if(btn) btn.style.opacity=c===choice?'1':'0.4';
+  });
+}
+
+function submitFeedback(){
+  saveFeedback({
+    q1:document.getElementById('fq1').value,
+    q2:document.getElementById('fq2').value,
+    q3:document.getElementById('fq3').value,
+    q4:document.getElementById('fq4').value,
+    return:S.returnChoice,
+  });
+  showThanksEnd();
+}
+
+function skipFeedback(){showThanksEnd();}
+
+function showThanksEnd(){
+  document.getElementById('t-msg').textContent='Ačiū. Tavo grįžtamasis ryšys padeda sistemai.';
+  go('s-thanks');
+  document.querySelector('#s-thanks .btn-g:last-child').style.display='none';
+}
+
 function reset(){
-  S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};S.selected=null;
+  S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};S.selected=null;S.returnChoice=null;
   document.getElementById('fb-extra').classList.remove('show');
   document.getElementById('fb-text').value='';
+  ['fq1','fq2','fq3','fq4'].forEach(id=>document.getElementById(id).value='');
+  ['yes','maybe','no'].forEach(c=>{
+    const btn=document.getElementById('return-'+c);
+    if(btn) btn.style.opacity='1';
+  });
+  document.querySelectorAll('#s-thanks .btn-g').forEach(b=>b.style.display='');
   renderIntro();
   go('s-intro');
 }
