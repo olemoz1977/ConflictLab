@@ -56,3 +56,22 @@ signals:
 - Idėjos čia nėra patvirtintos metodologijos dalis
 - Jos neturi įtakos dabartiniam validacijos procesui
 - Protocol keičiamas tik kai idėja pasikartoja ≥3 stimuluose ir yra aiški taisymo formuluotė
+
+---
+
+## FC-003: Simetrijos efektas (Symmetry Effect)
+
+**Pastebėta:** ST-002 v2 audito metu (2026-07-30)
+**Šaltinis:** Nepriklausomas auditas
+
+**Aprašas:**
+Kai dvi figūros yra beveik veidrodinės (simetriškos), žiūrovas gali reaguoti į estetinį "dviejų vienodų objektų" suvokimą, o ne į tarpusavio sąveikos dinamiką. Nedidelis figūrų asimetrija (laikysena, galvos kampas, atstumas) gali sukurti natūralesnį efektą neprarandant neutralumo.
+
+**ST-002 pavyzdys:**
+Abstrakčios figūros yra beveik identiškos formos ir laikysenos. Tai gali skatinti estetinę, o ne situacinę reakciją.
+
+**Skirtumas nuo esamų kriterijų:**
+Nėra tiesiogiai aprėptas Protocol — susijęs su V1.1 (neutralumas), bet specifinis figūrų kompozicijai.
+
+**Stebėjimų skaičius:** 1/3
+**Statusas:** Stebima

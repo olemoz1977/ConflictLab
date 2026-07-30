@@ -1,144 +1,140 @@
 # ST-002 — Stimulus Review
 
 **Stimulo ID:** ST-002
+**Vaizdo versija:** v2 (abstrakčios figūros)
 **Peržiūros data:** 2026-07-30
-**Recenzentas:** Claude (ConflictLab v0.6 auditas)
+**Recenzentas:** Claude + nepriklausomas auditas
 **Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0.1
 **Statusas po peržiūros:** beta
 
 ---
 
+> ⚠ Protocol > Review. Jei prieštaravimas — taisomas Review.
+
+---
+
 ## IMAGE — Vaizdo validacija (V1)
 
-*Vertinamas tik vaizdas. Variantai ir signalai dar nevertinami.*
+*Vertinamas vaizdas v2: dvi abstrakčios figūros be lyties/statuso/aplinkos.*
 
 ### V1.1 Neutralumas
 **Įvertinimas:** 4/5
-**Paaiškinimas:** ✓ Pataisyta v2 vaizdu. Abstrakčios figūros be konteksto leidžia platesnes interpretacijas: susitikimas, konfrontacija, pokalbyje, tyla, laukimas. Koridoriaus kontekstas pašalintas — nebėra biuro naratyvo.
-**Rastos problemos:** Du humanoidai veidu į veidą vis dar turi artėjimo/konfrontacijos reikšmę — bet tai yra tiksliai tai ką aw ašis matuoja.
+**Paaiškinimas:** Dvi abstrakčios figūros veidu į veidą juodame fone leidžia kelias interpretacijas: susitikimas, konfrontacija, tyla, laukimas, sąveika. Koridoriaus ir biuro kontekstas pašalintas. Likusi pagrindinė interpretacijos ašis yra artumas/distancija — tiksliai tai, ką aw matuoja.
+**Rastos problemos:** Dvi beveik veidrodinės figūros gali skatinti estetinį "dviejų vienodų objektų" suvokimą. Tai nėra kritinė problema — bus stebima empiriškai.
 **Rekomendacija:** Priimti
 
 ### V1.2 AI artefaktai
 **Įvertinimas:** 4/5
-**Paaiškinimas:** Vaizdas yra AI generuotas, tačiau artefaktų nėra — figūros anatomiškai teisingos, aplinka natūrali, apšvietimas logiškas.
-**Rastos problemos:** Šiek tiek per "tobulas" — gali atrodyti kaip reklama, o ne gyvenimiškas kadras.
+**Paaiškinimas:** Figūros yra AI generuotos, bet artefaktų nėra. Forma natūrali, apšvietimas logiškas, paviršius vienodas.
+**Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ### V1.3 Kultūrinis šališkumas
 **Įvertinimas:** 4/5
-**Paaiškinimas:** ✓ Pataisyta v2 vaizdu. Juodas neutralus fonas, jokios aplinkos detalių — kultūrinis kontekstas pašalintas. Distancija tarp figūrų vis dar turi kultūrinę reikšmę, bet abstrakčios figūros mažina šią priklausomybę.
-**Rastos problemos:** Minimali — fizinė distancija tarp figūrų gali skirtingai interpretuojama skirtingose kultūrose.
+**Paaiškinimas:** Juodas neutralus fonas, jokios aplinkos detalių. Kultūrinis kontekstas praktiškai pašalintas. Fizinė distancija tarp figūrų gali skirtingai interpretuojama skirtingose kultūrose — bet tai priimtinas lygis.
+**Rastos problemos:** Minimali — fizinė distancija.
 **Rekomendacija:** Priimti
 
 ### V1.4 Lyties / amžiaus / statuso signalai
 **Įvertinimas:** 5/5
-**Paaiškinimas:** ✓ Pataisyta v2 vaizdu. Dvi abstrakčios figūros be lyties, amžiaus ar statuso požymių. Jokios drabužių detalių, jokio veido. Figūros identifikuojamos tik kaip "du subjektai".
+**Paaiškinimas:** Dvi abstrakčios figūros be lyties, amžiaus ar statuso požymių. Jokių drabužių detalių, jokio veido. Figūros identifikuojamos tik kaip "du subjektai". Pilnai išsprendžia ankstesnio vaizdo problemą.
 **Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ### V1.4a Naratyvinis šališkumas (FC-001)
-**Įvertinimas:** ⚠ Pastaba (ne Protocol kriterijus — žr. `future_considerations.md`)
-**Paaiškinimas:** ✓ Dalinai išspręsta v2 vaizdu. Abstrakčios figūros be drabužių ir veido drastiškai sumažina santykio naratyvo kūrimo galimybę. Tačiau du humanoidai veidu į veidą visada turės tam tikrą santykio neapibrėžtumą — tai gali būti priimtinas lygis aw stimului.
-**Rastos problemos:** Minimalus likutinis naratyvinis šališkumas — priimtinas.
-**Rekomendacija:** Priimti
+**Įvertinimas:** ⚠ Pastaba (ne Protocol kriterijus)
+**Paaiškinimas:** Dalinai išspręsta. Abstrakčios figūros be aplinkos drastiškai sumažina santykio naratyvo kūrimą. Minimalus likutinis efektas — du humanoidai visada turės tam tikrą sąveikos potencialą. Priimtinas lygis aw stimului.
+**Stebėjimų skaičius FC-001:** 1/3. Stebima.
 
 ### V1.5 Neapibrėžtumo lygis
-**Įvertinimas:** 20–70% (optimalus, bet ribinis)
-**Paaiškinimas:** Vaizdas yra suprantamas — žmonės koridoriuje. Bet du žmonės veidu į veidą be konteksto sukuria didelę interpretacijų įvairovę. Optimalus diapazonas pasiektas, bet V1.1 ir V1.4 problemos gali jį siaurinti.
-**Rastos problemos:** Lyties signalas gali siaurinti interpretacijų erdvę.
+**Įvertinimas:** 20–70% (optimalus)
+**Paaiškinimas:** Vaizdas suprantamas ir interpretacijos erdvė pakankama.
+**Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ---
 
 ## CHOICES — Variantų validacija (V2)
 
-*Vertinami tik trijų variantų tekstai.*
+*Vertinami trijų variantų tekstai.*
 
 ### V2.1 Reakcija, ne nuomonė
 **Įvertinimas:** 4/5
-**Paaiškinimas:** A ("artumas — kažkas sprendžiasi") ir B ("įtampa — per arti") yra momentinės reakcijos. C ("neutralu — tiesiog du žmonės") yra šiek tiek racionalizuotas — reikalauja "tiesiog" neutralizavimo gesto.
-**Rastos problemos:** C variantas yra racionalizacija, ne gryna reakcija.
-**Rekomendacija:** Priimti — C yra ribinis bet priimtinas.
+**Paaiškinimas:** A ("artumas — kažkas sprendžiasi") ir B ("įtampa — per arti") yra momentinės reakcijos. C ("neutralu — tiesiog du subjektai") yra šiek tiek racionalizuotas.
+**Rastos problemos:** C variantas ribinis.
+**Rekomendacija:** Priimti
 
 ### V2.2 Socialiai pageidaujamas atsakymas
 **Įvertinimas:** 4/5
-**Paaiškinimas:** A ("artumas") ir C ("neutralu") gali atrodyti "pozityvesni" nei B ("įtampa"). Tačiau B yra legitimiai tikėtina reakcija — "per arti" nėra moraliniu požiūriu negatyvu.
-**Rastos problemos:** A ir C šiek tiek "geresni" socialiniu požiūriu nei B, bet skirtumas nėra kritinis.
+**Paaiškinimas:** A ir C gali atrodyti šiek tiek "geresni", bet skirtumas nėra kritinis. B ("per arti") yra legitimiai tikėtina reakcija.
+**Rastos problemos:** Nereikšminga asimetrija.
 **Rekomendacija:** Priimti
 
 ### V2.3 Moralinis pasirinkimas
 **Įvertinimas:** 5/5
-**Paaiškinimas:** Nė vienas variantas neturi moralinės konotacijos. "Artumas", "įtampa", "neutralu" — visi moraliniu požiūriu neutralūs.
+**Paaiškinimas:** Nė vienas variantas neturi moralinės konotacijos.
 **Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ### V2.4 Projekcija į vaizdą
 **Įvertinimas:** 4/5
-**Paaiškinimas:** Visi variantai aprašo žiūrovo reakciją — ne figūrų emocijas. "Jaučiau artumą", "jaučiau įtampą", "mačiau neutralią sceną" — visi pirmo asmens reakcijos.
-**Rastos problemos:** "Kažkas sprendžiasi" (A variante) yra projekcija į situaciją — bet ne į figūrą. Ribinai priimtina.
+**Paaiškinimas:** Visi variantai aprašo žiūrovo reakciją. "Kažkas sprendžiasi" (A) yra projekcija į situaciją — ribinai priimtina.
+**Rastos problemos:** Nereikšminga.
 **Rekomendacija:** Priimti
 
 ### V2.5 Akivaizdžiai teisingas variantas
 **Įvertinimas:** 4/5
-**Paaiškinimas:** Galima įsivaizduoti realų žmogų kiekvienam variantui. A — ekstravertas ar empatas. B — asmuo jautrus asmeninei erdvei. C — analitiškai mąstantis žmogus.
-**Rastos problemos:** C variantas yra mažiau tikėtinas kaip pirma reakcija.
+**Paaiškinimas:** Galima įsivaizduoti realų žmogų kiekvienam variantui.
+**Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ---
 
 ## SIGNALS — Signalų validacija (V3)
 
-*Vertinami tik aw/cs/cr svoriai.*
-
 ### V3.1 Pirminė ašis
-**Deklaruota ašis:** aw (approach_withdrawal)
+**Deklaruota ašis:** aw (approach_withdrawal), polius: teigiamas (+)
 **Įvertinimas:** 5/5
-**Paaiškinimas:** A: aw+0.50 (stiprus artėjimas). B: aw-0.25 (atsitraukimas). C: aw+0.05 (neutralus). Pirminė ašis dominuoja. Ir X+ (A) ir X- (B) variantai yra.
+**Paaiškinimas:** A: aw+0.50. B: aw-0.25. C: aw+0.05. Pirminė ašis dominuoja. Yra tiek X+ tiek X-.
 **Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ### V3.2 aw/cs/cr diferenciacija
 **Įvertinimas:** 4/5
-**Paaiškinimas:** aw ir cr nesupainiotos. B variante aw- (-0.25) + cs+ (+0.35) + cr+ (+0.25) — tai yra dokumentuotas mišrus signalas. Logika: įtampa → atsitraukimas + aiškumo poreikis + kontrolės siekimas. Psichologiškai pagrįsta.
-**Rastos problemos:** B variante cs ir cr svoriai reikšmingi — bet žemiau pirminės aw ašies.
+**Paaiškinimas:** aw ir cr nesupainiotos. B variante mišrūs signalai dokumentuoti ir pagrįsti: įtampa → aiškumo poreikis (cs+) + kontrolės siekimas (cr+).
+**Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ### V3.3 Mišrūs signalai
-**Ar yra mišrūs signalai:** Taip (A ir B variantai)
-**Paaiškinimas:** Abu pagrįsti ir dokumentuoti `stimulus.yaml → mixed_signal_justification`. A: artumas → struktūros lūkestis (cs+, cr+). B: įtampa → aiškumo ir kontrolės poreikis (cs+, cr+).
-**Rastos problemos:** Nėra — pagrindimas tinkamas.
+**Ar yra:** Taip (A ir B variantai)
+**Paaiškinimas:** Abu pagrįsti ir dokumentuoti `stimulus.yaml`.
+**Rastos problemos:** Nėra.
 **Rekomendacija:** Priimti
 
 ### V3.4 Variantų svorių simetrija
 **Įvertinimas:** 4/5
-**Paaiškinimas:** A: aw+0.50. B: aw-0.25. C: aw+0.05. Yra tiek aw+ tiek aw- variantai. Simetrija pakankama, nors A polius kiek stipresnis nei B.
-**Rastos problemos:** A (aw+0.50) stipresnis nei B (aw-0.25) — asimetrija priimtina bet pastebėta.
+**Paaiškinimas:** A: aw+0.50. B: aw-0.25. C: aw+0.05. Simetrija pakankama.
+**Rastos problemos:** A polius šiek tiek stipresnis nei B — priimtina.
 **Rekomendacija:** Priimti
 
 ---
 
 ## Daugiateorinė validacija (V4)
 
-*Teorijos validuoja stimulą — ne žmogų.*
-
-### Teorija 1: Dual Process Theory (Kahneman)
-**Validacijos klausimas:** Ar stimulas sukelia momentinę (System 1) reakciją?
+### Teorija 1: Dual Process Theory
 **Įvertinimas:** Patvirtina
-**Paaiškinimas:** Visi trys variantai gali kilti per pirmąsias 2 sekundes. "Artumas", "įtampa", "neutralu" — visi System 1 lygio reakcijos.
+**Paaiškinimas:** Visi variantai yra System 1 lygio momentinės reakcijos.
 
-### Teorija 2: Attachment Theory (Bowlby)
-**Validacijos klausimas:** Ar stimulas gali aktyvuoti prisirišimo schemas? Ar aw ašis tinkama?
-**Įvertinimas:** Patvirtina — su pastaba
-**Paaiškinimas:** Du žmonės veidu į veidą yra klasikinis prisirišimo konteksto stimulas. aw ašis visiškai tinkama. Pastaba: lyties signalas (V1.4) gali aktyvuoti romantinius prisirišimo scenarijus — ne universalų aw konstruktą.
+### Teorija 2: Attachment Theory
+**Įvertinimas:** Patvirtina
+**Paaiškinimas:** aw ašis tinkama. Abstrakčios figūros sumažina romantiškų scenarijų aktyvavimą.
 
-### Teorija 3: SCARF Model (Rock)
-**Validacijos klausimas:** Ar stimulas aktyvuoja Status ar Relatedness grėsmę?
-**Įvertinimas:** Abejoja
-**Paaiškinimas:** Du žmonės koridoriuje gali aktyvuoti Status dinamiką (kas turi galią?) ir Relatedness (ar jie pažįstami?). Jei Status dominuoja — stimulas matuoja ne aw, o hierarchijos reakciją. SCARF signalizuoja potencialą konstrukto supainiojimui.
+### Teorija 3: SCARF Model
+**Įvertinimas:** Abejoja (stebima)
+**Paaiškinimas:** Galima Status dinamika — kas turi galią? Tačiau abstrakčios figūros sumažina šį efektą lyginant su senu vaizdu.
 
 ### Teoriniai prieštaravimai
-**Ar yra:** Taip (ribinis)
-**Aprašymas:** SCARF abejoja ar aw yra dominuojantis konstruktas — gali būti Status signalas. Attachment patvirtina aw, bet su lyties signalo pastaba.
+**Ar yra:** Ribinis (SCARF)
 **Rekomendacija:** Priimti su žyma `teorinis_abejonimas: SCARF_status`
 
 ---
@@ -146,38 +142,26 @@
 ## Bibliotekos validacija (V5)
 
 ### V5.1 Dublikatai
-**Ar yra panašių stimulų:** Taip — L02 (identiškas stimulas senoje bibliotekoje)
-**Ar konstruktai skiriasi:** Ne — tas pats vaizdas, ta pati ašis
-**Rekomendacija:** ST-002 pakeičia L02. L02 archyvuojamas.
+**Rekomendacija:** Priimti. ST-002 pakeičia L02. Skiriasi nuo ST-001 (vienas vs. du subjektai).
 
-### V5.2 Ašių balansas po ST-002 pridėjimo
-- aw stimulai: 2/2 (100%) — kol kas tik aw stimulai, balansuosis toliau
-- cs stimulai: 0/2 (0%)
-- cr stimulai: 0/2 (0%)
-
-**Ar laikomasi 25–40% ribų:** Ne — bet tik 2 stimulai iš planuojamų 12. Balansas vertintinas po pilno bibliotekos ciklo.
-**Rekomendacija:** Priimti — disbalansas laukiamas pradinėje fazėje.
+### V5.2 Ašių balansas
+**Statusas:** 2 aw stimulai iš 2. Balansuosis toliau.
+**Rekomendacija:** Priimti.
 
 ### V5.3 Kontekstų įvairovė
 **Stimulo kontekstas:** tarpasmeniniai
-**Ar per daug reprezentuotas:** Ne — ST-001 yra vidine_erdve, ST-002 yra tarpasmeniniai.
-**Rekomendacija:** Priimti — kontekstai skiriasi.
+**Rekomendacija:** Priimti. Skiriasi nuo ST-001 (vidine_erdve).
 
 ---
 
 ## Empirinė validacija (V6)
 
-*(Nepildyta — stimulas dar nebuvo testuotas su realiais žmonėmis)*
+*(Nepildyta — laukiama)*
 
-### Beta / Pilotinis
-**Statusas:** Laukiama
-
-### Pašalinimo kriterijai
-- [ ] Nė vienas variantas >60%
-- [ ] Reakcijos laikas <8 sek.
-- [ ] >70% supranta vaizdą
-- [ ] >40% rezonansas
-- [ ] Nėra statistinių demografinių skirtumų
+### Stebėsenos punktai
+- Ar simetrijos efektas (V1.1) realiai veikia pasiskirstymą?
+- Ar SCARF Status dinamika matoma atsakymų laike?
+- Ar FC-001 naratyvinis šališkumas pasireiškia?
 
 ---
 
@@ -196,30 +180,20 @@
 | V4 Teorijų validacija | VISI | 5% | 4/5 | 4 |
 | **VISO** | | **100%** | | **84/100** |
 
-**Minimalus balas: 70/100**
-**Gautas balas: 84/100** ✓ (buvo 73/100 su senu vaizdu)
-
+**Gautas balas: 84/100** ✓
 **Sprendimas:** ✅ Beta
-
-**Žymos:**
-- `teorinis_abejonimas: SCARF_status` — SCARF abejoja dominuojančiu konstruktu (stebima)
-- `fc_001_stebima` — Naratyvinis šališkumas minimalus, stebimas
-- `replaces: L02` — archyvuojamas senas stimulas
-- `image_v2` — vaizdas pakeistas po audito
+**Žymos:** `teorinis_abejonimas:SCARF_status` · `fc_001_stebima` · `simetrijos_efektas_stebimas` · `replaces:L02` · `image_v2`
 
 ---
 
 ## Bibliotekos įnašo suvestinė
 
-**Kas naujo bibliotekoje po ST-002:**
-- ✓ Naujas kontekstas: `tarpasmeniniai` (ST-001 buvo `vidine_erdve`)
-- ✓ Naujas situacijų klasė: dviejų žmonių dinamika (ST-001 buvo vienas žmogus)
-- ✓ Naujas aw polius: `aw+` (artėjimas)
-- ✓ Naujas signalų derinys: aw+ su cs+/cr+ (artėjimas + struktūros lūkestis)
-- ⚠ Taisytina: naratyvinis šališkumas + lyties signalas
-
-**Sprendimas:** ✅ Beta — stimulas praturtina biblioteką, vaizdas pataisytas po audito
+- ✓ Nauja situacijų klasė: dviejų subjektų sąveika
+- ✓ Naujas kontekstas: tarpasmeniniai
+- ✓ Naujas aw polius: artėjimas
+- ✓ Abstrakčios figūros — precedentas bibliotekoje
 
 ---
 
 *Review užpildyta pagal: `docs/methodology/stimulus_validation_protocol.md` v1.0.1*
+*Audito ciklas: Claude review → nepriklausomas auditas → vaizdo pataisymas → beta*
