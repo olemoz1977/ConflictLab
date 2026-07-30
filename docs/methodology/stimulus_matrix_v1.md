@@ -1,114 +1,133 @@
 # ConflictLab — Stimulus Matrix v1.0
+**Data:** 2026-07-30 | **Statusas:** Užšaldyta po architektūrinio audito
+**Versija:** v1.0.1 — redakcinis: pridėti Energija, Kontekstas, Psichologinis momentas
 
-**Data:** 2026-07-30
-**Paskirtis:** Bibliotekos planavimo dokumentas. Ne metodologija.
-**Principas:** Stimulai kuriami kryptingai, ne atsitiktinai.
+> Šis dokumentas apibrėžia bibliotekos projektavimo kalbą.
+> Keičiamas tik kai biblioteka pasiekia 20+ stimulų arba po empirinio testavimo.
+
+---
+
+## Stimulo komponentų struktūra
+
+Kiekvieną stimulą apibūdina **trys lygiai** (skirtingi — ne sinonimiškai):
+
+| Lygis | Klausimas | Pavyzdys |
+|---|---|---|
+| **Situacija** | Kas vyksta? | Laukimas, Susitikimas, Perėjimas |
+| **Kontekstas** | Kur vyksta? | Darbo aplinka, Socialinis, Neutralus |
+| **Psichologinis momentas** | Ką žmogus patiria viduje? | Neapibrėžtumas, Sprendimas, Atvirumas |
+
+Ir ketvirtasis parametras:
+
+| Lygis | Klausimas | Skalė |
+|---|---|---|
+| **Energija** | Kiek stimulas mobilizuoja dėmesį? | L1 (tylu) · L2 (vidutinis) · L3 (intensyvus) |
+
+> Energija nėra emocija. Nėra valentingumas.
+> Tai dėmesio mobilizacijos lygis — kiek stimulas "sustabdo" žiūrovą.
 
 ---
 
 ## Esami stimulai
 
-| ID | Vaizdas | Universali situacija | Ašis | Statusas | Balas |
-|---|---|---|---|---|---|
-| ST-001 | Žmogus prie lango | Atsitraukimas / laukimas | aw- | review | 76 |
-| ST-002 | Dvi abstrakčios figūros | Susitikimas / sąveika | aw+ | beta | 84 |
-| ST-003 | Tuščias lapas | Neapibrėžtumas / pradžia | cs- | beta | 84 |
-| ST-004 | Telefonas ant stalo | Laukimas atsakymo | cs+ | beta | 83 |
-| ST-005 | Tuščias stalas | Laukimas prieš sąveiką | cr- | beta | 80 |
-| ST-006 | Žmogus vienas salėje | Vienatvė po grupės | aw- | review | 65 |
-| ST-007 | Tuščia konferencijų salė | Pabaiga / pradžia | cr+ | beta | 88 |
-| ST-008 | Koridorius | Judėjimas po įvykio | aw- | review | 74 |
-| ST-009 | Žmogus prie kompiuterio | Darbas / atsiribojimas | cr+ | beta | 84 |
-| ST-010 | Atviros durys | Pasirinkimas / perėjimas | cr- | **approved** | 93 |
-
----
-
-## Padengtos situacijų klasės
-
-### ✅ Gerai padengta
-
-| Klasė | Stimulai | Pastaba |
-|---|---|---|
-| Laukimas (socialinis) | ST-004 (telefonas), ST-005 (stalas) | Abu cs ir cr dimensijose |
-| Perėjimas / pabaiga | ST-007 (salė), ST-010 (durys) | Abu cr ašyje |
-| Vieno žmogaus vidinė erdvė | ST-001 (langas), ST-003 (lapas) | aw- ir cs- |
-| Darbas ir koncentracija | ST-009 (kompiuteris) | cr+ |
-| Dviejų žmonių sąveika | ST-002 (figūros) | aw+ |
-
-### ⚠ Silpnai padengta
-
-| Klasė | Problema | Rekomendacija |
-|---|---|---|
-| Atsitraukimas (dinaminis) | ST-008 per institucinis | Pakeisti arba papildyti |
-| Vienatvė (socialinis kontekstas) | ST-006 per didelis FC-001 | Pakeisti vaizdą |
-| Kontrolė / struktūra | cr+ tik ST-007 ir ST-009 | Pridėti dar vieną cr+ |
-
-### ❌ Nepadengta
-
-| Klasė | Aprašas | Prioritetas |
-|---|---|---|
-| Konfliktas | Du subjektai aiškioje įtampoje | Aukštas |
-| Praradimas | Tuščia erdvė po kažko buvimo | Vidutinis |
-| Atsakomybė | Sprendimo momento vaizdas | Vidutinis |
-| Gamta / organinė erdvė | Jokio socialinio ar darbo konteksto | Žemas |
-| Kūnas / fizinė būsena | Rankos, gestai, poza | Žemas |
+| ID | Situacija | Kontekstas | Psichologinis momentas | Ašis | Energija | Statusas | Balas |
+|---|---|---|---|---|---|---|---|
+| ST-001 | Atsitraukimas | Vidinė erdvė | Izoliacija | aw- | L1 | review | 76 |
+| ST-002 | Susitikimas | Socialinis | Artumas/įtampa | aw+ | L2 | beta | 84 |
+| ST-003 | Neapibrėžtumas | Vidinė erdvė | Tuštuma/galimybė | cs- | L1 | beta | 84 |
+| ST-004 | Laukimas | Technologinis | Nerimas/tikrinimas | cs+ | L2 | beta | 83 |
+| ST-005 | Laukimas prieš sąveiką | Socialinis | Potencialas | cr- | L1 | beta | 80 |
+| ST-006 | Vienatvė | Socialinis | Atskirtis | aw- | L2 | review | 65 |
+| ST-007 | Pabaiga/pradžia | Darbo aplinka | Perėjimas | cr+ | L3 | beta | 88 |
+| ST-008 | Judėjimas | Darbo aplinka | Atsitraukimas | aw- | L2 | review | 74 |
+| ST-009 | Koncentracija | Darbo aplinka | Kontrolė | cr+ | L2 | beta | 84 |
+| ST-010 | Pasirinkimas | Neutralus | Sprendimas | cr- | L3 | approved | 93 |
 
 ---
 
 ## Ašių balansas
 
-| Ašis | Stimulai | Procentas | Optimalus |
+| Ašis | Stimulai | % | Optimalus |
 |---|---|---|---|
 | aw | ST-001, ST-002, ST-006, ST-008 | 40% | 33% |
-| cs | ST-003, ST-004 | 20% | 33% |
+| cs | ST-003, ST-004 | 20% | 33% ⚠ |
 | cr | ST-005, ST-007, ST-009, ST-010 | 40% | 33% |
 
-**Disbalansas:** cs ašis nepakankamai reprezentuota (20% vs. 33%).
-**Rekomendacija:** Sekantys 2-3 stimulai turėtų būti cs ašies.
+**Prioritetas:** Sekantys stimulai — cs ašis.
+
+---
+
+## Energijos pasiskirstymas
+
+| Energija | Stimulai | Aprašas |
+|---|---|---|
+| L1 — Tylu | ST-001, ST-003, ST-005 | Ramūs, kontempliatyvūs. Nedidelis mobilizacijos lygis. |
+| L2 — Vidutinis | ST-002, ST-004, ST-006, ST-008, ST-009 | Aiški situacija. Normalus dėmesio lygis. |
+| L3 — Intensyvus | ST-007, ST-010 | Stiprus micro-pause efektas. Didelė mobilizacija. |
+
+**Sesijos ritmo pastaba:** Per daug L1 iš eilės sukuria monotoniją. Per daug L3 — nuovargį.
+Rekomenduojama sesijos struktūra: L1–L2–L2–L3 arba L2–L1–L2–L3.
+
+---
+
+## Micro-pause rodiklis
+
+> Ar žmogus automatiškai pasirenka atsakymą, ar bent sekundei sustoja?
+
+Šiuo metu vertinama subjektyviai. Ateityje — empiriškai (reakcijos laikas).
+
+| Stiprumas | Stimulai | Pastaba |
+|---|---|---|
+| ✓✓ Stiprus | ST-007, ST-010 | L3 energija + archetipinis vaizdas |
+| ✓ Vidutinis | ST-001, ST-002, ST-004, ST-005, ST-009 | |
+| ⚠ Silpnas | ST-003, ST-006 | ST-003 per abstraktus, ST-006 per daug naratyvo |
 
 ---
 
 ## Kontekstų pasiskirstymas
 
-| Kontekstas | Stimulai | Procentas | Tikslas |
+| Kontekstas | Stimulai | % | Tikslas |
 |---|---|---|---|
-| Darbo aplinka | ST-007, ST-008, ST-009 | 30% | 20-30% ✓ |
-| Tarpasmeniniai | ST-002, ST-005, ST-006 | 30% | 20-30% ✓ |
-| Vidinė erdvė | ST-001, ST-003, ST-010 | 30% | 15-25% ⚠ |
-| Technologinis | ST-004 | 10% | 10-20% ✓ |
-| Gamta/abstraktus | — | 0% | 10-20% ❌ |
+| Darbo aplinka | ST-007, ST-008, ST-009 | 30% | 20–30% ✓ |
+| Socialinis | ST-002, ST-005, ST-006 | 30% | 20–30% ✓ |
+| Vidinė erdvė | ST-001, ST-003 | 20% | 15–25% ✓ |
+| Technologinis | ST-004 | 10% | 10–20% ✓ |
+| Neutralus | ST-010 | 10% | 10–20% ✓ |
+| Gamta/organiškas | — | 0% | 10–20% ❌ |
 
 ---
 
-## Micro-pause efekto vertinimas
+## Psichologinių momentų aprėptis
 
-| Stiprumas | Stimulai |
-|---|---|
-| ✓✓ Stiprus | ST-007, ST-009, ST-010 |
-| ✓ Vidutinis | ST-001, ST-002, ST-004, ST-005, ST-008 |
-| ⚠ Silpnas | ST-003, ST-006 |
+| Momentas | Stimulai | Ar padengta? |
+|---|---|---|
+| Neapibrėžtumas | ST-003, ST-004 | ✓ |
+| Sprendimas | ST-010 | ✓ (tik vienas) |
+| Atsitraukimas | ST-001, ST-008 | ✓ |
+| Artumas/įtampa | ST-002 | ✓ |
+| Kontrolė | ST-009 | ✓ |
+| Potencialas | ST-005 | ✓ |
+| Perėjimas | ST-007 | ✓ |
+| Izoliacija | ST-001, ST-006 | ⚠ du stimulai |
+| **Konfliktas** | — | ❌ |
+| **Praradimas** | — | ❌ |
+| **Neapibrėžtas pasirinkimas** | — | ❌ |
+
+> **Neapibrėžtas pasirinkimas** — situacija kur žmogus nežino kas vyksta,
+> bet jaučia kad turi apsispręsti. Galimas cs+cr+ derinys.
+> Prioritetinis trūkstamas momentas.
 
 ---
 
 ## Prioritetiniai trūkstami stimulai
 
-Sekantys stimulai turėtų būti kuriami šia tvarka:
-
-**1. cs+ su gamtos/abstrakčia aplinka**
-- Situacija: neapibrėžtumas be socialinio konteksto
-- Pavyzdys: horizontas, kelias į nežinomybę, migla
-
-**2. aw- su konflikto kontekstu**
-- Situacija: atsitraukimas nuo konflikto
-- Pavyzdys: du subjektai nugaromis vienas kito link
-
-**3. cr+ su atsakomybės momentu**
-- Situacija: sprendimo taško vaizdas
-- Pavyzdys: ranka ant mygtuko, dokumentas su parašo vieta
-
-**4. cs- su kūrybiniu kontekstu**
-- Situacija: neapibrėžtumas kaip galimybė
-- Pavyzdys: tuščias drobė, neužpildyta erdvė
+| Prioritetas | Situacija | Kontekstas | Momentas | Ašis | Energija |
+|---|---|---|---|---|---|
+| 🔴 Aukštas | Neapibrėžtas pasirinkimas | Neutralus | Apsisprendimas be informacijos | cs+cr+ | L3 |
+| 🔴 Aukštas | cs ašies stimulas | Gamta | Neapibrėžtumas | cs+ arba cs- | L2 |
+| 🟡 Vidutinis | Konfliktas | Socialinis | Įtampa | aw- | L2–L3 |
+| 🟡 Vidutinis | Praradimas | Vidinė erdvė | Tuštuma po | cr- | L1 |
+| 🟢 Žemas | Organiškas/gamtos kontekstas | Gamta | Ramybė | cr- | L1 |
 
 ---
 
@@ -116,16 +135,27 @@ Sekantys stimulai turėtų būti kuriami šia tvarka:
 
 | Metrika | Reikšmė |
 |---|---|
-| Iš viso kandidatų | 10 |
-| Approved | 1 (ST-010) |
-| Beta | 6 (ST-002, ST-003, ST-004, ST-005, ST-007, ST-009) |
-| Needs refinement | 3 (ST-001, ST-006, ST-008) |
+| Iš viso stimulų | 10 |
+| Approved | 1 — ST-010 (93) |
+| Beta | 6 — vidurkis 83/100 |
+| Needs refinement | 3 — ST-001, ST-006, ST-008 |
 | Rejected | 0 |
 | Vidurkinis balas | 81/100 |
-| Stipriausias | ST-010 (93/100) |
-| Silpniausias | ST-006 (65/100) |
+| Stipriausias micro-pause | ST-010, ST-007 |
+| cs disbalansas | ⚠ 20% (reikia 33%) |
 
 ---
 
-*Stimulus Matrix v1.0 — ConflictLab bibliotekos planavimo dokumentas*
-*Atnaujinti po kiekvieno naujo stimulo pridėjimo*
+## Sesijų ritmo rekomendacijos
+
+Empiriškai nepatikrinta — teorinė rekomendacija.
+
+**4 stimulų sesija:** L1 → L2 → L2 → L3
+**Logika:** Pradėti ramiai, leisti žiūrovui įsijungti. Pabaiga su stipriu micro-pause.
+
+**Vengti:** L3 → L3 (per intensyvu), L1 → L1 → L1 (monotonija)
+
+---
+
+*Stimulus Matrix v1.0 — ConflictLab bibliotekos projektavimo kalba*
+*Užšaldyta: 2026-07-30. Kitas atnaujinimas: po empirinio testavimo arba 20+ stimulų.*
