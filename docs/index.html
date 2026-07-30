@@ -203,12 +203,12 @@
       <div style="font-size:1.6rem;margin-bottom:16px">◎</div>
       <div class="ref-question" id="t-msg" style="margin-bottom:0"></div>
     </div>
-    <button class="btn btn-g" onclick="goFeedback()">Dar vienas klausimas →</button>
-    <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
+    <button class="btn btn-g" id="btn-feedback-link" onclick="goFeedback()">Dar vienas klausimas →</button>
+    <button class="btn btn-p" onclick="reset()" style="margin-top:0">↺ Nauja sesija</button>
   </div>
 
   <footer>
-    <span>ConflictLab v0.6.1-beta</span>
+    <span>ConflictLab v0.7-beta</span>
     <span>Epistemic Reflection Framework</span>
   </footer>
 </div>
@@ -355,7 +355,7 @@ function saveFeedback(fb){
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
-const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null};
+const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null,feedbackDone:false};
 
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -722,6 +722,8 @@ function finishSession(fb){
   else{
     const msg=fb==='yes'?'Kita sesija gali atskleisti kažką kito.':'Šį kartą mūsų matymas nesutapo. Tai irgi svarbu.';
     document.getElementById('t-msg').textContent=msg;
+    const feedbackBtn = document.getElementById('btn-feedback-link');
+    if (feedbackBtn) feedbackBtn.style.display = S.feedbackDone ? 'none' : '';
     go('s-thanks');
   }
 }
@@ -793,9 +795,11 @@ function submitFeedback(){
 function skipFeedback(){showThanksEnd();}
 
 function showThanksEnd(){
+  S.feedbackDone = true;
   document.getElementById('t-msg').textContent='Ačiū. Tavo grįžtamasis ryšys padeda sistemai.';
+  const feedbackBtn = document.getElementById('btn-feedback-link');
+  if (feedbackBtn) feedbackBtn.style.display = 'none';
   go('s-thanks');
-  document.querySelector('#s-thanks .btn-g:last-child').style.display='none';
 }
 
 function reset(){
@@ -807,7 +811,9 @@ function reset(){
     const btn=document.getElementById('return-'+c);
     if(btn) btn.style.opacity='1';
   });
-  document.querySelectorAll('#s-thanks .btn-g').forEach(b=>b.style.display='');
+  S.feedbackDone = false;
+  const fb = document.getElementById('btn-feedback-link');
+  if (fb) fb.style.display = '';
   renderIntro();
   go('s-intro');
 }
