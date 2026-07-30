@@ -78,8 +78,10 @@ def k1_data_foundation(candidate: CandidateInsight) -> tuple[bool, str]:
     K1: Ar įžvalga paremta konkrečiais duomenimis?
     Minimum confidence threshold.
     """
-    if candidate.pattern.confidence < 0.40:
-        return False, f"Confidence per žemas: {candidate.pattern.confidence:.2f} < 0.40"
+    # P3 (hesitation) turi žemesnį slenkstį — latency pats savaime yra silpnas signalas
+    threshold = 0.25 if candidate.pattern.type.value == "P3" else 0.40
+    if candidate.pattern.confidence < threshold:
+        return False, f"Confidence per žemas: {candidate.pattern.confidence:.2f} < {threshold}"
     if not candidate.evidence_str:
         return False, "Nėra konkrečių duomenų pagrindo"
     return True, ""
@@ -96,6 +98,11 @@ def k2_specificity(candidate: CandidateInsight) -> tuple[bool, str]:
             return False, f"Barnum frazė rasta: '{phrase}'"
     # Multi-session insights yra specifiniai pagal apibrėžimą
     if candidate.is_multi_session:
+        return True, ""
+    # P3 hesitation: žmogus nematė savo latency — žemesnis slenkstis
+    if candidate.pattern.type.value == "P3":
+        if candidate.aha_potential < 0.30:
+            return False, f"P3 AHA per žemas: {candidate.aha_potential:.2f} < 0.30"
         return True, ""
     # Single session: reikalauti stipraus signalo
     if candidate.aha_potential < 0.45:

@@ -62,7 +62,7 @@ TEMPLATES = {
         "why": "Norėti ir išeiti, ir suprasti — tai nėra prieštaravimas. Tai gali būti apsaugos strategija.",
         "aha_potential": 0.80,
     },
-    "P2:cs+cr": {
+    "P2:cr+cs": {
         "text": "Šioje sesijoje pasirodė dvigubas impulsas: suprasti ir kartu kontroliuoti.",
         "why": "Aiškumo ir kontrolės poreikis kartu dažnai aktyvuojamas kai žmogus jaučiasi nesaugus.",
         "aha_potential": 0.75,
@@ -71,7 +71,7 @@ TEMPLATES = {
     "P3:hesitation": {
         "text": "Prie vieno vaizdo tavo dėmesys sustojo ilgiau negu prie kitų.",
         "why": "Ilgesnė pauzė gali reikšti atpažinimą, sumaištį arba gilesnį rezonansą — sistema negali atskirti.",
-        "aha_potential": 0.70,
+        "aha_potential": 0.85,  # Aukštas: žmogus pats nematuoja savo pauzių
     },
     # Kelių sesijų
     "P5:cs:positive": {
@@ -115,7 +115,7 @@ TEMPLATES = {
     "P8": {
         "text": "Keliose sesijose signalas buvo neutralus — be ryškios krypties.",
         "why": "Neutralumas gali reikšti pusiausvyrą arba kad stimulai nepasiekė to, kas šiandien iš tikrųjų svarbu.",
-        "aha_potential": 0.40,
+        "aha_potential": 0.20,  # Žemas — rodyti tik kai nėra geresnių kandidatų
     },
     # Fallback
     "FALLBACK": {
@@ -196,6 +196,10 @@ def _build_evidence_str(pattern: DetectedPattern) -> str:
         return f"{m.get('label1','?')} + {m.get('label2','?')} vienu metu"
     if pattern.type == PatternType.P1_SIGNAL_STRENGTH:
         return f"{m.get('label','?')} (reikšmė: {m.get('value','?')})"
+    if pattern.type == PatternType.P6_CONTRAST:
+        return f"{m.get('prev_label','?')} → {m.get('curr_label','?')}"
+    if pattern.type == PatternType.P8_STABILITY:
+        return f"Neutralus per {m.get('sessions','?')} sesijas ({m.get('avg_value','?')} vid.)"
     return str(m)
 
 
