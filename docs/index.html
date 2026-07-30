@@ -79,6 +79,20 @@
     .step-n{font-size:.7rem;font-weight:600;color:var(--accent);flex-shrink:0;padding-top:3px}
     .step-t{font-size:.84rem;color:var(--dim);line-height:1.5}
     footer{border-top:1px solid var(--border);padding:22px 0;margin-top:40px;font-size:.73rem;color:var(--faint);display:flex;justify-content:space-between}
+    .timer-box{text-align:center;padding:36px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px}
+    .timer-ring{width:80px;height:80px;margin:0 auto 16px;position:relative}
+    .timer-ring svg{transform:rotate(-90deg)}
+    .timer-ring circle{fill:none;stroke:var(--border);stroke-width:3}
+    .timer-ring circle.prog{stroke:var(--accent);stroke-dasharray:226;stroke-dashoffset:226;transition:stroke-dashoffset 1s linear}
+    .timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:300;color:var(--text)}
+    .timer-box p{color:var(--dim);font-size:.85rem;line-height:1.65;margin-bottom:20px}
+    .note-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:20px}
+    .note-box p{color:var(--dim);font-size:.84rem;line-height:1.65;margin-bottom:12px}
+    .note-q{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.5;padding:16px;background:rgba(124,158,143,.06);border:1px solid var(--a2);border-radius:10px;margin-bottom:16px}
+    .copy-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:var(--r);border:1px solid var(--a2);background:transparent;color:var(--accent);font-family:'Inter',sans-serif;font-size:.84rem;cursor:pointer;transition:background 180ms}
+    .copy-btn:active{background:var(--a2)}
+    .copy-confirm{font-size:.76rem;color:var(--accent);text-align:center;margin-top:8px;opacity:0;transition:opacity 300ms}
+    .copy-confirm.show{opacity:1}
   </style>
 </head>
 <body>
@@ -159,17 +173,7 @@
         <div class="r-q" id="r-q"></div>
       </div>
     </div>
-    <div class="fb-lbl">Kaip jautėsi ši refleksija?</div>
-    <div class="fb-row">
-      <button class="fb-btn res" onclick="fb('res')">✓ Rezonuoja</button>
-      <button class="fb-btn dis" onclick="fb('dis')">✕ Nesutinku</button>
-    </div>
-    <div class="fb-detail" id="fb-d">
-      <div style="font-size:.78rem;color:var(--dim);margin-bottom:8px">Tavo nesutarimas yra vertingiausia informacija sistemai.</div>
-      <textarea id="fb-t" placeholder="Kas neatitiko?"></textarea>
-      <button class="btn btn-p" onclick="thanks('dis')">Išsaugoti</button>
-    </div>
-    <button class="btn btn-g" onclick="reset()">↺ Pradėti iš naujo</button>
+    <button class="btn btn-p" style="margin-top:8px" onclick="startSilence()">Toliau →</button>
   </div>
 
   <!-- THANKS -->
@@ -178,7 +182,48 @@
     <button class="btn btn-g" onclick="reset()">↺ Bandyti dar kartą</button>
   </div>
 
-  <footer><span>ConflictLab v0.5.0</span><span>Epistemic Reflection Framework</span></footer>
+  <!-- SILENCE TIMER -->
+  <div class="screen" id="s-silence">
+    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
+    <div class="timer-box">
+      <div class="timer-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="36"/>
+          <circle cx="40" cy="40" r="36" class="prog" id="timer-circle"/>
+        </svg>
+        <div class="timer-num" id="timer-num">30</div>
+      </div>
+      <p>Sustok. Neskubėk.<br>Leisk klausimui kurį laiką būti.</p>
+      <button class="btn btn-g" style="margin-top:0" onclick="go('s-note')">Praleisti →</button>
+    </div>
+  </div>
+
+  <!-- NOTE SCREEN -->
+  <div class="screen" id="s-note">
+    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
+    <div class="note-box">
+      <p>Refleksijos klausimas:</p>
+      <div class="note-q" id="note-q"></div>
+      <p style="margin-top:4px">Jei nori su šiuo klausimu grįžti rytoj — nukopijuok jį į užrašus. Sistema negali priminti automatiškai.</p>
+      <button class="copy-btn" onclick="copyQuestion()">
+        <span>⎘</span> Nukopijuoti klausimą
+      </button>
+      <div class="copy-confirm" id="copy-confirm">Nukopijuota ✓</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--dim);margin-bottom:10px">Kaip jautėsi ši refleksija?</div>
+    <div class="fb-row">
+      <button class="fb-btn res" onclick="fb('res')">✓ Rezonuoja</button>
+      <button class="fb-btn dis" onclick="fb('dis')">✕ Nesutinku</button>
+    </div>
+    <div class="fb-detail" id="fb-d2">
+      <div style="font-size:.78rem;color:var(--dim);margin-bottom:8px">Tavo nesutarimas yra vertingiausia informacija sistemai.</div>
+      <textarea id="fb-t2" placeholder="Kas neatitiko?"></textarea>
+      <button class="btn btn-p" onclick="thanks('dis')">Išsaugoti</button>
+    </div>
+    <button class="btn btn-g" onclick="reset()">↺ Pradėti iš naujo</button>
+  </div>
+
+    <footer><span>ConflictLab v0.5.0</span><span>Epistemic Reflection Framework</span></footer>
 </div>
 
 <script>
@@ -348,13 +393,12 @@ function fillReflection(p, r, unc, q) {
   document.getElementById('r-trace-photo').textContent = `"${p.label}"`;
   document.getElementById('r-trace-reaction').textContent = `"${r.text}"`;
   document.getElementById('r-q').textContent = q;
+  document.getElementById('note-q').textContent = q;
+  currentQuestion = q;
 }
 
 // ── FEEDBACK ──
-function fb(type) {
-  if (type === 'dis') document.getElementById('fb-d').classList.add('show');
-  else thanks('res');
-}
+
 
 function thanks(type) {
   document.getElementById('t-title').textContent = type === 'res' ? 'Ačiū — rezonuoja' : 'Ačiū — nesutarimas užregistruotas';
@@ -364,11 +408,62 @@ function thanks(type) {
   go('s-thanks');
 }
 
+// ── SILENCE TIMER ──
+let timerInterval = null;
+function startSilence() {
+  go('s-silence');
+  let secs = 30;
+  const circle = document.getElementById('timer-circle');
+  const num = document.getElementById('timer-num');
+  const circumference = 226;
+  circle.style.strokeDashoffset = circumference;
+  num.textContent = secs;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    secs--;
+    num.textContent = secs;
+    const offset = circumference - (circumference * (30 - secs) / 30);
+    circle.style.strokeDashoffset = offset;
+    if (secs <= 0) {
+      clearInterval(timerInterval);
+      go('s-note');
+      document.getElementById('note-q').textContent = currentQuestion;
+    }
+  }, 1000);
+}
+
+// ── COPY QUESTION ──
+let currentQuestion = '';
+function copyQuestion() {
+  navigator.clipboard.writeText(currentQuestion).then(() => {
+    const el = document.getElementById('copy-confirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }).catch(() => {
+    // Fallback for browsers without clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = currentQuestion;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const el = document.getElementById('copy-confirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+function fb(type) {
+  if (type === 'dis') document.getElementById('fb-d2').classList.add('show');
+  else thanks('res');
+}
+
 function reset() {
   S.photo=null; S.reaction=null; S.reactionW=0; S.photoLatency=0; S.reactionLatency=0;
+  if (timerInterval) clearInterval(timerInterval);
   document.querySelectorAll('.photo-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('fb-d').classList.remove('show');
-  document.getElementById('fb-t').value='';
+  document.getElementById('fb-d2').classList.remove('show');
+  if(document.getElementById('fb-t2')) document.getElementById('fb-t2').value='';
   go('s-intro');
 }
 </script>
