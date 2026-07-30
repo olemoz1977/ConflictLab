@@ -18,6 +18,9 @@
     .screen{display:none}.screen.active{display:block}
     .prog{height:1px;background:var(--border);margin-bottom:32px}
     .prog-fill{height:1px;background:var(--accent);transition:width 500ms ease}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px}
+    .card h2{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:500;margin-bottom:8px}
+    .card p{color:var(--dim);font-size:.86rem;line-height:1.65}
     .situation{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);padding:20px 22px;margin-bottom:28px}
     .sit-label{font-size:.65rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
     .sit-text{font-size:.92rem;line-height:1.7;color:var(--text)}
@@ -36,20 +39,19 @@
     .react-q{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.4;margin-bottom:20px}
     .choices{display:flex;flex-direction:column;gap:9px;margin-bottom:28px}
     .choice{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;color:var(--dim);font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.5;text-align:left;cursor:pointer;transition:border-color 180ms,color 180ms,background 180ms;position:relative;-webkit-tap-highlight-color:transparent}
-    .choice:active{background:var(--bg)}
     .choice.on{border-color:var(--accent);background:rgba(124,158,143,.07);color:var(--text)}
     .choice.on::after{content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--accent)}
     .btn{display:block;width:100%;padding:15px;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:500;border:none;cursor:pointer;transition:opacity 180ms;-webkit-tap-highlight-color:transparent}
     .btn:disabled{opacity:.25;cursor:not-allowed}
     .btn-p{background:var(--accent);color:#0C0C0F}
     .btn-p:active{opacity:.8}
-    .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border);margin-top:12px}
+    .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border);margin-top:10px}
     .loading-box{text-align:center;padding:48px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px}
     .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
     @keyframes spin{to{transform:rotate(360deg)}}
     .loading-box p{color:var(--dim);font-size:.85rem;line-height:1.6}
-    .r-box{background:var(--card);border:1px solid var(--a2);border-radius:var(--r);padding:26px 22px;margin-bottom:24px}
-    .r-sec{margin-bottom:22px}
+    .r-box{background:var(--card);border:1px solid var(--a2);border-radius:var(--r);padding:26px 22px;margin-bottom:20px}
+    .r-sec{margin-bottom:20px}
     .r-sec:last-child{margin-bottom:0}
     .r-lbl{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
     .r-txt{font-size:.87rem;color:var(--dim);line-height:1.75}
@@ -57,42 +59,33 @@
     .fw-pill{display:inline-block;font-size:.7rem;padding:3px 10px;border:1px solid var(--a2);border-radius:20px;color:var(--accent);margin-bottom:7px}
     .scope{font-size:.76rem;color:var(--faint);font-style:italic;line-height:1.6}
     .trace-box{background:rgba(124,158,143,.06);border:1px solid var(--a2);border-radius:10px;padding:16px 18px}
-    .fb-lbl{font-size:.8rem;color:var(--dim);margin-bottom:10px}
-    .fb-row{display:flex;gap:10px;margin-bottom:14px}
+    .fb-row{display:flex;gap:10px;margin-bottom:12px}
     .fb-btn{flex:1;padding:13px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--dim);transition:border-color 180ms,color 180ms}
     .fb-btn.res{border-color:var(--accent);color:var(--accent)}
     .fb-btn.dis{border-color:var(--warn);color:var(--warn)}
-    .fb-detail{display:none}
+    .fb-detail{display:none;margin-top:10px}
     .fb-detail.show{display:block}
-    textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:13px;resize:vertical;min-height:85px;line-height:1.6;margin-bottom:10px}
+    textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:13px;resize:vertical;min-height:80px;line-height:1.6;margin-bottom:10px}
     textarea:focus{outline:none;border-color:var(--accent)}
-    .thanks{text-align:center;padding:44px 20px;background:var(--card);border:1px solid var(--a2);border-radius:var(--r);margin-bottom:16px}
-    .thanks-icon{font-size:1.8rem;margin-bottom:14px}
-    .thanks h2{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:400;margin-bottom:10px}
-    .thanks p{color:var(--dim);font-size:.86rem;line-height:1.65}
-    .warn-box{border:1px solid rgba(176,128,80,.2);background:rgba(176,128,80,.05);border-radius:var(--r);padding:13px 16px;font-size:.79rem;color:var(--warn);line-height:1.6;margin-bottom:20px}
-    .intro-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:20px}
-    .intro-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:9px}
-    .intro-card p{color:var(--dim);font-size:.87rem;line-height:1.65}
-    .steps{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+    /* History */
+    .hist-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:10px}
+    .hist-meta{font-size:.72rem;color:var(--faint);margin-bottom:6px}
+    .hist-signal{font-size:.84rem;color:var(--dim);line-height:1.5}
+    .hist-signal span{color:var(--accent)}
+    /* Pattern */
+    .pattern-box{background:var(--card);border:1px solid var(--accent);border-radius:var(--r);padding:24px;margin-bottom:20px}
+    .pattern-label{font-size:.65rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+    .pattern-insight{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.55;margin-bottom:16px}
+    .pattern-note{font-size:.78rem;color:var(--faint);font-style:italic;line-height:1.6}
+    /* Misc */
+    .warn-box{border:1px solid rgba(176,128,80,.2);background:rgba(176,128,80,.05);border-radius:var(--r);padding:13px 16px;font-size:.79rem;color:var(--warn);line-height:1.6;margin-bottom:16px}
+    .steps{display:flex;flex-direction:column;gap:9px;margin-top:14px}
     .step{display:flex;gap:12px}
     .step-n{font-size:.7rem;font-weight:600;color:var(--accent);flex-shrink:0;padding-top:3px}
     .step-t{font-size:.84rem;color:var(--dim);line-height:1.5}
+    .sess-count{display:inline-block;font-size:.75rem;color:var(--accent);background:var(--a2);padding:3px 10px;border-radius:20px;margin-bottom:14px}
+    .divider{height:1px;background:var(--border);margin:20px 0}
     footer{border-top:1px solid var(--border);padding:22px 0;margin-top:40px;font-size:.73rem;color:var(--faint);display:flex;justify-content:space-between}
-    .timer-box{text-align:center;padding:36px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px}
-    .timer-ring{width:80px;height:80px;margin:0 auto 16px;position:relative}
-    .timer-ring svg{transform:rotate(-90deg)}
-    .timer-ring circle{fill:none;stroke:var(--border);stroke-width:3}
-    .timer-ring circle.prog{stroke:var(--accent);stroke-dasharray:226;stroke-dashoffset:226;transition:stroke-dashoffset 1s linear}
-    .timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:300;color:var(--text)}
-    .timer-box p{color:var(--dim);font-size:.85rem;line-height:1.65;margin-bottom:20px}
-    .note-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:20px}
-    .note-box p{color:var(--dim);font-size:.84rem;line-height:1.65;margin-bottom:12px}
-    .note-q{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.5;padding:16px;background:rgba(124,158,143,.06);border:1px solid var(--a2);border-radius:10px;margin-bottom:16px}
-    .copy-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:var(--r);border:1px solid var(--a2);background:transparent;color:var(--accent);font-family:'Inter',sans-serif;font-size:.84rem;cursor:pointer;transition:background 180ms}
-    .copy-btn:active{background:var(--a2)}
-    .copy-confirm{font-size:.76rem;color:var(--accent);text-align:center;margin-top:8px;opacity:0;transition:opacity 300ms}
-    .copy-confirm.show{opacity:1}
   </style>
 </head>
 <body>
@@ -105,29 +98,28 @@
 
   <!-- INTRO -->
   <div class="screen active" id="s-intro">
-    <div class="warn-box">ConflictLab nėra diagnostikos sistema. Čia nėra teisingų ar neteisingų atsakymų — sistema stebi dėmesio kryptį, ne ar atsakei teisingai.</div>
-    <div class="intro-card">
+    <div class="warn-box">Čia nėra teisingų ar neteisingų atsakymų. Sistema stebi dėmesio kryptį, ne ar atsakei teisingai.</div>
+    <div id="session-badge"></div>
+    <div class="card">
       <h2>Pasirink scenarijų</h2>
-      <p>Du skirtingi kontekstai. Pasirink kurį nori nagrinėti.</p>
+      <p>Du skirtingi kontekstai. Kiekviena sesija prideda naują stebėjimą.</p>
       <div class="steps">
-        <div class="step"><div class="step-n">01</div><div class="step-t">Pamatysi kelias nuotraukas. Pasirink kurią norėtum matyti ilgiau.</div></div>
-        <div class="step"><div class="step-n">02</div><div class="step-t">Atsakyk į vieną klausimą apie savo reakciją.</div></div>
-        <div class="step"><div class="step-n">03</div><div class="step-t">Gausi refleksijos klausimą — ne atsakymą apie tave.</div></div>
+        <div class="step"><div class="step-n">01</div><div class="step-t">Pasirink vaizdą kuris patraukia dėmesį.</div></div>
+        <div class="step"><div class="step-n">02</div><div class="step-t">Atsakyk į vieną klausimą.</div></div>
+        <div class="step"><div class="step-n">03</div><div class="step-t">Gausi refleksijos klausimą. Po 3 sesijų — sistema parodys dėsningumą.</div></div>
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
       <button class="btn btn-p" onclick="startScenario(1)">Scenarijus 1 — Neatsakyta žinutė</button>
       <button class="btn btn-g" onclick="startScenario(2)">Scenarijus 2 — Kritika susirinkime</button>
     </div>
+    <div id="history-section"></div>
   </div>
 
   <!-- GRID -->
   <div class="screen" id="s-grid">
     <div class="prog"><div class="prog-fill" style="width:20%"></div></div>
-    <div class="situation">
-      <div class="sit-label">Situacija</div>
-      <div class="sit-text" id="sit-grid">...</div>
-    </div>
+    <div class="situation"><div class="sit-label">Situacija</div><div class="sit-text" id="sit-grid"></div></div>
     <div class="grid-q">Prie kurio vaizdo tavo dėmesys natūraliai sustoja?</div>
     <div class="photo-grid" id="photo-grid"></div>
   </div>
@@ -135,10 +127,7 @@
   <!-- ATTENTION -->
   <div class="screen" id="s-attention">
     <div class="prog"><div class="prog-fill" style="width:55%"></div></div>
-    <div class="situation">
-      <div class="sit-label">Situacija</div>
-      <div class="sit-text" id="sit-attention">...</div>
-    </div>
+    <div class="situation"><div class="sit-label">Situacija</div><div class="sit-text" id="sit-attention"></div></div>
     <div class="single-photo"><img id="selected-img" src="" alt=""></div>
     <div class="photo-caption">Vaizdas kurį pasirinkote</div>
     <div class="react-q">Kas pirmiausia šovė į galvą žiūrint į šį vaizdą?</div>
@@ -151,7 +140,7 @@
     <div class="prog"><div class="prog-fill" style="width:85%"></div></div>
     <div class="loading-box">
       <div class="spinner"></div>
-      <p>Sistema analizuoja pasirinkimą<br>ir kuria refleksiją...</p>
+      <p id="loading-msg">Sistema analizuoja pasirinkimą<br>ir kuria refleksiją...</p>
     </div>
   </div>
 
@@ -173,127 +162,189 @@
         <div class="r-q" id="r-q"></div>
       </div>
     </div>
-    <button class="btn btn-p" style="margin-top:8px" onclick="startSilence()">Toliau →</button>
+    <div style="font-size:.8rem;color:var(--dim);margin-bottom:10px">Kaip jautėsi ši refleksija?</div>
+    <div class="fb-row">
+      <button class="fb-btn res" onclick="saveAndContinue('res')">✓ Rezonuoja</button>
+      <button class="fb-btn dis" onclick="showDisagree()">✕ Nesutinku</button>
+    </div>
+    <div class="fb-detail" id="fb-d">
+      <textarea id="fb-t" placeholder="Kas neatitiko? Tavo nesutarimas yra vertingiausia informacija."></textarea>
+      <button class="btn btn-p" onclick="saveAndContinue('dis')">Išsaugoti ir tęsti</button>
+    </div>
+  </div>
+
+  <!-- PATTERN (shown after 3+ sessions) -->
+  <div class="screen" id="s-pattern">
+    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
+    <div class="loading-box" id="pattern-loading" style="display:none">
+      <div class="spinner"></div>
+      <p>Sistema analizuoja tavo sesijų istoriją...</p>
+    </div>
+    <div id="pattern-content" style="display:none">
+      <div class="pattern-box">
+        <div class="pattern-label">Pastebėtas dėsningumas</div>
+        <div class="pattern-insight" id="pattern-insight"></div>
+        <div class="pattern-note" id="pattern-note"></div>
+      </div>
+      <div class="r-box" style="border-color:var(--border)">
+        <div class="r-lbl">Pagrindas</div>
+        <div class="r-txt" id="pattern-basis"></div>
+      </div>
+    </div>
+    <button class="btn btn-g" onclick="reset()">↺ Pradėti naują sesiją</button>
   </div>
 
   <!-- THANKS -->
   <div class="screen" id="s-thanks">
-    <div class="thanks"><div class="thanks-icon">◎</div><h2 id="t-title"></h2><p id="t-msg"></p></div>
-    <button class="btn btn-g" onclick="reset()">↺ Bandyti dar kartą</button>
+    <div class="card" style="text-align:center;padding:44px 20px;border-color:var(--a2)">
+      <div style="font-size:1.8rem;margin-bottom:14px">◎</div>
+      <h2 id="t-title" style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:400;margin-bottom:10px"></h2>
+      <p id="t-msg" style="color:var(--dim);font-size:.86rem;line-height:1.65"></p>
+    </div>
+    <button class="btn btn-g" onclick="reset()">↺ Pradėti naują sesiją</button>
   </div>
 
-  <!-- SILENCE TIMER -->
-  <div class="screen" id="s-silence">
-    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
-    <div class="timer-box">
-      <div class="timer-ring">
-        <svg width="80" height="80" viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="36"/>
-          <circle cx="40" cy="40" r="36" class="prog" id="timer-circle"/>
-        </svg>
-        <div class="timer-num" id="timer-num">30</div>
-      </div>
-      <p>Sustok. Neskubėk.<br>Leisk klausimui kurį laiką būti.</p>
-      <button class="btn btn-g" style="margin-top:0" onclick="go('s-note')">Praleisti →</button>
-    </div>
-  </div>
-
-  <!-- NOTE SCREEN -->
-  <div class="screen" id="s-note">
-    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
-    <div class="note-box">
-      <p>Refleksijos klausimas:</p>
-      <div class="note-q" id="note-q"></div>
-      <p style="margin-top:4px">Jei nori su šiuo klausimu grįžti rytoj — nukopijuok jį į užrašus. Sistema negali priminti automatiškai.</p>
-      <button class="copy-btn" onclick="copyQuestion()">
-        <span>⎘</span> Nukopijuoti klausimą
-      </button>
-      <div class="copy-confirm" id="copy-confirm">Nukopijuota ✓</div>
-    </div>
-    <div style="font-size:.8rem;color:var(--dim);margin-bottom:10px">Kaip jautėsi ši refleksija?</div>
-    <div class="fb-row">
-      <button class="fb-btn res" onclick="fb('res')">✓ Rezonuoja</button>
-      <button class="fb-btn dis" onclick="fb('dis')">✕ Nesutinku</button>
-    </div>
-    <div class="fb-detail" id="fb-d2">
-      <div style="font-size:.78rem;color:var(--dim);margin-bottom:8px">Tavo nesutarimas yra vertingiausia informacija sistemai.</div>
-      <textarea id="fb-t2" placeholder="Kas neatitiko?"></textarea>
-      <button class="btn btn-p" onclick="thanks('dis')">Išsaugoti</button>
-    </div>
-    <button class="btn btn-g" onclick="reset()">↺ Pradėti iš naujo</button>
-  </div>
-
-    <footer><span>ConflictLab v0.5.0</span><span>Epistemic Reflection Framework</span></footer>
+  <footer><span>ConflictLab v0.5.0</span><span>Epistemic Reflection Framework</span></footer>
 </div>
 
 <script>
-// ── SCENARIO DATA ──
+// ═══════════════════════════════════════════
+// SCENARIO DATA
+// ═══════════════════════════════════════════
 const SCENARIOS = {
   1: {
+    title: 'Neatsakyta žinutė',
     situation: 'Išsiuntei svarbų pasiūlymą kolegai. Praėjo 4 valandos. Jis peržiūrėjo — bet neatsako.',
     photos: [
-      {src:'media/p1_phone_table.png',     label:'Telefonas ant stalo',        fw:'AT-001',fw_name:'Attachment Theory',      bs:'Ši teorija nepaaiškina situacinio konteksto ar nuovargio.'},
-      {src:'media/p2_window_silhouette.png',label:'Žmogus prie lango',          fw:'ER-001',fw_name:'Emotion Regulation',      bs:'Ši teorija nepaaiškina tarpasmeninių dinamikų.'},
-      {src:'media/p3_chat_screen.png',     label:'Pokalbio ekranas',            fw:'CD-001',fw_name:'Cognitive Distortions',   bs:'Ši teorija nepaaiškina biologinių ar situacinių veiksnių.'},
-      {src:'media/p4_empty_table.png',     label:'Tuščias stalas',              fw:'SC-001',fw_name:'SCARF Model',             bs:'Ši teorija geriau tinka organizaciniams kontekstams.'},
-      {src:'media/p5_person_laptop.png',   label:'Žmogus prie kompiuterio',     fw:'DP-001',fw_name:'Dual Process Theory',    bs:'Ši teorija nepaaiškina emocinio ar santykių konteksto.'},
+      {src:'media/p1_phone_table.png',     label:'Telefonas ant stalo',              fw:'AT-001', fw_name:'Attachment Theory',    bs:'Nepaaiškina situacinio konteksto ar nuovargio.'},
+      {src:'media/p2_window_silhouette.png',label:'Žmogus prie lango',               fw:'ER-001', fw_name:'Emotion Regulation',    bs:'Nepaaiškina tarpasmeninių dinamikų.'},
+      {src:'media/p3_chat_screen.png',     label:'Pokalbio ekranas',                 fw:'CD-001', fw_name:'Cognitive Distortions', bs:'Nepaaiškina biologinių ar situacinių veiksnių.'},
+      {src:'media/p4_empty_table.png',     label:'Tuščias stalas',                   fw:'SC-001', fw_name:'SCARF Model',           bs:'Geriau tinka organizaciniams kontekstams.'},
+      {src:'media/p5_person_laptop.png',   label:'Žmogus prie kompiuterio',          fw:'DP-001', fw_name:'Dual Process Theory',  bs:'Nepaaiškina emocinio ar santykių konteksto.'},
     ],
     reactions: [
-      [{text:'Iš karto pagalvojau apie žinutę',w:.35},      {text:'Telefonas nutylęs — tai normalu',w:-.10},       {text:'Pradėjau galvoti ką daryti toliau',w:.20}],
-      [{text:'Norėjosi atsitraukti ir negalvoti',w:-.35},   {text:'Gal kolega tiesiog užsiėmęs',w:-.05},           {text:'Pagalvojau apie laukimą',w:.15}],
-      [{text:'Tuščia vieta po žinute — neramina',w:.50},    {text:'Žinutė perskaityta — faktas, tiek to',w:-.10},  {text:'Pagalvojau rašyti dar kartą',w:.30}],
-      [{text:'Tuštuma priminė laukimą',w:.25},              {text:'Erdvė be žmonių — ramu',w:-.20},                {text:'Mintys nukeliavo kitur',w:0}],
-      [{text:'Norėjosi tiesiog dirbti ir nekreipti dėmesio',w:-.25},{text:'Gal ir man reikia tiesiog dirbti',w:.10},{text:'Pastebėjau telefoną šalia — jis stebimas',w:.35}],
+      [{text:'Iš karto pagalvojau apie žinutę',w:.35},       {text:'Telefonas nutylęs — tai normalu',w:-.10},      {text:'Pradėjau galvoti ką daryti toliau',w:.20}],
+      [{text:'Norėjosi atsitraukti ir negalvoti',w:-.35},    {text:'Gal kolega tiesiog užsiėmęs',w:-.05},          {text:'Pagalvojau apie laukimą',w:.15}],
+      [{text:'Tuščia vieta po žinute — neramina',w:.50},     {text:'Žinutė perskaityta — faktas, tiek to',w:-.10}, {text:'Pagalvojau rašyti dar kartą',w:.30}],
+      [{text:'Tuštuma priminė laukimą',w:.25},               {text:'Erdvė be žmonių — ramu',w:-.20},               {text:'Mintys nukeliavo kitur',w:0}],
+      [{text:'Norėjosi dirbti ir nekreipti dėmesio',w:-.25}, {text:'Gal ir man reikia tiesiog dirbti',w:.10},      {text:'Pastebėjau telefoną šalia — jis stebimas',w:.35}],
     ],
   },
   2: {
+    title: 'Kritika susirinkime',
     situation: 'Susirinkimo metu viršininkas pasako, kad tavo ataskaitoje yra klaidos — prieš visą komandą. Nesitikėjai.',
     photos: [
-      {src:'media/v2_p1_empty_room.png',   label:'Tuščia konferencijų salė',          fw:'SC-001',fw_name:'SCARF Model',           bs:'Ši teorija nepaaiškina gilesnės santykių istorijos.'},
-      {src:'media/v2_p2_corridor.png',     label:'Koridorius po susirinkimo',          fw:'AT-001',fw_name:'Attachment Theory',     bs:'Ši teorija nepaaiškina organizacinių galios struktūrų.'},
-      {src:'media/v2_p3_notebook.png',     label:'Knygelė su išbrauktais žodžiais',   fw:'CD-001',fw_name:'Cognitive Distortions', bs:'Ši teorija nepaaiškina biologinių autonominių reakcijų.'},
-      {src:'media/v2_p4_person_alone.png', label:'Žmogus vienas salėje',              fw:'ER-001',fw_name:'Emotion Regulation',    bs:'Ši teorija nepaaiškina socialinio statuso dinamikų.'},
+      {src:'media/v2_p1_empty_room.png',   label:'Tuščia konferencijų salė',         fw:'SC-001', fw_name:'SCARF Model',           bs:'Nepaaiškina gilesnės santykių istorijos.'},
+      {src:'media/v2_p2_corridor.png',     label:'Koridorius po susirinkimo',         fw:'AT-001', fw_name:'Attachment Theory',    bs:'Nepaaiškina organizacinių galios struktūrų.'},
+      {src:'media/v2_p3_notebook.png',     label:'Knygelė su išbrauktais žodžiais',  fw:'CD-001', fw_name:'Cognitive Distortions', bs:'Nepaaiškina biologinių autonominių reakcijų.'},
+      {src:'media/v2_p4_person_alone.png', label:'Žmogus vienas salėje',             fw:'ER-001', fw_name:'Emotion Regulation',    bs:'Nepaaiškina socialinio statuso dinamikų.'},
     ],
     reactions: [
       [{text:'Norėjosi išeiti iš salės',w:-.40},                      {text:'Pagalvojau kaip paaiškinti situaciją',w:.20},          {text:'Viduje supykau, bet nieko nesakiau',w:.45}],
-      [{text:'Pradėjau braukti savo mintis — jos neteisingos',w:.50}, {text:'Fiksuojau faktus, kad nereaguočiau emociškai',w:-.15}, {text:'Ranka sustojo — nežinojau ką rašyti',w:.30}],
-      [{text:'Salė priminė, kad visi išėjo ir aš likau',w:.35},       {text:'Tuštuma atrodė kaip palengvėjimas',w:-.30},           {text:'Galvojau apie tai, kas buvo pasakyta',w:.25}],
       [{text:'Norėjosi tiesiog išeiti ir neatsigręžti',w:-.45},       {text:'Galvojau ką pasakyčiau kitą kartą',w:.30},             {text:'Pastebėjau kaip einu — lėtai ar greitai',w:.15}],
+      [{text:'Pradėjau braukti mintis — jos neteisingos',w:.50},      {text:'Fiksuojau faktus, kad nereaguočiau emociškai',w:-.15},{text:'Ranka sustojo — nežinojau ką rašyti',w:.30}],
+      [{text:'Salė priminė, kad visi išėjo ir aš likau',w:.35},       {text:'Tuštuma atrodė kaip palengvėjimas',w:-.30},           {text:'Galvojau apie tai, kas buvo pasakyta',w:.25}],
     ],
   },
 };
 
-// ── STATE ──
-const S = { scenario:1, photo:null, reaction:null, reactionW:0, photoLatency:0, reactionLatency:0, gridShownAt:0, attentionShownAt:0 };
+// ═══════════════════════════════════════════
+// SESSION HISTORY (localStorage)
+// ═══════════════════════════════════════════
+const STORAGE_KEY = 'conflictlab_sessions';
 
-// ── NAVIGATION ──
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch(e) { return []; }
+}
+
+function saveSession(session) {
+  const history = loadHistory();
+  history.push(session);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+function clearHistory() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const S = {
+  scenario: 1, photo: null, reaction: null, reactionW: 0,
+  photoLatency: 0, reactionLatency: 0, gridShownAt: 0, attentionShownAt: 0,
+  currentQuestion: '', currentPhoto: null, currentReaction: null,
+};
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── START SCENARIO ──
+// ═══════════════════════════════════════════
+// INTRO — show history
+// ═══════════════════════════════════════════
+function renderIntro() {
+  const history = loadHistory();
+  const badge = document.getElementById('session-badge');
+  const histSection = document.getElementById('history-section');
+
+  if (history.length === 0) {
+    badge.innerHTML = '';
+    histSection.innerHTML = '';
+    return;
+  }
+
+  badge.innerHTML = `<span class="sess-count">${history.length} sesija${history.length > 1 ? (history.length < 10 ? 'os' : 'ų') : ''} išsaugota</span>`;
+
+  // Show last 3 sessions
+  const recent = history.slice(-3).reverse();
+  let html = '<div class="divider"></div><div style="font-size:.72rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Paskutinės sesijos</div>';
+  recent.forEach(s => {
+    const d = new Date(s.timestamp);
+    const dateStr = d.toLocaleDateString('lt-LT', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    html += `<div class="hist-item">
+      <div class="hist-meta">${dateStr} · ${SCENARIOS[s.scenario]?.title || 'Scenarijus'}</div>
+      <div class="hist-signal">Dėmesys: <span>${s.photoLabel}</span> · Mintis: <span>${s.reactionText}</span></div>
+    </div>`;
+  });
+
+  if (history.length >= 3) {
+    html += `<button class="btn btn-g" style="margin-top:6px" onclick="showPattern()">Žiūrėti dėsningumą (${history.length} sesijos)</button>`;
+  } else {
+    const needed = 3 - history.length;
+    html += `<div style="font-size:.78rem;color:var(--faint);text-align:center;margin-top:10px">Dar ${needed} sesij${needed===1?'a':'os'} iki dėsningumo</div>`;
+  }
+
+  html += `<button class="btn btn-g" style="margin-top:6px;font-size:.78rem;color:var(--faint)" onclick="if(confirm('Ištrinti visą istoriją?')){clearHistory();renderIntro()}">Ištrinti istoriją</button>`;
+  histSection.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// START SCENARIO
+// ═══════════════════════════════════════════
 function startScenario(num) {
   S.scenario = num;
-  S.photo = null; S.reaction = null; S.reactionW = 0; S.photoLatency = 0; S.reactionLatency = 0;
+  S.photo = null; S.reaction = null; S.reactionW = 0;
+  S.photoLatency = 0; S.reactionLatency = 0;
   const sc = SCENARIOS[num];
 
-  // Update situation text
   document.getElementById('sit-grid').textContent = sc.situation;
   document.getElementById('sit-attention').textContent = sc.situation;
 
-  // Build photo grid dynamically
   const grid = document.getElementById('photo-grid');
   grid.innerHTML = '';
   sc.photos.forEach((p, i) => {
     const isLast = i === sc.photos.length - 1;
     const isOdd = sc.photos.length % 2 !== 0;
-    const span = (isLast && isOdd) ? 'grid-column:span 2;aspect-ratio:3/2' : '';
     const card = document.createElement('div');
     card.className = 'photo-card';
-    card.id = 'pc' + i;
-    card.setAttribute('style', span);
+    if (isLast && isOdd) card.style.cssText = 'grid-column:span 2;aspect-ratio:3/2';
     card.innerHTML = `<img src="${p.src}" alt=""><div class="check">✓</div>`;
     card.addEventListener('click', () => selectPhoto(i));
     grid.appendChild(card);
@@ -303,65 +354,67 @@ function startScenario(num) {
   S.gridShownAt = Date.now();
 }
 
-// ── SELECT PHOTO ──
+// ═══════════════════════════════════════════
+// SELECT PHOTO
+// ═══════════════════════════════════════════
 function selectPhoto(idx) {
   S.photo = idx;
   S.photoLatency = Date.now() - S.gridShownAt;
   const sc = SCENARIOS[S.scenario];
+  const p = sc.photos[idx];
+  S.currentPhoto = p;
 
-  // Visual feedback
   document.querySelectorAll('.photo-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
-  document.getElementById('selected-img').src = sc.photos[idx].src;
+  document.getElementById('selected-img').src = p.src;
 
-  // Build reactions
   const wrap = document.getElementById('choices-wrap');
   wrap.innerHTML = '';
   document.getElementById('btn-react').disabled = true;
+
   sc.reactions[idx].forEach((r, i) => {
     const b = document.createElement('button');
     b.className = 'choice';
     b.textContent = r.text;
     b.addEventListener('click', () => {
-      S.reaction = i;
-      S.reactionW = r.w;
+      S.reaction = i; S.reactionW = r.w;
       S.reactionLatency = Date.now() - S.attentionShownAt;
+      S.currentReaction = r;
       wrap.querySelectorAll('.choice').forEach((c, j) => c.classList.toggle('on', j === i));
       document.getElementById('btn-react').disabled = false;
     });
     wrap.appendChild(b);
   });
 
-  // Auto-advance after 350ms
-  setTimeout(() => {
-    go('s-attention');
-    S.attentionShownAt = Date.now();
-  }, 350);
+  setTimeout(() => { go('s-attention'); S.attentionShownAt = Date.now(); }, 350);
 }
 
-// ── GENERATE REFLECTION ──
+// ═══════════════════════════════════════════
+// GENERATE REFLECTION
+// ═══════════════════════════════════════════
 async function generateReflection() {
   const sc = SCENARIOS[S.scenario];
   const p = sc.photos[S.photo];
   const r = sc.reactions[S.photo][S.reaction];
   go('s-loading');
+  document.getElementById('loading-msg').textContent = 'Sistema analizuoja pasirinkimą\nir kuria refleksiją...';
 
   const prompt = `Tu esi ConflictLab — episteminės refleksijos sistema.
 
 SITUACIJA: ${sc.situation}
 
 STEBĖJIMAI:
-- Pasirinktas vaizdas: "${p.label}" (laikas iki pasirinkimo: ${Math.round(S.photoLatency/1000)}s)
+- Pasirinktas vaizdas: "${p.label}" (laikas: ${Math.round(S.photoLatency/1000)}s)
 - Pirma mintis: "${r.text}" (reakcijos laikas: ${Math.round(S.reactionLatency/1000)}s)
 - Teorinis rėmelis: ${p.fw_name} (${p.fw})
 
-TAISYKLĖS (privalomi):
+TAISYKLĖS:
 1. Refleksija PRIVALO baigtis klausimu
 2. DRAUDŽIAMA: diagnozės, verdiktai, "tu esi toks žmogus"
 3. Klausimas PRIVALO prasidėti: "Pasirinkti ${p.label} — ir ${r.text.toLowerCase()}."
-4. Neapibrėžtumo pastaba — trumpa, konkreti, sąžininga
+4. Neapibrėžtumo pastaba — konkreti ir trumpa
 5. Visas tekstas lietuvių kalba, natūralus
 
-Grąžink TIKTAI JSON be jokio kito teksto:
+Grąžink TIKTAI JSON:
 {"uncertainty_note":"...","reflection_question":"..."}`;
 
   try {
@@ -375,16 +428,14 @@ Grąžink TIKTAI JSON be jokio kito teksto:
     const result = JSON.parse(text);
     fillReflection(p, r, result.uncertainty_note, result.reflection_question);
   } catch(e) {
-    // Fallback
     fillReflection(p, r,
-      'Refleksija paremta vienu dėmesio pasirinkimu. Sistema negali žinoti priežasties — kodėl šis vaizdas patraukė dėmesį.',
+      'Refleksija paremta vienu dėmesio pasirinkimu. Sistema negali žinoti priežasties.',
       `Pasirinkti ${p.label} — ir ${r.text.toLowerCase()}. Kas tame pasirinkime buvo svarbiausias?`
     );
   }
   go('s-ref');
 }
 
-// ── FILL REFLECTION ──
 function fillReflection(p, r, unc, q) {
   document.getElementById('r-obs').textContent = `Dėmesys sustojo ties "${p.label}". Pirma mintis: "${r.text.toLowerCase()}".`;
   document.getElementById('r-unc').textContent = unc;
@@ -393,79 +444,135 @@ function fillReflection(p, r, unc, q) {
   document.getElementById('r-trace-photo').textContent = `"${p.label}"`;
   document.getElementById('r-trace-reaction').textContent = `"${r.text}"`;
   document.getElementById('r-q').textContent = q;
-  document.getElementById('note-q').textContent = q;
-  currentQuestion = q;
+  S.currentQuestion = q;
 }
 
-// ── FEEDBACK ──
-
-
-function thanks(type) {
-  document.getElementById('t-title').textContent = type === 'res' ? 'Ačiū — rezonuoja' : 'Ačiū — nesutarimas užregistruotas';
-  document.getElementById('t-msg').textContent = type === 'res'
-    ? 'Refleksija atspindėjo stebėtus signalus tiksliai.'
-    : 'Tavo nesutarimas padės sistemai suprasti, kokiuose kontekstuose teoriniai rėmeliai neveikia.';
-  go('s-thanks');
+// ═══════════════════════════════════════════
+// SAVE SESSION + CONTINUE
+// ═══════════════════════════════════════════
+function showDisagree() {
+  document.getElementById('fb-d').classList.add('show');
 }
 
-// ── SILENCE TIMER ──
-let timerInterval = null;
-function startSilence() {
-  go('s-silence');
-  let secs = 30;
-  const circle = document.getElementById('timer-circle');
-  const num = document.getElementById('timer-num');
-  const circumference = 226;
-  circle.style.strokeDashoffset = circumference;
-  num.textContent = secs;
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    secs--;
-    num.textContent = secs;
-    const offset = circumference - (circumference * (30 - secs) / 30);
-    circle.style.strokeDashoffset = offset;
-    if (secs <= 0) {
-      clearInterval(timerInterval);
-      go('s-note');
-      document.getElementById('note-q').textContent = currentQuestion;
-    }
-  }, 1000);
+function saveAndContinue(feedback) {
+  const sc = SCENARIOS[S.scenario];
+  const p = sc.photos[S.photo];
+  const r = sc.reactions[S.photo][S.reaction];
+
+  // Save to localStorage
+  const session = {
+    timestamp: Date.now(),
+    scenario: S.scenario,
+    scenarioTitle: sc.title,
+    photoLabel: p.label,
+    photoSrc: p.src,
+    reactionText: r.text,
+    signalWeight: S.reactionW,
+    framework: p.fw,
+    question: S.currentQuestion,
+    feedback: feedback,
+    disagreementNote: feedback === 'dis' ? document.getElementById('fb-t').value : '',
+    photoLatency: S.photoLatency,
+    reactionLatency: S.reactionLatency,
+  };
+  saveSession(session);
+
+  const history = loadHistory();
+
+  if (history.length >= 3 && history.length % 3 === 0) {
+    // Every 3 sessions — show pattern
+    showPattern();
+  } else {
+    const needed = 3 - (history.length % 3);
+    const msg = history.length >= 3
+      ? `Sesija išsaugota. Dar ${needed === 3 ? 3 : needed} sesij${needed===1?'a':'os'} iki kito dėsningumo.`
+      : `Sesija išsaugota. Dar ${needed} sesij${needed===1?'a':'os'} iki pirmojo dėsningumo.`;
+    document.getElementById('t-title').textContent = 'Sesija išsaugota';
+    document.getElementById('t-msg').textContent = msg;
+    go('s-thanks');
+  }
 }
 
-// ── COPY QUESTION ──
-let currentQuestion = '';
-function copyQuestion() {
-  navigator.clipboard.writeText(currentQuestion).then(() => {
-    const el = document.getElementById('copy-confirm');
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 2000);
-  }).catch(() => {
-    // Fallback for browsers without clipboard API
-    const ta = document.createElement('textarea');
-    ta.value = currentQuestion;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    const el = document.getElementById('copy-confirm');
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 2000);
-  });
+// ═══════════════════════════════════════════
+// SHOW PATTERN (after 3+ sessions)
+// ═══════════════════════════════════════════
+async function showPattern() {
+  go('s-pattern');
+  document.getElementById('pattern-loading').style.display = 'block';
+  document.getElementById('pattern-content').style.display = 'none';
+
+  const history = loadHistory();
+
+  // Build history summary for Claude
+  const summary = history.slice(-9).map((s, i) =>
+    `Sesija ${i+1} (${new Date(s.timestamp).toLocaleDateString('lt-LT')}): scenarijus "${s.scenarioTitle}", dėmesys → "${s.photoLabel}", mintis → "${s.reactionText}", signalas: ${s.signalWeight > 0 ? '+' : ''}${s.signalWeight}`
+  ).join('\n');
+
+  const prompt = `Tu esi ConflictLab — episteminės refleksijos sistema.
+
+Štai ${history.length} sesijų istorija:
+${summary}
+
+Tavo užduotis: surasti pasikartojantį dėmesio dėsningumą.
+
+TAISYKLĖS:
+1. Aprašyk dėsningumą be vertinimų ir diagnozių
+2. Naudok formulę: "X iš Y sesijų tavo dėmesys krypo į [tema]"
+3. Pateik atvirą klausimą apie tai
+4. Pripažink ribas: tai tik stebėjimas, ne išvada apie asmenybę
+5. Visas tekstas lietuvių kalba, natūralus
+
+Grąžink TIKTAI JSON:
+{"insight":"dėsningumo aprašymas (1-2 sakiniai)","question":"atviras klausimas?","note":"metodologinė pastaba apie ribas","basis":"kokie konkretūs pasirinkimai tai pagrindžia"}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-6', max_tokens:1000, messages:[{role:'user',content:prompt}]})
+    });
+    const data = await resp.json();
+    const text = data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const result = JSON.parse(text);
+
+    document.getElementById('pattern-insight').textContent = result.insight + '\n\n' + result.question;
+    document.getElementById('pattern-note').textContent = result.note;
+    document.getElementById('pattern-basis').textContent = result.basis;
+  } catch(e) {
+    // Fallback: calculate manually
+    const photoLabels = history.map(s => s.photoLabel);
+    const freq = {};
+    photoLabels.forEach(l => freq[l] = (freq[l]||0) + 1);
+    const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('pattern-insight').textContent =
+      `${top[1]} iš ${history.length} sesijų tavo dėmesys krypo į "${top[0]}".\n\nKas tau šiame vaizde buvo svarbiausias?`;
+    document.getElementById('pattern-note').textContent =
+      'Tai yra stebėjimas, ne išvada apie asmenybę. Dėsningumas gali atspindėti situacinį kontekstą.';
+    document.getElementById('pattern-basis').textContent =
+      photoLabels.join(', ');
+  }
+
+  document.getElementById('pattern-loading').style.display = 'none';
+  document.getElementById('pattern-content').style.display = 'block';
 }
 
-function fb(type) {
-  if (type === 'dis') document.getElementById('fb-d2').classList.add('show');
-  else thanks('res');
-}
-
+// ═══════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════
 function reset() {
-  S.photo=null; S.reaction=null; S.reactionW=0; S.photoLatency=0; S.reactionLatency=0;
-  if (timerInterval) clearInterval(timerInterval);
+  S.photo=null; S.reaction=null; S.reactionW=0;
+  S.photoLatency=0; S.reactionLatency=0; S.currentQuestion='';
   document.querySelectorAll('.photo-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('fb-d2').classList.remove('show');
-  if(document.getElementById('fb-t2')) document.getElementById('fb-t2').value='';
+  document.getElementById('fb-d').classList.remove('show');
+  document.getElementById('fb-t').value='';
+  renderIntro();
   go('s-intro');
 }
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderIntro();
 </script>
 </body>
 </html>
