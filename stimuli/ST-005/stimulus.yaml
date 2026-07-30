@@ -1,0 +1,41 @@
+stimulus_id: ST-005
+image: image.png
+primary_axis: cr
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Kažko čia trūksta"
+    signals:
+      aw: -0.15
+      cs: +0.35
+      cr: +0.45
+    mixed_signal_justification: >
+      cs+ antrinis: "trūksta" aktyvuoja aiškumo poreikį.
+      cr+ pirminė: noras užpildyti = kontrolės siekimas.
+
+  - id: B
+    text: "Ramu — nieko nereikia"
+    signals:
+      aw: -0.10
+      cs: -0.35
+      cr: -0.60
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Pagalvojau kas čia sėdės"
+    signals:
+      aw: +0.30
+      cs: +0.20
+      cr: +0.15
+    mixed_signal_justification: >
+      aw+ pirminė: mintis apie kitus žmones = artėjimas.
+      Mišrūs signalai silpni ir pagrįsti.
+
+metadata:
+  context: tarpasmeniniai
+  cultural_flag: null
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

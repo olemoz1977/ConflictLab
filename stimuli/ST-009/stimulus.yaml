@@ -1,0 +1,38 @@
+stimulus_id: ST-009
+image: image.png
+primary_axis: cr
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Darbas — viskas tvarkoje"
+    signals:
+      aw: +0.10
+      cs: +0.25
+      cr: +0.65
+    mixed_signal_justification: null
+
+  - id: B
+    text: "Norėjosi to paties — dirbti ir nekreipti dėmesio"
+    signals:
+      aw: -0.20
+      cs: -0.15
+      cr: -0.35
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Pastebėjau telefoną šalia"
+    signals:
+      aw: +0.15
+      cs: +0.40
+      cr: +0.40
+    mixed_signal_justification: >
+      cs+ ir cr+ lygūs: telefonas = neapibrėžtumas (cs+) + kontrolė (cr+).
+
+metadata:
+  context: darbo_aplinka
+  cultural_flag: null
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

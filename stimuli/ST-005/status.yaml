@@ -1,0 +1,9 @@
+stimulus_id: ST-005
+status: beta
+history:
+  - date: 2026-07-30
+    status: draft
+    note: "Kandidatas — tuščias stalas"
+  - date: 2026-07-30
+    status: beta
+    note: "Library audit: 80/100. 🟢 Accept."

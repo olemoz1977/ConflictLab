@@ -1,0 +1,39 @@
+stimulus_id: ST-007
+image: image.png
+primary_axis: cr
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Palengvėjimas — čia tuščia"
+    signals:
+      aw: -0.15
+      cs: -0.30
+      cr: -0.60
+    mixed_signal_justification: null
+
+  - id: B
+    text: "Tuoj prasidės — reikia pasiruošti"
+    signals:
+      aw: +0.15
+      cs: +0.50
+      cr: +0.55
+    mixed_signal_justification: >
+      cs+ ir cr+ abu stiprūs ir abi pagrįstos:
+      laukimas + pasiruošimas = aiškumo siekimas + kontrolė.
+
+  - id: C
+    text: "Pagalvojau kas čia buvo"
+    signals:
+      aw: +0.20
+      cs: +0.25
+      cr: -0.10
+    mixed_signal_justification: null
+
+metadata:
+  context: darbo_aplinka
+  cultural_flag: null
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

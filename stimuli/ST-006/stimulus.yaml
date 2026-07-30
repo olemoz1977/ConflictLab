@@ -1,0 +1,40 @@
+stimulus_id: ST-006
+image: image.png
+primary_axis: aw
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Norėjosi priartėti — sužinoti kas čia"
+    signals:
+      aw: +0.50
+      cs: +0.30
+      cr: +0.10
+    mixed_signal_justification: >
+      cs+ antrinis: smalsumas = aiškumo siekimas.
+
+  - id: B
+    text: "Palikti ramybėje"
+    signals:
+      aw: -0.40
+      cs: -0.20
+      cr: -0.30
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Pagalvojau kaip ilgai čia sėdi"
+    signals:
+      aw: +0.10
+      cs: +0.45
+      cr: +0.10
+    mixed_signal_justification: >
+      cs+ pirminė šiame variante: klausimas apie laiką =
+      aiškumo siekimas. aw+ silpnas antrinis.
+
+metadata:
+  context: tarpasmeniniai
+  cultural_flag: null
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

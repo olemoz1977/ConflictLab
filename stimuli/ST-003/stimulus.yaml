@@ -6,7 +6,7 @@ question: "Kas pirmiausia šovė į galvą žiūrint į šį vaizdą?"
 
 choices:
   - id: A
-    text: "Galimybė — čia galima rašyti bet ką"
+    text: "Iš karto pagalvojau ką čia galėčiau daryti"
     signals:
       aw: +0.10
       cs: -0.45
@@ -17,7 +17,7 @@ choices:
       Antrinė ašis neviršija pirminės (cs: -0.45).
 
   - id: B
-    text: "Nerimas — nežinau nuo ko pradėti"
+    text: "Nežinau nuo ko pradėti"
     signals:
       aw: -0.10
       cs: +0.55
@@ -28,7 +28,7 @@ choices:
       Antrinė ašis neviršija pirminės (cs: +0.55).
 
   - id: C
-    text: "Tyla — nieko nereikia daryti"
+    text: "Nieko nekyla"
     signals:
       aw: -0.20
       cs: -0.50

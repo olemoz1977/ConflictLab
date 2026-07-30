@@ -1,0 +1,46 @@
+stimulus_id: ST-004
+image: image.png
+primary_axis: cs
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Ar atsakė?"
+    signals:
+      aw: +0.10
+      cs: +0.65
+      cr: +0.30
+    mixed_signal_justification: >
+      cr+ pagrįstas: laukimas su aktyviu aiškumo siekimu
+      natūraliai aktyvuoja kontrolės norą.
+
+  - id: B
+    text: "Telefonas nutylęs — ir gerai"
+    signals:
+      aw: -0.10
+      cs: -0.40
+      cr: -0.25
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Pradėjau galvoti ką daryti toliau"
+    signals:
+      aw: +0.15
+      cs: +0.40
+      cr: +0.55
+    mixed_signal_justification: >
+      cr+ dominuoja — aktyvus planas yra kontrolės
+      siekimas. cs+ antrinis ir pagrįstas.
+
+metadata:
+  context: technologinis
+  cultural_flag: >
+    Telefonas kaip laukimo simbolis — universalus šiuolaikinis
+    kontekstas. Tačiau "skaitytas" statusas gali nebūti
+    žinomas vyresniems vartotojams.
+  demographic_flag: >
+    Stipriau rezonuoja su 20-45 m. amžiaus grupe
+    kuri aktyviai naudoja žinučių programėles.
+  created: 2026-07-30
+  version: "1.0"

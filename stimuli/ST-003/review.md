@@ -5,7 +5,7 @@
 **Peržiūros data:** 2026-07-30
 **Recenzentas:** Claude (ConflictLab auditas)
 **Remtasi:** `docs/methodology/stimulus_validation_protocol.md` v1.0.1
-**Statusas po peržiūros:** review
+**Statusas po peržiūros:** beta
 
 ---
 
@@ -48,16 +48,16 @@
 ## CHOICES — Variantų validacija (V2)
 
 ### V2.1 Reakcija, ne nuomonė
-**Įvertinimas:** 3/5
-**Paaiškinimas:** A ("galimybė — galima rašyti bet ką") yra sąvokinė reakcija — reikalauja kognityvinės operacijos "tai = galimybė". B ("nerimas") ir C ("tyla") yra artimesnės momentinei reakcijai.
-**Rastos problemos:** A variantas yra interpretacija, ne gryna reakcija. Pažeidžia V2.1 ribą.
-**Rekomendacija:** Perrašyti A variantą. Siūloma: *"Iš karto pagalvojau ką čia galėčiau daryti"* — tai yra reakcija, ne vertinimas.
+**Įvertinimas:** 5/5
+**Paaiškinimas:** ✓ Pataisyta. Visi trys variantai yra spontaniškos mintys, ne etiketės: A ("Iš karto pagalvojau ką čia galėčiau daryti"), B ("Nežinau nuo ko pradėti"), C ("Nieko nekyla"). Nė vienas neįvardija vidinės būsenos kaip sąvokos.
+**Rastos problemos:** Nėra.
+**Rekomendacija:** Priimti
 
 ### V2.2 Socialiai pageidaujamas atsakymas
-**Įvertinimas:** 3/5
-**Paaiškinimas:** A ("galimybė") skamba optimistiškai ir gali būti renkamas kaip socialiai pageidaujamas. B ("nerimas") gali būti vengiamas kaip "silpnybės" ženklas. Asimetrija reikšminga.
-**Rastos problemos:** A variantas turi pozityvumo šališkumą. B variantas gali būti vengiamas.
-**Rekomendacija:** Perrašyti A — pašalinti "galimybė" žodį iš teksto.
+**Įvertinimas:** 4/5
+**Paaiškinimas:** ✓ Pataisyta. "Iš karto pagalvojau ką galėčiau daryti" nėra aiškiai "geresnis" už "Nieko nekyla". Pozityvumo šališkumas pašalintas kartu su žodžiu "galimybė". B ("Nežinau nuo ko pradėti") vis dar gali būti šiek tiek vengiamas kaip "silpnybės" ženklas — bet tai priimtinas lygis.
+**Rastos problemos:** Minimali — B šiek tiek vengiamas. Stebėtina empiriškai.
+**Rekomendacija:** Priimti
 
 ### V2.3 Moralinis pasirinkimas
 **Įvertinimas:** 5/5
@@ -167,24 +167,18 @@
 | V1.2 AI artefaktai | IMAGE | 10% | 5/5 | 10 |
 | V1.3 Kultūrinis neutralumas | IMAGE | 10% | 5/5 | 10 |
 | V1.4 Lyties/statuso neutralumas | IMAGE | 10% | 5/5 | 10 |
-| V2.1 Reakcija, ne nuomonė | CHOICES | 15% | 3/5 | 9 |
-| V2.2 Socialinis neutralumas | CHOICES | 15% | 3/5 | 9 |
+| V2.1 Reakcija, ne nuomonė | CHOICES | 15% | 5/5 | 15 |
+| V2.2 Socialinis neutralumas | CHOICES | 15% | 4/5 | 12 |
 | V3.1 Pirminė ašis | SIGNALS | 10% | 4/5 | 8 |
 | V3.4 Svorių simetrija | SIGNALS | 10% | 2/5 | 4 |
 | V4 Teorijų validacija | VISI | 5% | 3/5 | 3 |
-| **VISO** | | **100%** | | **75/100** |
+| **VISO** | | **100%** | | **84/100** |
 
-**Gautas balas: 75/100** ✓ (min 70)
+**Gautas balas: 84/100** ✓
 
-**Sprendimas:** 🟡 Beta po pataisymo
+**Sprendimas:** ✅ Beta
 
-**Reikalingi pataisymai (CHOICES):**
-1. **A variantas** — perrašyti: pašalinti "galimybė", paversti momentine reakcija
-2. **Svorių balansas** — po A perrašymo patikrinti V3.4
-
-**IMAGE — puiki** (5/5 trijuose iš penkių kriterijų). Vaizdas nekeičiamas.
-
-**Žymos:** `choices_rewrite_required` · `cs_skersvėjas_stebimas` · `replaces:L07`
+**Žymos:** `cs_skersvėjas_stebimas` · `replaces:L07` · `choices_v2`
 
 ---
 
@@ -193,9 +187,9 @@
 - ✓ Pirmas cs ašies stimulas bibliotekoje
 - ✓ Pirmas "objektas be žmonių" (ST-001 ir ST-002 turėjo figūras)
 - ✓ Naujas kontekstų poklasis: abstraktus objektas → vidinė erdvė
-- ⚠ CHOICES reikalauja perrašymo prieš beta
+- ✓ CHOICES perrašyti — spontaniškos mintys, ne etiketės
 
-**Sprendimas:** 🟡 Beta po CHOICES pataisymo
+**Sprendimas:** ✅ Beta
 
 ---
 

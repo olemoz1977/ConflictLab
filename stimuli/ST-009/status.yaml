@@ -1,0 +1,9 @@
+stimulus_id: ST-009
+status: beta
+history:
+  - date: 2026-07-30
+    status: draft
+    note: "Kandidatas — žmogus prie kompiuterio"
+  - date: 2026-07-30
+    status: beta
+    note: "Library audit: 84/100. 🟢 Accept."

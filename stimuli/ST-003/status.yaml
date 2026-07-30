@@ -1,5 +1,5 @@
 stimulus_id: ST-003
-status: review
+status: beta
 
 history:
   - date: 2026-07-30
@@ -7,4 +7,10 @@ history:
     note: "Sukurtas — cs- polius (neapibrėžtumo tolerancija)"
   - date: 2026-07-30
     status: review
-    note: "Pateiktas peržiūrai pagal Protocol v1.0.1"
+    note: "Claude review: 75/100. CHOICES reikalauja perrašymo — variantai per konceptualūs."
+  - date: 2026-07-30
+    status: review
+    note: "Nepriklausomas auditas: diagnozė patikslinta — visi trys variantai yra etiketės, ne spontaniškos mintys."
+  - date: 2026-07-30
+    status: beta
+    note: "CHOICES perrašyti: A→'Iš karto pagalvojau ką čia galėčiau daryti', B→'Nežinau nuo ko pradėti', C→'Nieko nekyla'. Balas: 84/100."

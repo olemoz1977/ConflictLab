@@ -1,0 +1,39 @@
+stimulus_id: ST-010
+image: image.png
+primary_axis: cr
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Laisvė — galima eiti"
+    signals:
+      aw: +0.10
+      cs: -0.25
+      cr: -0.65
+    mixed_signal_justification: null
+
+  - id: B
+    text: "Pagalvojau ar eiti ar likti"
+    signals:
+      aw: +0.10
+      cs: +0.50
+      cr: +0.35
+    mixed_signal_justification: >
+      cs+ pirminė šiame variante: abejojimas = aiškumo siekimas.
+
+  - id: C
+    text: "Kažkas laukia ten"
+    signals:
+      aw: +0.40
+      cs: +0.20
+      cr: -0.10
+    mixed_signal_justification: >
+      aw+ pirminė: laukimas ko nors = artėjimas prie to.
+
+metadata:
+  context: vidine_erdve
+  cultural_flag: null
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

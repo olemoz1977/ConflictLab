@@ -1,0 +1,38 @@
+stimulus_id: ST-008
+image: image.png
+primary_axis: aw
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Norėjosi eiti toliau greičiau"
+    signals:
+      aw: -0.45
+      cs: -0.10
+      cr: -0.20
+    mixed_signal_justification: null
+
+  - id: B
+    text: "Pagalvojau kas eina priekyje"
+    signals:
+      aw: +0.35
+      cs: +0.20
+      cr: +0.10
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Sustojau mintyse"
+    signals:
+      aw: -0.10
+      cs: +0.30
+      cr: +0.25
+    mixed_signal_justification: >
+      cs+ antrinis: sustojimas aktyvuoja apmąstymą = aiškumo poreikis.
+
+metadata:
+  context: darbo_aplinka
+  cultural_flag: null
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

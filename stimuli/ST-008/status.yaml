@@ -1,0 +1,9 @@
+stimulus_id: ST-008
+status: review
+history:
+  - date: 2026-07-30
+    status: draft
+    note: "Kandidatas — koridorius"
+  - date: 2026-07-30
+    status: review
+    note: "Library audit: 74/100. 🟡 Needs refinement. Institucinis kontekstas."

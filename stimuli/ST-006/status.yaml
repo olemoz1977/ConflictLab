@@ -1,0 +1,9 @@
+stimulus_id: ST-006
+status: review
+history:
+  - date: 2026-07-30
+    status: draft
+    note: "Kandidatas — žmogus vienas salėje"
+  - date: 2026-07-30
+    status: review
+    note: "Library audit: 65/100. 🟡 Needs refinement. FC-001 per stiprus."
