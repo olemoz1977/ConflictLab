@@ -16,20 +16,16 @@
     header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,5vw,1.8rem);font-weight:300;line-height:1.2;margin-bottom:10px}
     header p{color:var(--dim);font-size:.87rem;line-height:1.65}
     .screen{display:none}.screen.active{display:block}
-    .prog{height:1px;background:var(--border);margin-bottom:32px}
-    .prog-fill{height:1px;background:var(--accent);transition:width 600ms ease}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px}
-    .card h2{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:500;margin-bottom:8px}
-    .card p{color:var(--dim);font-size:.86rem;line-height:1.65}
-    .steps{display:flex;flex-direction:column;gap:9px;margin-top:14px}
-    .step{display:flex;gap:12px}
-    .step-n{font-size:.7rem;font-weight:600;color:var(--accent);flex-shrink:0;padding-top:3px}
-    .step-t{font-size:.84rem;color:var(--dim);line-height:1.5}
+    /* PROGRESS */
+    .prog-wrap{margin-bottom:28px}
+    .prog-dots{display:flex;gap:6px;margin-bottom:8px}
+    .prog-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);transition:background 400ms}
+    .prog-dot.done{background:var(--accent)}
+    .prog-dot.active{background:var(--accent);box-shadow:0 0 0 2px var(--a2)}
+    .prog-label{font-size:.72rem;color:var(--faint);letter-spacing:.06em}
     /* STIMULUS */
-    .stim-wrap{border-radius:var(--r);overflow:hidden;margin-bottom:20px;aspect-ratio:3/4;background:var(--faint);position:relative}
-    .stim-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-    .stim-num{position:absolute;top:14px;left:14px;font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);background:rgba(0,0,0,.4);padding:4px 10px;border-radius:20px}
-    .stim-q{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.4;margin-bottom:18px}
+    .stim-img-wrap{border-radius:var(--r);overflow:hidden;margin-bottom:24px;background:var(--faint);position:relative}
+    .stim-img-wrap img{width:100%;display:block;object-fit:cover;aspect-ratio:3/4}
     .choices{display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
     .choice{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;color:var(--dim);font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.5;text-align:left;cursor:pointer;transition:border-color 180ms,color 180ms,background 180ms;position:relative;-webkit-tap-highlight-color:transparent}
     .choice.on{border-color:var(--accent);background:rgba(124,158,143,.07);color:var(--text)}
@@ -40,28 +36,29 @@
     .btn-p:active{opacity:.8}
     .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border);margin-top:10px}
     /* LOADING */
-    .loading-box{text-align:center;padding:48px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px}
-    .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+    .loading-box{text-align:center;padding:56px 24px}
+    .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
     @keyframes spin{to{transform:rotate(360deg)}}
     .loading-box p{color:var(--dim);font-size:.85rem;line-height:1.6}
-    /* AXES DISPLAY */
+    /* AXES */
     .axes-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
-    .axis-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .axes-title{font-size:.65rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .axis-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
     .axis-row:last-child{margin-bottom:0}
-    .axis-name{font-size:.75rem;color:var(--dim);width:130px;flex-shrink:0}
+    .axis-name{font-size:.74rem;color:var(--dim);width:120px;flex-shrink:0;line-height:1.3}
     .axis-track{flex:1;height:4px;background:var(--faint);border-radius:2px;position:relative}
-    .axis-center{position:absolute;left:50%;top:-2px;width:1px;height:8px;background:var(--border)}
-    .axis-fill{position:absolute;top:0;height:4px;border-radius:2px;background:var(--accent);transition:all 600ms ease}
-    .axis-val{font-size:.75rem;color:var(--text);width:36px;text-align:right;font-family:'Space Grotesk',sans-serif}
+    .axis-center{position:absolute;left:50%;top:-3px;width:1px;height:10px;background:var(--border)}
+    .axis-fill{position:absolute;top:0;height:4px;border-radius:2px;background:var(--accent);transition:all 700ms ease}
+    .axis-val{font-size:.74rem;color:var(--text);width:38px;text-align:right;font-family:'Space Grotesk',sans-serif}
     /* REFLECTION */
-    .r-box{background:var(--card);border:1px solid var(--a2);border-radius:var(--r);padding:26px 22px;margin-bottom:20px}
-    .r-sec{margin-bottom:20px}
-    .r-sec:last-child{margin-bottom:0}
+    .r-box{background:var(--card);border:1px solid var(--a2);border-radius:var(--r);padding:24px;margin-bottom:18px}
     .r-lbl{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
-    .r-txt{font-size:.87rem;color:var(--dim);line-height:1.75}
-    .r-q{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:400;color:var(--text);line-height:1.5}
-    .scope{font-size:.76rem;color:var(--faint);font-style:italic;line-height:1.6}
-    .fb-row{display:flex;gap:10px;margin-bottom:12px}
+    .r-txt{font-size:.87rem;color:var(--dim);line-height:1.75;margin-bottom:18px}
+    .r-txt:last-child{margin-bottom:0}
+    .r-q{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:400;color:var(--text);line-height:1.55}
+    .scope{font-size:.74rem;color:var(--faint);font-style:italic;line-height:1.6;margin-bottom:18px}
+    .trace-box{background:rgba(124,158,143,.06);border:1px solid var(--a2);border-radius:10px;padding:16px}
+    .fb-row{display:flex;gap:10px;margin-bottom:10px}
     .fb-btn{flex:1;padding:13px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--dim)}
     .fb-btn.res{border-color:var(--accent);color:var(--accent)}
     .fb-btn.dis{border-color:var(--warn);color:var(--warn)}
@@ -69,14 +66,23 @@
     .fb-detail.show{display:block}
     textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:13px;resize:vertical;min-height:80px;line-height:1.6;margin-bottom:10px}
     textarea:focus{outline:none;border-color:var(--accent)}
+    /* INTRO */
+    .intro-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px}
+    .intro-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:400;margin-bottom:10px;line-height:1.3}
+    .intro-card p{color:var(--dim);font-size:.86rem;line-height:1.65}
+    .warn-box{border:1px solid rgba(176,128,80,.2);background:rgba(176,128,80,.05);border-radius:var(--r);padding:12px 16px;font-size:.79rem;color:var(--warn);line-height:1.6;margin-bottom:16px}
     /* HISTORY */
+    .sess-badge{display:inline-block;font-size:.74rem;color:var(--accent);background:var(--a2);padding:3px 10px;border-radius:20px;margin-bottom:14px}
     .hist-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px}
     .hist-meta{font-size:.72rem;color:var(--faint);margin-bottom:5px}
-    .hist-signal{font-size:.83rem;color:var(--dim);line-height:1.5}
-    .hist-signal span{color:var(--accent)}
-    .sess-count{display:inline-block;font-size:.74rem;color:var(--accent);background:var(--a2);padding:3px 10px;border-radius:20px;margin-bottom:14px}
-    .divider{height:1px;background:var(--border);margin:18px 0}
-    .warn-box{border:1px solid rgba(176,128,80,.2);background:rgba(176,128,80,.05);border-radius:var(--r);padding:13px 16px;font-size:.79rem;color:var(--warn);line-height:1.6;margin-bottom:16px}
+    .hist-axes{font-size:.82rem;color:var(--dim)}
+    .hist-axes span{color:var(--accent)}
+    .divider{height:1px;background:var(--border);margin:16px 0}
+    /* PATTERN */
+    .pattern-card{background:var(--card);border:1px solid var(--accent);border-radius:var(--r);padding:24px;margin-bottom:18px}
+    .pattern-lbl{font-size:.65rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+    .pattern-text{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400;color:var(--text);line-height:1.6;margin-bottom:14px}
+    .pattern-note{font-size:.78rem;color:var(--faint);font-style:italic;line-height:1.6}
     footer{border-top:1px solid var(--border);padding:22px 0;margin-top:40px;font-size:.73rem;color:var(--faint);display:flex;justify-content:space-between}
   </style>
 </head>
@@ -85,506 +91,512 @@
   <header>
     <div class="logo">ConflictLab</div>
     <h1>Savirefleksijos platforma</h1>
-    <p>Sistema stebi dėmesio kryptį — ne emocijų pavadinimą.</p>
+    <p>Sistema stebi reakcijų trajektoriją — ne asmenybę.</p>
   </header>
 
   <!-- INTRO -->
   <div class="screen active" id="s-intro">
-    <div class="warn-box">Čia nėra teisingų ar neteisingų atsakymų. Sistema stebi reakcijų trajektoriją, ne asmenybę.</div>
-    <div id="session-badge"></div>
-    <div class="card">
-      <h2>Pasirink situaciją</h2>
-      <p>Sistema pateiks 3–5 stimulus. Po kiekvieno — tavo reakcija. Gale — refleksinis sakinys apie pastebėtą trajektoriją.</p>
-      <div class="steps">
-        <div class="step"><div class="step-n">01</div><div class="step-t">Žiūri į vaizdą. Pasirenki pirmą reakciją.</div></div>
-        <div class="step"><div class="step-n">02</div><div class="step-t">Sistema renka signalus per 3 ašis.</div></div>
-        <div class="step"><div class="step-n">03</div><div class="step-t">Gauni refleksinį sakinį apie savo reakcijų kryptį.</div></div>
-      </div>
+    <div class="warn-box">Čia nėra teisingų ar neteisingų atsakymų.</div>
+    <div id="sess-badge-wrap"></div>
+    <div class="intro-card">
+      <h2>Kaip tai veikia</h2>
+      <p>Pamatysi keletą vaizdų. Po kiekvieno — pasirink pirmą reakciją kuri šovė į galvą. Sistema renka signalus ir po 3 sesijų parodo pastebėtą trajektoriją.</p>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-      <button class="btn btn-p" onclick="startSession(1)">Neatsakyta žinutė</button>
-      <button class="btn btn-g" onclick="startSession(2)">Kritika susirinkime</button>
-    </div>
-    <div id="history-section"></div>
+    <button class="btn btn-p" onclick="beginSession()" id="btn-begin">Pradėti</button>
+    <div id="history-wrap"></div>
   </div>
 
   <!-- STIMULUS -->
   <div class="screen" id="s-stim">
-    <div class="prog"><div class="prog-fill" id="stim-prog" style="width:10%"></div></div>
-    <div class="stim-wrap">
-      <img id="stim-img" src="" alt="">
-      <div class="stim-num" id="stim-num">1 / 4</div>
+    <div class="prog-wrap">
+      <div class="prog-dots" id="prog-dots"></div>
+      <div class="prog-label" id="prog-label"></div>
     </div>
-    <div class="stim-q" id="stim-q">Kas pirmiausia šovė į galvą?</div>
+    <div class="stim-img-wrap">
+      <img id="stim-img" src="" alt="">
+    </div>
     <div class="choices" id="stim-choices"></div>
-    <button class="btn btn-p" id="btn-next" onclick="nextStimulus()" disabled>Toliau</button>
+    <button class="btn btn-p" id="btn-next" onclick="nextStim()" disabled>Toliau</button>
   </div>
 
   <!-- LOADING -->
   <div class="screen" id="s-loading">
-    <div class="prog"><div class="prog-fill" style="width:90%"></div></div>
     <div class="loading-box">
       <div class="spinner"></div>
-      <p>Sistema analizuoja reakcijų trajektoriją...</p>
+      <p id="load-msg">Analizuojama...</p>
     </div>
   </div>
 
   <!-- REFLECTION -->
   <div class="screen" id="s-ref">
-    <div class="prog"><div class="prog-fill" style="width:100%"></div></div>
-
-    <!-- Signal Orientation axes -->
     <div class="axes-box">
-      <div style="font-size:.65rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">Signalų kryptys</div>
+      <div class="axes-title">Signalų kryptys šioje sesijoje</div>
       <div class="axis-row">
         <div class="axis-name">atsitraukimas ↔ artėjimas</div>
-        <div class="axis-track">
-          <div class="axis-center"></div>
-          <div class="axis-fill" id="ax-aw"></div>
-        </div>
+        <div class="axis-track"><div class="axis-center"></div><div class="axis-fill" id="ax-aw"></div></div>
         <div class="axis-val" id="ax-aw-v">0.00</div>
       </div>
       <div class="axis-row">
-        <div class="axis-name">aiškumas ↔ neapibrėžtumas</div>
-        <div class="axis-track">
-          <div class="axis-center"></div>
-          <div class="axis-fill" id="ax-cs"></div>
-        </div>
+        <div class="axis-name">neapibrėžtumas ↔ aiškumas</div>
+        <div class="axis-track"><div class="axis-center"></div><div class="axis-fill" id="ax-cs"></div></div>
         <div class="axis-val" id="ax-cs-v">0.00</div>
       </div>
       <div class="axis-row">
         <div class="axis-name">paleidimas ↔ kontrolė</div>
-        <div class="axis-track">
-          <div class="axis-center"></div>
-          <div class="axis-fill" id="ax-cr"></div>
-        </div>
+        <div class="axis-track"><div class="axis-center"></div><div class="axis-fill" id="ax-cr"></div></div>
         <div class="axis-val" id="ax-cr-v">0.00</div>
       </div>
     </div>
 
     <div class="r-box">
-      <div class="r-sec">
-        <div class="r-lbl">Pastebėta trajektorija</div>
-        <div class="r-txt" id="r-trajectory"></div>
-      </div>
-      <div class="r-sec">
-        <div class="r-lbl">Ko sistema negali žinoti</div>
-        <div class="r-txt" id="r-limits"></div>
-      </div>
-      <div class="r-sec">
-        <div class="r-lbl">Kur tai galioja</div>
-        <div class="scope">Tik šios sesijos stimulai. Ne apie asmenybę ar elgesį kitose situacijose.</div>
-      </div>
-      <div class="r-sec" style="background:rgba(124,158,143,.06);border:1px solid var(--a2);border-radius:10px;padding:16px 18px">
-        <div class="r-lbl">Refleksinis klausimas</div>
-        <div class="r-q" id="r-question"></div>
+      <div class="r-lbl">Pastebėta trajektorija</div>
+      <div class="r-txt" id="r-traj"></div>
+      <div class="r-lbl">Ko sistema negali žinoti</div>
+      <div class="r-txt scope" id="r-limits"></div>
+      <div class="trace-box">
+        <div class="r-lbl" style="margin-bottom:8px">Refleksinis klausimas</div>
+        <div class="r-q" id="r-q"></div>
       </div>
     </div>
 
     <div style="font-size:.8rem;color:var(--dim);margin-bottom:10px">Ar tai atitinka tavo patirtį?</div>
     <div class="fb-row">
-      <button class="fb-btn res" onclick="saveSession('res')">✓ Atpažįstu</button>
+      <button class="fb-btn res" onclick="finishSession('res')">✓ Atpažįstu</button>
       <button class="fb-btn dis" onclick="document.getElementById('fb-d').classList.add('show')">✕ Nepanašu</button>
     </div>
     <div class="fb-detail" id="fb-d">
-      <textarea id="fb-t" placeholder="Kas neatitiko? Tai vertingiausia informacija."></textarea>
-      <button class="btn btn-p" onclick="saveSession('dis')">Išsaugoti</button>
+      <textarea id="fb-t" placeholder="Kas neatitiko?"></textarea>
+      <button class="btn btn-p" onclick="finishSession('dis')">Išsaugoti</button>
     </div>
     <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
   </div>
 
-  <!-- THANKS -->
-  <div class="screen" id="s-thanks">
-    <div class="card" style="text-align:center;padding:40px 20px;border-color:var(--a2)">
-      <div style="font-size:1.6rem;margin-bottom:14px">◎</div>
-      <h2 id="t-title" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:400;margin-bottom:10px"></h2>
-      <p id="t-msg" style="color:var(--dim);font-size:.85rem;line-height:1.65"></p>
+  <!-- PATTERN -->
+  <div class="screen" id="s-pattern">
+    <div class="loading-box" id="pat-loading">
+      <div class="spinner"></div>
+      <p>Analizuojama sesijų istorija...</p>
+    </div>
+    <div id="pat-content" style="display:none">
+      <div class="pattern-card">
+        <div class="pattern-lbl">Pastebėtas dėsningumas</div>
+        <div class="pattern-text" id="pat-text"></div>
+        <div class="pattern-note" id="pat-note"></div>
+      </div>
+      <div class="r-box">
+        <div class="r-lbl">Pagrindas</div>
+        <div class="r-txt" id="pat-basis"></div>
+      </div>
     </div>
     <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
   </div>
 
-  <footer><span>ConflictLab v0.5.1</span><span>SignalOrientation Lite</span></footer>
+  <footer><span>ConflictLab v0.6.0</span><span>SignalOrientation Lite</span></footer>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// STIMULUS LIBRARY — 12 stimulai, 3 ašys
-// Kiekvienas stimulas turi signalą per 3 ašis:
-// aw: approach_withdrawal (-1=atsitraukimas, +1=artėjimas)
-// cs: certainty_seeking (-1=neapibrėžtumas, +1=aiškumas)
-// cr: control_release (-1=paleidimas, +1=kontrolė)
-// ═══════════════════════════════════════════
-const STIMULI = [
-  // APPROACH_WITHDRAWAL ašis
-  {
-    id:'s01', src:'media/p2_window_silhouette.png',
-    label:'Žmogus prie lango',
-    q:'Kas pirmiausia šovė į galvą?',
-    axis:'aw',
-    choices:[
-      {text:'Norėjosi pabūti vienam ir negalvoti', aw:-.50, cs:-.20, cr:-.30},
-      {text:'Pagalvojau — gal reikia kažką daryti', aw:+.20, cs:+.30, cr:+.40},
-      {text:'Laukimas — normali dalis', aw:-.10, cs:-.30, cr:-.20},
-    ]
-  },
-  {
-    id:'s02', src:'media/ax_approach.png',
-    label:'Du žmonės koridoriuje',
-    q:'Ką jaučiau žiūrėdamas į šią sceną?',
-    axis:'aw',
-    choices:[
-      {text:'Artumas — kažkas sprendžiasi', aw:+.40, cs:+.20, cr:+.10},
-      {text:'Įtampa — per arti', aw:-.30, cs:+.30, cr:+.20},
-      {text:'Neutralu — tiesiog du žmonės', aw:+.05, cs:-.10, cr:-.10},
-    ]
-  },
-  {
-    id:'s03', src:'media/v2_p2_corridor.png',
-    label:'Koridorius po susirinkimo',
-    q:'Ką norėjosi daryti šioje situacijoje?',
-    axis:'aw',
-    choices:[
-      {text:'Išeiti greičiau — nebenorėjosi būti', aw:-.50, cs:-.10, cr:-.30},
-      {text:'Palaukti ir pasikalbėti su kuo nors', aw:+.35, cs:+.10, cr:+.10},
-      {text:'Tiesiog eiti savo keliu', aw:-.15, cs:-.20, cr:+.20},
-    ]
-  },
-  {
-    id:'s04', src:'media/v2_p4_person_alone.png',
-    label:'Žmogus vienas salėje',
-    q:'Kas pirmiausia šovė į galvą?',
-    axis:'aw',
-    choices:[
-      {text:'Vienišumas — sunkiai jaučiasi', aw:-.40, cs:+.20, cr:-.20},
-      {text:'Ramybė — laikas sau', aw:-.20, cs:-.30, cr:-.30},
-      {text:'Pagalvojau ar reikia pagalbos', aw:+.30, cs:+.30, cr:+.20},
-    ]
-  },
-  // CERTAINTY_SEEKING ašis
-  {
-    id:'s05', src:'media/p1_phone_table.png',
-    label:'Telefonas ant stalo',
-    q:'Kas pirmiausia šovė į galvą?',
-    axis:'cs',
-    choices:[
-      {text:'Iš karto pagalvojau — ar atsakė?', aw:+.10, cs:+.60, cr:+.30},
-      {text:'Telefonas nutylęs — tai normalu', aw:-.10, cs:-.30, cr:-.20},
-      {text:'Pradėjau galvoti ką daryti toliau', aw:+.20, cs:+.40, cr:+.50},
-    ]
-  },
-  {
-    id:'s06', src:'media/p3_chat_screen.png',
-    label:'Pokalbio ekranas',
-    q:'Ką jaučiau žiūrėdamas į tuščią vietą po žinute?',
-    axis:'cs',
-    choices:[
-      {text:'Neramino — reikia žinoti kas vyksta', aw:+.10, cs:+.65, cr:+.30},
-      {text:'Faktas, tiek to — palaukiu', aw:-.15, cs:-.35, cr:-.25},
-      {text:'Pagalvojau rašyti dar kartą', aw:+.20, cs:+.50, cr:+.55},
-    ]
-  },
-  {
-    id:'s07', src:'media/ax_uncertainty.png',
-    label:'Tuščias lapas',
-    q:'Kas pirmiausia šovė į galvą žiūrint į tuščią lapą?',
-    axis:'cs',
-    choices:[
-      {text:'Galimybė — galima rašyti bet ką', aw:+.10, cs:-.40, cr:-.20},
-      {text:'Nerimas — nežinau nuo ko pradėti', aw:-.10, cs:+.55, cr:+.30},
-      {text:'Tyla — nieko nereikia daryti', aw:-.20, cs:-.50, cr:-.40},
-    ]
-  },
-  {
-    id:'s08', src:'media/v2_p3_notebook.png',
-    label:'Knygelė su išbrauktais žodžiais',
-    q:'Ką jaučiau žiūrėdamas į išbraukytus žodžius?',
-    axis:'cs',
-    choices:[
-      {text:'Noras pataisyti — surasti teisingą', aw:+.10, cs:+.60, cr:+.50},
-      {text:'Procesas — normalus mąstymas', aw:+.05, cs:-.20, cr:-.10},
-      {text:'Neišspręstumas — kažkas ne taip', aw:-.10, cs:+.45, cr:+.20},
-    ]
-  },
-  // CONTROL_RELEASE ašis
-  {
-    id:'s09', src:'media/p5_person_laptop.png',
-    label:'Žmogus prie kompiuterio',
-    q:'Kas pirmiausia šovė į galvą?',
-    axis:'cr',
-    choices:[
-      {text:'Darbas — viso kontrolė', aw:+.10, cs:+.30, cr:+.60},
-      {text:'Norėjosi tiesiog dirbti ir nekreipti dėmesio', aw:-.20, cs:-.20, cr:-.30},
-      {text:'Pastebėjau telefoną šalia — jis stebimas', aw:+.15, cs:+.40, cr:+.45},
-    ]
-  },
-  {
-    id:'s10', src:'media/v2_p1_empty_room.png',
-    label:'Tuščia konferencijų salė',
-    q:'Ką jaučiau žiūrėdamas į tuščią salę?',
-    axis:'cr',
-    choices:[
-      {text:'Palengvėjimas — nieko nevyksta', aw:-.20, cs:-.40, cr:-.55},
-      {text:'Laukimas — tuoj kažkas prasidės', aw:+.10, cs:+.45, cr:+.30},
-      {text:'Galimybė kontroliuoti kas vyksta', aw:+.20, cs:+.35, cr:+.60},
-    ]
-  },
-  {
-    id:'s11', src:'media/ax_release.png',
-    label:'Atviros durys',
-    q:'Ką jaučiau žiūrėdamas į atidarytas duris?',
-    axis:'cr',
-    choices:[
-      {text:'Laisvė — galima išeiti', aw:-.10, cs:-.30, cr:-.60},
-      {text:'Galimybė — kažkas naujo laukia', aw:+.30, cs:-.20, cr:-.20},
-      {text:'Sprendimas — reikia pasirinkti', aw:+.10, cs:+.50, cr:+.40},
-    ]
-  },
-  {
-    id:'s12', src:'media/p4_empty_table.png',
-    label:'Tuščias stalas',
-    q:'Kas pirmiausia šovė į galvą?',
-    axis:'cr',
-    choices:[
-      {text:'Tuštuma — nieko nevyksta', aw:-.25, cs:-.30, cr:-.50},
-      {text:'Tvarka — viskas savo vietoje', aw:+.10, cs:+.20, cr:+.55},
-      {text:'Laukimas — kažkas ateis', aw:-.15, cs:+.30, cr:-.10},
-    ]
-  },
+// ══════════════════════════════════════════
+// STIMULUS LIBRARY — 12 stimulų be konteksto
+// aw: approach(-) ↔ withdrawal(+)... wait:
+// aw>0 = artėjimas, aw<0 = atsitraukimas
+// cs>0 = aiškumo siekimas, cs<0 = neapibrėžtumo tolerancija
+// cr>0 = kontrolė, cr<0 = paleidimas
+// ══════════════════════════════════════════
+const LIB = [
+  {id:'L01',src:'media/p2_window_silhouette.png',axis:'aw',pole:-1,
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Norėjosi pabūti vienam',aw:-.55,cs:-.20,cr:-.30},
+      {t:'Galvojau kas vyksta lauke',aw:+.25,cs:+.15,cr:+.10},
+      {t:'Laukimas — normalu',aw:-.10,cs:-.30,cr:-.15}]},
+
+  {id:'L02',src:'media/ax_approach.png',axis:'aw',pole:+1,
+   q:'Ką jaučiau žiūrėdamas į šią sceną?',
+   c:[{t:'Artumas — kažkas sprendžiasi',aw:+.50,cs:+.20,cr:+.15},
+      {t:'Įtampa — per arti',aw:-.25,cs:+.35,cr:+.25},
+      {t:'Neutralu — tiesiog du žmonės',aw:+.05,cs:-.10,cr:-.05}]},
+
+  {id:'L03',src:'media/v2_p2_corridor.png',axis:'aw',pole:-1,
+   q:'Ką norėjosi daryti šioje situacijoje?',
+   c:[{t:'Išeiti greičiau',aw:-.50,cs:-.10,cr:-.30},
+      {t:'Palaukti ir pasikalbėti',aw:+.40,cs:+.10,cr:+.15},
+      {t:'Tiesiog eiti savo keliu',aw:-.10,cs:-.20,cr:+.20}]},
+
+  {id:'L04',src:'media/v2_p4_person_alone.png',axis:'aw',pole:-1,
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Vienišumas — sunkiai jaučiasi',aw:-.40,cs:+.20,cr:-.20},
+      {t:'Ramybė — laikas sau',aw:-.15,cs:-.35,cr:-.35},
+      {t:'Ar reikia pagalbos?',aw:+.35,cs:+.30,cr:+.20}]},
+
+  {id:'L05',src:'media/p1_phone_table.png',axis:'cs',pole:+1,
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Ar atsakė?',aw:+.10,cs:+.65,cr:+.30},
+      {t:'Nutylęs — normalu',aw:-.10,cs:-.35,cr:-.20},
+      {t:'Pradėjau galvoti ką daryti',aw:+.20,cs:+.45,cr:+.55}]},
+
+  {id:'L06',src:'media/p3_chat_screen.png',axis:'cs',pole:+1,
+   q:'Ką jaučiau žiūrėdamas į tuščią vietą?',
+   c:[{t:'Neramino — reikia žinoti',aw:+.10,cs:+.65,cr:+.30},
+      {t:'Faktas, palaukiu',aw:-.15,cs:-.40,cr:-.25},
+      {t:'Rašyti dar kartą',aw:+.20,cs:+.50,cr:+.60}]},
+
+  {id:'L07',src:'media/ax_uncertainty.png',axis:'cs',pole:-1,
+   q:'Kas pirmiausia šovė į galvą žiūrint į tuščią lapą?',
+   c:[{t:'Galimybė — rašyti bet ką',aw:+.10,cs:-.45,cr:-.20},
+      {t:'Nerimas — nežinau nuo ko pradėti',aw:-.10,cs:+.55,cr:+.30},
+      {t:'Tyla — nieko nereikia',aw:-.20,cs:-.50,cr:-.45}]},
+
+  {id:'L08',src:'media/v2_p3_notebook.png',axis:'cs',pole:+1,
+   q:'Ką jaučiau žiūrėdamas į išbraukytus žodžius?',
+   c:[{t:'Noras surasti teisingą',aw:+.10,cs:+.60,cr:+.50},
+      {t:'Normalus mąstymo procesas',aw:+.05,cs:-.20,cr:-.10},
+      {t:'Kažkas neišspręsta',aw:-.10,cs:+.40,cr:+.20}]},
+
+  {id:'L09',src:'media/p5_person_laptop.png',axis:'cr',pole:+1,
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Darbas — viskas kontroliuojama',aw:+.10,cs:+.30,cr:+.65},
+      {t:'Norėjosi dirbti ir nekreipti dėmesio',aw:-.20,cs:-.15,cr:-.30},
+      {t:'Telefonas šalia — stebimas',aw:+.15,cs:+.40,cr:+.45}]},
+
+  {id:'L10',src:'media/v2_p1_empty_room.png',axis:'cr',pole:-1,
+   q:'Ką jaučiau žiūrėdamas į tuščią salę?',
+   c:[{t:'Palengvėjimas — nieko nevyksta',aw:-.20,cs:-.40,cr:-.60},
+      {t:'Laukimas — tuoj pradės',aw:+.10,cs:+.45,cr:+.30},
+      {t:'Galimybė kontroliuoti',aw:+.20,cs:+.35,cr:+.65}]},
+
+  {id:'L11',src:'media/ax_release.png',axis:'cr',pole:-1,
+   q:'Ką jaučiau žiūrėdamas į atidarytas duris?',
+   c:[{t:'Laisvė — galima išeiti',aw:-.10,cs:-.30,cr:-.65},
+      {t:'Galimybė — kažkas naujo laukia',aw:+.30,cs:-.15,cr:-.20},
+      {t:'Sprendimas — reikia pasirinkti',aw:+.10,cs:+.50,cr:+.40}]},
+
+  {id:'L12',src:'media/p4_empty_table.png',axis:'cr',pole:-1,
+   q:'Kas pirmiausia šovė į galvą?',
+   c:[{t:'Tuštuma — nieko nevyksta',aw:-.25,cs:-.30,cr:-.55},
+      {t:'Tvarka — viskas savo vietoje',aw:+.10,cs:+.20,cr:+.60},
+      {t:'Laukimas — kažkas ateis',aw:-.15,cs:+.30,cr:-.10}]},
 ];
 
-// SESSION CONFIGS — kurie stimulai naudojami kuriam scenarijui
-const SESSIONS = {
-  1: { // Neatsakyta žinutė
-    title: 'Neatsakyta žinutė',
-    context: 'Išsiuntei svarbų pasiūlymą kolegai. Jis peržiūrėjo — bet neatsako 4 valandas.',
-    stimuliIds: ['s05','s02','s07','s09'], // cs, aw, cs, cr
-  },
-  2: { // Kritika susirinkime
-    title: 'Kritika susirinkime',
-    context: 'Viršininkas pasako, kad tavo ataskaitoje yra klaidos — prieš visą komandą.',
-    stimuliIds: ['s04','s08','s10','s03'], // aw, cs, cr, aw
-  },
-};
+// ══════════════════════════════════════════
+// ADAPTIVE SELECTION LOGIC
+// ══════════════════════════════════════════
+function selectStimuli(history) {
+  // First session: one from each axis
+  if (history.length === 0) {
+    return [
+      LIB.find(s=>s.id==='L05'), // cs
+      LIB.find(s=>s.id==='L01'), // aw
+      LIB.find(s=>s.id==='L09'), // cr
+      LIB.find(s=>s.id==='L07'), // cs opposite
+    ];
+  }
 
-// localStorage
-const STORAGE_KEY = 'cl_sessions_v2';
-function loadHistory() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { return []; } }
-function saveToStorage(s) { const h = loadHistory(); h.push(s); localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); }
+  // Subsequent sessions: probe weakest axis, confirm strongest
+  const last = history[history.length-1];
+  const axes = last.axes;
+  const absAw = Math.abs(axes.aw);
+  const absCs = Math.abs(axes.cs);
+  const absCr = Math.abs(axes.cr);
 
+  // Strongest axis to confirm
+  let confirmAxis = 'cs';
+  if (absAw >= absCs && absAw >= absCr) confirmAxis = 'aw';
+  else if (absCr >= absCs && absCr >= absAw) confirmAxis = 'cr';
+
+  // Weakest axis to probe
+  let probeAxis = 'cr';
+  if (absAw <= absCs && absAw <= absCr) probeAxis = 'aw';
+  else if (absCs <= absAw && absCs <= absCr) probeAxis = 'cs';
+
+  // Get used IDs from all history
+  const usedIds = new Set(history.flatMap(h => h.stimuliUsed || []));
+
+  const pick = (axis, excludeIds=[]) => {
+    const pool = LIB.filter(s => s.axis === axis && !usedIds.has(s.id) && !excludeIds.includes(s.id));
+    return pool.length > 0 ? pool[Math.floor(Math.random()*pool.length)]
+      : LIB.filter(s => s.axis === axis)[Math.floor(Math.random()*LIB.filter(s=>s.axis===axis).length)];
+  };
+
+  const s1 = pick(confirmAxis);
+  const s2 = pick(probeAxis, [s1?.id]);
+  const s3 = pick(confirmAxis, [s1?.id]);
+  const s4 = pick(probeAxis, [s2?.id]);
+
+  return [s1,s2,s3,s4].filter(Boolean);
+}
+
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+const KEY = 'cl_v3';
+function loadH() { try{return JSON.parse(localStorage.getItem(KEY))||[];}catch{return [];} }
+function saveH(s) { const h=loadH(); h.push(s); localStorage.setItem(KEY,JSON.stringify(h)); }
+
+// ══════════════════════════════════════════
 // STATE
+// ══════════════════════════════════════════
 const S = {
-  sessionType: 1,
-  stimuliQueue: [],
-  currentIdx: 0,
-  responses: [], // {stimId, label, choice, aw, cs, cr, latency}
-  stimShownAt: 0,
-  // Accumulated axes
-  axes: {aw:0, cs:0, cr:0},
+  queue:[], idx:0,
+  responses:[],
+  axes:{aw:0,cs:0,cr:0},
+  stimShownAt:0,
+  selected:null,
 };
 
-function go(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── INTRO ──
-function renderIntro() {
-  const history = loadHistory();
-  const badge = document.getElementById('session-badge');
-  const hist = document.getElementById('history-section');
+// ══════════════════════════════════════════
+// INTRO
+// ══════════════════════════════════════════
+function renderIntro(){
+  const h = loadH();
+  const badge = document.getElementById('sess-badge-wrap');
+  const hist = document.getElementById('history-wrap');
+  const btn = document.getElementById('btn-begin');
 
-  badge.innerHTML = history.length > 0
-    ? `<span class="sess-count">${history.length} sesij${history.length===1?'a':history.length<10?'os':'ų'} išsaugota</span>`
-    : '';
+  if(h.length===0){ badge.innerHTML=''; hist.innerHTML=''; return; }
 
-  if (history.length === 0) { hist.innerHTML = ''; return; }
+  badge.innerHTML = `<span class="sess-badge">${h.length} sesij${h.length===1?'a':h.length<10?'os':'ų'} išsaugota</span>`;
+  btn.textContent = h.length>=3 ? 'Tęsti →' : `Tęsti (${h.length}/3) →`;
 
-  const recent = history.slice(-3).reverse();
+  const recent = h.slice(-3).reverse();
   let html = '<div class="divider"></div><div style="font-size:.72rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Paskutinės sesijos</div>';
-  recent.forEach(s => {
-    const d = new Date(s.timestamp).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
-    html += `<div class="hist-item"><div class="hist-meta">${d} · ${s.title}</div>
-    <div class="hist-signal">aw: <span>${s.axes.aw>0?'+':''}${s.axes.aw.toFixed(2)}</span> · cs: <span>${s.axes.cs>0?'+':''}${s.axes.cs.toFixed(2)}</span> · cr: <span>${s.axes.cr>0?'+':''}${s.axes.cr.toFixed(2)}</span></div></div>`;
+  recent.forEach(s=>{
+    const d = new Date(s.ts).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
+    html += `<div class="hist-item">
+      <div class="hist-meta">${d}</div>
+      <div class="hist-axes">aw: <span>${fmt(s.axes.aw)}</span> &nbsp; cs: <span>${fmt(s.axes.cs)}</span> &nbsp; cr: <span>${fmt(s.axes.cr)}</span></div>
+    </div>`;
   });
-  html += `<button class="btn btn-g" style="margin-top:4px;font-size:.78rem" onclick="if(confirm('Ištrinti istoriją?')){localStorage.removeItem('${STORAGE_KEY}');renderIntro()}">Ištrinti istoriją</button>`;
+
+  if(h.length>=3){
+    html += `<button class="btn btn-p" style="margin-top:6px" onclick="showPattern()">Žiūrėti dėsningumą →</button>`;
+  } else {
+    const need = 3-h.length;
+    html += `<div style="font-size:.78rem;color:var(--faint);text-align:center;margin-top:10px">Dar ${need} sesij${need===1?'a':'os'} iki dėsningumo</div>`;
+  }
+  html += `<button class="btn btn-g" style="font-size:.76rem;margin-top:4px" onclick="if(confirm('Ištrinti?')){localStorage.removeItem('${KEY}');renderIntro()}">Ištrinti istoriją</button>`;
   hist.innerHTML = html;
 }
 
-// ── START SESSION ──
-function startSession(type) {
-  S.sessionType = type;
-  S.responses = [];
-  S.axes = {aw:0, cs:0, cr:0};
-  S.currentIdx = 0;
+function fmt(v){ return (v>=0?'+':'')+v.toFixed(2); }
 
-  const cfg = SESSIONS[type];
-  S.stimuliQueue = cfg.stimuliIds.map(id => STIMULI.find(s => s.id === id));
-
-  showStimulus(0);
+// ══════════════════════════════════════════
+// BEGIN SESSION
+// ══════════════════════════════════════════
+function beginSession(){
+  const h = loadH();
+  S.queue = selectStimuli(h);
+  S.idx=0; S.responses=[]; S.axes={aw:0,cs:0,cr:0}; S.selected=null;
+  showStim(0);
 }
 
-// ── SHOW STIMULUS ──
-function showStimulus(idx) {
-  S.currentIdx = idx;
-  const total = S.stimuliQueue.length;
-  const stim = S.stimuliQueue[idx];
-  const pct = Math.round((idx / total) * 80) + 10;
+// ══════════════════════════════════════════
+// SHOW STIMULUS
+// ══════════════════════════════════════════
+function showStim(idx){
+  S.idx=idx;
+  const total=S.queue.length;
+  const stim=S.queue[idx];
 
-  document.getElementById('stim-prog').style.width = pct + '%';
+  // Progress dots
+  const dots = document.getElementById('prog-dots');
+  dots.innerHTML = '';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='prog-dot'+(i<idx?' done':i===idx?' active':'');
+    dots.appendChild(d);
+  }
+  document.getElementById('prog-label').textContent = `${idx+1} / ${total}`;
+
   document.getElementById('stim-img').src = stim.src;
-  document.getElementById('stim-num').textContent = `${idx+1} / ${total}`;
-  document.getElementById('stim-q').textContent = stim.q;
   document.getElementById('btn-next').disabled = true;
+  S.selected = null;
 
   const wrap = document.getElementById('stim-choices');
   wrap.innerHTML = '';
-  stim.choices.forEach((c, i) => {
-    const b = document.createElement('button');
-    b.className = 'choice';
-    b.textContent = c.text;
-    b.addEventListener('click', () => {
-      // Record response
-      const latency = Date.now() - S.stimShownAt;
-      wrap.querySelectorAll('.choice').forEach((el,j) => el.classList.toggle('on', j===i));
-      document.getElementById('btn-next').disabled = false;
-      // Store current selection
-      b._choiceData = {stimId: stim.id, label: stim.label, choice: c.text, aw: c.aw, cs: c.cs, cr: c.cr, latency};
-      wrap._selected = b;
+  stim.c.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='choice';
+    b.textContent=c.t;
+    b.addEventListener('click',()=>{
+      wrap.querySelectorAll('.choice').forEach((el,j)=>el.classList.toggle('on',j===i));
+      S.selected={...c, stimId:stim.id, latency:Date.now()-S.stimShownAt};
+      document.getElementById('btn-next').disabled=false;
     });
     wrap.appendChild(b);
   });
 
   go('s-stim');
-  S.stimShownAt = Date.now();
+  S.stimShownAt=Date.now();
 }
 
-// ── NEXT STIMULUS ──
-function nextStimulus() {
-  // Save response
-  const wrap = document.getElementById('stim-choices');
-  if (wrap._selected && wrap._selected._choiceData) {
-    const d = wrap._selected._choiceData;
-    S.responses.push(d);
-    S.axes.aw += d.aw;
-    S.axes.cs += d.cs;
-    S.axes.cr += d.cr;
+// ══════════════════════════════════════════
+// NEXT STIMULUS
+// ══════════════════════════════════════════
+function nextStim(){
+  if(S.selected){
+    S.responses.push(S.selected);
+    S.axes.aw+=S.selected.aw;
+    S.axes.cs+=S.selected.cs;
+    S.axes.cr+=S.selected.cr;
   }
-
-  const next = S.currentIdx + 1;
-  if (next < S.stimuliQueue.length) {
-    showStimulus(next);
-  } else {
-    generateReflection();
-  }
+  const next=S.idx+1;
+  if(next<S.queue.length){ showStim(next); }
+  else { generateReflection(); }
 }
 
-// ── GENERATE REFLECTION ──
-async function generateReflection() {
+// ══════════════════════════════════════════
+// GENERATE REFLECTION
+// ══════════════════════════════════════════
+async function generateReflection(){
   go('s-loading');
+  document.getElementById('load-msg').textContent='Analizuojama trajektorija...';
 
-  const n = S.responses.length;
-  const aw = Math.max(-1, Math.min(1, S.axes.aw / n));
-  const cs = Math.max(-1, Math.min(1, S.axes.cs / n));
-  const cr = Math.max(-1, Math.min(1, S.axes.cr / n));
+  const n=S.responses.length;
+  const aw=clamp(S.axes.aw/n);
+  const cs=clamp(S.axes.cs/n);
+  const cr=clamp(S.axes.cr/n);
 
-  // Render axes
-  renderAxis('aw', aw);
-  renderAxis('cs', cs);
-  renderAxis('cr', cr);
+  renderAxes(aw,cs,cr);
 
-  const cfg = SESSIONS[S.sessionType];
-  const responsesSummary = S.responses.map((r,i) =>
-    `Stimulas ${i+1} "${r.label}": "${r.choice}" (laikas: ${Math.round(r.latency/1000)}s)`
-  ).join('\n');
+  const summary=S.responses.map((r,i)=>`${i+1}. "${r.t}" (${Math.round(r.latency/1000)}s)`).join('\n');
 
-  const prompt = `Tu esi ConflictLab — episteminės refleksijos sistema.
+  const prompt=`Tu esi ConflictLab — episteminės refleksijos sistema.
 
-SITUACIJA: ${cfg.context}
+REAKCIJŲ SEKA (be situacijos konteksto — tik vaizdai):
+${summary}
 
-REAKCIJŲ SEKA:
-${responsesSummary}
-
-SIGNALŲ AŠYS (vidutiniai per ${n} stimulus):
-- approach_withdrawal: ${aw.toFixed(2)} (${aw < -0.2 ? 'atsitraukimo kryptis' : aw > 0.2 ? 'artėjimo kryptis' : 'neutrali'})
-- certainty_seeking: ${cs.toFixed(2)} (${cs > 0.2 ? 'aiškumo siekimas' : cs < -0.2 ? 'neapibrėžtumo tolerancija' : 'neutrali'})
-- control_release: ${cr.toFixed(2)} (${cr > 0.2 ? 'kontrolės siekimas' : cr < -0.2 ? 'paleidimas' : 'neutrali'})
+SIGNALŲ AŠYS (vidurkis per ${n} stimulus):
+- approach_withdrawal: ${fmt(aw)} (${aw<-0.15?'atsitraukimo kryptis':aw>0.15?'artėjimo kryptis':'neutrali'})
+- certainty_seeking: ${fmt(cs)} (${cs>0.15?'aiškumo siekimas':cs<-0.15?'neapibrėžtumo tolerancija':'neutrali'})
+- control_release: ${fmt(cr)} (${cr>0.15?'kontrolės siekimas':cr<-0.15?'paleidimas':'neutrali'})
 
 TAISYKLĖS:
-1. Aprašyk trajektoriją be verdiktų: "Pastebima tendencija..."
+1. Aprašyk trajektoriją: "Pastebima tendencija..."
 2. DRAUDŽIAMA: "tu esi...", diagnozės, patarimai
-3. Pateik vieną atvirą refleksinį klausimą
-4. Pripažink ribas: viena sesija, situacinis kontekstas
-5. Visas tekstas lietuvių kalba, natūralus
+3. Vienas atviras refleksinis klausimas
+4. Pripažink ribas: be konteksto, viena sesija
+5. Lietuvių kalba, natūralus stilius
 
-Grąžink TIKTAI JSON:
-{"trajectory":"pastebėta trajektorija (1-2 sakiniai)","limits":"ko sistema negali žinoti (1 sakinys)","question":"refleksinis klausimas?"}`;
+JSON tik:
+{"trajectory":"...","limits":"...","question":"..."}`;
 
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-6', max_tokens:800, messages:[{role:'user',content:prompt}]})
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:prompt}]})
     });
-    const data = await resp.json();
-    const text = data.content[0].text.trim().replace(/```json|```/g,'').trim();
-    const result = JSON.parse(text);
-    document.getElementById('r-trajectory').textContent = result.trajectory;
-    document.getElementById('r-limits').textContent = result.limits;
-    document.getElementById('r-question').textContent = result.question;
-  } catch(e) {
-    // Fallback
-    const traj = aw < -0.2
-      ? 'Pastebima tendencija pirmiau sukurti distanciją prieš reaguojant.'
-      : cs > 0.2
-      ? 'Pastebima tendencija pirmiau ieškoti aiškumo prieš veiksmą.'
-      : cr > 0.2
-      ? 'Pastebima tendencija siekti struktūros ir kontrolės neapibrėžtose situacijose.'
-      : 'Reakcijų trajektorija šioje sesijoje buvo neutrali — ryškaus dėsningumo nefiksuota.';
-    document.getElementById('r-trajectory').textContent = traj;
-    document.getElementById('r-limits').textContent = 'Refleksija paremta vienos sesijos stimulais. Situacinis kontekstas ir nuovargis nepastebimi.';
-    document.getElementById('r-question').textContent = 'Ar šioje situacijoje tavo pirmoji reakcija dažnai tokia pati?';
+    const d=await r.json();
+    const t=d.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const result=JSON.parse(t);
+    document.getElementById('r-traj').textContent=result.trajectory;
+    document.getElementById('r-limits').textContent=result.limits;
+    document.getElementById('r-q').textContent=result.question;
+  }catch{
+    const dom=aw<-0.15?'atsitraukimo':cs>0.15?'aiškumo siekimo':cr>0.15?'kontrolės':'neutrali';
+    document.getElementById('r-traj').textContent=`Pastebima ${dom} krypties tendencija per šios sesijos stimulus.`;
+    document.getElementById('r-limits').textContent='Sistema negali žinoti konteksto, nuovargio ar situacinio spaudimo.';
+    document.getElementById('r-q').textContent='Ar ši kryptis pažįstama iš kitų situacijų?';
   }
-
   go('s-ref');
 }
 
-function renderAxis(id, val) {
-  const fill = document.getElementById('ax-' + id);
-  const valEl = document.getElementById('ax-' + id + '-v');
-  const pct = Math.abs(val) * 50;
-  if (val >= 0) { fill.style.left = '50%'; fill.style.width = pct + '%'; }
-  else { fill.style.left = (50 - pct) + '%'; fill.style.width = pct + '%'; }
-  valEl.textContent = (val >= 0 ? '+' : '') + val.toFixed(2);
+function renderAxes(aw,cs,cr){
+  setAx('aw',aw); setAx('cs',cs); setAx('cr',cr);
 }
+function setAx(id,val){
+  const f=document.getElementById('ax-'+id);
+  const v=document.getElementById('ax-'+id+'-v');
+  const pct=Math.abs(val)*50;
+  if(val>=0){f.style.left='50%';f.style.width=pct+'%';}
+  else{f.style.left=(50-pct)+'%';f.style.width=pct+'%';}
+  v.textContent=fmt(val);
+}
+function clamp(v){return Math.max(-1,Math.min(1,v));}
 
-// ── SAVE + DONE ──
-function saveSession(feedback) {
-  const n = S.responses.length;
-  const aw = Math.max(-1, Math.min(1, S.axes.aw / n));
-  const cs = Math.max(-1, Math.min(1, S.axes.cs / n));
-  const cr = Math.max(-1, Math.min(1, S.axes.cr / n));
+// ══════════════════════════════════════════
+// FINISH SESSION
+// ══════════════════════════════════════════
+function finishSession(fb){
+  const n=S.responses.length;
+  const aw=clamp(S.axes.aw/n);
+  const cs=clamp(S.axes.cs/n);
+  const cr=clamp(S.axes.cr/n);
 
-  saveToStorage({
-    timestamp: Date.now(),
-    title: SESSIONS[S.sessionType].title,
-    axes: {aw, cs, cr},
-    responses: S.responses,
-    feedback,
-    disagreement: feedback === 'dis' ? document.getElementById('fb-t').value : '',
+  saveH({
+    ts:Date.now(),
+    axes:{aw,cs,cr},
+    stimuliUsed:S.queue.map(s=>s.id),
+    feedback:fb,
+    note:fb==='dis'?document.getElementById('fb-t').value:'',
   });
 
-  const h = loadHistory();
-  document.getElementById('t-title').textContent = feedback === 'res' ? 'Ačiū — atpažinti' : 'Ačiū — nepanašumas užregistruotas';
-  document.getElementById('t-msg').textContent = feedback === 'res'
-    ? `Sesija ${h.length} išsaugota. Sistema geriau supras tavo reakcijų trajektoriją.`
-    : 'Tavo nepanašumas yra vertingiausia informacija — padeda sistemai tikslinti modelį.';
-  go('s-thanks');
+  const h=loadH();
+  if(h.length>=3 && h.length%3===0){ showPattern(); }
+  else{
+    const need=3-(h.length%3);
+    alert(`Sesija ${h.length} išsaugota. Dar ${need===3?3:need} sesij${need===1?'a':'os'} iki dėsningumo.`);
+    reset();
+  }
 }
 
-function reset() {
+// ══════════════════════════════════════════
+// PATTERN
+// ══════════════════════════════════════════
+async function showPattern(){
+  go('s-pattern');
+  document.getElementById('pat-loading').style.display='block';
+  document.getElementById('pat-content').style.display='none';
+
+  const h=loadH();
+  const summary=h.slice(-6).map((s,i)=>{
+    const d=new Date(s.ts).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
+    return `Sesija ${i+1} (${d}): aw=${fmt(s.axes.aw)}, cs=${fmt(s.axes.cs)}, cr=${fmt(s.axes.cr)}`;
+  }).join('\n');
+
+  const prompt=`Tu esi ConflictLab. Štai ${h.length} sesijų signalų istorija:
+${summary}
+
+Surask pasikartojantį dėsningumą. Formulė: "X iš Y sesijų..."
+DRAUDŽIAMA: diagnozės, verdiktai, patarimai.
+Lietuvių kalba.
+
+JSON tik:
+{"insight":"dėsningumas (1-2 sakiniai)","question":"atviras klausimas?","note":"metodologinė pastaba","basis":"konkretūs duomenys"}`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    const t=d.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const res=JSON.parse(t);
+    document.getElementById('pat-text').textContent=res.insight+'\n\n'+res.question;
+    document.getElementById('pat-note').textContent=res.note;
+    document.getElementById('pat-basis').textContent=res.basis;
+  }catch{
+    const avgs=h.reduce((a,s)=>({aw:a.aw+s.axes.aw,cs:a.cs+s.axes.cs,cr:a.cr+s.axes.cr}),{aw:0,cs:0,cr:0});
+    const n=h.length;
+    document.getElementById('pat-text').textContent=`Per ${n} sesijų pastebėta: aw=${fmt(avgs.aw/n)}, cs=${fmt(avgs.cs/n)}, cr=${fmt(avgs.cr/n)}.\n\nAr ši kryptis pažįstama?`;
+    document.getElementById('pat-note').textContent='Stebėjimas, ne išvada apie asmenybę.';
+    document.getElementById('pat-basis').textContent=`${n} sesijų duomenys.`;
+  }
+
+  document.getElementById('pat-loading').style.display='none';
+  document.getElementById('pat-content').style.display='block';
+}
+
+// ══════════════════════════════════════════
+// RESET
+// ══════════════════════════════════════════
+function reset(){
   document.getElementById('fb-d').classList.remove('show');
-  document.getElementById('fb-t').value = '';
+  document.getElementById('fb-t').value='';
   renderIntro();
   go('s-intro');
 }
