@@ -1,0 +1,18 @@
+# Stimulus status file
+# Galimos būsenos: draft | review | beta | approved | archived
+# Statusas keičiamas tik po review.
+
+stimulus_id: ST-XXX
+status: draft
+
+history:
+  - date: YYYY-MM-DD
+    status: draft
+    note: "Sukurtas"
+
+# Statusų reikšmės:
+# draft    — stimulas sukurtas, dar neperžiūrėtas
+# review   — peržiūra vyksta
+# beta     — praėjo V1–V5, testuojamas su žmonėmis (V6)
+# approved — praėjo visus 6 etapus, aktyvus bibliotekoje
+# archived — pašalintas iš aktyvios bibliotekos (su priežastimi)

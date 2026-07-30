@@ -1,0 +1,44 @@
+stimulus_id: ST-001
+image: image.png
+primary_axis: aw
+
+question: "Kas pirmiausia šovė į galvą?"
+
+choices:
+  - id: A
+    text: "Norėjosi pabūti vienam"
+    signals:
+      aw: -0.55
+      cs: -0.20
+      cr: -0.30
+    mixed_signal_justification: >
+      cs- (-0.20) ir cr- (-0.30) yra antriniai ir logiškai pagrįsti:
+      norėjimas pabūti vienam natūraliai susijęs su neapibrėžtumo
+      tolerancija (cs-) ir kontrolės atleidimu (cr-).
+      Antrinės ašys neviršija pirminės (aw: -0.55).
+
+  - id: B
+    text: "Galvojau kas vyksta lauke"
+    signals:
+      aw: +0.25
+      cs: +0.15
+      cr: +0.10
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Laukimas — normalu"
+    signals:
+      aw: -0.10
+      cs: -0.30
+      cr: -0.15
+    mixed_signal_justification: null
+
+metadata:
+  context: vidine_erdve
+  cultural_flag: >
+    Lietus pro langą gali turėti skirtingas konotacijas skirtingose
+    kultūrose (melancholija vs. ramybė). Rekomenduojama patikrinti
+    su ne-europietiška auditorija.
+  demographic_flag: null
+  created: 2026-07-30
+  version: "1.0"

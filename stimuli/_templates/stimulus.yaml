@@ -1,0 +1,45 @@
+# Stimulus data file
+# Tik duomenys. Jokios interpretacijos.
+
+stimulus_id: ST-XXX
+image: image.png
+primary_axis: aw  # aw | cs | cr
+
+# Ašių apibrėžimai:
+# aw: approach_withdrawal  (-1 = atsitraukimas, +1 = artėjimas)
+# cs: certainty_seeking    (-1 = neapibrėžtumo tolerancija, +1 = aiškumo siekimas)
+# cr: control_release      (-1 = paleidimas, +1 = kontrolė)
+
+question: "Klausimas vartotojui"
+
+choices:
+  - id: A
+    text: "Varianto A tekstas"
+    signals:
+      aw: 0.00
+      cs: 0.00
+      cr: 0.00
+    mixed_signal_justification: null  # Privaloma jei bet kuri ne-pirminė ašis > 0.30
+
+  - id: B
+    text: "Varianto B tekstas"
+    signals:
+      aw: 0.00
+      cs: 0.00
+      cr: 0.00
+    mixed_signal_justification: null
+
+  - id: C
+    text: "Varianto C tekstas"
+    signals:
+      aw: 0.00
+      cs: 0.00
+      cr: 0.00
+    mixed_signal_justification: null
+
+metadata:
+  context: null           # darbo_aplinka | tarpasmeniniai | vidine_erdve | gamta | technologinis
+  cultural_flag: null     # null arba aprašymas jei kultūriškai specifiškas
+  demographic_flag: null  # null arba aprašymas jei demografiškai specifiškas
+  created: YYYY-MM-DD
+  version: "1.0"

@@ -1,0 +1,10 @@
+stimulus_id: ST-001
+status: review
+
+history:
+  - date: 2026-07-30
+    status: draft
+    note: "Sukurtas kaip pirmasis v0.6 bibliotekos stimulas"
+  - date: 2026-07-30
+    status: review
+    note: "Pateiktas pirminei peržiūrai pagal Protocol v1.0"
