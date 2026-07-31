@@ -1139,13 +1139,9 @@ function dsmComplete() {
     };
     localStorage.setItem(KEY, JSON.stringify(h));
   }
-  // Check if ready for pattern or feedback
-  const newH = loadH();
-  if (newH.length >= 3 && newH.length % 3 === 0) {
-    showPattern();
-  } else {
-    goFeedback();
-  }
+  // DSM is always the last step — go to feedback then reset
+  // (showPattern was already shown before DSM — don't repeat it)
+  goFeedback();
 }
 
 // ══════════════════════════════════════════
