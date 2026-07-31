@@ -484,7 +484,12 @@ function renderIntro(){
       <div class="hist-dir">${summary}</div></div>`;
   });
   if(h.length>=3){
-    html+=`<button class="btn btn-p" style="margin-top:8px" onclick="showPattern()">Palyginti sesijas →</button>`;
+    // Only show if there are new sessions since last pattern view
+    const lastPatternView = parseInt(localStorage.getItem('cl_pattern_viewed')||'0');
+    const newSessions = h.filter(s=>s.ts > lastPatternView).length;
+    if(newSessions > 0) {
+      html+=`<button class="btn btn-p" style="margin-top:8px" onclick="showPattern()">Palyginti sesijas →</button>`;
+    }
   } else {
     const need=3-h.length;
     html+=`<div class="sess-note">Dar ${need} sesij${need===1?'a':'os'} iki dėsningumo</div>`;
@@ -1149,6 +1154,7 @@ function dsmComplete() {
 // ══════════════════════════════════════════
 async function showPattern(){
   S.patternShown = true;
+  localStorage.setItem('cl_pattern_viewed', Date.now().toString());
   go('s-pattern');
   document.getElementById('pat-loading').style.display='flex';
   document.getElementById('pat-content').style.display='none';
