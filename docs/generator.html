@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConflictLab — Stimulus Generator</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;padding:20px}
+  .wrap{max-width:680px;margin:0 auto}
+  .label{font-size:.65rem;letter-spacing:.15em;color:#64748b;margin-bottom:4px}
+  .title{font-size:1.3rem;font-weight:600;margin-bottom:4px}
+  .sub{font-size:.8rem;color:#64748b;margin-bottom:24px}
+  .upload-zone{border:1px dashed #334155;border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:#1e2433;margin-bottom:16px;min-height:120px;display:flex;align-items:center;justify-content:center}
+  .upload-zone img{max-height:260px;max-width:100%;border-radius:8px;object-fit:contain}
+  .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:12px}
+  .btn-primary{background:#0d9488;color:#fff}
+  .btn-primary:disabled{background:#334155;cursor:default}
+  .btn-secondary{background:#1e2433;border:1px solid #334155;color:#94a3b8}
+  .card{background:#1e2433;border-radius:12px;padding:16px;margin-bottom:12px}
+  .meta-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  select,input[type=text]{background:#0f1117;border:1px solid #334155;border-radius:6px;color:#e2e8f0;padding:7px 10px;font-size:.85rem}
+  .choice-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .choice-id{width:28px;height:28px;border-radius:50%;background:#0d9488;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+  .choice-text{flex:1;padding:8px 12px;font-size:.9rem}
+  .axes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+  .axis-label{font-size:.65rem;color:#64748b;margin-bottom:4px}
+  .axis-val{font-weight:600}
+  input[type=range]{width:100%;accent-color:#0d9488}
+  .f4{font-size:.75rem;color:#64748b;font-style:italic;margin-top:6px}
+  .notes{font-size:.8rem;color:#94a3b8;font-style:italic;margin-top:8px}
+  .actions{display:flex;gap:10px;margin-top:4px}
+  .actions .btn{margin-bottom:0}
+  .err{color:#f87171;font-size:.85rem;margin-bottom:12px}
+  .pos{color:#4ade80}
+  .neg{color:#f87171}
+  .neu{color:#94a3b8}
+  .yaml-box{background:#0f1117;border:1px solid #334155;border-radius:8px;padding:14px;font-family:monospace;font-size:.75rem;white-space:pre-wrap;margin-bottom:12px;max-height:320px;overflow-y:auto;color:#94a3b8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="label">CONFLICTLAB</div>
+  <div class="title">Stimulus Generator</div>
+  <div class="sub">F1–F7 · Attention Cues · YAML output</div>
+
+  <div class="upload-zone" id="dropzone" onclick="document.getElementById('filein').click()">
+    <span id="drop-hint" style="color:#64748b">Spausti ir pasirinkti vaizdą</span>
+    <img id="preview" style="display:none">
+  </div>
+  <input type="file" id="filein" accept="image/*" style="display:none">
+
+  <div id="analyze-wrap" style="display:none">
+    <button class="btn btn-primary" id="btn-analyze" onclick="analyze()">Analizuoti pagal F1–F7</button>
+  </div>
+
+  <div class="err" id="err-msg" style="display:none"></div>
+
+  <div id="results" style="display:none">
+    <!-- Meta -->
+    <div class="card">
+      <div class="meta-row">
+        <div>
+          <div class="label">ŠEIMA</div>
+          <select id="m-family">
+            <option>waiting</option><option>withdrawal</option><option>encounter</option>
+            <option>open_space</option><option>work</option><option>other</option>
+          </select>
+        </div>
+        <div>
+          <div class="label">PIRMINĖ AŠIS</div>
+          <select id="m-axis">
+            <option value="aw">aw</option><option value="cs">cs</option><option value="cr">cr</option>
+          </select>
+        </div>
+        <div>
+          <div class="label">STIMULUS ID</div>
+          <input type="text" id="m-id" value="ST-011" style="width:90px">
+        </div>
+      </div>
+      <div class="notes" id="m-notes"></div>
+    </div>
+
+    <!-- Choices -->
+    <div id="choices-container"></div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-primary" onclick="showYaml()">Peržiūrėti YAML</button>
+      <button class="btn btn-secondary" onclick="nextImage()">Kitas →</button>
+    </div>
+    <div id="yaml-wrap" style="display:none;margin-top:12px">
+      <div class="yaml-box" id="yaml-out"></div>
+      <button class="btn btn-primary" onclick="downloadYaml()">↓ Parsisiųsti YAML</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SYSTEM = `Tu esi ConflictLab stimulus kūrimo ekspertas.
+
+FILTRAI (visi privalomi):
+F1: Cue neturi pasakyti ką tai reiškia (ne interpretacija)
+F2: Cue neturi apibūdinti jausmo (ne emocija)
+F3: Cue neturi siūlyti teisingos reakcijos (ne vertinimas)
+F4: Du skirtingi žmonės gali rinktis tą patį cue dėl SKIRTINGŲ priežasčių (svarbiausias)
+F5: Suprantamas be paaiškinimo
+F6: Pagrįstas tuo kas TIKRAI matoma vaizde
+F7: Kuriamas konkrečiam vaizdui
+
+AŠYS: aw (approach_withdrawal, -1=atsitraukimas +1=artėjimas), cs (certainty_seeking, -1=neapibrėžtumo tolerancija +1=aiškumo siekimas), cr (control_release, -1=paleidimas +1=kontrolė)
+ŠEIMOS: waiting | withdrawal | encounter | open_space | work | other
+KLAUSIMAS: visada "Kas pirmiausia patraukė dėmesį?"
+
+Grąžink tik JSON (be markdown):
+{"family":"šeima","primary_axis":"aw|cs|cr","choices":[{"id":"A","text":"cue (1-3 žodžiai)","aw":0.00,"cs":0.00,"cr":0.00,"f4_test":"Žmogus A: ... Žmogus B: ..."},{"id":"B",...},{"id":"C",...}],"notes":"pastabos arba null"}
+
+Svorių gairės: pirminė ašis ±0.30–0.65, antrinės <0.30. Trys variantai — skirtingos kryptys.`;
+
+let currentB64 = null, currentMime = null, currentData = null;
+
+document.getElementById('filein').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const url = ev.target.result;
+    const [meta, data] = url.split(',');
+    currentB64 = data;
+    currentMime = meta.match(/data:([^;]+)/)[1];
+    document.getElementById('preview').src = url;
+    document.getElementById('preview').style.display = 'block';
+    document.getElementById('drop-hint').style.display = 'none';
+    document.getElementById('analyze-wrap').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('yaml-wrap').style.display = 'none';
+    document.getElementById('err-msg').style.display = 'none';
+    currentData = null;
+  };
+  reader.readAsDataURL(f);
+});
+
+async function analyze() {
+  const btn = document.getElementById('btn-analyze');
+  btn.disabled = true;
+  btn.textContent = 'Analizuojama...';
+  document.getElementById('err-msg').style.display = 'none';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: [{role:'user', content:[
+          {type:'image', source:{type:'base64', media_type:currentMime, data:currentB64}},
+          {type:'text', text:'Išanalizuok šį vaizdą ir sukurk stimulus konfigūraciją pagal F1-F7.'}
+        ]}]
+      })
+    });
+    const d = await res.json();
+    const raw = d.content[0].text.trim().replace(/```json|```/g,'').trim();
+    currentData = JSON.parse(raw);
+    renderResults(currentData);
+  } catch(e) {
+    const err = document.getElementById('err-msg');
+    err.textContent = 'Klaida: ' + e.message;
+    err.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Analizuoti pagal F1–F7';
+}
+
+function axColor(v) {
+  return v > 0.15 ? 'pos' : v < -0.15 ? 'neg' : 'neu';
+}
+
+function renderResults(data) {
+  document.getElementById('m-family').value = data.family || 'waiting';
+  document.getElementById('m-axis').value = data.primary_axis || 'aw';
+  const notes = document.getElementById('m-notes');
+  notes.textContent = data.notes || '';
+
+  const container = document.getElementById('choices-container');
+  container.innerHTML = '';
+  (data.choices || []).forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="choice-header">
+        <div class="choice-id">${c.id}</div>
+        <input type="text" class="choice-text" id="text-${i}" value="${c.text}" style="flex:1;background:#0f1117;border:1px solid #334155;border-radius:6px;color:#e2e8f0">
+      </div>
+      <div class="axes">
+        ${['aw','cs','cr'].map(ax => `
+          <div>
+            <div class="axis-label">${ax.toUpperCase()} <span class="${axColor(c[ax])}" id="val-${i}-${ax}">${c[ax]>=0?'+':''}${c[ax].toFixed(2)}</span></div>
+            <input type="range" min="-0.8" max="0.8" step="0.05" value="${c[ax]}" id="range-${i}-${ax}"
+              oninput="updateVal(${i},'${ax}',this.value)">
+          </div>`).join('')}
+      </div>
+      ${c.f4_test ? `<div class="f4">${c.f4_test}</div>` : ''}
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById('results').style.display = 'block';
+}
+
+function updateVal(i, ax, v) {
+  const f = parseFloat(v);
+  const el = document.getElementById(`val-${i}-${ax}`);
+  el.textContent = (f >= 0 ? '+' : '') + f.toFixed(2);
+  el.className = axColor(f);
+}
+
+function getEdited() {
+  const choices = (currentData.choices || []).map((c, i) => ({
+    id: c.id,
+    text: document.getElementById(`text-${i}`).value,
+    aw: parseFloat(document.getElementById(`range-${i}-aw`).value),
+    cs: parseFloat(document.getElementById(`range-${i}-cs`).value),
+    cr: parseFloat(document.getElementById(`range-${i}-cr`).value),
+  }));
+  return {
+    family: document.getElementById('m-family').value,
+    primary_axis: document.getElementById('m-axis').value,
+    id: document.getElementById('m-id').value,
+    choices
+  };
+}
+
+function buildYaml(d) {
+  const date = new Date().toISOString().slice(0,10);
+  return `stimulus_id: ${d.id}
+image: image.png
+family: ${d.family}
+primary_axis: ${d.primary_axis}
+
+question: "Kas pirmiausia patraukė dėmesį?"
+
+choices:
+${d.choices.map(c=>`  - id: ${c.id}
+    text: "${c.text}"
+    signals:
+      aw: ${c.aw.toFixed(2)}
+      cs: ${c.cs.toFixed(2)}
+      cr: ${c.cr.toFixed(2)}`).join('\n')}
+
+metadata:
+  context: null
+  cultural_flag: null
+  demographic_flag: null
+  created: ${date}
+  version: "1.0"`;
+}
+
+function showYaml() {
+  const d = getEdited();
+  const y = buildYaml(d);
+  document.getElementById('yaml-out').textContent = y;
+  document.getElementById('yaml-wrap').style.display = 'block';
+}
+
+function downloadYaml() {
+  const d = getEdited();
+  const y = buildYaml(d);
+  const blob = new Blob([y], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${d.id}_stimulus.yaml`; a.click();
+}
+
+function nextImage() {
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('drop-hint').style.display = 'block';
+  document.getElementById('analyze-wrap').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('yaml-wrap').style.display = 'none';
+  document.getElementById('filein').value = '';
+  const idEl = document.getElementById('m-id');
+  const cur = idEl.value;
+  const num = parseInt(cur.replace('ST-','')) + 1;
+  idEl.value = 'ST-' + String(num).padStart(3,'0');
+  currentB64 = null; currentData = null;
+}
+</script>
+</body>
+</html>
