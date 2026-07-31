@@ -262,7 +262,14 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-g" onclick="goFeedback()">Toliau →</button>
+    <div style="margin-top:20px">
+      <div class="fb-label">Ar tai atspindi ką nors tikro?</div>
+      <div class="fb-row">
+        <button class="fb-btn yes" onclick="patternFinishAndDSM('yes')">Taip, kažką palietė</button>
+        <button class="fb-btn no" onclick="patternFinishAndDSM('no')">Matau kitaip</button>
+      </div>
+    </div>
+    <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
   </div>
 
   <!-- THANKS -->
@@ -1169,10 +1176,14 @@ JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","ref
     });
     const d=await r.json();
     const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
-    document.getElementById('pat-traj').textContent=res.observation||res.trajectory||'';
-    document.getElementById('pat-detail').textContent=res.what_repeated||res.detail||'';
-    document.getElementById('pat-note').textContent=res.why_it_matters||res.note||'';
-    document.getElementById('pat-q').textContent=res.reflection_question||res.question||'';
+    const patTraj = res.observation||res.trajectory||'';
+    const patDetail = res.what_repeated||res.detail||'';
+    const patNote = res.why_it_matters||res.note||'';
+    const patQ = res.reflection_question||res.question||'';
+    document.getElementById('pat-traj').textContent = patTraj;
+    document.getElementById('pat-detail').textContent = patDetail || '(Claude negrąžino what_repeated)';
+    document.getElementById('pat-note').textContent = patNote || '(Claude negrąžino why_it_matters)';
+    document.getElementById('pat-q').textContent = patQ;
   }catch{
     document.getElementById('pat-traj').textContent='Keliose skirtingose situacijose pirmoji reakcija buvo panaši.';
     document.getElementById('pat-detail').textContent='';
@@ -1184,6 +1195,14 @@ JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","ref
 }
 
 function goFeedback(){go('s-feedback');}
+
+function patternFinishAndDSM(fb) {
+  S.hasPattern = true;
+  S.obsState = 'STATE_PATTERN_FOUND';
+  const reflQ = document.getElementById('pat-q').textContent ||
+    'Ar tai tau pažįstama už šio eksperimento ribų?';
+  dsmStart(reflQ);
+}
 
 // ══════════════════════════════════════════
 // BETA FEEDBACK MODULE
