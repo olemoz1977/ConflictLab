@@ -183,7 +183,8 @@
     <!-- S2A: Recognition — kas rezonuoja (Progressive Commitment: 1 klausimas) -->
     <div class="ref-box" style="margin-bottom:20px">
       <div class="ref-label">Kas buvo panašiausia?</div>
-      <div class="ref-text" style="margin-top:8px">Kasdienėje situacijoje, kurią prisimeni</div>
+      <div class="ref-text" style="margin-top:6px" id="s2a-context"></div>
+      <div class="ref-limit" style="margin-top:4px">Kasdienėje situacijoje, kurią prisimeni</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:9px">
       <button class="choice" onclick="dsmTransition('s2a','thought')">Pirmoji mintis</button>
@@ -1068,7 +1069,14 @@ function dsmTransition(fromState, choice) {
 
   if (fromState === 's0') {
     DSM.agreement = choice;
-    if (choice === 'yes') { DSM.path.push('s2a'); go('s-dsm-s2a'); }
+    if (choice === 'yes') {
+      DSM.path.push('s2a');
+      // Show what was observed — context for the next question
+      const ctx = document.getElementById('r-traj') || document.getElementById('pat-traj');
+      const s2aCtx = document.getElementById('s2a-context');
+      if (ctx && s2aCtx) s2aCtx.textContent = ctx.textContent;
+      go('s-dsm-s2a');
+    }
     else if (choice === 'no') { DSM.path.push('s2b'); go('s-dsm-s2b'); }
     else { DSM.path.push('s2c'); dsmShowMirror(); } // unknown → skip to mirror
   }
