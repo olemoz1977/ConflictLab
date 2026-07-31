@@ -1172,10 +1172,12 @@ JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","ref
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:prompt}]})
     });
     const d=await r.json();
-    const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
+    if(!d.content||!d.content[0]) throw new Error('No content: '+JSON.stringify(d));
+    const raw=d.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const res=JSON.parse(raw);
     const patTraj = res.observation||res.trajectory||'';
     const patDetail = res.what_repeated||res.detail||'';
     const patNote = res.why_it_matters||res.note||'';
@@ -1184,10 +1186,22 @@ JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","ref
     document.getElementById('pat-detail').textContent = patDetail || '(Claude negrąžino what_repeated)';
     document.getElementById('pat-note').textContent = patNote || '(Claude negrąžino why_it_matters)';
     document.getElementById('pat-q').textContent = patQ;
-  }catch{
-    document.getElementById('pat-traj').textContent='Keliose skirtingose situacijose pirmoji reakcija buvo panaši.';
-    document.getElementById('pat-detail').textContent='';
-    document.getElementById('pat-note').textContent='Tai nėra išvada — tik pastebėjimas, kurį verta patikrinti kasdienėse situacijose.';
+  }catch(err){
+    // Fallback when API fails — use session data directly
+    const h2=loadH();
+    const axes=h2.map(s=>s.axes);
+    const crAvg=axes.reduce((a,s)=>a+(s.cr||0),0)/axes.length;
+    const csAvg=axes.reduce((a,s)=>a+(s.cs||0),0)/axes.length;
+    const awAvg=axes.reduce((a,s)=>a+(s.aw||0),0)/axes.length;
+    const dominant = Math.abs(crAvg)>Math.abs(csAvg)&&Math.abs(crAvg)>Math.abs(awAvg)
+      ? (crAvg>0?'struktūros siekimas':'paleidimo impulsas')
+      : Math.abs(csAvg)>Math.abs(awAvg)
+      ? (csAvg>0?'aiškumo siekimas':'neapibrėžtumo tolerancija')
+      : (awAvg>0?'artėjimo impulsas':'atsitraukimo impulsas');
+    const cnt = h2.length;
+    document.getElementById('pat-traj').textContent=`Per ${cnt} sesijas pasirodė pasikartojantis motyvas.`;
+    document.getElementById('pat-detail').textContent=`Dažniausiai pasikartojo: ${dominant}.`;
+    document.getElementById('pat-note').textContent='Tai nėra išvada — tik stebėjimas, kurį verta patikrinti kasdienėse situacijose.';
     document.getElementById('pat-q').textContent='Ar tai tau pažįstama už šio eksperimento ribų?';
   }
   document.getElementById('pat-loading').style.display='none';
