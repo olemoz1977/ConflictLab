@@ -1,62 +1,107 @@
 # ConflictLab
 
-**ConflictLab** – tai adaptyvus kognityvinės elgsenos modeliavimo ir „aklojo taško“ (*Blind Spot*) diagnostikos karkasas. 
+**Epistemic Reflection Framework** — savirefleksijos platforma, padedanti žmonėms geriau stebėti savo spontaniškas reakcijų dėsningumus.
 
-Skirtingai nuo tradicinių testų ar stacionarių anketų, sistema remiasi ne žmogaus deklaracijomis (kurioms būdinga racionalizacija ir gynybinis šališkumas), o **pasikartojančiais spontaniškų reakcijų dėsningumais**, išgaunamais per multimodalinius mikro-stimulus.
+> *Mes nepadedame žmogui greičiau suprasti save. Mes padedame jam išmokti geriau stebėti save.*
 
----
-
-## 🎯 Esminė Filosofija ir Principas
-
-> *„Žmonės dažnai negali patikimai papasakoti, kodėl elgiasi vienaip ar kitaip. Todėl sistema remiasi ne pasakojimais apie elgesį, o spontaniškų reakcijų stebėjimu per skirtingas medijos formas.“*
-
-Kai žmogus atsako į tekstinį klausimą, jame įsijungia kognityviniai filtrai ir gynybiniai mechanizmai. Naudojant **ne-tekstinius stimulus (vaizdus, pseudokalbos intonacijas, mikro-pasirinkimus laike)**, sistema fiksuoja grynąją pirminę reakciją, praleisdama ją pro smegenų amigdalos ir autonominės nervų sistemos lygmenį.
+**Versija:** v0.7-beta (Feature Freeze)
+**Gyvas produktas:** https://olemoz1977.github.io/ConflictLab/
 
 ---
 
-## 🏗️ Architektūra ir Duomenų Srautas
+## Kas tai yra
 
-Sistema veikia per 4 sąveikaujančius sluoksnius:
-[ Multimodaliniai Stimulai ] (/stimuli)
-├─ Vizualiniai trigeriai
-├─ Audio / Pseudokalbos intonacijos
-└─ Micro-scenarijai (greiti pasirinkimai)
-│
-▼
-[ Stebėjimo Sluoksnis ] (/perception)
-├─ Reakcijos greitis (Latency < 1.5s)
-└─ Pasirinkimo šališkumo fiksavimas
-│
-▼
-[ Adaptyvusis Variklis ] (/adaptive)
-├─ Hipotezių tikrinimas (A/B testing ant elgesio)
-└─ Kito tikslinio stimulo parinkimas
-│
-▼
-[ Kognityvinis Variklis ] (/theories & /core)
-├─ Teorijų atitikimas (SCARF, Polyvagal, Karpman ir kt.)
-└─ Blind Spots identifikavimas & Transformacija
+ConflictLab **nėra**:
+- psichologinis testas
+- asmenybės diagnostika
+- elgesio prognozavimo sistema
+
+ConflictLab **yra**:
+- episteminis refleksijos įrankis
+- stimulais grįstas dėmesio krypties stebėjimas
+- hipotezėmis pagrįstas savirefleksijos tyrimas
 
 ---
 
-## 📁 Projekto Struktūra
+## Kaip veikia
 
-- **`/core`**: Pagrindinis žmogaus reagavimo grandinės modelis (`human_model.md`), interpretacijos filtrai ir transformacijos kelias.
-- **`/stimuli`**: Multimodalinių trigerių katalogas (vizualiniai atstumai, kūno kalba, balso intonacijos, greitojo pasirinkimo situacijos).
-- **`/perception`**: Mikro-reakcijų ir pasąmoninių dėsningumų fiksavimo mechanizmas (objektyvus stebėjimas be teisimo).
-- **`/adaptive`**: Dinaminis interviu / patirties generatorius, parenkantis kitą stimulą pagal iškeltą hipotezę.
-- **`/theories`**: 15 mokslinių teorijų bazė (neurologinės, kognityvinės, socialinės-santykių).
-- **`/hypotheses`**: Patikrinamų elgsenos hipotezių katalogas (H001–H004 ir kt.).
-- **`/engine`**: Analizės pipeline, sintezės ir išvesčių schemos.
+```
+Stimulai (vaizdai)
+    ↓ pirma spontaniška reakcija
+Signal Engine (aw/cs/cr ašys)
+    ↓ semantic observations
+Observation Engine
+    ↓ structured facts
+Claude API (Reflection Engine)
+    ↓ žmogaus kalba pagal R1-R8
+Reflection + Dialogue State Machine
+    ↓
+Žmogus sprendžia ar rezonuoja
+```
+
+**Sesija:** 4 stimulai → Reflection → DSM dialogas (S0→Mirror→Bridge)
+
+**Po 3 sesijų:** Pattern ekranas su pasikartojančių dėsningumų analize
 
 ---
 
-## ⚖️ Bešališkumo Garantija (Trianguliacija)
+## Repozitorijos struktūra
 
-Sistema neklijuoja etikečių pagal 1 ar 2 atsakymus. Hipotezė patvirtinama tik atlikus **trianguliaciją tarp 3 skirtingų medijos formų**:
-1. Abstraktus vaizdas / vizualinė situacija.
-2. Garso intonacija (pseudokalba).
-3. Sąmoningas elgesio pasirinkimas scenarijuje.
+```
+ConflictLab/
+├── docs/
+│   ├── index.html              ← produktas (GitHub Pages)
+│   ├── media/                  ← stimulų vaizdai
+│   ├── methodology/            ← užšaldyta metodologija (v1.0)
+│   │   ├── METHODOLOGY_FREEZE_v1.md    ← pradėk čia
+│   │   ├── stimulus_cue_rules_v1.md    ← F1-F7 standartai
+│   │   ├── reflection_language_standard_v1.md  ← R1-R8
+│   │   ├── reflection_safety_principles_v1.md  ← S1-S5
+│   │   ├── micro_dialogue_dsm_v1.md    ← DSM specifikacija
+│   │   └── ...
+│   ├── adr/                    ← architektūros sprendimai
+│   └── beta_research_protocol_v1.md   ← H1-H4, SC1-SC5
+├── stimuli/                    ← stimulų biblioteka (ST-001÷ST-010)
+│   └── _templates/             ← šablonai naujiems stimulams
+├── src/engine/behavior_translation/   ← Python engine (validuotas)
+├── tests/                      ← 13/13 testai
+└── archive/v0.7-freeze/        ← istorija (nieko netrinant)
+```
 
-Gauta išvada pateikiama ne kaip verdiktas, o kaip **veidrodis refleksijai**:  
-*„3 skirtingose situacijose pasirinkai atsitraukimą, kai išgirdai neaiškų balso toną. Ar pastebi šį dėsningumą savo kasdienybėje?“*
+---
+
+## Pradėti nuo
+
+1. **Metodologija:** `docs/methodology/METHODOLOGY_FREEZE_v1.md`
+2. **Produktas:** https://olemoz1977.github.io/ConflictLab/
+3. **Beta tyrimas:** `docs/beta_research_protocol_v1.md`
+4. **Stimulų kūrimas:** `docs/methodology/stimulus_cue_rules_v1.md`
+
+---
+
+## Metodologijos standartai
+
+| Dokumentas | Aprašas |
+|---|---|
+| Stimulus Language Standard (F1-F7) | Kaip kurti attention cues |
+| Reflection Language Standard (R1-R8) | Kaip sistema kalba po sesijos |
+| Reflection Safety Principles (S1-S5) | Ko sistema niekada nedaro |
+| Micro-Dialogue DSM | State Machine specifikacija |
+| Stimulus Lifecycle | 9 etapų gamybos procesas |
+| Beta Research Protocol | H1-H4 hipotezės, SC1-SC5 sėkmės kriterijai |
+
+**Methodology Freeze:** pakeitimai priimami tik kai beta duomenys rodo SC1-SC5 netenkinimą.
+
+---
+
+## Beta testas
+
+**Tikslas:** 10-15 žmonių, ≥3 sesijos kiekvienas.
+
+**Klausimai:** Ar žmonės sako *"to nebuvau pastebėjęs"*? (SC3)
+
+**Debug duomenys:** `localStorage['cl_debug_log']` — paskutinės 50 sesijų
+
+---
+
+*ConflictLab — nebe Architecture. Evidence.*
