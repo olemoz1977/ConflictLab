@@ -1034,6 +1034,7 @@ const DSM_MIRRORS = {
     action:     "Tu pažymėjai, kad labiausiai pažįstamas buvo savo veiksmas.",
     other:      "Tu pažymėjai, kad labiausiai pažįstamas buvo kito žmogaus elgesys.",
     unclear:    "Tu pažymėjai, kad sunku pasakyti kas tiksliai buvo pažįstama.",
+    recognized: "Tu pažymėjai, kad tai pažįstama.",
   },
   no: {
     context:    "Tu pažymėjai, kad situacija buvo kitokia.",
@@ -1070,12 +1071,9 @@ function dsmTransition(fromState, choice) {
   if (fromState === 's0') {
     DSM.agreement = choice;
     if (choice === 'yes') {
-      DSM.path.push('s2a');
-      // Show what was observed — context for the next question
-      const ctx = document.getElementById('r-traj') || document.getElementById('pat-traj');
-      const s2aCtx = document.getElementById('s2a-context');
-      if (ctx && s2aCtx) s2aCtx.textContent = ctx.textContent;
-      go('s-dsm-s2a');
+      DSM.path.push('s2a_skipped');
+      DSM.detail = 'recognized';
+      dsmShowMirror(); // Skip S2A — go directly to Mirror
     }
     else if (choice === 'no') { DSM.path.push('s2b'); go('s-dsm-s2b'); }
     else { DSM.path.push('s2c'); dsmShowMirror(); } // unknown → skip to mirror
