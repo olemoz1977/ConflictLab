@@ -152,16 +152,69 @@
         <div class="ref-question" id="r-q"></div>
       </div>
     </div>
-    <div class="fb-label">Ar tai atspindi ką nors tikro?</div>
-    <div class="fb-row">
-      <button class="fb-btn yes" onclick="finishSession('yes')">Taip, kažką palietė</button>
-      <button class="fb-btn no" onclick="showDisagree()">Ne, čia kitaip</button>
+    <div class="fb-row" style="margin-top:8px">
+      <button class="fb-btn yes" onclick="finishAndStartDSM('yes')">Taip, kažką palietė</button>
+      <button class="fb-btn no" onclick="finishAndStartDSM('no')">Ne, čia kitaip</button>
     </div>
-    <div class="fb-extra" id="fb-extra">
-      <textarea id="fb-text" placeholder="Kas kitaip? Tavo žodžiai padės sistemai."></textarea>
-      <button class="btn btn-p" onclick="finishSession('no')">Išsaugoti</button>
+    <button class="btn btn-g" style="margin-top:8px" onclick="reset()">↺ Nauja sesija</button>
+  </div>
+
+  <!-- MICRO-DIALOGUE STATE MACHINE -->
+  <!-- State Independence: each screen has ONE purpose -->
+  <div class="screen" id="s-dsm-s0">
+    <!-- S0: Agreement — patikrinti rezonansą -->
+    <div class="ref-box" style="margin-bottom:20px">
+      <div class="ref-question" id="dsm-s0-q"></div>
     </div>
-    <button class="btn btn-g" onclick="reset()">↺ Nauja sesija</button>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <button class="choice" onclick="dsmTransition('s0','yes')">Taip, pažįstama</button>
+      <button class="choice" onclick="dsmTransition('s0','no')">Ne, čia kitaip</button>
+      <button class="choice" onclick="dsmTransition('s0','unknown')">Sunku pasakyti</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s-dsm-s2a">
+    <!-- S2A: Recognition — kas rezonuoja (Progressive Commitment: 1 klausimas) -->
+    <div class="ref-box" style="margin-bottom:20px">
+      <div class="ref-label">Kas buvo panašiausia?</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <button class="choice" onclick="dsmTransition('s2a','thought')">Pirmoji mintis</button>
+      <button class="choice" onclick="dsmTransition('s2a','feeling')">Jausmas situacijoje</button>
+      <button class="choice" onclick="dsmTransition('s2a','action')">Mano veiksmas</button>
+      <button class="choice" onclick="dsmTransition('s2a','other')">Kito žmogaus elgesys</button>
+      <button class="choice" onclick="dsmTransition('s2a','unclear')">Sunku pasakyti</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s-dsm-s2b">
+    <!-- S2B: Disagreement — nesutikimo tipas -->
+    <div class="ref-box" style="margin-bottom:20px">
+      <div class="ref-label">Kas kitaip?</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <button class="choice" onclick="dsmTransition('s2b','context')">Situacija buvo kitokia</button>
+      <button class="choice" onclick="dsmTransition('s2b','reaction')">Mano reakcija paprastai kitokia</button>
+      <button class="choice" onclick="dsmTransition('s2b','irrelevant')">Klausimas nepritaikomas</button>
+      <button class="choice" onclick="dsmTransition('s2b','unclear')">Sunku pasakyti</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s-dsm-s3">
+    <!-- S3: Mirror — sistema atspindi, ne interpretuoja -->
+    <div class="ref-box" style="margin-bottom:20px">
+      <div class="ref-text" id="dsm-s3-mirror"></div>
+    </div>
+    <button class="btn btn-p" onclick="dsmTransition('s3','continue')">Toliau →</button>
+  </div>
+
+  <div class="screen" id="s-dsm-s4">
+    <!-- S4: Bridge — tikslas, ne algoritmas -->
+    <div class="ref-box" style="margin-bottom:20px;text-align:center;padding:32px 24px">
+      <div style="font-size:1.4rem;margin-bottom:16px">◎</div>
+      <div class="ref-question" id="dsm-s4-bridge"></div>
+    </div>
+    <button class="btn btn-p" onclick="dsmComplete()">Baigti sesiją</button>
   </div>
 
   <!-- BETA FEEDBACK MODULE -->
@@ -870,7 +923,12 @@ function fmt(v){return(v>=0?'+':'')+v.toFixed(2);}
 // ══════════════════════════════════════════
 function showDisagree(){document.getElementById('fb-extra').classList.add('show');}
 
-function finishSession(fb){
+function finishAndStartDSM(initialFeedback) {
+  // Save session first
+  finishSession(initialFeedback, true); // true = DSM follows
+}
+
+function finishSession(fb, dsmFollows=false){
   const n=S.responses.length;
   const aw=clamp(S.axes.aw/n);
   const cs=clamp(S.axes.cs/n);
@@ -891,6 +949,116 @@ function finishSession(fb){
     const feedbackBtn = document.getElementById('btn-feedback-link');
     if (feedbackBtn) feedbackBtn.style.display = S.feedbackDone ? 'none' : '';
     go('s-thanks');
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════
+// DIALOGUE STATE MACHINE — Micro-Dialogue DSM v1.1
+// Progressive Commitment: each state asks ONE thing
+// State Independence: each state has ONE purpose
+// ══════════════════════════════════════════════════════════
+
+const DSM = {
+  path: [],        // ["s0","s2a","s3","s4"]
+  agreement: null, // "yes"|"no"|"unknown"
+  detail: null,    // recognition or disagreement type
+};
+
+// Mirror texts — use only user's own words (State Independence)
+const DSM_MIRRORS = {
+  yes: {
+    thought:    "Tu pažymėjai, kad labiausiai pažįstama buvo pirmoji mintis.",
+    feeling:    "Tu pažymėjai, kad labiausiai pažįstamas buvo jausmas situacijoje.",
+    action:     "Tu pažymėjai, kad labiausiai pažįstamas buvo savo veiksmas.",
+    other:      "Tu pažymėjai, kad labiausiai pažįstamas buvo kito žmogaus elgesys.",
+    unclear:    "Tu pažymėjai, kad sunku pasakyti kas tiksliai buvo pažįstama.",
+  },
+  no: {
+    context:    "Tu pažymėjai, kad situacija buvo kitokia.",
+    reaction:   "Tu pažymėjai, kad tavo reakcija paprastai būna kitokia.",
+    irrelevant: "Tu pažymėjai, kad klausimas nepritaikomas.",
+    unclear:    "Tu pažymėjai, kad sunku pasakyti kas tiksliai buvo kitaip.",
+  },
+  unknown:      "Nežinomybė taip pat yra stebėjimas.",
+};
+
+// Bridge texts — about purpose, not algorithm (State Independence)
+const DSM_BRIDGES = {
+  first:  "Gal šiandien dar pastebėsi kažką, ko anksčiau nepastebėdavai.",
+  repeat: "Kitoje sesijoje patikrinsime, ar šis stebėjimas kartojasi kitose situacijose.",
+  shift:  "Kitoje sesijoje tęsime šį tyrinėjimą.",
+};
+
+function dsmStart(reflectionQuestion) {
+  DSM.path = ['s0'];
+  DSM.agreement = null;
+  DSM.detail = null;
+  document.getElementById('dsm-s0-q').textContent = reflectionQuestion;
+  go('s-dsm-s0');
+}
+
+function dsmTransition(fromState, choice) {
+  DSM.path.push(choice);
+
+  if (fromState === 's0') {
+    DSM.agreement = choice;
+    if (choice === 'yes') { DSM.path.push('s2a'); go('s-dsm-s2a'); }
+    else if (choice === 'no') { DSM.path.push('s2b'); go('s-dsm-s2b'); }
+    else { DSM.path.push('s2c'); dsmShowMirror(); } // unknown → skip to mirror
+  }
+  else if (fromState === 's2a' || fromState === 's2b') {
+    DSM.detail = choice;
+    dsmShowMirror();
+  }
+  else if (fromState === 's3') {
+    dsmShowBridge();
+  }
+}
+
+function dsmShowMirror() {
+  DSM.path.push('s3');
+  let mirror = '';
+  if (DSM.agreement === 'unknown') {
+    mirror = DSM_MIRRORS.unknown;
+  } else if (DSM.agreement === 'yes' && DSM.detail) {
+    mirror = (DSM_MIRRORS.yes[DSM.detail] || DSM_MIRRORS.yes.unclear);
+  } else if (DSM.agreement === 'no' && DSM.detail) {
+    mirror = (DSM_MIRRORS.no[DSM.detail] || DSM_MIRRORS.no.unclear);
+  } else {
+    mirror = DSM_MIRRORS.unknown;
+  }
+  document.getElementById('dsm-s3-mirror').textContent = mirror;
+  go('s-dsm-s3');
+}
+
+function dsmShowBridge() {
+  DSM.path.push('s4');
+  const h = loadH();
+  const sessCount = h.length;
+  let bridge = DSM_BRIDGES.first;
+  if (sessCount >= 2) bridge = DSM_BRIDGES.repeat;
+  document.getElementById('dsm-s4-bridge').textContent = bridge;
+  go('s-dsm-s4');
+}
+
+function dsmComplete() {
+  // Save DSM data alongside session
+  const h = loadH();
+  if (h.length > 0) {
+    h[h.length-1].micro_dialogue = {
+      state_path: DSM.path,
+      agreement: DSM.agreement,
+      detail: DSM.detail,
+    };
+    localStorage.setItem(KEY, JSON.stringify(h));
+  }
+  // Check if ready for pattern or feedback
+  const newH = loadH();
+  if (newH.length >= 3 && newH.length % 3 === 0) {
+    showPattern();
+  } else {
+    goFeedback();
   }
 }
 

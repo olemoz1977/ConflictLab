@@ -231,5 +231,49 @@ Kiekviena mikro-dialogo sesija išsaugoma `cl_debug_log`:
 
 ---
 
-*Micro-Dialogue State Machine v1.0*
+
+---
+
+## Du architektūriniai principai
+
+### Progressive Commitment
+
+> Kiekviena būsena gali paprašyti tik vieno mažo įsipareigojimo iš vartotojo.
+
+Jei vienoje būsenoje paprašoma prisiminti, paaiškinti, parašyti ir įvertinti —
+žmogus pereina į racionalizavimą. ConflictLab metodologija remiasi
+mažais, natūraliais refleksijos žingsniais.
+
+```
+S0: Ar tai pažįstama?           ← vienas klausimas
+S2: Kas pažįstama?              ← vienas klausimas
+S3: Sistema atspindi            ← jokio klausimo
+S4: Kitas etapas atsidaro       ← jokio klausimo
+```
+
+### State Independence
+
+> Kiekviena būsena turi vieną tikslą.
+
+| Būsena | Tikslas |
+|---|---|
+| S0 | Patikrinti rezonansą |
+| S2A | Identifikuoti kas rezonuoja |
+| S2B | Suprasti nesutikimo tipą |
+| S2C | Pripažinti neapibrėžtumą |
+| S3 | Atspindėti |
+| S4 | Sukurti tiltą į kitą etapą |
+
+Jokia būsena neturi bandyti atlikti dviejų funkcijų vienu metu.
+
+---
+
+## Apibrėžimas
+
+> Refleksija nėra klausimynas.
+> Tai būsenomis valdomas dialogas, kuris seka žmogaus kognityvinę būseną.
+
+---
+
+*Micro-Dialogue State Machine v1.1 — Progressive Commitment + State Independence*
 *ConflictLab — žmogus yra bendratyrėjas, ne objektas*
