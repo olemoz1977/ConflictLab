@@ -651,6 +651,142 @@ function buildAHAContext(sessionPatterns, crossPatterns) {
 }
 
 // ── MAIN ──────────────────────────────────
+
+// ══════════════════════════════════════════════════════════
+// OBSERVATION ENGINE — ADR-010
+// Signal Engine outputs → Semantic observations[]
+// Never exposes axis labels (cs/aw/cr) to upper layers
+// Engine is "cold" — never prioritizes by psychological value
+// ══════════════════════════════════════════════════════════
+
+const SIGNAL_MAP = {
+  // axis: [positive_signal, negative_signal, threshold]
+  cs: ['clarity_seeking',      'ambiguity_tolerance', 0.20],
+  aw: ['approach_impulse',     'withdrawal_impulse',  0.20],
+  cr: ['structure_seeking',    'release_impulse',     0.20],
+};
+
+function buildObservations(ahaResult, sessionResponses, history) {
+  const observations = [];
+
+  // Primary signal from AHA Detection
+  if (ahaResult.hasInsight) {
+    const p = ahaResult.pattern;
+    const m = p.metadata || {};
+
+    // Map pattern type to semantic signal
+    let signal = null;
+    if (p.type === 'P1' || p.type === 'P5') {
+      const axis = p.axis;
+      const map = SIGNAL_MAP[axis];
+      if (map) signal = p.direction === 'positive' ? map[0] : map[1];
+    } else if (p.type === 'P9') {
+      signal = 'trajectory_shift';
+    } else if (p.type === 'P2') {
+      signal = 'axis_conflict';
+    } else if (p.type === 'P3' && m.type === 'hesitation') {
+      signal = 'hesitation_before_choice';
+    }
+
+    if (signal) {
+      const obs = {
+        signal,
+        strength: Math.round(p.confidence * 100) / 100,
+        occurrences: m.matching_count || m.sessions || null,
+        total: m.sessions_checked || sessionResponses.length || null,
+        families: [...new Set(sessionResponses.map(r => r.family).filter(Boolean))],
+        cross_session: p.scope === 'cross_session',
+      };
+      if (m.type === 'hesitation') obs.latency = 'hesitation';
+      if (p.type === 'P9') {
+        obs.from_label = m.from_label;
+        obs.to_label = m.to_label;
+      }
+      if (p.type === 'P2') {
+        obs.conflict = [m.label1, m.label2].filter(Boolean);
+      }
+      observations.push(obs);
+    }
+  }
+
+  return {
+    observations,
+    cross_session: history.length >= 2,
+    session_count: history.length + 1,
+  };
+}
+
+// Build Claude prompt from Observation Engine output
+// Claude receives structured facts — never axis labels
+function buildReflectionPrompt(obsResult, isSingleSession) {
+  const obs = obsResult.observations[0]; // Primary observation
+  if (!obs) return null;
+
+  // Signal to human description mapping
+  const SIGNAL_DESC = {
+    'clarity_seeking':          'aiškumo ieškojimas',
+    'ambiguity_tolerance':      'neapibrėžtumo tolerancija',
+    'approach_impulse':         'artėjimo impulsas',
+    'withdrawal_impulse':       'atsitraukimo impulsas',
+    'structure_seeking':        'struktūros siekimas',
+    'release_impulse':          'paleidimo impulsas',
+    'hesitation_before_choice': 'ilgesnė pauzė prieš pasirenkant',
+    'trajectory_shift':         'reakcijos krypties pokytis per sesijas',
+    'axis_conflict':            'dvi priešingos reakcijų kryptys vienu metu',
+  };
+
+  const signalDesc = SIGNAL_DESC[obs.signal] || obs.signal;
+  const occStr = (obs.occurrences && obs.total)
+    ? `${obs.occurrences} iš ${obs.total} situacijų`
+    : 'keliose situacijose';
+  const famStr = obs.families && obs.families.length > 1
+    ? `skirtingų tipų situacijose (${obs.families.join(', ')})`
+    : obs.families && obs.families.length === 1
+    ? `situacijose, susijusiose su: ${obs.families[0]}`
+    : 'šios sesijos situacijose';
+  const conflictStr = obs.conflict ? obs.conflict.join(' ir ') : '';
+  const shiftStr = (obs.from_label && obs.to_label)
+    ? `${obs.from_label} → ${obs.to_label}`
+    : '';
+
+  return `Tu esi ConflictLab. Išversk pateiktus stebėjimus į žmogaus kalbą.
+
+KONSTITUCIJA (absoliučiai privaloma):
+NEVER infer causes or reasons.
+NEVER explain personality traits.
+NEVER predict future behavior.
+NEVER create facts beyond provided data.
+DESCRIBE only what is listed below.
+USE only provided numbers and families.
+
+REFLECTION LANGUAGE STANDARD R1-R8:
+R1: Stebėjimas, ne išvada
+R2: Subjektas = situacija, ne žmogus ("Šioje sesijoje...", ne "Tu...")
+R3: ${isSingleSession ? "1 sesija — nekalbėk apie tendencijas. Max 2 sakiniai + klausimas." : "Kelios sesijos — galima kalbėti apie kartojimąsi su skaičiais."}
+R4: Baikite atviru klausimu apie realų gyvenimą
+R5: Palik nežinomybės erdvę ("Gal...", "Galbūt...")
+R7: DRAUDŽIAMA: "cs", "aw", "cr", "signalas", "trajektorija", teorijų pavadinimai
+R8: Paskutinis sakinys išveda į gyvenimą
+
+STEBĖTI FAKTAI (naudok tik šiuos):
+Signalas: ${signalDesc}
+Dažnis: ${occStr}
+Kontekstas: ${famStr}
+${obs.latency === 'hesitation' ? 'Papildoma: pauzė prieš pasirinkimą buvo ilgesnė nei įprastai.' : ''}
+${conflictStr ? `Du priešingi impulsai: ${conflictStr}` : ''}
+${shiftStr ? `Pokytis per sesijas: ${shiftStr}` : ''}
+Pasitikėjimo lygis: ${Math.round(obs.strength * 100)}%
+
+SUKURK:
+"observation" — 1 sakinys. Kas faktiškai matyta. Naudok pateiktus skaičius.
+"what_repeated" — ${isSingleSession ? "1 sakinys. Kas pasirodė šioje sesijoje." : "1-2 sakiniai. Kas kartojosi, su skaičiais."}
+"why_it_matters" — ${isSingleSession ? "Gali būti tuščia arba 1 sakinys be išvados." : "1-2 sakiniai. Kas nustebina. Ne interpretacija — tik pastebėjimas."}
+"reflection_question" — 1 klausimas apie kasdienį gyvenimą. Palieka erdvę atsakyti "ne".
+Pvz: "Kur paskutinį kartą ši pirmoji reakcija pasirodė tavo kasdienybėje?"
+
+JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}`;
+}
+
 async function generateReflection(){
   go('s-loading');
   const n=S.responses.length;
@@ -689,54 +825,19 @@ async function generateReflection(){
     ? 'Šis momentas buvo užfiksuotas pagal reakcijos greitį — ne pagal pasirinkimą.'
     : 'Ši reakcija buvo pastebima per visą sesiją.';
 
+  // Observation Engine: Signal → Semantic observations[] → Claude
   const isSingleSession = !aha.isCross;
-  const prompt=`Tu esi ConflictLab — smalsus pašnekovas, ne analitikas.
-Tu žiūri į duomenis kartu su žmogumi, o ne jam aiškini.
+  const obsResult = buildObservations(aha, S.responses, history);
+  const prompt = buildReflectionPrompt(obsResult, isSingleSession);
 
-REFLECTION LANGUAGE STANDARD v1.0 — R1-R8:
-R1: Stebėjimas, ne išvada ("Šioje sesijoje pasirodė...", ne "Pastebėjome dėsningumą")
-R2: Subjektas = sesija/situacija, ne žmogus (ne "Tu linkęs...")
-R3: Kuklumo proporcingumas — po 1 sesijos nekalbėk apie tendencijas
-R4: Baigk atviru klausimu (ne atsakymu)
-R5: Palik erdvės nežinomybei ("Gal...", "Galbūt...")
-R6: Atverk smalsumą — ne uždok su atsakymu
-R7: DRAUDŽIAMA: "sistema", "trajektorija", "pattern", "ašis", teorijų pavadinimai, "tu esi", "tu linkęs"
-R8: Paskutinis sakinys išveda į gyvenimą
-KALBA: lietuvių.
-
-${isSingleSession
-  ? "SVARBU: Pirma sesija — tik 4 pasirinkimai. Nekalbėk apie pasikartojimą (per anksti). Max 2 sakiniai + klausimas. Tikslas: atidaryti klausimą, ne aiškinti."
-  : "SVARBU: Kelios sesijos. Galima kalbėti apie tai kas kartojosi. Naudok: X iš Y sesijų."
-}
-
-PASTEBĖTA: ${aha.tmpl.text}
-Duomenų pagrindas: ${aha.evidence}
-${aha.isCross ? "Kodėl įdomu: " + ahaReason : ""}
-
-SUKURK 4 laukus:
-
-"observation" — 1 sakinys. Konkretus faktas, be išvados.
-${isSingleSession
-  ? 'Pvz: "Šioje sesijoje dėmesys sustojo ten, kur situacija buvo neaiški."'
-  : 'Pvz: "Per tris sesijas skirtingose situacijose išryškėjo vienas motyvas."'
-}
-
-"what_repeated" — ${isSingleSession ? "1 sakinys." : "1-2 sakiniai."} Pradėk nuo situacijos, ne nuo žmogaus.
-${isSingleSession
-  ? 'Pvz: "Kai reikėjo apsispręsti, pirmoji reakcija buvo ieškoti aiškumo."'
-  : 'Pvz: "Kai situacija tapdavo neaiški, dažniau krypo į aiškumą — ne į laukimą."'
-}
-
-"why_it_matters" — ${isSingleSession
-  ? "Gali būti tuščia. Jei yra ką pasakyti — 1 sakinys, ne išvada."
-  : "1-2 sakiniai. Kodėl tai įdomu — pabrėžk kad skirtingos situacijos. Ne išvada, kvietimas."
-}
-
-"reflection_question" — vienas atviras klausimas apie REALŲ GYVENIMĄ, ne apie sesiją.
-Klausimas palieka erdvę atsakyti "ne". Kviečia tęsti tyrinėjimą.
-Pvz: "Kur tau tai pažįstama už ekrano ribų?"
-
-JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}`;
+  // If no observations, use fallback directly
+  if (!prompt) {
+    document.getElementById('r-traj').textContent = 'Šiandien aiškaus pasikartojimo neatsirado.';
+    document.getElementById('r-detail').textContent = '';
+    document.getElementById('r-limits').textContent = 'Sesija nematė viso konteksto — tik pirmąsias reakcijas.';
+    document.getElementById('r-q').textContent = 'Ar šiandien buvo situacija, kur panaši reakcija pasirodė tavo kasdienybėje?';
+    go('s-ref'); return;
+  }
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
