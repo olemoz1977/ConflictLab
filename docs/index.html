@@ -1047,9 +1047,9 @@ const DSM_MIRRORS = {
 
 // Bridge texts — about purpose, not algorithm (State Independence)
 const DSM_BRIDGES = {
-  first:  "Gal šiandien dar pastebėsi kažką, ko anksčiau nepastebėdavai.",
-  repeat: "Kitoje sesijoje patikrinsime, ar šis stebėjimas kartojasi kitose situacijose.",
-  shift:  "Kitoje sesijoje tęsime šį tyrinėjimą.",
+  first:  "Viena situacija dar nėra dėsningumas. Bet ji jau verta tavo dėmesio.",
+  repeat: "Šiandien pastebėjai vieną galimą dėsningumą. Ar jis kartojasi — paaiškės tik kitose situacijose.",
+  shift:  "Kryptis keičiasi. Tai verta stebėti toliau.",
 };
 
 function dsmStart(reflectionQuestion) {
@@ -1111,17 +1111,15 @@ function dsmShowBridge() {
   let bridge;
 
   if (!S.hasPattern || state === 'STATE_NO_PATTERN') {
-    // No pattern — honest, no false promise
     bridge = sessCount >= 2
-      ? 'Šiandien reakcijos buvo įvairios. Kita sesija parodys, ar pradės ryškėti bendras dėsningumas.'
-      : 'Vienos sesijos dar nepakanka. Kita sesija suteiks daugiau konteksto.';
+      ? 'Šiandien aiškaus dėsningumo neatsirado. Bet kiekviena sesija prideda konteksto.'
+      : 'Viena sesija dar nėra dėsningumas. Bet ji jau verta tavo dėmesio.';
   } else if (state === 'STATE_TRAJECTORY') {
-    bridge = 'Kitoje sesijoje tęsime šį tyrinėjimą — patikrinsime ar kryptis tęsiasi.';
+    bridge = 'Kryptis keičiasi. Tai verta stebėti toliau.';
   } else if (state === 'STATE_CONTRADICTION') {
-    bridge = 'Kitoje sesijoje pažiūrėsime, kuris iš dviejų impulsų pasirodys ryškiau.';
+    bridge = 'Du impulsai vienu metu — tai nėra klaida. Tai verta dėmesio.';
   } else {
-    // STATE_PATTERN_FOUND or STRONG
-    bridge = 'Kitoje sesijoje patikrinsime, ar šis stebėjimas kartojasi kitose situacijose.';
+    bridge = 'Šiandien pastebėjai vieną galimą dėsningumą. Ar jis kartojasi — paaiškės tik kitose situacijose.';
   }
 
   document.getElementById('dsm-s4-bridge').textContent = bridge;
