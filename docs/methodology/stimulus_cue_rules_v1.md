@@ -1,4 +1,4 @@
-# ConflictLab — Stimulus Cue Writing Rules v1.0
+# ConflictLab — Stimulus Language Standard v1.0
 
 **Data:** 2026-07-31
 **Statusas:** Užšaldyta — taikoma visai bibliotekai
@@ -88,6 +88,21 @@ Jei **ne** — cue jau turi vieną aiškią reikšmę. Pakeisti.
    → Trys visiškai skirtingos reakcijos į tą patį cue. GERAS.
 ```
 
+### Filtras 5 — Suprantamas be paaiškinimo
+
+Cue neturi reikalauti instrukcijos.
+
+Testas: ar vartotojas galėtų paklausti *"Ką reiškia šitas pasirinkimas?"*
+
+Jei taip — cue netinka. Geras cue yra akivaizdus savaime.
+
+```
+❌ "orientacija"   → reikia paaiškinimo
+❌ "cr+"           → visiškai nesuprantama
+✓  "artėjimas"    → akivaizdu iš karto
+✓  "tyla"         → akivaizdu iš karto
+```
+
 ---
 
 ## Papildomi kriterijai
@@ -174,6 +189,26 @@ Sistema:     choice_id: L02_A → {aw:+0.50, cs:+0.20, cr:+0.15}
 
 ---
 
+## A/B testavimo protokolas
+
+**Švarus A/B testas reikalauja pilnų sesijų — ne mišrių.**
+
+Vienos sesijos metu vartotojas mokosi kaip atsakinėti. Jei pirmi 5 stimulus yra su cues, o kiti 5 su sakiniais — lyginamas ne tik tekstas, bet ir adaptacija, nuovargis, mokymasis.
+
+```
+Beta A sesija:  visi 10 stimulus su SAKINIAIS
+Beta B sesija:  visi 10 stimulus su CUES
+```
+
+Po sesijos klausiama:
+- Kurioje versijoje buvo lengviau rinktis?
+- Kurioje mažiau jauteisi pildantis testą?
+- Kurioje pasirinkimai atrodė natūralesni?
+
+**Dabar (iki beta):** 5 stimulus su cues (L01, L02, L05, L10, L12), 5 su sakiniais (L03, L04, L07, L09, L11). Tai **nėra A/B testas** — tai pereinamasis etapas prieš pilną bibliotekos perrašymą.
+
+---
+
 ## Bibliotekos taikymas
 
 Šios taisyklės taikomos:
@@ -185,5 +220,5 @@ Likę 5 stimulus (L03, L04, L07, L09, L11) — peržiūrėti po pirmų beta sesi
 
 ---
 
-*Stimulus Cue Writing Rules v1.0*
+*Stimulus Language Standard v1.0*
 *ConflictLab — pirmoji reakcija, ne interpretacija*
