@@ -135,6 +135,25 @@ Vaizdas: telefonas ant stalo.
 ✓  tyla     ← matoma situacija (telefonas nutylėjęs)
 ```
 
+### Filtras 7 — Semantinis nepriklausomumas (Semantic Independence)
+
+Cue kuriamas konkrečiam vaizdui — ne bibliotekai.
+
+**Problema:** jei tas pats cue naudojamas daugelyje stimulų, vartotojas pradeda reaguoti į žodį, o ne į vaizdą.
+
+```
+❌ "žinutė" L05 + "žinutė" L17 + "žinutė" L28
+   → vartotojas jau žino ką "reiškia" žinutė
+   → Reflection Engine gauna atpažinimą, ne pirmą reakciją
+
+✓  Kiekvienas cue kuriamas iš naujo kiekvienam vaizdui
+   → net jei žodis kartojasi, jis turi kilti iš konkretaus vaizdo
+```
+
+**Praktinė taisyklė:** prieš rašant cues, nepažiūrėti į kitų stimulų cues. Žiūrėti tik į vaizdą.
+
+**Bibliotekos lygiu:** po kiekvieno naujo stimulus — patikrinti ar nauji cues nepasikartoja esamuose. Jei kartojasi dažniau nei 3 kartus — perrašyti.
+
 ---
 
 ## Papildomi kriterijai
@@ -258,5 +277,5 @@ kokie vaizdai tinka, kiek objektų, kiek dviprasmybės, ar galima tekstas.
 
 ---
 
-*Stimulus Language Standard v1.1 — F6 Visual Fidelity pridėta*
+*Stimulus Language Standard v1.2 — F7 Semantic Independence pridėta*
 *ConflictLab — pirmoji reakcija, ne interpretacija*
