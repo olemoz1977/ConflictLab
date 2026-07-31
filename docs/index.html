@@ -424,7 +424,7 @@ function saveFeedback(fb){
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
-const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null,feedbackDone:false};
+const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null,feedbackDone:false,obsState:null,hasPattern:false};
 
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -762,8 +762,20 @@ function buildObservations(ahaResult, sessionResponses, history) {
     }
   }
 
+  // OBSERVATION STATE — drives Reflection, DSM, and Bridge
+  let obs_state = 'STATE_NO_PATTERN';
+  if (observations.length > 0) {
+    const top = observations[0];
+    if (top.signal === 'trajectory_shift') obs_state = 'STATE_TRAJECTORY';
+    else if (top.signal === 'axis_conflict') obs_state = 'STATE_CONTRADICTION';
+    else if (top.strength >= 0.70) obs_state = 'STATE_PATTERN_STRONG';
+    else if (top.strength >= 0.40) obs_state = 'STATE_PATTERN_FOUND';
+    else obs_state = 'STATE_HIGH_UNCERTAINTY';
+  }
+
   return {
     observations,
+    obs_state,
     cross_session: history.length >= 2,
     session_count: history.length + 1,
   };
@@ -772,8 +784,12 @@ function buildObservations(ahaResult, sessionResponses, history) {
 // Build Claude prompt from Observation Engine output
 // Claude receives structured facts — never axis labels
 function buildReflectionPrompt(obsResult, isSingleSession) {
+  const obs_state = obsResult.obs_state || "STATE_NO_PATTERN";
   const obs = obsResult.observations[0]; // Primary observation
-  if (!obs) return null;
+  // No observation OR high uncertainty — use state-aware fallback
+  if (!obs || obs_state === 'STATE_NO_PATTERN' || obs_state === 'STATE_HIGH_UNCERTAINTY') {
+    return null; // triggers state-aware fallback in generateReflection
+  }
 
   // Signal to human description mapping
   const SIGNAL_DESC = {
@@ -883,14 +899,35 @@ async function generateReflection(){
   const obsResult = buildObservations(aha, S.responses, history);
   const prompt = buildReflectionPrompt(obsResult, isSingleSession);
 
-  // If no observations, use fallback directly
+  // State-aware fallback — different text for different states
   if (!prompt) {
-    document.getElementById('r-traj').textContent = 'Šiandien aiškaus pasikartojimo neatsirado.';
-    document.getElementById('r-detail').textContent = '';
-    document.getElementById('r-limits').textContent = 'Sesija nematė viso konteksto — tik pirmąsias reakcijas.';
-    document.getElementById('r-q').textContent = 'Ar šiandien buvo situacija, kur panaši reakcija pasirodė tavo kasdienybėje?';
+    const state = obsResult.obs_state || 'STATE_NO_PATTERN';
+    const fallbacks = {
+      'STATE_NO_PATTERN': {
+        traj: 'Šiandien ryškios reakcijų krypties neatsirado.',
+        detail: '',
+        limits: 'Vienos sesijos nepakanka dėsningumams matyti.',
+        q: 'Ar šiandien buvo situacija, kuri kažkuo išsiskyrė iš kitų?'
+      },
+      'STATE_HIGH_UNCERTAINTY': {
+        traj: 'Šioje sesijoje reakcijos buvo įvairios — be ryškios krypties.',
+        detail: '',
+        limits: 'Kita sesija suteiks daugiau konteksto.',
+        q: 'Ar šiandien buvo momentas, kur pirmoji reakcija tave nustebino?'
+      },
+    };
+    const fb = fallbacks[state] || fallbacks['STATE_NO_PATTERN'];
+    document.getElementById('r-traj').textContent = fb.traj;
+    document.getElementById('r-detail').textContent = fb.detail;
+    document.getElementById('r-limits').textContent = fb.limits;
+    document.getElementById('r-q').textContent = fb.q;
+    // Store state for DSM
+    S.obsState = state;
+    S.hasPattern = false;
     go('s-ref'); return;
   }
+  S.obsState = obsResult.obs_state;
+  S.hasPattern = true;
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
@@ -998,7 +1035,13 @@ function dsmStart(reflectionQuestion) {
   DSM.path = ['s0'];
   DSM.agreement = null;
   DSM.detail = null;
-  document.getElementById('dsm-s0-q').textContent = reflectionQuestion;
+  // State-aware S0 question
+  let s0q = reflectionQuestion;
+  if (!S.hasPattern) {
+    // No pattern found — don't ask about "similar reaction"
+    s0q = 'Ar šiandien buvo situacija, kuri kažkuo išsiskyrė iš kitų?';
+  }
+  document.getElementById('dsm-s0-q').textContent = s0q;
   go('s-dsm-s0');
 }
 
@@ -1040,8 +1083,23 @@ function dsmShowBridge() {
   DSM.path.push('s4');
   const h = loadH();
   const sessCount = h.length;
-  let bridge = DSM_BRIDGES.first;
-  if (sessCount >= 2) bridge = DSM_BRIDGES.repeat;
+  const state = S.obsState || 'STATE_NO_PATTERN';
+  let bridge;
+
+  if (!S.hasPattern || state === 'STATE_NO_PATTERN') {
+    // No pattern — honest, no false promise
+    bridge = sessCount >= 2
+      ? 'Šiandien reakcijos buvo įvairios. Kita sesija parodys, ar pradės ryškėti bendras dėsningumas.'
+      : 'Vienos sesijos dar nepakanka. Kita sesija suteiks daugiau konteksto.';
+  } else if (state === 'STATE_TRAJECTORY') {
+    bridge = 'Kitoje sesijoje tęsime šį tyrinėjimą — patikrinsime ar kryptis tęsiasi.';
+  } else if (state === 'STATE_CONTRADICTION') {
+    bridge = 'Kitoje sesijoje pažiūrėsime, kuris iš dviejų impulsų pasirodys ryškiau.';
+  } else {
+    // STATE_PATTERN_FOUND or STRONG
+    bridge = 'Kitoje sesijoje patikrinsime, ar šis stebėjimas kartojasi kitose situacijose.';
+  }
+
   document.getElementById('dsm-s4-bridge').textContent = bridge;
   go('s-dsm-s4');
 }
@@ -1162,7 +1220,7 @@ function showThanksEnd(){
 }
 
 function reset(){
-  S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};S.selected=null;S.returnChoice=null;
+  S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};S.selected=null;S.returnChoice=null;S.obsState=null;S.hasPattern=false;
   document.getElementById('fb-extra').classList.remove('show');
   document.getElementById('fb-text').value='';
   ['fq1','fq2','fq3','fq4'].forEach(id=>document.getElementById(id).value='');
