@@ -1220,17 +1220,24 @@ function showThanksEnd(){
 }
 
 function reset(){
-  S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};S.selected=null;S.returnChoice=null;S.obsState=null;S.hasPattern=false;
-  document.getElementById('fb-extra').classList.remove('show');
-  document.getElementById('fb-text').value='';
-  ['fq1','fq2','fq3','fq4'].forEach(id=>document.getElementById(id).value='');
+  S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};
+  S.selected=null;S.returnChoice=null;S.obsState=null;S.hasPattern=false;S.feedbackDone=false;
+  DSM.path=[];DSM.agreement=null;DSM.detail=null;
+  // Safe element resets — guard against missing elements
+  const fbExtra=document.getElementById('fb-extra');
+  if(fbExtra) fbExtra.classList.remove('show');
+  const fbText=document.getElementById('fb-text');
+  if(fbText) fbText.value='';
+  ['fq1','fq2','fq3','fq4'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
   ['yes','maybe','no'].forEach(c=>{
     const btn=document.getElementById('return-'+c);
     if(btn) btn.style.opacity='1';
   });
-  S.feedbackDone = false;
-  const fb = document.getElementById('btn-feedback-link');
-  if (fb) fb.style.display = '';
+  const fbLink=document.getElementById('btn-feedback-link');
+  if(fbLink) fbLink.style.display='';
+  document.querySelectorAll('#s-thanks .btn-g').forEach(b=>b.style.display='');
   renderIntro();
   go('s-intro');
 }
