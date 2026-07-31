@@ -222,17 +222,14 @@
   <!-- BETA FEEDBACK MODULE -->
   <div class="screen" id="s-feedback">
     <div class="fb-module">
-      <div class="fb-module-title">Prieš išeidamas</div>
-      <div class="fb-module-sub">5 klausimai. Anonimiška. Padeda suprasti kas veikia.</div>
-      <div class="fb-q">Kuris vaizdas labiausiai įstrigo?</div>
+      <div class="fb-module-title">Vienas klausimas</div>
+      <div class="fb-module-sub">Anonimiška. Padeda suprasti kas veikia.</div>
+      <div class="fb-q">Ar buvo momentas šioje sesijoje, kuris kažkuo išsiskyrė?</div>
       <textarea class="fb-small" id="fq1" placeholder="Aprašyk arba praleisk..."></textarea>
-      <div class="fb-q">Kur sustojote pagalvoti — ne pasirinkti, o tikrai sustojote?</div>
-      <textarea class="fb-small" id="fq2" placeholder="..."></textarea>
-      <div class="fb-q">Ar buvo momentas „čia apie mane"?</div>
-      <textarea class="fb-small" id="fq3" placeholder="..."></textarea>
-      <div class="fb-q">Kas labiausiai trukdė?</div>
-      <textarea class="fb-small" id="fq4" placeholder="..."></textarea>
-      <div class="fb-q">Ar grįžtumėte antrai sesijai?</div>
+      <textarea class="fb-small" id="fq2" style="display:none"></textarea>
+      <textarea class="fb-small" id="fq3" style="display:none"></textarea>
+      <textarea class="fb-small" id="fq4" style="display:none"></textarea>
+      <div class="fb-q">Ar grįžtumėte kitai sesijai?</div>
       <div class="fb-row" style="margin-top:6px">
         <button class="fb-btn yes" id="return-yes" onclick="selectReturn('yes')">Taip</button>
         <button class="fb-btn" id="return-maybe" onclick="selectReturn('maybe')" style="flex:1;padding:14px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--dim)">Galbūt</button>
