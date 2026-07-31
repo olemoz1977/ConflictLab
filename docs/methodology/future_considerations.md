@@ -75,3 +75,48 @@ Nėra tiesiogiai aprėptas Protocol — susijęs su V1.1 (neutralumas), bet spec
 
 **Stebėjimų skaičius:** 1/3
 **Statusas:** Stebima
+
+
+---
+
+## FC-004 — Attention Anchors Research
+
+**Data:** 2026-07-31
+**Statusas:** Research — ne Beta, ne MVP
+**Prioritetas:** v2.0
+
+### Hipotezė
+
+Ar spontaniškai pasirinktas dėmesio objektas (vizualinis elementas vaizde) gali būti ankstyvesnis ir patikimesnis signalas nei reakcijos aprašymas?
+
+### Kontekstas
+
+ConflictLab šiandien matuoja: **žmogaus pasirinktą reakciją į stimulą.**
+
+Attention Anchors matuotų: **vizualinį dėmesį prieš interpretaciją.**
+
+Tai yra skirtinga architektūra — ne geresnis ar blogesnis metodas, bet kita hipotezė:
+
+```
+Dabar:   Stimulas → reakcija → pasirinkimas → SignalOrientation
+Anchors: Stimulas → vizualinis dėmesys → interpretacija → pasirinkimas → SignalOrientation
+```
+
+### Kodėl atidedame
+
+1. **Episteminė problema:** "siluetas → aw:-0.55" yra spėjimas, ne kalibruotas ryšys. ConflictLab buvo kuriamas kad sistema kuo mažiau spėliotų.
+
+2. **Nauja kalibravimo metodika:** svoriai buvo kalibruoti pagal reakcijų aprašymus. Anchors reikalauja atskiro validacijos etapo.
+
+3. **Skirtinga grandinė:** tai nėra polish — tai yra naujas SignalOrientation žemėlapis.
+
+### Kas reikalinga prieš tęsiant
+
+- Nauja signalų kalibravimo metodika (kaip priskirti aw/cs/cr fiziniam vaizdo elementui)
+- Atskiras validacijos etapas su bent 50 sesijomis
+- Tikėtina naujas stimulus bibliotekos kūrimo principas
+
+### Ryšys su beta
+
+Beta vyksta su B variantu (attention cues — trumpos frazės).
+FC-004 gali tapti atskiru tyrimu po beta duomenų analizės.
