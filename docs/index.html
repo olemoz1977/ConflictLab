@@ -239,7 +239,7 @@
       <div class="fb-q">Ar grįžtumėte kitai sesijai?</div>
       <div class="fb-row" style="margin-top:6px">
         <button class="fb-btn yes" id="return-yes" onclick="selectReturn('yes')">Taip</button>
-        <button class="fb-btn" id="return-maybe" onclick="selectReturn('maybe')" style="flex:1;padding:14px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--dim)">Galbūt</button>
+        <button class="fb-btn" id="return-maybe" onclick="selectReturn('maybe')">Galbūt</button>
         <button class="fb-btn no" id="return-no" onclick="selectReturn('no')">Ne</button>
       </div>
     </div>
@@ -1257,6 +1257,8 @@ function selectReturn(choice){
     const btn=document.getElementById('return-'+c);
     if(btn) btn.style.opacity=c===choice?'1':'0.4';
   });
+  // Auto-submit after selection — no need to press "Baigti" separately
+  setTimeout(submitFeedback, 400);
 }
 
 function submitFeedback(){
