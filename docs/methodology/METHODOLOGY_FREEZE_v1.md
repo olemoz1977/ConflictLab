@@ -91,4 +91,10 @@ Po pirmos sesijos žmogus nori grįžti ne todėl kad gautų kitą „rezultatą
 
 ---
 
+## Methodology Freeze Commitment
+
+> Nuo šio momento metodologijos pakeitimai priimami tik tada, jei beta duomenys aiškiai rodo, kad dabartinė metodika nepasiekia SC1–SC5 kriterijų. Idėjos, intuicija ar pavienės nuomonės nebėra pakankamas pagrindas keisti sistemą.
+
+---
+
 *"Nebe Architecture. Evidence."*
