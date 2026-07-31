@@ -2,6 +2,9 @@
 **Last updated:** 2026-07-31
 **Purpose:** AI context document. Read this first in every new conversation.
 
+> *"Not architecture. Evidence."*
+> We are no longer building theories. We are collecting evidence from real people.
+
 ---
 
 ## Current Version
@@ -9,6 +12,8 @@
 **v0.7 — Feature Freeze / Beta Ready**
 
 Live at: `https://olemoz1977.github.io/ConflictLab/`
+
+**This document MUST be updated before every beta milestone or release.**
 
 ---
 
@@ -24,6 +29,21 @@ Core philosophy:
 - Psychological diagnosis
 - Human scoring system
 - Behavioral prediction engine
+
+---
+
+## Current Blocker (Technical)
+
+### Stimulus Generator CORS problem — unresolved
+`docs/generator.html` calls Anthropic API directly from browser.
+GitHub Pages blocks this (CORS). Generator UI is functional — API calls fail.
+
+**Options not yet decided:**
+- Local Python server (`python -m http.server`)
+- Proxy solution
+- Accept manual YAML creation for now
+
+This is the only current technical blocker before beta can begin.
 
 ---
 
@@ -57,11 +77,11 @@ Stimuli → Signal Engine (aw/cs/cr) → Observation Engine → Claude API → R
 - **Reflection Engine:** generates CandidateInsight
 - All 13 tests passing
 
-### Observation Engine (ADR-010) — IMPLEMENTED in index.html
+### Observation Engine (ADR-010) — implemented in index.html
 Translates raw axis signals → semantic observations before Claude API.
 Constitutional rule: NEVER infer causes, NEVER explain personality traits, NEVER predict behavior, NEVER create facts beyond provided data.
 
-### Dialogue State Machine (micro_dialogue_dsm_v1.md) — SPECIFIED, partially implemented
+### Dialogue State Machine (micro_dialogue_dsm_v1.md) — specified, partially implemented
 ```
 Reflection → STATE 0 (Agreement) → STATE 2A/2B/2C → STATE 3 (Mirror) → STATE 4 (Bridge)
 ```
@@ -69,7 +89,12 @@ User responses: TAIP / NE / NEŽINAU
 
 ---
 
-## Methodology Freeze v1.0 (DO NOT CHANGE without beta data)
+## Methodology Status
+
+**The methodology is frozen for implementation, not for critique.**
+Do not propose changes unless they are supported by beta evidence or explicitly requested.
+
+If you find a logical flaw — name it clearly. Do not implement it without Oleg's decision.
 
 **Frozen documents:**
 - `conflictlab_voice_v1.md` — how system speaks
@@ -79,9 +104,6 @@ User responses: TAIP / NE / NEŽINAU
 - `stimulus_cue_rules_v1.md` (F1–F7) — cue creation rules
 - `stimulus_lifecycle_v1.md` — production process
 - `beta_research_protocol_v1.md` — H1–H4 research hypotheses
-
-**Freeze commitment:**
-> Methodology changes accepted ONLY when beta data clearly shows SC1–SC5 criteria are not met. Ideas, intuition, or individual opinions are NO LONGER sufficient grounds to change the system.
 
 ---
 
@@ -105,8 +127,7 @@ User responses: TAIP / NE / NEŽINAU
 - S5: Never compare the person to others
 
 ### Stimulus Language (F1–F7)
-- F1–F6: Stimulus and cue construction rules
-- F7: Semantic Independence — cues created fresh per stimulus, NOT standardized across library
+- F7 key rule: Semantic Independence — cues created fresh per stimulus, NOT standardized across library
 
 ---
 
@@ -115,13 +136,14 @@ User responses: TAIP / NE / NEŽINAU
 **10 active stimuli:** ST-001 through ST-010
 - Located in `stimuli/ST-XXX/` with `stimulus.yaml`, `status.yaml`, `review.md`
 - Known gap: cs axis underrepresented (22% vs optimal 33%)
-- Known issue: ST-001 and ST-006 both aw- with single figure — may cause monotony
+- Known issue: ST-001 and ST-006 both aw− with single figure — may cause monotony
 
 ---
 
 ## Beta Research Protocol
 
 **Target:** 10–15 participants, ≥3 sessions each
+
 **Hypotheses:**
 | ID | Hypothesis | Success criterion |
 |---|---|---|
@@ -139,50 +161,47 @@ User responses: TAIP / NE / NEŽINAU
 
 ---
 
-## Current Blockers
+## Open Design Questions
 
-### 1. Stimulus Generator CORS problem
-`docs/generator.html` calls Anthropic API directly from browser.
-GitHub Pages blocks this (CORS). Generator.html exists and is functional UI — but API calls fail.
+These questions are NOT yet decided. Do not assume they are resolved.
 
-**Options not yet decided:**
-- Local Python server (`python -m http.server`)
-- Proxy solution
-- Accept manual YAML creation for now
-
-### 2. Beta not started yet
-10–15 participants needed. Protocol ready. UI ready. Waiting to start.
+- **What creates the strongest AHA moment?** P9 is theorized to be highest — not yet confirmed by data.
+- **Adaptive stimulus selection:** should it happen before beta or after? Currently random within axis balance rules.
+- **Observation Engine branching:** when should the dialogue branch based on signal type (clarity_seeking vs withdrawal_impulse)?
+- **Generator CORS:** local server, proxy, or manual YAML — which path?
+- **cs axis gap:** 22% representation vs optimal 33% — how many new stimuli are needed before beta?
 
 ---
 
-## What Has Been Tried (Do NOT repeat)
+## What Has Been Tried and Rejected (Do NOT repeat)
 
-- ❌ 12-stimulus session (reduced to 4 — users fatigued)
-- ❌ Showing raw axis numbers (aw=-0.09) to users — removed, replaced with dot on line
-- ❌ alert() dialogs — removed, replaced with UI screens
-- ❌ Attention Anchors / FC-004 — rejected (assigning axis weights to visual elements = speculation)
-- ❌ Standardized cues across library (violates F7 — Semantic Independence)
-- ❌ Single session pattern detection (needs ≥3 sessions)
-- ❌ Personality labels in reflections (forbidden by S1)
-- ❌ "Evidence Engine" naming (changed to "Observation Engine" — observation ≠ evidence about personality)
+- ❌ 12-stimulus session → reduced to 4 (users fatigued)
+- ❌ Raw axis numbers shown to users (aw=−0.09) → removed, replaced with dot on line
+- ❌ alert() dialogs → replaced with UI screens
+- ❌ Attention Anchors / FC-004 → rejected (assigning axis weights to visual elements = speculation)
+- ❌ Standardized cues across library → violates F7 Semantic Independence
+- ❌ Single session pattern detection → needs ≥3 sessions
+- ❌ Personality labels in reflections → forbidden by S1
+- ❌ "Evidence Engine" naming → changed to "Observation Engine" (observation ≠ evidence about personality)
 
 ---
 
 ## Archived Modules (exist in archive/, not active)
 
-These Python modules exist and are well-written but NOT integrated into active `src/`:
-- `signal_orientation.py` — SignalOrientation dataclass with [-1.0, +1.0] axes
-- `evidence_graph.py` — EvidenceNode + EvidenceGraph + provenance chain
-- `event_log.py` — Immutable append-only EventLog
-- `uncertainty_engine.py` — 5-dimensional UncertaintyProfile (decomposed, never collapsed)
-- `model_registry.py` — 14 registered frameworks with assumptions + blind spots
-- `reflection_contract.py` — ReflectionContract with 7 required fields + validation
+Well-written Python modules — NOT integrated into active UI. v0.4 architecture.
 
-**These are v0.4 architecture.** Integration into active UI requires decision on whether v0.4 Python layer is needed before beta, or after.
+- `signal_orientation.py` — SignalOrientation dataclass, axes [−1.0, +1.0]
+- `evidence_graph.py` — EvidenceNode + EvidenceGraph + provenance chain
+- `event_log.py` — immutable append-only EventLog
+- `uncertainty_engine.py` — 5-dimensional UncertaintyProfile (never collapsed to single score)
+- `model_registry.py` — 14 registered frameworks with assumptions + blind spots
+- `reflection_contract.py` — ReflectionContract, 7 required fields + validation
+
+Integration decision: deferred until after beta.
 
 ---
 
-## Repository Structure (Clean State)
+## Repository Structure
 
 ```
 ConflictLab/
@@ -208,23 +227,20 @@ ConflictLab/
 
 ## How to Work With This Project
 
-### For AI assistants — read this first:
-1. The methodology is FROZEN. Do not propose methodology changes.
-2. The architecture is FROZEN. Do not propose architectural redesigns.
-3. Current priority is BETA — getting 10–15 people to test.
-4. If you are unsure about methodology, ASK — do not invent.
-5. Changes to `docs/index.html` require understanding ConflictLab Voice (see `conflictlab_voice_v1.md`).
-6. Stimulus creation follows F1–F7 rules. Read `stimulus_cue_rules_v1.md` before proposing stimuli.
+**Role of the human (Oleg):** product architect and methodologist. Final authority on all decisions. Works primarily from mobile.
 
-### Role of the human (Oleg):
-- Product architect and methodologist
-- Holds final authority on all architectural and methodological decisions
-- Operates primarily from mobile (GitHub is difficult — prefer direct commits)
+**For AI assistants:**
+1. Methodology is frozen for implementation — critique is welcome, changes require beta evidence or explicit request
+2. Architecture is frozen — do not redesign
+3. Current priority is BETA — getting real people to test
+4. If uncertain about methodology, ask — do not invent
+5. Changes to `index.html` require understanding ConflictLab Voice (`conflictlab_voice_v1.md`)
+6. Stimulus creation follows F1–F7 rules — read `stimulus_cue_rules_v1.md` first
 
-### Current immediate tasks (in priority order):
+**Current immediate priorities (in order):**
 1. Start beta with 10–15 participants using current `docs/index.html`
-2. Solve generator.html CORS problem (or workaround)
-3. Monitor H1–H4 hypothesis results
+2. Solve generator.html CORS problem
+3. Monitor H1–H4 results
 
 ---
 
