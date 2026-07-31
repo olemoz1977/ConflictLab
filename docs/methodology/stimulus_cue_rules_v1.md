@@ -103,6 +103,38 @@ Jei taip — cue netinka. Geras cue yra akivaizdus savaime.
 ✓  "tyla"         → akivaizdu iš karto
 ```
 
+### Filtras 6 — Vizualinis sąžiningumas (Visual Fidelity)
+
+Cue turi būti pagrįstas tuo, kas **tikrai matoma** vaizde — ne autoriaus žiniomis apie situaciją.
+
+Testas: ar žmogus, nežinodamas konteksto, galėtų pamatyti šį cue vaizde?
+
+```
+Vaizdas: žmogus stovi prie lango.
+
+✓  langas       ← matoma
+✓  siluetas     ← matoma
+✓  šviesa       ← matoma
+✓  būti vienam  ← matoma situacija
+✓  kas lauke    ← matoma kryptis
+
+❌ ilgesys      ← ne vizualus faktas
+❌ laukia kažko ← autoriaus interpretacija
+❌ liūdesys     ← nematoma
+```
+
+Ypač svarbu su objektais, kurie **egzistuoja istorijoje, bet nematomi vaizde**:
+
+```
+Vaizdas: tuščias stalas.
+❌ žinutė  ← nėra telefono vaizde
+❌ skambutis ← nematoma
+
+Vaizdas: telefonas ant stalo.
+✓  žinutė   ← telefonas matomas, žinutė logiškai seka
+✓  tyla     ← matoma situacija (telefonas nutylėjęs)
+```
+
 ---
 
 ## Papildomi kriterijai
@@ -218,7 +250,13 @@ Po sesijos klausiama:
 Pirmi 5 stimulus (L01, L02, L05, L10, L12) atnaujinti pagal šias taisykles.
 Likę 5 stimulus (L03, L04, L07, L09, L11) — peržiūrėti po pirmų beta sesijų.
 
+**Etaloniniai stimulai:** Prieš plečiant biblioteką iki 30+, sukurti 10–15 stimulų,
+kurie nepriekaištingai atitinka F1–F6. Jie taps šablonu likusiai bibliotekai.
+
+**Kitas dokumentas:** `stimulus_design_standard.md` (FC-005) — apibrėš
+kokie vaizdai tinka, kiek objektų, kiek dviprasmybės, ar galima tekstas.
+
 ---
 
-*Stimulus Language Standard v1.0*
+*Stimulus Language Standard v1.1 — F6 Visual Fidelity pridėta*
 *ConflictLab — pirmoji reakcija, ne interpretacija*

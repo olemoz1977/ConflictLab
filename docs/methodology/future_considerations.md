@@ -120,3 +120,53 @@ Anchors: Stimulas → vizualinis dėmesys → interpretacija → pasirinkimas �
 
 Beta vyksta su B variantu (attention cues — trumpos frazės).
 FC-004 gali tapti atskiru tyrimu po beta duomenų analizės.
+
+
+---
+
+## FC-005 — Stimulus Design Standard
+
+**Data:** 2026-07-31
+**Statusas:** Planuojama — prieš bibliotekos plėtimą virš 15 stimulų
+**Prioritetas:** Prieš v2.0 bibliotekos plėtrą
+
+### Tikslas
+
+Net geriausi cues neišgelbės prasto stimulo.
+Stimulus Design Standard apibrėš kokie vaizdai apskritai tinka ConflictLab.
+
+### Klausimai, į kuriuos turi atsakyti dokumentas
+
+**Vaizdo struktūra:**
+- Kiek objektų gali būti viename stimule?
+- Kiek vizualinio triukšmo leidžiama?
+- Koks optimalus detalumo lygis?
+
+**Žmonės vaizde:**
+- Kiek žmonių? (0, 1, 2, grupė)
+- Ar veidas matomas? Ar nugara?
+- Ar lytis/amžius/rasė neutralūs?
+
+**Dviprasmybė:**
+- Koks minimalus interpretacijos erdvės kiekis?
+- Kaip išvengti vienos dominuojančios istorijos?
+- Micro-pause potencialas — kaip jį įvertinti?
+
+**Techniniai apribojimai:**
+- Tekstas vaizde — draudžiamas (AI artefaktai, kulturinis šališkumas)
+- Spalvų schema — neutrali ar specifinė?
+- Kadravimas, kampas, apšvietimas
+
+### Ryšys su Stimulus Language Standard
+
+F6 (Visual Fidelity) reikalauja, kad cues atitiktų tai, kas matoma.
+Stimulus Design Standard apibrėš, **kas turi būti matoma**.
+
+Abu dokumentai kartu sudaro pilną stimulus kūrimo metodiką.
+
+### Kada kurti
+
+Po beta etapo — kai bus empirinių duomenų apie tai:
+- Kurie stimulai sukelia stipriausią micro-pause
+- Kurie generuoja daugiausia AHA momentų
+- Kurie dažniausiai sulaukia "Ne, čia kitaip" atsakymų
