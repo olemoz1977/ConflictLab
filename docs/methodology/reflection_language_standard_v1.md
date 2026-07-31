@@ -214,5 +214,38 @@ Claude API tikrina kiekvieną sakinį prieš išvesdamas:
 
 ---
 
-*Reflection Language Standard v1.0*
+
+---
+
+## Kognityvinio nepertraukiamumo principas
+
+> Nepertraukti kognityvinės būsenos.
+
+Po ketvirto stimulo žmogus dar yra refleksinėje mąstymo būsenoje.
+Tai pats vertingiausias momentas — jis dar negrįžo į "aš pildau programėlę".
+
+**Sesijos struktūra pagal šį principą:**
+```
+Patyriau → Pastebėjau → Patikrinau → Išsinešiau klausimą
+```
+
+Ne:
+```
+Patyriau → Baigiau → [context switch] → Dar truputį pakalbėkime
+```
+
+**Praktinė išvada:** Mikro-dialogas po refleksijos nėra priedas.
+Jis yra paskutinė sesijos dalis — kol žmogus dar yra refleksinėje būsenoje.
+
+Sesija psichologiškai baigiasi ne po ketvirto stimulo.
+Ji baigiasi tada, kai žmogus gali pasakyti:
+*"Dabar suprantu, ką ką tik pastebėjau."*
+
+**Ryšys su R8:** R8 sako "refleksija baigiasi ne ekrane".
+Kognityvinio nepertraukiamumo principas sako "refleksija baigiasi tik tada,
+kai žmogus pats užbaigia savo stebėjimą."
+
+---
+
+*Reflection Language Standard v1.1 — Kognityvinio nepertraukiamumo principas*
 *"Po kiekvienos refleksijos žmogus turi išeiti su geresniu klausimu, o ne su gatavu atsakymu."*
