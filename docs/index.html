@@ -154,7 +154,7 @@
     </div>
     <div class="fb-row" style="margin-top:8px">
       <button class="fb-btn yes" onclick="finishAndStartDSM('yes')">Taip, kažką palietė</button>
-      <button class="fb-btn no" onclick="finishAndStartDSM('no')">Ne, čia kitaip</button>
+      <button class="fb-btn no" onclick="finishAndStartDSM('no')">Matau kitaip</button>
     </div>
     <button class="btn btn-g" style="margin-top:8px" onclick="reset()">↺ Nauja sesija</button>
   </div>
@@ -168,7 +168,7 @@
     </div>
     <div style="display:flex;flex-direction:column;gap:9px">
       <button class="choice" onclick="dsmTransition('s0','yes')">Taip, pažįstama</button>
-      <button class="choice" onclick="dsmTransition('s0','no')">Ne, čia kitaip</button>
+      <button class="choice" onclick="dsmTransition('s0','no')">Matau kitaip</button>
       <button class="choice" onclick="dsmTransition('s0','unknown')">Sunku pasakyti</button>
     </div>
   </div>
@@ -1160,7 +1160,7 @@ SUKURK 4 dalis:
 
 "why_it_matters" — 1-2 sakiniai. Kodėl tai verta dėmesio. Pabrėžk kad tai SKIRTINGOS situacijos — tai nustebina. Ne išvada, o kvietimas. Pvz: "Tai pasikartojo labai skirtingose situacijose. Tai nėra išvada — tik pastebėjimas, kurį verta patikrinti."
 
-"reflection_question" — vienas klausimas apie realų gyvenimą, ne apie sesiją. Pvz: "Kur paskutinį kartą panaši reakcija pasirodė kasdienėje situacijoje?"
+"reflection_question" — vienas atviras klausimas apie kasdienį gyvenimą. Pvz: "Ar tai tau pažįstama už šio eksperimento ribų?" arba "Ar šiandien buvo momentas, kuris kažkuo išsiskyrė?"
 
 JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}`;
 
