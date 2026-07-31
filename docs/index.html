@@ -110,7 +110,7 @@
     <div class="prog-wrap"><div class="prog-dots" id="prog-dots"></div></div>
     <div class="stim-img-wrap"><img id="stim-img" src="" alt=""></div>
     <div class="choices" id="stim-choices"></div>
-    <button class="btn btn-p" id="btn-next" onclick="nextStim()" disabled>Toliau</button>
+    <button class="btn btn-p" id="btn-next" onclick="nextStim()" disabled style="display:none">Toliau</button>
   </div>
 
   <!-- LOADING -->
@@ -536,6 +536,8 @@ function showStim(idx){
       wrap.querySelectorAll('.choice').forEach((el,j)=>el.classList.toggle('on',j===i));
       S.selected={...c,stimId:stim.id,family:stim.family,latency:Date.now()-S.stimShownAt};
       document.getElementById('btn-next').disabled=false;
+      // Auto-advance after brief visual feedback (300ms)
+      setTimeout(()=>{ if(S.selected) nextStim(); }, 300);
     });
     wrap.appendChild(b);
   });
