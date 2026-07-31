@@ -145,7 +145,13 @@
         <div class="ref-text" id="r-detail"></div>
       </div>
       <div class="ref-section">
-        <div class="ref-label">Kodėl tai rodome?</div>
+        <div class="ref-label" style="display:flex;align-items:center;gap:6px">
+          Kodėl tai rodome?
+          <span onclick="toggleWhyInfo()" style="cursor:pointer;font-size:.9rem;color:var(--accent);opacity:.7" title="Plačiau">ⓘ</span>
+        </div>
+        <div id="why-info-ref" style="display:none;font-size:.78rem;color:var(--dim);line-height:1.65;margin-top:8px;font-style:normal">
+          Žmonės į pavienes situacijas gali reaguoti labai skirtingai. Todėl ConflictLab nevertina atskiro pasirinkimo — sistema ieško spontaniškų reakcijų, kurios kartojasi skirtinguose kontekstuose. Tokie pasikartojimai laikomi patikimesniu pagrindu refleksijai nei pavienis atsakymas. Tai nėra diagnozė ar asmenybės vertinimas — tik stebėjimas, kurį verta pasitikrinti savo patirtyje.
+        </div>
         <div class="ref-limit" id="r-limits"></div>
       </div>
       <div class="ref-section">
@@ -254,7 +260,13 @@
           <div class="ref-text" id="pat-detail"></div>
         </div>
         <div class="ref-section">
-          <div class="ref-label">Kodėl tai rodome?</div>
+          <div class="ref-label" style="display:flex;align-items:center;gap:6px">
+            Kodėl tai rodome?
+            <span onclick="toggleWhyInfo()" style="cursor:pointer;font-size:.9rem;color:var(--accent);opacity:.7" title="Plačiau">ⓘ</span>
+          </div>
+          <div id="why-info" style="display:none;font-size:.78rem;color:var(--dim);line-height:1.65;margin-top:8px;font-style:normal">
+            Žmonės į pavienes situacijas gali reaguoti labai skirtingai. Todėl ConflictLab nevertina atskiro pasirinkimo — sistema ieško spontaniškų reakcijų, kurios kartojasi skirtinguose kontekstuose. Tokie pasikartojimai laikomi patikimesniu pagrindu refleksijai nei pavienis atsakymas. Tai nėra diagnozė ar asmenybės vertinimas — tik stebėjimas, kurį verta pasitikrinti savo patirtyje.
+          </div>
           <div class="ref-limit" id="pat-note"></div>
         </div>
         <div class="ref-section">
@@ -1210,6 +1222,14 @@ JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","ref
 }
 
 function goFeedback(){go('s-feedback');}
+
+function toggleWhyInfo() {
+  // Toggle whichever info box is currently visible
+  ['why-info','why-info-ref'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  });
+}
 
 function patternFinishAndDSM(fb) {
   S.hasPattern = true;
