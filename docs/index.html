@@ -882,7 +882,7 @@ async function generateReflection(){
     document.getElementById('r-traj').textContent='Šiandien aiškaus dėsningumo neatsirado.';
     document.getElementById('r-detail').textContent='';
     document.getElementById('r-limits').textContent='Šiandien aiškaus pasikartojimo neatsirado.';
-    document.getElementById('r-q').textContent='Ar šiandien buvo situacija, kur panaši reakcija pasirodė realiame gyvenime?';
+    document.getElementById('r-q').textContent='Ar šiandien buvo momentas, kuris kažkuo išsiskyrė?';
     go('s-ref'); return;
   }
 
@@ -943,7 +943,7 @@ async function generateReflection(){
     document.getElementById('r-traj').textContent=aha.tmpl.text;
     document.getElementById('r-detail').textContent=aha.evidence||'';
     document.getElementById('r-limits').textContent='Tai pastebėta šioje sesijoje — kvietimas pasitikrinti, ar atpažįsti tai kasdienėse situacijose.';
-    document.getElementById('r-q').textContent='Kur paskutinį kartą panaši reakcija pasirodė ne ekrane?';
+    document.getElementById('r-q').textContent='Ar tai tau pažįstama už šio eksperimento ribų?';
   }
   go('s-ref');
 }
@@ -981,7 +981,7 @@ function finishSession(fb, dsmFollows=false){
   const h=loadH();
   if (dsmFollows) {
     const reflQ = document.getElementById('r-q').textContent ||
-      'Kur paskutinį kartą panaši reakcija pasirodė tavo kasdienybėje?';
+      'Ar šiandien buvo situacija, kuri kažkuo išsiskyrė?';
     dsmStart(reflQ);
   } else if(h.length>=3&&h.length%3===0){ showPattern(); }
   else{
@@ -1179,7 +1179,7 @@ JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","ref
     document.getElementById('pat-traj').textContent='Keliose skirtingose situacijose pirmoji reakcija buvo panaši.';
     document.getElementById('pat-detail').textContent='';
     document.getElementById('pat-note').textContent='Tai nėra išvada — tik pastebėjimas, kurį verta patikrinti kasdienėse situacijose.';
-    document.getElementById('pat-q').textContent='Kur paskutinį kartą panaši reakcija pasirodė ne ekrane?';
+    document.getElementById('pat-q').textContent='Ar tai tau pažįstama už šio eksperimento ribų?';
   }
   document.getElementById('pat-loading').style.display='none';
   document.getElementById('pat-content').style.display='block';
