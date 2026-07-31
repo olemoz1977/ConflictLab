@@ -443,7 +443,7 @@ function saveFeedback(fb){
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
-const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null,feedbackDone:false,obsState:null,hasPattern:false};
+const S={queue:[],idx:0,responses:[],axes:{aw:0,cs:0,cr:0},stimShownAt:0,selected:null,returnChoice:null,feedbackDone:false,obsState:null,hasPattern:false,patternShown:false};
 
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1005,7 +1005,7 @@ function finishSession(fb, dsmFollows=false){
     const reflQ = document.getElementById('r-q').textContent ||
       'Ar šiandien buvo situacija, kuri kažkuo išsiskyrė?';
     dsmStart(reflQ);
-  } else if(h.length>=3&&h.length%3===0){ showPattern(); }
+  } else if(h.length>=3&&h.length%3===0&&!S.patternShown){ showPattern(); }
   else{
     const msg=fb==='yes'?'Kita sesija gali atskleisti kažką kito.':'Šį kartą mūsų matymas nesutapo. Tai irgi svarbu.';
     document.getElementById('t-msg').textContent=msg;
@@ -1148,6 +1148,7 @@ function dsmComplete() {
 // PATTERN
 // ══════════════════════════════════════════
 async function showPattern(){
+  S.patternShown = true;
   go('s-pattern');
   document.getElementById('pat-loading').style.display='flex';
   document.getElementById('pat-content').style.display='none';
@@ -1275,7 +1276,7 @@ function showThanksEnd(){
 
 function reset(){
   S.queue=[];S.idx=0;S.responses=[];S.axes={aw:0,cs:0,cr:0};
-  S.selected=null;S.returnChoice=null;S.obsState=null;S.hasPattern=false;S.feedbackDone=false;
+  S.selected=null;S.returnChoice=null;S.obsState=null;S.hasPattern=false;S.feedbackDone=false;S.patternShown=false;
   DSM.path=[];DSM.agreement=null;DSM.detail=null;
   // Safe element resets — guard against missing elements
   const fbExtra=document.getElementById('fb-extra');
