@@ -938,11 +938,15 @@ function finishSession(fb, dsmFollows=false){
     stimuliUsed:S.queue.map(s=>s.id),
     families:S.responses.map(r=>r.family),
     feedback:fb,
-    note:fb==='no'?document.getElementById('fb-text').value:'',
+    note:fb==='no'?(document.getElementById('fb-text')||{value:''}).value:'',
     latencies:S.responses.map(r=>r.latency),
   });
   const h=loadH();
-  if(h.length>=3&&h.length%3===0){ showPattern(); }
+  if (dsmFollows) {
+    const reflQ = document.getElementById('r-q').textContent ||
+      'Kur paskutinį kartą panaši reakcija pasirodė tavo kasdienybėje?';
+    dsmStart(reflQ);
+  } else if(h.length>=3&&h.length%3===0){ showPattern(); }
   else{
     const msg=fb==='yes'?'Kita sesija gali atskleisti kažką kito.':'Šį kartą mūsų matymas nesutapo. Tai irgi svarbu.';
     document.getElementById('t-msg').textContent=msg;
