@@ -1035,12 +1035,11 @@ function dsmStart(reflectionQuestion) {
   DSM.path = ['s0'];
   DSM.agreement = null;
   DSM.detail = null;
-  // State-aware S0 question
-  let s0q = reflectionQuestion;
-  if (!S.hasPattern) {
-    // No pattern found — don't ask about "similar reaction"
-    s0q = 'Ar šiandien buvo situacija, kuri kažkuo išsiskyrė iš kitų?';
-  }
+  // S0 asks about the reflection — NOT the same question again
+  // Meta-question: did the reflection resonate?
+  const s0q = S.hasPattern
+    ? 'Ar tai, ką parodė refleksija, tau kažką primena?'
+    : 'Ar šiandien buvo momentas, kuris kažkuo išsiskyrė?';
   document.getElementById('dsm-s0-q').textContent = s0q;
   go('s-dsm-s0');
 }
