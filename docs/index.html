@@ -476,7 +476,8 @@ function renderIntro(){
     const need=3-h.length;
     html+=`<div class="sess-note">Dar ${need} sesij${need===1?'a':'os'} iki dėsningumo</div>`;
   }
-  html+=`<button class="hist-clear" onclick="confirmClear()">Ištrinti istoriją</button></div>`;
+  html+=`<div style="height:24px"></div>`;
+  html+=`<button class="hist-clear" onclick="confirmClear()" style="margin-top:8px;border-color:rgba(176,128,80,.3)">Ištrinti istoriją</button></div>`;
   histWrap.innerHTML=html;
 }
 
