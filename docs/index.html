@@ -192,10 +192,22 @@
   <div class="screen" id="s-pattern">
     <div class="loading-wrap" id="pat-loading"><div class="spinner"></div></div>
     <div id="pat-content" style="display:none">
-      <div class="pattern-card">
-        <div class="pattern-label">Pastebėtas dėsningumas</div>
-        <div class="pattern-text" id="pat-text"></div>
-        <div class="pattern-note" id="pat-note"></div>
+      <div class="ref-box">
+        <div class="ref-section">
+          <div class="ref-label">Pastebėjome</div>
+          <div class="ref-text" id="pat-traj"></div>
+        </div>
+        <div class="ref-section">
+          <div class="ref-label">Kas kartojosi?</div>
+          <div class="ref-text" id="pat-detail"></div>
+        </div>
+        <div class="ref-section">
+          <div class="ref-label">Kodėl tai rodome?</div>
+          <div class="ref-limit" id="pat-note"></div>
+        </div>
+        <div class="ref-section">
+          <div class="ref-question" id="pat-q"></div>
+        </div>
       </div>
     </div>
     <button class="btn btn-g" onclick="goFeedback()">Toliau →</button>
@@ -386,14 +398,21 @@ function renderIntro(){
   let html=`<div class="hist-wrap"><div class="hist-title">Ankstesnės sesijos</div>`;
   recent.forEach(s=>{
     const d=new Date(s.ts).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
-    const awW=dirWord(s.axes.aw,'atsitraukimo','artėjimo');
-    const csW=dirWord(s.axes.cs,'neapibrėžtumo','aiškumo');
-    const crW=dirWord(s.axes.cr,'paleidimo','kontrolės');
+    // Generate one human sentence instead of internal labels
+    const aw=s.axes.aw, cs=s.axes.cs, cr=s.axes.cr;
+    const dominant = [
+      {axis:'aw',v:aw,pos:'dažniau artėta prie situacijų',neg:'dažniau trauktasi nuo situacijų'},
+      {axis:'cs',v:cs,pos:'dažniau ieškota aiškumo',neg:'patogiau su neapibrėžtumu'},
+      {axis:'cr',v:cr,pos:'dažniau siekta struktūros',neg:'dažniau paliekama eiti savaime'},
+    ].filter(a=>Math.abs(a.v)>0.15).sort((a,b)=>Math.abs(b.v)-Math.abs(a.v))[0];
+    const summary = dominant
+      ? (dominant.v > 0 ? dominant.pos : dominant.neg)
+      : 'Aiškios krypties nepastebėta';
     html+=`<div class="hist-item"><div class="hist-date">${d}</div>
-      <div class="hist-dir"><span>${awW}</span> · <span>${csW}</span> · <span>${crW}</span></div></div>`;
+      <div class="hist-dir">${summary}</div></div>`;
   });
   if(h.length>=3){
-    html+=`<button class="btn btn-p" style="margin-top:8px" onclick="showPattern()">Žiūrėti dėsningumą →</button>`;
+    html+=`<button class="btn btn-p" style="margin-top:8px" onclick="showPattern()">Palyginti sesijas →</button>`;
   } else {
     const need=3-h.length;
     html+=`<div class="sess-note">Dar ${need} sesij${need===1?'a':'os'} iki dėsningumo</div>`;
@@ -657,34 +676,45 @@ async function generateReflection(){
   if (!aha.hasInsight) {
     document.getElementById('r-traj').textContent='Šiandien aiškaus dėsningumo neatsirado.';
     document.getElementById('r-detail').textContent='';
-    document.getElementById('r-limits').textContent='Tai nėra nesėkmė — sistema tyli kai neturi ko konkrečiai pasakyti.';
+    document.getElementById('r-limits').textContent='Šiandien aiškaus pasikartojimo neatsirado.';
     document.getElementById('r-q').textContent='Ar šiandien buvo situacija, kur panaši reakcija pasirodė realiame gyvenime?';
     go('s-ref'); return;
   }
 
   // Claude receives pattern context — NOT raw aw/cs/cr numbers
-  const prompt=`Tu esi ConflictLab. Veiki kaip vertėjas — ne psichologas.
-DRAUDŽIAMA: "Sistema nustatė", "Tu esi", "Rezultatai rodo", diagnozės, verdiktai
-SUBJEKTAS: žmogaus dėmesys ar reakcija — ne sistema
-TONAS: ramus, smalsus, kuklus. KALBA: lietuvių
+  // aha_reason: kodėl šis pastebėjimas gali nustebinti
+  const ahaReason = aha.isCross
+    ? 'Ši reakcija pasikartojo keliose skirtingose sesijose — situacijose, kurios tarpusavyje nebuvo panašios.'
+    : aha.pattern.type === 'P3'
+    ? 'Šis momentas buvo užfiksuotas pagal reakcijos greitį — ne pagal pasirinkimą.'
+    : 'Ši reakcija buvo pastebima per visą sesiją.';
 
-APTIKTAS DĖSNINGUMAS:
-Tipas: ${aha.pattern.type} | Duomenų pagrindas: ${aha.evidence} | Kelių sesijų: ${aha.isCross}
+  const prompt=`Tu esi ConflictLab. Kalbi su žmogumi, kuris nori geriau suprasti savo pirmąsias reakcijas.
 
-VERTIMO ŠABLONAS: ${aha.tmpl.text}
-VIDINIS KLAUSIMAS (ne rodyti): ${aha.tmpl.why}
+TAVO TIKSLAS: Padėti žmogui pačiam pastebėti dėsningumą — ne pasakyti jam išvadą.
+DRAUDŽIAMA: "sistema", "signalas", "kryptis", "trajektorija", "pattern", "ašis", diagnozės, etiketės, "Tu esi"
+TONAS: ramus, smalsus, kuklus. KALBA: lietuvių.
 
-1. "trajectory" — 1 sakinys. Neutralus pastebėjimas be išvados. Pvz: "Keliose skirtingose situacijose pasikartojo ta pati pirmoji reakcijos kryptis."
+PASTEBĖTA:
+${aha.tmpl.text}
+Konkrečiai: ${aha.evidence}
+Kodėl tai įdomu: ${ahaReason}
 
-2. "detail" — 1-2 sakiniai. Kas konkrečiai kartojosi, žmogaus kalba. Remkis: "${aha.evidence}". Pvz: "Kai situacija buvo neaiški, pirmasis impulsas dažniau buvo ieškoti aiškumo nei laukti, kol jo atsiras savaime."
+SUKURK 4 dalis:
 
-3. "limits" — 1-2 sakiniai. Kas mus nustebino + kodėl tai rodome. Tai yra vieta kur žmogus PATS padaro išvadą — NE sistema. Pvz: "Tai pasikartojo skirtinguose vaizduose, kurie tarpusavyje nebuvo panašūs. Tai nėra išvada apie tave — tik kvietimas pasitikrinti."
+"observation" — 1 sakinys. Neutralus faktas be išvados. Kalba apie situacijas, ne apie žmogų.
+Pvz: "Keliose skirtingose situacijose pirmoji reakcija buvo panaši."
 
-4. "question" — vienas atviras klausimas. Ne apie sesiją — apie realų gyvenimą. Pvz: "Kur paskutinį kartą panaši reakcija pasireiškė ne ekrane, o realioje situacijoje?"
+"what_repeated" — 1-2 sakiniai. Kas konkrečiai kartojosi. Pradėk nuo situacijos, ne nuo žmogaus.
+Pvz: "Kai situacija tapdavo neaiški, dažniau atsirado impulsas ieškoti aiškumo — o ne laukti, kol jis atsiras savaime."
 
-SVARBU: sistema neprimeta išvados. Ji tik rodo pastebėjimą ir palieka žmogui erdvę pačiam nustebti.
+"why_it_matters" — 1-2 sakiniai. Naudok: "${ahaReason}". Sistema neklijuoja etikečių — ji kviečia pasitikrinti.
+Pvz: "Įdomu tai, kad ši reakcija pasikartojo labai skirtingose situacijose. Tai nėra išvada — tik pastebėjimas."
 
-JSON tik: {"trajectory":"...","detail":"...","limits":"...","question":"..."}`;
+"reflection_question" — vienas klausimas apie realų gyvenimą, ne apie sesiją.
+Pvz: "Kur paskutinį kartą panaši reakcija pasirodė ne ekrane, o realioje situacijoje?"
+
+JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}`;
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
@@ -692,15 +722,15 @@ JSON tik: {"trajectory":"...","detail":"...","limits":"...","question":"..."}`;
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:prompt}]})});
     const d=await r.json();
     const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
-    document.getElementById('r-traj').textContent=res.trajectory;
-    document.getElementById('r-detail').textContent=res.detail||'';
-    document.getElementById('r-limits').textContent=res.limits;
-    document.getElementById('r-q').textContent=res.question;
+    document.getElementById('r-traj').textContent=res.observation||res.trajectory||'';
+    document.getElementById('r-detail').textContent=res.what_repeated||res.detail||'';
+    document.getElementById('r-limits').textContent=res.why_it_matters||res.limits||'';
+    document.getElementById('r-q').textContent=res.reflection_question||res.question||'';
   }catch{
     document.getElementById('r-traj').textContent=aha.tmpl.text;
     document.getElementById('r-detail').textContent=aha.evidence||'';
-    document.getElementById('r-limits').textContent='Ši kryptis atsirado iš šios sesijos pasirinkimų — tai kvietimas pasitikrinti, ar atpažįsti tai savo kasdienybėje.';
-    document.getElementById('r-q').textContent='Kur paskutinį kartą panaši reakcija pasireiškė ne ekrane?';
+    document.getElementById('r-limits').textContent='Tai pastebėta šioje sesijoje — kvietimas pasitikrinti, ar atpažįsti tai kasdienėse situacijose.';
+    document.getElementById('r-q').textContent='Kur paskutinį kartą panaši reakcija pasirodė ne ekrane?';
   }
   go('s-ref');
 }
@@ -751,18 +781,35 @@ async function showPattern(){
   const h=loadH();
   const summary=h.slice(-6).map((s,i)=>{
     const d=new Date(s.ts).toLocaleDateString('lt-LT',{month:'short',day:'numeric'});
-    return `Sesija ${i+1} (${d}): ${dirWord(s.axes.aw,'atsitraukimo','artėjimo')} · ${dirWord(s.axes.cs,'neapibrėžtumo','aiškumo')} · ${dirWord(s.axes.cr,'paleidimo','kontrolės')}`;
+    const aw=s.axes.aw, cs=s.axes.cs, cr=s.axes.cr;
+    const parts=[];
+    if(Math.abs(aw)>0.15) parts.push(aw>0?'artėjimas':'atsitraukimas');
+    if(Math.abs(cs)>0.15) parts.push(cs>0?'aiškumo siekimas':'neapibrėžtumo tolerancija');
+    if(Math.abs(cr)>0.15) parts.push(cr>0?'struktūros siekimas':'paleidimas');
+    const desc = parts.length ? parts.join(', ') : 'įvairi, be aiškios krypties';
+    return `Sesija ${i+1} (${d}): ${desc}`;
   }).join('\n');
 
-  const prompt=`Tu esi ConflictLab.
-DRAUDŽIAMA: diagnozės, verdiktai, "Sistema nustatė"
-FORMULĖ: "X iš Y sesijų..."
-TONAS: ramus, smalsus, kuklus. Lietuvių kalba.
+  const prompt=`Tu esi ConflictLab. Kalbi su žmogumi, kuris atliko kelias sesijas.
 
-SESIJŲ ISTORIJA:
+TAVO TIKSLAS: Parodyti kas kartojosi — kad žmogus pats padarytų išvadą.
+DRAUDŽIAMA: "sistema", "signalas", "kryptis", "trajektorija", "pattern", diagnozės, etiketės, "Tu esi"
+TONAS: ramus, smalsus, kuklus. KALBA: lietuvių.
+
+SESIJŲ DUOMENYS (${h.length} sesijos):
 ${summary}
 
-JSON: {"insight":"1-2 sakiniai apie dėsningumą","question":"Vienas atviras klausimas","note":"Trumpa pastaba apie ribas"}`;
+SUKURK 4 dalis:
+
+"observation" — 1 sakinys. Neutralus faktas. Pvz: "Keliose sesijose pirmoji reakcija buvo panaši, net kai situacijos skyrėsi."
+
+"what_repeated" — 1-2 sakiniai. Kas konkrečiai kartojosi. Formulė: "X iš Y sesijų...". Pvz: "3 iš 3 sesijų, kai situacija buvo neaiški, pirmoji reakcija buvo ieškoti aiškumo, o ne laukti."
+
+"why_it_matters" — 1-2 sakiniai. Kodėl tai verta dėmesio. Pabrėžk kad tai SKIRTINGOS situacijos — tai nustebina. Ne išvada, o kvietimas. Pvz: "Tai pasikartojo labai skirtingose situacijose. Tai nėra išvada — tik pastebėjimas, kurį verta patikrinti."
+
+"reflection_question" — vienas klausimas apie realų gyvenimą, ne apie sesiją. Pvz: "Kur paskutinį kartą panaši reakcija pasirodė kasdienėje situacijoje?"
+
+JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}`;
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
@@ -771,11 +818,15 @@ JSON: {"insight":"1-2 sakiniai apie dėsningumą","question":"Vienas atviras kla
     });
     const d=await r.json();
     const res=JSON.parse(d.content[0].text.trim().replace(/```json|```/g,'').trim());
-    document.getElementById('pat-text').textContent=res.insight+'\n\n'+res.question;
-    document.getElementById('pat-note').textContent=res.note;
+    document.getElementById('pat-traj').textContent=res.observation||res.trajectory||'';
+    document.getElementById('pat-detail').textContent=res.what_repeated||res.detail||'';
+    document.getElementById('pat-note').textContent=res.why_it_matters||res.note||'';
+    document.getElementById('pat-q').textContent=res.reflection_question||res.question||'';
   }catch{
-    document.getElementById('pat-text').textContent='Keliose sesijose pasirodė pasikartojanti kryptis. Ar tai tau pažįstama?';
-    document.getElementById('pat-note').textContent='Tai stebėjimas, ne išvada apie tave.';
+    document.getElementById('pat-traj').textContent='Keliose skirtingose situacijose pirmoji reakcija buvo panaši.';
+    document.getElementById('pat-detail').textContent='';
+    document.getElementById('pat-note').textContent='Tai nėra išvada — tik pastebėjimas, kurį verta patikrinti kasdienėse situacijose.';
+    document.getElementById('pat-q').textContent='Kur paskutinį kartą panaši reakcija pasirodė ne ekrane?';
   }
   document.getElementById('pat-loading').style.display='none';
   document.getElementById('pat-content').style.display='block';
