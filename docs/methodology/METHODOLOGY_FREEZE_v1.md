@@ -91,6 +91,29 @@ Po pirmos sesijos žmogus nori grįžti ne todėl kad gautų kitą „rezultatą
 
 ---
 
+---
+
+## ConflictLab Philosophy Statement
+
+> Mes nepadedame žmogui greičiau suprasti save.
+> Mes padedame jam išmokti geriau stebėti save.
+
+Tai nėra tas pats.
+
+**Ne:** „Sužinok, koks esi."
+**O:** „Išmok pastebėti tai, ko iki šiol nepastebėdavai."
+
+Šis skirtumas yra visa ConflictLab metodikos esmė:
+
+- Stimulai neklausia apie asmenybę — jie kviečia pastebėti pirmą reakciją.
+- Refleksija nepasakoja žmogui, kas jis yra — ji rodo, ką ji matė.
+- Sistema neprimeta išvados — ji atveria klausimą.
+
+Sėkmė nėra tada, kai žmogus sako: *"Dabar žinau, koks esu."*
+Sėkmė yra tada, kai žmogus sako: *"Keista... nepastebėdavau, kad taip reaguoju."*
+
+---
+
 ## Methodology Freeze Commitment
 
 > Nuo šio momento metodologijos pakeitimai priimami tik tada, jei beta duomenys aiškiai rodo, kad dabartinė metodika nepasiekia SC1–SC5 kriterijų. Idėjos, intuicija ar pavienės nuomonės nebėra pakankamas pagrindas keisti sistemą.
