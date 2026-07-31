@@ -690,46 +690,64 @@ async function generateReflection(){
     : 'Ši reakcija buvo pastebima per visą sesiją.';
 
   // Tipo A — tarpinė refleksija (po 1 sesijos)
-  // Principas: atidaryti klausimą, ne pradėti aiškinti
   // R1: nekalbėti už žmogų | R2: neužbaigti minties
-  // R3: atviras klausimas | R4: atsargus tonas (1 sesija)
-  const isSingleSession = ${JSON.stringify(!aha.isCross)};
+  // R3: atviras klausimas | R4: tonas proporcingas duomenims
+  const isSingleSession = !aha.isCross;
+  const sessionNote = isSingleSession
+    ? 'SVARBU: Tai PIRMA sesija — tik 4 pasirinkimai. Nekalbėk apie pasikartojimą (per anksti). Tikslas: atidaryti vieną klausimą. Max: 2 sakiniai + klausimas.'
+    : 'SVARBU: Kelios sesijos. Galima kalbėti apie tai kas kartojosi. Naudok: "keliose sesijose", "dažniau nei viename vaizde".';
+  const obsHint = isSingleSession
+    ? 'Pvz: "Šioje sesijoje dėmesys sustojo ten, kur situacija buvo neaiški."'
+    : 'Pvz: "Per tris sesijas skirtingose situacijose išryškėjo vienas motyvas."';
+  const repeatHint = isSingleSession
+    ? 'Pvz: "Kai reikėjo apsispręsti, pirmoji reakcija buvo ieškoti aiškumo."'
+    : 'Pvz: "Kai situacija tapdavo neaiški, dažniau krypo į aiškumą — ne į laukimą."';
+  const whyNote = isSingleSession
+    ? 'Gali būti tuščia arba 1 labai trumpas sakinys.'
+    : '1-2 sakiniai. Kodėl tai įdomu: ' + ahaReason + ' Ne išvada — stebėjimas.';
+  const crossNote = aha.isCross ? 'Kodėl įdomu: ' + ahaReason : '';
 
-  const prompt=`Tu esi ConflictLab — smalsus pašnekovas, ne analitikas.
-Tu žiūri į sesijos duomenis kartu su žmogumi — ne jam aiškini.
+  const prompt = 'Tu esi ConflictLab — smalsus pašnekovas, ne analitikas.
+'
+    + 'Tu žiūri į sesijos duomenis kartu su žmogumi — ne jam aiškini.
 
-DRAUDŽIAMA: "sistema", "pastebėjome dėsningumą", "tai rodo kad", "tavo profilis",
-"rezultatai rodo", diagnozės, išvados, "tu esi", "tu linkęs"
-TONAS: ramus, smalsus, trumpas. KALBA: lietuvių.
+'
+    + 'DRAUDŽIAMA: "sistema", "pastebėjome dėsningumą", "tai rodo kad", '
+    + '"tavo profilis", "rezultatai rodo", diagnozės, išvados, "tu esi", "tu linkęs"
+'
+    + 'TONAS: ramus, smalsus, trumpas. KALBA: lietuvių.
 
-${isSingleSession ? `SVARBU: Tai PIRMA sesija. Tik 4 pasirinkimai.
-Nekalbėk apie "pasikartojimą" — per anksti.
-Tikslas: atidaryti vieną klausimą, ne aiškinti.
-Maksimalus ilgis: 2 sakiniai + klausimas.` : `SVARBU: Kelios sesijos. Galima kalbėti apie tai, kas kartojosi.
-Naudok skaičius: "keliose sesijose", "dažniau nei viename vaizde".
-Tikslas: parodyti ką matėme kartu — ir paklausti.`}
+'
+    + sessionNote + '
 
-PASTEBĖTA:
-${aha.tmpl.text}
-Konkrečiai: ${aha.evidence}
-${aha.isCross ? `Kodėl įdomu: ${ahaReason}` : ''}
+'
+    + 'PASTEBĖTA:
+'
+    + aha.tmpl.text + '
+'
+    + 'Konkrečiai: ' + aha.evidence + '
+'
+    + crossNote + '
 
-SUKURK 4 laukus:
+'
+    + 'SUKURK 4 laukus:
 
-"observation" — ${isSingleSession ? '1 trumpas sakinys. Konkretus faktas. NE apie pasikartojimą.' : '1 sakinys. Konkretus faktas su skaičiais jei galima.'}
-Pvz: ${isSingleSession ? '"Šioje sesijoje dėmesys sustojo ten, kur situacija buvo neaiški."' : '"Per tris sesijas skirtingose situacijose išryškėjo vienas motyvas."'}
+'
+    + '"observation" — 1 sakinys. ' + obsHint + '
 
-"what_repeated" — ${isSingleSession ? '1 sakinys. Kas tiksliai pasirodė. Pradėk nuo situacijos.' : '1-2 sakiniai. Kas kartojosi. Pradėk nuo situacijos, ne nuo žmogaus.'}
-Pvz: ${isSingleSession ? '"Kai reikėjo apsispręsti, pirmoji reakcija buvo ieškoti aiškumo."' : '"Kai situacija tapdavo neaiški, dažniau krypo į aiškumą — ne į laukimą."'}
+'
+    + '"what_repeated" — 1-2 sakiniai. ' + repeatHint + '
 
-"why_it_matters" — ${isSingleSession ? 'Praleisti arba 1 labai trumpas sakinys jei yra ką pasakyti. Gali būti tuščia.' : `1-2 sakiniai. Kodėl tai įdomu: "${ahaReason}". Ne išvada — stebėjimas.`}
-Pvz: ${isSingleSession ? '""' : '"Tai pasirodė vaizduose, kurie tarpusavyje nebuvo panašūs."'}
+'
+    + '"why_it_matters" — ' + whyNote + '
 
-"reflection_question" — vienas atviras klausimas apie REALŲ GYVENIMĄ, ne apie sesiją.
-Klausimas palieka erdvę atsakyti "ne". Kviečia tęsti tyrinėjimą.
-Pvz: "Kur tau tai pažįstama už ekrano ribų?" arba "Kur paskutinį kartą kažkas panašaus pasirodė ne čia?"
+'
+    + '"reflection_question" — vienas atviras klausimas apie REALŲ GYVENIMĄ.
+'
+    + 'Palieka erdvę atsakyti "ne". Pvz: "Kur tau tai pažįstama už ekrano ribų?"
 
-JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}`;
+'
+    + 'JSON tik: {"observation":"...","what_repeated":"...","why_it_matters":"...","reflection_question":"..."}';
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
