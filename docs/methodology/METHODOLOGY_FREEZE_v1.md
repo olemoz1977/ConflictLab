@@ -57,4 +57,38 @@ Ne pagal nuojautą. Ne pagal diskusiją. Tik pagal tai ką parodys realūs žmon
 
 ---
 
+## Success Criteria v1.0
+
+Beta laikoma sėkminga ne tada kai nėra klaidų — o tada kai pasiekiami šie kriterijai.
+
+**SC1 — Natūrali reakcija**
+Dauguma dalyvių renkasi spontaniškai, nejaučia kad ieško „teisingo atsakymo".
+
+**SC2 — Refleksijos rezonansas**
+Rezultatas atrodo susijęs su jų pačių patirtimi — ne kaip bendrinė frazė.
+
+**SC3 — AHA momentas**
+Dalis dalyvių pasako kažką panašaus į: *„Apie tai nebuvau pagalvojęs."*
+Tai svarbiau nei „patiko".
+
+**SC4 — Pasitikėjimas**
+Vartotojas nejaučia kad sistema jį vertina ar diagnozuoja.
+
+**SC5 — Pakartotinis naudojimas**
+Po pirmos sesijos žmogus nori grįžti ne todėl kad gautų kitą „rezultatą" — o todėl kad nori geriau suprasti savo reakcijų dėsningumus.
+
+---
+
+## Ryšys su beta hipotezėmis
+
+| Success Criteria | Beta hipotezė |
+|---|---|
+| SC1 | H1 (≥70% AHA) + stebėjimas |
+| SC2 | H1 (Q2 — „to nebuvau pastebėjęs") |
+| SC3 | H1 tiesioginė |
+| SC4 | H4 (nesutarimų kokybė) |
+| SC5 | Grįžtamumo metrika — nauja |
+
+---
+
 *"Nebe Architecture. Evidence."*
