@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConflictLab — Stimulus Candidate Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0C0C0F;--card:#121215;--border:#1E1E24;--text:#E2DED6;
+    --dim:#6E6A64;--faint:#32323A;--accent:#7C9E8F;--a2:#2A4840;
+    --warn:#B08050;--reject:#7A3030;--r:14px
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100%;-webkit-font-smoothing:antialiased}
+  .shell{max-width:480px;margin:0 auto;padding:0 18px 80px}
+
+  /* HEADER */
+  header{padding:36px 0 24px;border-bottom:1px solid var(--border);margin-bottom:32px}
+  .logo{font-family:'Space Grotesk',sans-serif;font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  header h1{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:300;line-height:1.2;margin-bottom:10px}
+
+  /* PHILOSOPHY NOTE */
+  .philosophy{border-left:2px solid var(--a2);padding:10px 14px;margin-bottom:28px;font-size:.8rem;color:var(--dim);line-height:1.7;font-style:italic}
+
+  /* API KEY */
+  .api-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:24px}
+  .api-label{font-size:.65rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .api-row{display:flex;gap:8px}
+  input[type=password],input[type=text]{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:10px 12px;outline:none;transition:border-color 180ms}
+  input[type=password]:focus,input[type=text]:focus{border-color:var(--accent)}
+  .api-status{font-size:.72rem;margin-top:6px;color:var(--faint)}
+  .api-status.ok{color:var(--accent)}
+
+  /* UPLOAD */
+  .upload-zone{border:1px dashed var(--border);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;background:var(--card);margin-bottom:20px;transition:border-color 180ms;min-height:100px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+  .upload-zone:hover{border-color:var(--accent)}
+  .upload-zone.has-img{padding:0;overflow:hidden}
+  .upload-zone img{width:100%;display:block;max-height:380px;object-fit:contain;border-radius:var(--r)}
+  .upload-hint{font-size:.85rem;color:var(--faint)}
+  .upload-sub{font-size:.72rem;color:var(--faint)}
+
+  /* ANALYSE BTN */
+  .btn{display:block;width:100%;padding:15px;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:500;border:none;cursor:pointer;transition:opacity 180ms;-webkit-tap-highlight-color:transparent;margin-bottom:10px}
+  .btn:disabled{opacity:.25;cursor:not-allowed}
+  .btn-p{background:var(--accent);color:#0C0C0F}
+  .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border)}
+
+  /* LOADING */
+  .loading-wrap{display:flex;align-items:center;justify-content:center;padding:48px 0;gap:12px}
+  .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0}
+  .loading-text{font-size:.85rem;color:var(--dim)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ANALYSIS RESULT */
+  .result-section{display:none}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+  .card-label{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  .card-text{font-size:.88rem;color:var(--dim);line-height:1.75}
+
+  /* F1-F7 checks */
+  .checks{display:flex;flex-direction:column;gap:8px}
+  .check-row{display:flex;align-items:flex-start;gap:10px}
+  .check-icon{font-size:.85rem;flex-shrink:0;margin-top:1px}
+  .check-label{font-size:.82rem;color:var(--dim);line-height:1.5}
+  .check-label strong{color:var(--text);font-weight:500}
+
+  /* Questions */
+  .questions{display:flex;flex-direction:column;gap:8px}
+  .question-item{font-size:.85rem;color:var(--dim);line-height:1.6;padding-left:14px;border-left:2px solid var(--a2)}
+
+  /* HUMAN SECTION */
+  .human-section{margin-top:4px}
+  .field-label{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;margin-top:16px}
+  .options-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
+  .opt-btn{padding:8px 13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;color:var(--dim);border:1px solid var(--border);background:var(--card);cursor:pointer;transition:border-color 180ms,color 180ms;-webkit-tap-highlight-color:transparent}
+  .opt-btn.on{border-color:var(--accent);color:var(--text)}
+  .options-grid.single .opt-btn.on{background:rgba(124,158,143,.07)}
+
+  textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:12px 14px;resize:vertical;min-height:72px;line-height:1.65;margin-top:4px;outline:none;transition:border-color 180ms}
+  textarea:focus{border-color:var(--accent)}
+  textarea::placeholder{color:var(--faint)}
+
+  /* VERDICT */
+  .verdict-row{display:flex;gap:8px;margin-top:4px}
+  .verdict-btn{flex:1;padding:14px 8px;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:500;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;text-align:center;transition:all 180ms;-webkit-tap-highlight-color:transparent;line-height:1.3}
+  .verdict-btn.beta.on{border-color:var(--accent);color:var(--accent);background:rgba(124,158,143,.07)}
+  .verdict-btn.revision.on{border-color:var(--warn);color:var(--warn);background:rgba(176,128,80,.06)}
+  .verdict-btn.archive.on{border-color:#7A3030;color:#c47878;background:rgba(122,48,48,.06)}
+
+  /* EXPORT */
+  .export-section{display:none;margin-top:20px}
+  .yaml-box{background:#0a0a0c;border:1px solid var(--border);border-radius:10px;padding:16px;font-family:'Space Grotesk',monospace;font-size:.75rem;white-space:pre-wrap;color:#94a3b8;max-height:300px;overflow-y:auto;margin-bottom:10px;line-height:1.7}
+  .copy-note{font-size:.72rem;color:var(--faint);text-align:center;margin-top:4px}
+
+  /* DIVIDER */
+  .divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+
+  footer{border-top:1px solid var(--border);padding:20px 0;margin-top:40px;font-size:.72rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="logo">ConflictLab</div>
+    <h1>Stimulus Candidate Review</h1>
+  </header>
+
+  <div class="philosophy">
+    Šio įrankio tikslas – padėti įvertinti stimulą prieš beta testą.<br>
+    Galutinį sprendimą apie jo vertę priima tik realių žmonių reakcijos.
+  </div>
+
+  <!-- API KEY -->
+  <div class="api-section">
+    <div class="api-label">Anthropic API Key</div>
+    <div class="api-row">
+      <input type="password" id="api-key" placeholder="sk-ant-..." autocomplete="off">
+    </div>
+    <div class="api-status" id="api-status">Įvesk raktą prieš analizę. Jis nesaugomas.</div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-in').click()">
+    <span class="upload-hint">Spausti ir pasirinkti vaizdą</span>
+    <span class="upload-sub">arba nuvilkti čia</span>
+    <img id="preview-img" style="display:none">
+  </div>
+  <input type="file" id="file-in" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+
+  <button class="btn btn-p" id="btn-analyse" disabled onclick="analyse()">Analizuoti kandidatą</button>
+  <button class="btn btn-g" id="btn-reset" style="display:none" onclick="reset()">Naujas kandidatas</button>
+
+  <!-- LOADING -->
+  <div class="loading-wrap" id="loading" style="display:none">
+    <div class="spinner"></div>
+    <span class="loading-text">Vertinama pagal F1–F7...</span>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-section" id="result-section">
+
+    <!-- F1-F7 -->
+    <div class="card">
+      <div class="card-label">F1–F7 Vaizdo savybės</div>
+      <div class="checks" id="f-checks"></div>
+    </div>
+
+    <!-- Bendras kontekstas -->
+    <div class="card">
+      <div class="card-label">Vaizdo kontekstas</div>
+      <div class="card-text" id="context-text"></div>
+    </div>
+
+    <!-- Beta klausimai -->
+    <div class="card">
+      <div class="card-label">Stebėjimo klausimai beta testui</div>
+      <div class="card-text" style="font-size:.75rem;color:var(--faint);margin-bottom:10px">Tai – hipotezės patikrinimui su žmonėmis, ne išvados.</div>
+      <div class="questions" id="beta-questions"></div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- HUMAN DECISIONS -->
+    <div class="human-section">
+
+      <div class="field-label">Kontekstas (pasirink vieną)</div>
+      <div class="options-grid single" id="context-opts">
+        <button class="opt-btn" onclick="pick(this,'context')">Laukimas</button>
+        <button class="opt-btn" onclick="pick(this,'context')">Autoritetas</button>
+        <button class="opt-btn" onclick="pick(this,'context')">Nežinomybė</button>
+        <button class="opt-btn" onclick="pick(this,'context')">Bendravimas</button>
+        <button class="opt-btn" onclick="pick(this,'context')">Atsakomybė</button>
+        <button class="opt-btn" onclick="pick(this,'context')">Kita</button>
+      </div>
+
+      <div class="field-label">Kodėl svarstome šį kandidatą?</div>
+      <div class="options-grid" id="reason-opts">
+        <button class="opt-btn" onclick="toggle(this,'reason')">Užpildo bibliotekos spragą</button>
+        <button class="opt-btn" onclick="toggle(this,'reason')">Naujas kontekstas</button>
+        <button class="opt-btn" onclick="toggle(this,'reason')">Alternatyva esamam stimului</button>
+        <button class="opt-btn" onclick="toggle(this,'reason')">Beta eksperimentas</button>
+        <button class="opt-btn" onclick="toggle(this,'reason')">Kita</button>
+      </div>
+
+      <div class="field-label">Pasitikėjimas šiuo kandidatu</div>
+      <div class="options-grid single" id="confidence-opts">
+        <button class="opt-btn" onclick="pick(this,'confidence')">Aukštai</button>
+        <button class="opt-btn" onclick="pick(this,'confidence')">Vidutiniškai</button>
+        <button class="opt-btn" onclick="pick(this,'confidence')">Žemai</button>
+      </div>
+
+      <div class="field-label">Pastabos (neprivaloma)</div>
+      <textarea id="notes" placeholder="Kas atkreipė dėmesį? Kokios abejonės?"></textarea>
+
+      <div class="field-label">Verdiktas</div>
+      <div class="verdict-row">
+        <button class="verdict-btn beta" onclick="setVerdict('beta',this)">✅ Ready for Beta</button>
+        <button class="verdict-btn revision" onclick="setVerdict('revision',this)">🟡 Needs Revision</button>
+        <button class="verdict-btn archive" onclick="setVerdict('archive',this)">❌ Archive</button>
+      </div>
+
+    </div>
+
+    <!-- EXPORT -->
+    <div class="export-section" id="export-section">
+      <hr class="divider">
+      <div class="card-label" style="margin-bottom:10px">YAML eksportas</div>
+      <div class="yaml-box" id="yaml-out"></div>
+      <button class="btn btn-g" onclick="copyYaml()">Kopijuoti YAML</button>
+      <div class="copy-note" id="copy-note"></div>
+    </div>
+
+  </div><!-- /result-section -->
+
+  <footer>ConflictLab · Stimulus Candidate Review · Galutinis vertinimas — tik su žmonėmis</footer>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────
+let state = {
+  imageB64: null,
+  imageMime: null,
+  analysis: null,
+  context: null,
+  reasons: [],
+  confidence: null,
+  verdict: null,
+};
+
+// ── FILE HANDLING ────────────────────────
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    const [header, b64] = dataUrl.split(',');
+    state.imageB64 = b64;
+    state.imageMime = file.type || 'image/jpeg';
+
+    const img = document.getElementById('preview-img');
+    img.src = dataUrl;
+    img.style.display = 'block';
+    document.querySelector('.upload-hint').style.display = 'none';
+    document.querySelector('.upload-sub').style.display = 'none';
+    document.getElementById('drop-zone').classList.add('has-img');
+
+    updateAnalyseBtn();
+  };
+  reader.readAsDataURL(file);
+}
+
+// Drag & drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
+dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.style.borderColor = '';
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+
+// ── API KEY ──────────────────────────────
+const keyInput = document.getElementById('api-key');
+keyInput.addEventListener('input', updateAnalyseBtn);
+
+function updateAnalyseBtn() {
+  const hasKey = keyInput.value.trim().startsWith('sk-');
+  const hasImg = !!state.imageB64;
+  document.getElementById('btn-analyse').disabled = !(hasKey && hasImg);
+  document.getElementById('api-status').textContent = hasKey
+    ? '✓ Raktas gautas. Nesaugomas.' : 'Įvesk raktą prieš analizę. Jis nesaugomas.';
+  document.getElementById('api-status').className = 'api-status' + (hasKey ? ' ok' : '');
+}
+
+// ── ANALYSE ──────────────────────────────
+async function analyse() {
+  const key = keyInput.value.trim();
+  if (!key || !state.imageB64) return;
+
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('btn-analyse').disabled = true;
+  document.getElementById('result-section').style.display = 'none';
+
+  const systemPrompt = `You are a stimulus evaluation assistant for ConflictLab — an Epistemic Reflection Framework.
+
+Your task: evaluate an image as a potential stimulus candidate.
+
+IMPORTANT RULES:
+- You evaluate the IMAGE PROPERTIES, not predict human reactions
+- You do NOT assign axis values (aw/cs/cr)
+- You do NOT say what signals the image "will" create — only what MIGHT be worth observing
+- All signal-related output must be framed as HYPOTHESES for human beta testing
+- You are a tool to help a human curator — not a validator
+
+Respond ONLY in this exact JSON format:
+{
+  "f_checks": [
+    {"rule": "F1", "label": "Dviprasmiška situacija", "pass": true/false, "note": "brief note"},
+    {"rule": "F2", "label": "Be teksto ir logotipų", "pass": true/false, "note": "brief note"},
+    {"rule": "F3", "label": "Be aiškių veido emocijų", "pass": true/false, "note": "brief note"},
+    {"rule": "F4", "label": "Universalus kontekstas", "pass": true/false, "note": "brief note"},
+    {"rule": "F5", "label": "Neutrali atmosfera", "pass": true/false, "note": "brief note"},
+    {"rule": "F6", "label": "Vienas aiškus centras", "pass": true/false, "note": "brief note"},
+    {"rule": "F7", "label": "Semantiškai savarankiškas", "pass": true/false, "note": "brief note"}
+  ],
+  "context_description": "2-3 sentences: what does the image show, factually. No interpretation.",
+  "beta_questions": [
+    "Ar šis vaizdas dažniau skatina...",
+    "Ar reakcijos į šį vaizdą...",
+    "Ar vaizdas pakankamai dviprasmiškas..."
+  ]
+}
+
+beta_questions must be 3 questions phrased as things TO CHECK with real people, not conclusions. In Lithuanian.
+context_description in Lithuanian.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{
+          role: 'user',
+          content: [{
+            type: 'image',
+            source: { type: 'base64', media_type: state.imageMime, data: state.imageB64 }
+          }, {
+            type: 'text',
+            text: 'Įvertink šį vaizdo kandidatą pagal ConflictLab F1–F7 kriterijus.'
+          }]
+        }]
+      })
+    });
+
+    const data = await resp.json();
+
+    if (data.error) throw new Error(data.error.message);
+
+    const raw = data.content[0].text;
+    const clean = raw.replace(/```json|```/g, '').trim();
+    state.analysis = JSON.parse(clean);
+    renderResult();
+
+  } catch (err) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btn-analyse').disabled = false;
+    alert('Klaida: ' + err.message);
+  }
+}
+
+// ── RENDER ───────────────────────────────
+function renderResult() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('btn-analyse').style.display = 'none';
+  document.getElementById('btn-reset').style.display = 'block';
+  document.getElementById('result-section').style.display = 'block';
+
+  const a = state.analysis;
+
+  // F-checks
+  const checksEl = document.getElementById('f-checks');
+  checksEl.innerHTML = a.f_checks.map(c => `
+    <div class="check-row">
+      <span class="check-icon">${c.pass ? '✓' : '○'}</span>
+      <span class="check-label" style="color:${c.pass ? 'var(--dim)' : 'var(--warn)'}">
+        <strong>${c.rule}: ${c.label}</strong><br>${c.note}
+      </span>
+    </div>
+  `).join('');
+
+  // Context
+  document.getElementById('context-text').textContent = a.context_description;
+
+  // Beta questions
+  const qEl = document.getElementById('beta-questions');
+  qEl.innerHTML = a.beta_questions.map(q => `<div class="question-item">${q}</div>`).join('');
+}
+
+// ── PICKS ────────────────────────────────
+function pick(btn, group) {
+  document.querySelectorAll(`#${group}-opts .opt-btn`).forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  state[group] = btn.textContent;
+  updateExport();
+}
+
+function toggle(btn, group) {
+  btn.classList.toggle('on');
+  state[group] = Array.from(document.querySelectorAll(`#reason-opts .opt-btn.on`)).map(b => b.textContent);
+  updateExport();
+}
+
+function setVerdict(v, btn) {
+  document.querySelectorAll('.verdict-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  state.verdict = v;
+  document.getElementById('export-section').style.display = 'block';
+  updateExport();
+}
+
+// ── YAML ────────────────────────────────
+function updateExport() {
+  if (!state.verdict) return;
+
+  const now = new Date().toISOString().split('T')[0];
+  const a = state.analysis || {};
+  const passed = (a.f_checks || []).filter(c => c.pass).map(c => c.rule);
+  const failed = (a.f_checks || []).filter(c => !c.pass).map(c => c.rule);
+
+  const verdictMap = { beta: 'candidate_ready', revision: 'needs_revision', archive: 'archived' };
+  const confidenceMap = { 'Aukštai': 'high', 'Vidutiniškai': 'medium', 'Žemai': 'low' };
+
+  const betaQs = (a.beta_questions || []).map(q => `  - "${q.replace(/"/g, "'")}"`).join('\n');
+  const reasons = (state.reasons || []).map(r => `  - ${r}`).join('\n');
+
+  const yaml = `# ConflictLab — Stimulus Candidate
+# Generated: ${now}
+# Status: PRE-VALIDATION (human reactions required for full validation)
+
+status: ${verdictMap[state.verdict] || 'candidate'}
+review_date: "${now}"
+
+context_family: "${state.context || ''}"
+
+candidacy_reason:
+${reasons || '  - (nenurodyta)'}
+
+curator_confidence: ${confidenceMap[state.confidence] || 'unknown'}
+
+f_criteria:
+  passed: [${passed.join(', ')}]
+  failed: [${failed.join(', ')}]
+
+context_description: |
+  ${(a.context_description || '').replace(/\n/g, '\n  ')}
+
+beta_questions:
+${betaQs || '  - (neišanalizuota)'}
+
+curator_notes: |
+  ${(document.getElementById('notes').value || '(nėra)').replace(/\n/g, '\n  ')}
+
+# IMPORTANT: aw/cs/cr axis values are NOT assigned here.
+# Signal hypotheses are verified only through human beta responses.
+`;
+
+  document.getElementById('yaml-out').textContent = yaml;
+}
+
+document.getElementById('notes').addEventListener('input', updateExport);
+
+// ── COPY ────────────────────────────────
+async function copyYaml() {
+  const text = document.getElementById('yaml-out').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    document.getElementById('copy-note').textContent = '✓ Nukopijuota';
+    setTimeout(() => document.getElementById('copy-note').textContent = '', 2000);
+  } catch {
+    document.getElementById('copy-note').textContent = 'Pasirink tekstą ir kopijuok rankiniu būdu';
+  }
+}
+
+// ── RESET ────────────────────────────────
+function reset() {
+  state = { imageB64: null, imageMime: null, analysis: null, context: null, reasons: [], confidence: null, verdict: null };
+
+  document.getElementById('preview-img').style.display = 'none';
+  document.getElementById('preview-img').src = '';
+  document.querySelector('.upload-hint').style.display = '';
+  document.querySelector('.upload-sub').style.display = '';
+  document.getElementById('drop-zone').classList.remove('has-img');
+  document.getElementById('file-in').value = '';
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('export-section').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('btn-analyse').style.display = 'block';
+  document.getElementById('btn-analyse').disabled = true;
+  document.getElementById('btn-reset').style.display = 'none';
+  document.getElementById('notes').value = '';
+  document.querySelectorAll('.opt-btn, .verdict-btn').forEach(b => b.classList.remove('on'));
+  updateAnalyseBtn();
+}
+</script>
+</body>
+</html>
