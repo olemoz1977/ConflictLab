@@ -210,7 +210,7 @@ document.getElementById('api-key').addEventListener('input', updateBtn);
 
 function updateBtn() {
   const key = document.getElementById('api-key').value.trim();
-  const ok = key.startsWith('AIza') && key.length > 20;
+  const ok = key.length > 10;
   document.getElementById('btn-analyse').disabled = !(ok && state.imageB64);
   const st = document.getElementById('api-status');
   st.textContent = ok ? '✓ Raktas gautas. Nesaugomas.' : 'Įvesk raktą prieš analizę. Jis nesaugomas.';
