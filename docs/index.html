@@ -310,65 +310,65 @@
 // ══════════════════════════════════════════
 const LIB = [
   // FAMILY: waiting — laukimas be atsakymo
-  {id:'L05',family:'waiting',src:'media/p1_phone_table.png',axis:'cs',
+  {id:'ST-004',family:'waiting',src:'media/p1_phone_table.png',axis:'cs',
    q:'Kas pirmiausia patraukė dėmesį?',
    c:[{t:'žinutė',aw:+.10,cs:+.65,cr:+.30},
       {t:'tyla',aw:-.10,cs:-.40,cr:-.20},
       {t:'patikrinti',aw:+.20,cs:+.45,cr:+.55}]},
 
-  {id:'L10',family:'waiting',src:'media/v2_p1_empty_room.png',axis:'cr',
+  {id:'ST-007',family:'waiting',src:'media/v2_p1_empty_room.png',axis:'cr',
    q:'Kas pirmiausia patraukė dėmesį?',
    c:[{t:'tuščia erdvė',aw:-.15,cs:-.30,cr:-.60},
       {t:'laukimas',aw:+.15,cs:+.45,cr:+.50},
       {t:'palikta vieta',aw:+.20,cs:+.25,cr:-.10}]},
 
-  {id:'L12',family:'waiting',src:'media/p4_empty_table.png',axis:'cr',
+  {id:'ST-005',family:'waiting',src:'media/p4_empty_table.png',axis:'cr',
    q:'Kas pirmiausia patraukė dėmesį?',
    c:[{t:'tuščios kėdės',aw:-.25,cs:-.30,cr:-.55},
       {t:'tvarka',aw:+.10,cs:+.20,cr:+.60},
       {t:'laisva vieta',aw:+.30,cs:+.20,cr:+.15}]},
 
   // FAMILY: withdrawal — atsitraukimas
-  {id:'L01',family:'withdrawal',src:'media/p2_window_silhouette.png',axis:'aw',
+  {id:'ST-001',family:'withdrawal',src:'media/p2_window_silhouette.png',axis:'aw',
    q:'Kas pirmiausia patraukė dėmesį?',
    c:[{t:'būti vienam',aw:-.55,cs:-.20,cr:-.30},
       {t:'kas lauke',aw:+.25,cs:+.15,cr:+.10},
       {t:'laukimas',aw:-.10,cs:-.30,cr:-.15}]},
 
-  {id:'L03',family:'withdrawal',src:'media/v2_p2_corridor.png',axis:'aw',
+  {id:'ST-008',family:'withdrawal',src:'media/v2_p2_corridor.png',axis:'aw',
    q:'Ką norėjosi daryti?',
    c:[{t:'Išeiti greičiau',aw:-.50,cs:-.10,cr:-.30},
       {t:'Palaukti ir pasikalbėti',aw:+.40,cs:+.10,cr:+.15},
       {t:'Eiti savo keliu',aw:-.10,cs:-.20,cr:+.20}]},
 
   // FAMILY: encounter — susitikimas/sąveika
-  {id:'L02',family:'encounter',src:'media/ax_approach.png',axis:'aw',
+  {id:'ST-002',family:'encounter',src:'media/ax_approach.png',axis:'aw',
    q:'Kas pirmiausia patraukė dėmesį?',
    c:[{t:'artėjimas',aw:+.50,cs:+.20,cr:+.15},
       {t:'atstumas',aw:-.25,cs:+.35,cr:+.25},
       {t:'du žmonės',aw:+.05,cs:-.10,cr:-.05}]},
 
-  {id:'L04',family:'encounter',src:'media/v2_p4_person_alone.png',axis:'aw',
+  {id:'ST-006',family:'encounter',src:'media/v2_p4_person_alone.png',axis:'aw',
    q:'Kas pirmiausia šovė į galvą?',
    c:[{t:'Norėjosi priartėti',aw:+.40,cs:+.20,cr:+.15},
       {t:'Palikti ramybėje',aw:-.35,cs:-.20,cr:-.25},
       {t:'Pagalvojau kaip ilgai čia sėdi',aw:+.10,cs:+.35,cr:+.10}]},
 
   // FAMILY: open_space — neapibrėžtumas/erdvė
-  {id:'L07',family:'open_space',src:'media/ax_uncertainty.png',axis:'cs',
+  {id:'ST-003',family:'open_space',src:'media/ax_uncertainty.png',axis:'cs',
    q:'Kas pirmiausia šovė į galvą žiūrint į tuščią lapą?',
    c:[{t:'Iš karto pagalvojau ką čia galėčiau daryti',aw:+.10,cs:-.45,cr:-.20},
       {t:'Nežinau nuo ko pradėti',aw:-.10,cs:+.55,cr:+.30},
       {t:'Nieko nekyla',aw:-.20,cs:-.50,cr:-.45}]},
 
-  {id:'L11',family:'open_space',src:'media/ax_release.png',axis:'cr',
+  {id:'ST-010',family:'open_space',src:'media/ax_release.png',axis:'cr',
    q:'Ką jaučiau žiūrėdamas į atidarytas duris?',
    c:[{t:'Laisvė — galima eiti',aw:+.10,cs:-.25,cr:-.65},
       {t:'Pagalvojau ar eiti ar likti',aw:+.10,cs:+.50,cr:+.35},
       {t:'Kažkas laukia ten',aw:+.40,cs:+.20,cr:-.10}]},
 
   // FAMILY: work — darbas/koncentracija
-  {id:'L09',family:'work',src:'media/p5_person_laptop.png',axis:'cr',
+  {id:'ST-009',family:'work',src:'media/p5_person_laptop.png',axis:'cr',
    q:'Kas pirmiausia šovė į galvą?',
    c:[{t:'Darbas — viskas gerai',aw:+.10,cs:+.25,cr:+.65},
       {t:'Norėjosi to paties — dirbti ir nekreipti dėmesio',aw:-.20,cs:-.15,cr:-.35},
@@ -434,6 +434,30 @@ function loadH(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch{ret
 function saveH(s){const h=loadH();h.push(s);localStorage.setItem(KEY,JSON.stringify(h));}
 
 const FBKEY='cl_feedback';
+// ── LEGACY ID MIGRATION ─────────────────────────────
+// Vienkartinis: seni L ID → ST ID naršyklės duomenyse
+const LEGACY_ID_MAP = {
+  'L01':'ST-001','L02':'ST-002','L03':'ST-008','L04':'ST-006',
+  'L05':'ST-004','L07':'ST-003','L09':'ST-009','L10':'ST-007',
+  'L11':'ST-010','L12':'ST-005'
+};
+(function migrateLegacyIds(){
+  if(localStorage.getItem('cl_legacy_migrated')) return;
+  try {
+    const raw = localStorage.getItem('cl_v3');
+    if(raw){
+      const sessions = JSON.parse(raw);
+      const migrated = sessions.map(s => ({
+        ...s,
+        stimuliUsed: (s.stimuliUsed||[]).map(id => LEGACY_ID_MAP[id]||id)
+      }));
+      localStorage.setItem('cl_v3', JSON.stringify(migrated));
+    }
+    localStorage.setItem('cl_legacy_migrated','1');
+  } catch(e){ console.warn('Legacy migration failed:',e); }
+})();
+// ─────────────────────────────────────────────────────
+
 function saveFeedback(fb){
   const all=JSON.parse(localStorage.getItem(FBKEY)||'[]');
   all.push({ts:Date.now(),...fb});
