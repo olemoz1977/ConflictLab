@@ -21,7 +21,8 @@
     "no_stimuli": "Stimulai dar neįkelti. Grįžkite vėliau.",
     "loading": "Kraunama...",
     "yes": "Taip",
-    "no": "Ne"
+    "no": "Ne",
+    "see_results": "Žiūrėti rezultatus"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -45,6 +46,7 @@
     "no_stimuli": "Stimuli not yet uploaded. Please check back later.",
     "loading": "Loading...",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "see_results": "See results"
   }
 }
