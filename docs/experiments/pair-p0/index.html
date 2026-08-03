@@ -16,153 +16,147 @@ html,body{
   height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;
   -webkit-tap-highlight-color:transparent;
 }
-#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#app{height:100vh;display:flex;flex-direction:column}
 
-/* ── SCREENS ── */
-.screen{display:none;flex-direction:column;height:100%;padding:0}
+.screen{display:none;flex-direction:column;height:100%}
 .screen.active{display:flex}
 
-/* ── INTRO ── */
-#screen-intro{align-items:center;justify-content:center;padding:32px 24px;gap:16px}
+/* INTRO */
+#screen-intro{align-items:center;justify-content:center;padding:32px 24px;gap:20px}
 .logo{font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
-.intro-title{font-size:1.6rem;font-weight:300;text-align:center;line-height:1.3}
+.intro-title{font-size:1.5rem;font-weight:300;text-align:center}
 .intro-sub{font-size:.9rem;color:var(--dim);text-align:center;line-height:1.6;max-width:280px}
-.lang-row{display:flex;gap:12px;margin:8px 0}
-.lang-btn{padding:8px 20px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--dim);font-size:.85rem;cursor:pointer;transition:all 180ms}
-.lang-btn.active{border-color:var(--accent);color:var(--text)}
-.start-btn{margin-top:8px;padding:16px 40px;border-radius:var(--r);background:var(--accent);
-  color:#0C0C0F;font-size:1rem;font-weight:600;border:none;cursor:pointer;width:100%;max-width:280px}
+.lang-row{display:flex;gap:10px}
+.lang-btn{
+  padding:8px 24px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.85rem;cursor:pointer;
+  transition:all 180ms;
+}
+.lang-btn.active{border-color:var(--accent);color:var(--text);background:rgba(124,158,143,.08)}
+.start-btn{
+  padding:16px;border-radius:var(--r);background:var(--accent);
+  color:#0C0C0F;font-size:1rem;font-weight:600;border:none;cursor:pointer;
+  width:100%;max-width:300px;
+}
 
-/* ── LAYER 1 — PAIR VIEW ── */
-#screen-pair{flex-direction:column;height:100%}
+/* NO STIMULI */
+#screen-nostimuli{align-items:center;justify-content:center;padding:32px;gap:12px;text-align:center}
+.nostimuli-msg{font-size:.9rem;color:var(--dim);line-height:1.6}
+
+/* PAIR */
+#screen-pair{flex-direction:column}
 .pair-header{
-  flex-shrink:0;padding:12px 16px;
+  flex-shrink:0;padding:10px 16px;
   display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);
+  border-bottom:1px solid var(--border);min-height:44px;
 }
 .pair-prompt{font-size:.8rem;color:var(--dim);flex:1;text-align:center}
-.pair-counter{font-size:.75rem;color:var(--faint);flex-shrink:0}
-.pair-images{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.pair-counter{font-size:.72rem;color:var(--faint);min-width:40px;text-align:right}
+.pair-images{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  height:calc(100vh - 44px);
+}
 .img-zone{
   flex:1;display:flex;align-items:center;justify-content:center;
   cursor:pointer;position:relative;overflow:hidden;
-  transition:opacity 120ms;
+  background:#0a0a0c;
 }
-.img-zone:first-child{border-bottom:2px solid var(--bg)}
-.img-zone img{width:100%;height:100%;object-fit:contain;display:block}
-.img-zone .overlay{
+.img-zone+.img-zone{border-top:3px solid var(--bg)}
+.img-zone img{
+  width:100%;height:100%;object-fit:contain;display:block;
+}
+.img-zone .tap-overlay{
   position:absolute;inset:0;background:rgba(124,158,143,0);
-  transition:background 120ms;pointer-events:none;
+  transition:background 100ms;
 }
-.img-zone:active .overlay{background:rgba(124,158,143,.15)}
+.img-zone:active .tap-overlay{background:rgba(124,158,143,.18)}
 .img-loading{
-  position:absolute;inset:0;display:flex;align-items:center;
-  justify-content:center;color:var(--faint);font-size:.8rem;
+  position:absolute;font-size:.8rem;color:var(--faint);
 }
 
-/* ── LAYER 2 — REFLECTION ── */
-#screen-reflect{flex-direction:column;height:100%}
-.reflect-header{
-  flex-shrink:0;padding:16px;border-bottom:1px solid var(--border);
-  text-align:center;
+/* REFLECT */
+#screen-reflect{flex-direction:column}
+.section-header{
+  flex-shrink:0;padding:14px 16px;border-bottom:1px solid var(--border);
+  text-align:center;font-size:.8rem;color:var(--dim);
 }
-.reflect-title{font-size:.8rem;color:var(--dim)}
-.reflect-body{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:20px}
+.scroll-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px}
 .reflect-item{display:flex;flex-direction:column;gap:10px}
-.reflect-img{width:100%;border-radius:var(--r);overflow:hidden;max-height:200px}
-.reflect-img img{width:100%;height:200px;object-fit:contain;background:#0a0a0c;display:block}
-.reflect-prompt{font-size:.85rem;color:var(--dim);line-height:1.5}
-.reflect-note{font-size:.72rem;color:var(--faint);font-style:italic}
-.reflect-input-row{display:flex;gap:8px}
+.reflect-img{border-radius:8px;overflow:hidden;background:#0a0a0c}
+.reflect-img img{width:100%;height:160px;object-fit:contain;display:block}
+.reflect-q{font-size:.85rem;color:var(--dim);line-height:1.5}
+.reflect-note{font-size:.72rem;color:var(--faint);font-style:italic;line-height:1.5}
+.reflect-row{display:flex;gap:8px;align-items:center}
 .reflect-input{
   flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
   color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;
   transition:border-color 180ms;
 }
 .reflect-input:focus{border-color:var(--accent)}
+.reflect-input:disabled{opacity:.4}
 .skip-btn{
-  padding:10px 14px;border-radius:8px;border:1px solid var(--border);
-  background:transparent;color:var(--faint);font-size:.8rem;cursor:pointer;
+  padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--faint);font-size:.75rem;cursor:pointer;
   white-space:nowrap;transition:all 180ms;flex-shrink:0;
 }
-.skip-btn.done{border-color:var(--accent);color:var(--accent)}
-.reflect-next{
-  flex-shrink:0;padding:16px;border-top:1px solid var(--border);
+.skip-btn.skipped{border-color:var(--accent);color:var(--accent)}
+.sticky-footer{
+  flex-shrink:0;padding:12px 16px;border-top:1px solid var(--border);
 }
-.next-btn{
+.action-btn{
   width:100%;padding:14px;border-radius:var(--r);background:var(--accent);
   color:#0C0C0F;font-size:.95rem;font-weight:600;border:none;cursor:pointer;
 }
-.next-btn:disabled{opacity:.3;cursor:not-allowed}
-
-/* ── RESULT ── */
-#screen-result{flex-direction:column;height:100%}
-.result-header{flex-shrink:0;padding:16px;border-bottom:1px solid var(--border);text-align:center}
-.result-title{font-size:1rem;font-weight:400}
-.result-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.result-item{display:flex;gap:12px;align-items:flex-start}
-.result-thumb{width:80px;height:54px;border-radius:8px;overflow:hidden;flex-shrink:0}
-.result-thumb img{width:100%;height:100%;object-fit:contain;background:#0a0a0c}
-.result-words{font-size:.9rem;color:var(--text);padding-top:4px}
-.result-words.skipped{color:var(--faint);font-style:italic}
-.result-question{
-  margin-top:8px;padding:16px;background:var(--card);
-  border:1px solid var(--border);border-radius:var(--r);
-  font-size:.95rem;color:var(--dim);text-align:center;
-}
-.result-footer{flex-shrink:0;padding:16px;border-top:1px solid var(--border)}
-.to-feedback-btn{
-  width:100%;padding:14px;border-radius:var(--r);background:transparent;
+.action-btn:disabled{opacity:.3;cursor:not-allowed}
+.ghost-btn{
+  width:100%;padding:12px;border-radius:var(--r);background:transparent;
   border:1px solid var(--border);color:var(--dim);font-size:.9rem;cursor:pointer;
 }
 
-/* ── FEEDBACK ── */
-#screen-feedback{flex-direction:column;height:100%}
-.fb-header{flex-shrink:0;padding:16px;border-bottom:1px solid var(--border);text-align:center}
-.fb-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px}
+/* RESULT */
+.result-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
+.result-thumb{width:72px;height:48px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#0a0a0c}
+.result-thumb img{width:100%;height:100%;object-fit:contain}
+.result-words{font-size:.9rem;color:var(--text);padding-top:6px;line-height:1.4}
+.result-words.empty{color:var(--faint);font-style:italic}
+.result-question{
+  margin-top:16px;padding:16px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--r);
+  font-size:.95rem;color:var(--dim);text-align:center;line-height:1.5;
+}
+
+/* FEEDBACK */
 .fb-item{display:flex;flex-direction:column;gap:10px}
 .fb-q{font-size:.9rem;color:var(--dim);line-height:1.5}
 .fb-yn{display:flex;gap:8px}
-.fb-yn-btn{
+.fb-btn{
   flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);
   background:transparent;color:var(--faint);font-size:.85rem;cursor:pointer;
   transition:all 180ms;
 }
-.fb-yn-btn.on{border-color:var(--accent);color:var(--text)}
-.fb-text{
+.fb-btn.on{border-color:var(--accent);color:var(--text);background:rgba(124,158,143,.08)}
+.fb-textarea{
   width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
   color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;resize:none;
-  min-height:60px;line-height:1.5;transition:border-color 180ms;
+  min-height:56px;line-height:1.5;transition:border-color 180ms;
 }
-.fb-text:focus{border-color:var(--accent)}
-.fb-footer{flex-shrink:0;padding:16px;border-top:1px solid var(--border)}
-.fb-submit{
-  width:100%;padding:14px;border-radius:var(--r);background:var(--accent);
-  color:#0C0C0F;font-size:.95rem;font-weight:600;border:none;cursor:pointer;
-}
+.fb-textarea:focus{border-color:var(--accent)}
 
-/* ── DONE ── */
-#screen-done{align-items:center;justify-content:center;padding:32px;gap:16px}
-.done-icon{font-size:2.5rem}
-.done-title{font-size:1.2rem;font-weight:300;text-align:center}
-.done-sub{font-size:.85rem;color:var(--dim);text-align:center;line-height:1.6}
+/* DONE */
+#screen-done{align-items:center;justify-content:center;padding:40px;gap:16px;text-align:center}
+.done-check{font-size:2.5rem}
+.done-title{font-size:1.2rem;font-weight:300}
+.done-sub{font-size:.85rem;color:var(--dim);line-height:1.6;max-width:260px}
 
-/* ── NO STIMULI ── */
-#screen-nostimuli{align-items:center;justify-content:center;padding:32px;gap:12px;text-align:center}
-.nostimuli-icon{font-size:2rem;color:var(--faint)}
-.nostimuli-msg{font-size:.9rem;color:var(--dim);line-height:1.6}
-
-/* ── DEBUG ── */
+/* DEBUG — tik su ?debug=1 */
 #debug-bar{
-  display:none;position:fixed;bottom:0;left:0;right:0;
-  background:#0a0a0c;border-top:1px solid var(--faint);
-  padding:8px 12px;font-size:.7rem;color:var(--faint);
-  display:flex;align-items:center;gap:12px;
+  position:fixed;bottom:0;left:0;right:0;
+  background:#080808;border-top:1px solid #222;
+  padding:6px 12px;font-size:.7rem;color:var(--faint);
+  display:flex;align-items:center;gap:10px;z-index:999;
 }
-#debug-bar.show{display:flex}
-.debug-export{
-  padding:4px 10px;border-radius:6px;border:1px solid var(--faint);
+.dbg-btn{
+  padding:3px 10px;border-radius:6px;border:1px solid #333;
   background:transparent;color:var(--faint);font-size:.7rem;cursor:pointer;
 }
 </style>
@@ -170,25 +164,22 @@ html,body{
 <body>
 <div id="app">
 
-  <!-- INTRO -->
   <div id="screen-intro" class="screen active">
     <div class="logo">ConflictLab</div>
-    <div class="intro-title" data-i18n="intro_subtitle"></div>
-    <div class="intro-sub" data-i18n="intro_instruction"></div>
+    <div class="intro-title" id="txt-subtitle"></div>
+    <div class="intro-sub" id="txt-instruction"></div>
     <div class="lang-row">
-      <button class="lang-btn active" onclick="setLang('lt')">LT</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btn-lt" onclick="setLang('lt')">LT</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
     </div>
-    <button class="start-btn" onclick="startExperiment()" data-i18n="intro_start"></button>
+    <button class="start-btn" id="txt-start" onclick="startExperiment()"></button>
   </div>
 
-  <!-- NO STIMULI -->
   <div id="screen-nostimuli" class="screen">
-    <div class="nostimuli-icon">🖼</div>
-    <div class="nostimuli-msg" data-i18n="no_stimuli"></div>
+    <div style="font-size:2rem;color:var(--faint)">🖼</div>
+    <div class="nostimuli-msg" id="txt-nostimuli"></div>
   </div>
 
-  <!-- LAYER 1: PAIR -->
   <div id="screen-pair" class="screen">
     <div class="pair-header">
       <div class="pair-prompt" id="pair-prompt"></div>
@@ -196,75 +187,73 @@ html,body{
     </div>
     <div class="pair-images">
       <div class="img-zone" id="zone-top" onclick="choosePair('top')">
-        <div class="img-loading" id="load-top">⋯</div>
-        <img id="img-top" style="display:none" alt="">
-        <div class="overlay"></div>
+        <span class="img-loading" id="load-top">⋯</span>
+        <img id="img-top" alt="" style="display:none">
+        <div class="tap-overlay"></div>
       </div>
       <div class="img-zone" id="zone-bottom" onclick="choosePair('bottom')">
-        <div class="img-loading" id="load-bottom">⋯</div>
-        <img id="img-bottom" style="display:none" alt="">
-        <div class="overlay"></div>
+        <span class="img-loading" id="load-bottom">⋯</span>
+        <img id="img-bottom" alt="" style="display:none">
+        <div class="tap-overlay"></div>
       </div>
     </div>
   </div>
 
-  <!-- LAYER 2: REFLECT -->
   <div id="screen-reflect" class="screen">
-    <div class="reflect-header">
-      <div class="reflect-title" data-i18n="layer2_prompt"></div>
-    </div>
-    <div class="reflect-body" id="reflect-body"></div>
-    <div class="reflect-next">
-      <button class="next-btn" id="reflect-next-btn" onclick="goToResult()" data-i18n="result_title"></button>
+    <div class="section-header" id="txt-reflect-header"></div>
+    <div class="scroll-body" id="reflect-body"></div>
+    <div class="sticky-footer">
+      <button class="action-btn" onclick="goToResult()" id="txt-reflect-next"></button>
     </div>
   </div>
 
-  <!-- RESULT -->
   <div id="screen-result" class="screen">
-    <div class="result-header">
-      <div class="result-title" data-i18n="result_title"></div>
-    </div>
-    <div class="result-body" id="result-body"></div>
-    <div class="result-footer">
-      <button class="to-feedback-btn" onclick="goToFeedback()" data-i18n="feedback_title"></button>
+    <div class="section-header" id="txt-result-header"></div>
+    <div class="scroll-body" id="result-body"></div>
+    <div class="sticky-footer">
+      <button class="ghost-btn" onclick="goToFeedback()" id="txt-to-feedback"></button>
     </div>
   </div>
 
-  <!-- FEEDBACK -->
   <div id="screen-feedback" class="screen">
-    <div class="fb-header">
-      <div class="result-title" data-i18n="feedback_title"></div>
-    </div>
-    <div class="fb-body" id="fb-body"></div>
-    <div class="fb-footer">
-      <button class="fb-submit" onclick="submitFeedback()" data-i18n="feedback_submit"></button>
+    <div class="section-header" id="txt-fb-header"></div>
+    <div class="scroll-body" id="fb-body"></div>
+    <div class="sticky-footer">
+      <button class="action-btn" onclick="submitFeedback()" id="txt-fb-submit"></button>
     </div>
   </div>
 
-  <!-- DONE -->
   <div id="screen-done" class="screen">
-    <div class="done-icon">✓</div>
-    <div class="done-title" data-i18n="result_title"></div>
-    <div class="done-sub" data-i18n="layer2_note"></div>
+    <div class="done-check">✓</div>
+    <div class="done-title" id="txt-done-title"></div>
+    <div class="done-sub" id="txt-done-sub"></div>
   </div>
 
 </div>
 
-<!-- DEBUG BAR -->
-<div id="debug-bar">
+<div id="debug-bar" style="display:none">
   <span>P0 debug</span>
-  <button class="debug-export" onclick="exportDebug()">Eksportuoti JSON</button>
+  <button class="dbg-btn" onclick="exportDebug()">Eksportuoti JSON</button>
+  <span id="dbg-info" style="margin-left:auto"></span>
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────
+// ── NAMESPACE ────────────────────────────────────────
 const NS = 'cl_pair_p0_';
-const DEBUG = new URLSearchParams(location.search).has('debug');
+const IS_DEBUG = new URLSearchParams(location.search).has('debug');
 
 // ── STATE ────────────────────────────────────────────
-let LANG = {};
+let L = {}; // current lang strings
+let LANGS = {};
 let PAIRS = [];
-let LAYER2_INDICES = []; // 0-based pair indices for layer2
+let L2_INDICES = []; // 0-based
+let currentLang = 'lt';
+let currentPairIdx = 0;
+let pairStartTime = 0;
+let bothLoaded = false;
+let reflectAnswers = {}; // image_id → {words, skipped}
+let fbAnswers = {};
+
 let SESSION = {
   session_id: uid(),
   timestamp: new Date().toISOString(),
@@ -275,260 +264,270 @@ let SESSION = {
   reflections: [],
   feedback: {}
 };
-let currentPairIndex = 0;
-let pairStartTime = 0;
-let reflectAnswers = {};
-let fbAnswers = {};
 
 // ── UTILS ────────────────────────────────────────────
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
 
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
 }
 
-function t(key){return LANG[key]||key}
+function txt(key){ return L[key] || key; }
 
-function applyLang(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    el.textContent=t(el.dataset.i18n);
-  });
-  document.getElementById('pair-prompt').textContent=t('layer1_prompt');
-}
-
+// ── LANGUAGE ─────────────────────────────────────────
 function setLang(lang){
-  SESSION.language=lang;
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===lang.toUpperCase()));
-  LANG=window.LANGS[lang]||{};
-  applyLang();
+  currentLang = lang;
+  SESSION.language = lang;
+  L = LANGS[lang] || LANGS['lt'] || {};
+
+  // Update buttons
+  document.getElementById('btn-lt').classList.toggle('active', lang === 'lt');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+  // Update all text nodes
+  document.getElementById('txt-subtitle').textContent = txt('intro_subtitle');
+  document.getElementById('txt-instruction').textContent = txt('intro_instruction');
+  document.getElementById('txt-start').textContent = txt('intro_start');
+  document.getElementById('txt-nostimuli').textContent = txt('no_stimuli');
+  document.getElementById('pair-prompt').textContent = txt('layer1_prompt');
+  document.getElementById('txt-reflect-header').textContent = txt('layer2_prompt');
+  document.getElementById('txt-reflect-next').textContent = txt('see_results') || txt('result_title');
+  document.getElementById('txt-result-header').textContent = txt('result_title');
+  document.getElementById('txt-to-feedback').textContent = txt('feedback_title');
+  document.getElementById('txt-fb-header').textContent = txt('feedback_title');
+  document.getElementById('txt-fb-submit').textContent = txt('feedback_submit');
+  document.getElementById('txt-done-title').textContent = txt('result_title');
+  document.getElementById('txt-done-sub').textContent = txt('layer2_note');
+  document.getElementById('html-root').lang = lang;
 }
 
 // ── INIT ─────────────────────────────────────────────
 async function init(){
   // Debug bar
-  if(DEBUG) document.getElementById('debug-bar').classList.add('show');
+  if(IS_DEBUG){
+    document.getElementById('debug-bar').style.display = 'flex';
+  }
 
-  // Detect language
-  const browserLang = navigator.language?.startsWith('lt') ? 'lt' : 'en';
+  // Detect browser lang
+  const bl = navigator.language || 'lt';
+  const detected = bl.startsWith('lt') ? 'lt' : 'en';
 
   // Load lang.json
   try {
     const r = await fetch('lang.json');
-    window.LANGS = await r.json();
-    LANG = window.LANGS[browserLang] || window.LANGS['lt'];
-    SESSION.language = browserLang;
-  } catch(e) {
-    window.LANGS = {lt:{},en:{}};
-    console.warn('lang.json nepavyko užkrauti');
+    LANGS = await r.json();
+  } catch(e){
+    console.warn('lang.json load failed:', e);
+    LANGS = { lt:{intro_subtitle:'Eksperimentas',intro_start:'Pradėti',no_stimuli:'Stimulai dar neįkelti.',layer1_prompt:'Kurį vaizdą pasirinktum šią akimirką?',layer2_prompt:'Pažvelk dar kartą.',layer2_note:'',result_title:'Tavo pasirinkimai',feedback_title:'Klausimai',feedback_submit:'Baigti'}, en:{intro_subtitle:'Experiment',intro_start:'Begin',no_stimuli:'Stimuli not yet uploaded.',layer1_prompt:'Which image would you choose right now?',layer2_prompt:'Look again.',layer2_note:'',result_title:'Your choices',feedback_title:'Questions',feedback_submit:'Finish'} };
   }
 
   // Load pair-set.json
   try {
     const r = await fetch('pair-set.json');
     const data = await r.json();
-    PAIRS = (data.pairs || []).filter(p=>p.status==='active');
-
-    // Layer2 indices from manifest (1-based → 0-based)
-    if(data.layer2_fixed_pairs){
-      LAYER2_INDICES = data.layer2_fixed_pairs.map(n=>n-1);
+    PAIRS = (data.pairs || []).filter(p => p.status === 'active');
+    // Layer2 indices (1-based in JSON → 0-based)
+    if(Array.isArray(data.layer2_fixed_pairs)){
+      L2_INDICES = data.layer2_fixed_pairs.map(n => n - 1).filter(i => i >= 0);
     }
-  } catch(e) {
-    console.warn('pair-set.json nepavyko užkrauti');
+  } catch(e){
+    console.warn('pair-set.json load failed:', e);
     PAIRS = [];
   }
 
-  // Apply lang
-  if(document.querySelector('.lang-btn.active'))
-    document.querySelector('.lang-btn.active').textContent = browserLang.toUpperCase();
-  setLang(browserLang);
-
-  // Mark active lang btn
-  document.querySelectorAll('.lang-btn').forEach(b=>{
-    b.classList.toggle('active', b.textContent===browserLang.toUpperCase());
-  });
-
+  // Apply detected language
+  setLang(detected);
   show('intro');
+
+  if(IS_DEBUG){
+    document.getElementById('dbg-info').textContent =
+      `pairs:${PAIRS.length} l2:[${L2_INDICES}]`;
+  }
 }
 
 // ── START ─────────────────────────────────────────────
 function startExperiment(){
-  if(PAIRS.length===0){
+  if(PAIRS.length === 0){
     show('nostimuli');
     return;
   }
-  currentPairIndex=0;
-  SESSION.choices=[];
-  showPair(0);
+  currentPairIdx = 0;
+  SESSION.choices = [];
+  loadPair(0);
 }
 
 // ── LAYER 1 ───────────────────────────────────────────
-function showPair(idx){
-  if(idx>=PAIRS.length){
+function loadPair(idx){
+  if(idx >= PAIRS.length){
     startLayer2();
     return;
   }
-  const pair = PAIRS[idx];
-  const flip = Math.random()<0.5;
-  const topImg = flip ? pair.image_b : pair.image_a;
-  const botImg = flip ? pair.image_a : pair.image_b;
 
-  // Store randomized layout
-  pair._top = topImg;
-  pair._bottom = botImg;
-  pair._flipped = flip;
+  const pair = PAIRS[idx];
+  const flip = Math.random() < 0.5;
+
+  pair._top    = flip ? pair.image_b : pair.image_a;
+  pair._bottom = flip ? pair.image_a : pair.image_b;
 
   // Counter
-  document.getElementById('pair-counter').textContent=`${idx+1} / ${PAIRS.length}`;
+  document.getElementById('pair-counter').textContent = `${idx + 1} / ${PAIRS.length}`;
 
-  // Load images
-  const imgTop = document.getElementById('img-top');
-  const imgBot = document.getElementById('img-bottom');
-  const loadTop = document.getElementById('load-top');
-  const loadBot = document.getElementById('load-bottom');
+  const imgT = document.getElementById('img-top');
+  const imgB = document.getElementById('img-bottom');
+  const ldT  = document.getElementById('load-top');
+  const ldB  = document.getElementById('load-bottom');
 
-  imgTop.style.display='none'; loadTop.style.display='flex';
-  imgBot.style.display='none'; loadBot.style.display='flex';
+  imgT.style.display = 'none';
+  imgB.style.display = 'none';
+  ldT.style.display  = 'block';
+  ldB.style.display  = 'block';
 
-  let topLoaded=false, botLoaded=false;
+  bothLoaded = false;
+  let tOk = false, bOk = false;
 
-  function checkReady(){
-    if(topLoaded&&botLoaded){
-      pairStartTime=Date.now();
+  function check(){
+    if(tOk && bOk){
+      bothLoaded = true;
+      pairStartTime = Date.now();
+      if(IS_DEBUG) document.getElementById('dbg-info').textContent =
+        `pair ${idx+1}/${PAIRS.length} loaded`;
     }
   }
 
-  imgTop.onload=()=>{imgTop.style.display='block';loadTop.style.display='none';topLoaded=true;checkReady();};
-  imgBot.onload=()=>{imgBot.style.display='block';loadBot.style.display='none';botLoaded=true;checkReady();};
-  imgTop.onerror=()=>{loadTop.textContent='?';topLoaded=true;checkReady();};
-  imgBot.onerror=()=>{loadBot.textContent='?';botLoaded=true;checkReady();};
+  imgT.onload  = () => { imgT.style.display='block'; ldT.style.display='none'; tOk=true; check(); };
+  imgB.onload  = () => { imgB.style.display='block'; ldB.style.display='none'; bOk=true; check(); };
+  imgT.onerror = () => { ldT.textContent='?'; tOk=true; check(); };
+  imgB.onerror = () => { ldB.textContent='?'; bOk=true; check(); };
 
-  imgTop.src=topImg.src;
-  imgBot.src=botImg.src;
+  imgT.src = pair._top.src;
+  imgB.src = pair._bottom.src;
 
   show('pair');
 }
 
 function choosePair(position){
-  if(!pairStartTime) return; // vaizdai dar nekrauti
-  const latency = Date.now()-pairStartTime;
-  const pair = PAIRS[currentPairIndex];
-  const selected = position==='top' ? pair._top : pair._bottom;
+  if(!bothLoaded){ return; } // vaizdai dar nekrauti
+  const latency = Date.now() - pairStartTime;
+  const pair = PAIRS[currentPairIdx];
+  const selected = position === 'top' ? pair._top : pair._bottom;
 
   SESSION.choices.push({
-    pair_id: pair.pair_id,
-    pair_order: currentPairIndex+1,
-    top_image_id: pair._top.id,
-    bottom_image_id: pair._bottom.id,
+    pair_id:          pair.pair_id,
+    pair_order:       currentPairIdx + 1,
+    top_image_id:     pair._top.id,
+    bottom_image_id:  pair._bottom.id,
     selected_image_id: selected.id,
     selected_position: position,
     choice_latency_ms: latency
   });
 
-  currentPairIndex++;
-  showPair(currentPairIndex);
+  currentPairIdx++;
+  loadPair(currentPairIdx);
 }
 
 // ── LAYER 2 ───────────────────────────────────────────
 function startLayer2(){
   const body = document.getElementById('reflect-body');
-  body.innerHTML='';
-  reflectAnswers={};
+  body.innerHTML = '';
+  reflectAnswers = {};
 
-  // Filter valid layer2 pairs
-  const l2pairs = LAYER2_INDICES
-    .filter(i=>i<SESSION.choices.length)
-    .map(i=>({
-      choice: SESSION.choices[i],
-      pair: PAIRS[i]
-    }));
+  // Parinkti l2 poras
+  const items = L2_INDICES
+    .filter(i => i < SESSION.choices.length)
+    .map(i => {
+      const choice = SESSION.choices[i];
+      const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+      const imgObj = pair
+        ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+        : null;
+      return { choice, imgObj };
+    })
+    .filter(x => x.imgObj);
 
-  l2pairs.forEach(({choice},idx)=>{
-    const imgSrc = PAIRS.find(p=>p.pair_id===choice.pair_id)
-      ? choice.selected_image_id
-      : null;
+  if(items.length === 0){
+    goToResult();
+    return;
+  }
 
-    // Find src from pairs
-    let src='';
-    const pair = PAIRS.find(p=>p.pair_id===choice.pair_id);
-    if(pair){
-      src = (pair.image_a.id===choice.selected_image_id ? pair.image_a : pair.image_b).src;
-    }
+  items.forEach(({ choice, imgObj }) => {
+    const key = imgObj.id;
+    reflectAnswers[key] = { words: '', skipped: false };
 
-    const key = choice.selected_image_id;
-    reflectAnswers[key]={words:'',skipped:false};
-
-    const div=document.createElement('div');
-    div.className='reflect-item';
-    div.innerHTML=`
-      <div class="reflect-img"><img src="${src}" alt="" loading="lazy"></div>
-      <div class="reflect-prompt">${t('layer2_prompt')}</div>
-      <div class="reflect-note">${t('layer2_note')}</div>
-      <div class="reflect-input-row">
-        <input class="reflect-input" maxlength="40" placeholder="${t('layer2_placeholder')}"
-          oninput="onReflectInput(this,'${key}')" id="ri-${key}">
-        <button class="skip-btn" onclick="skipReflect('${key}')" id="rs-${key}">${t('layer2_skip')}</button>
+    const div = document.createElement('div');
+    div.className = 'reflect-item';
+    div.innerHTML = `
+      <div class="reflect-img">
+        <img src="${imgObj.src}" alt="" loading="lazy">
+      </div>
+      <div class="reflect-q">${txt('layer2_prompt')}</div>
+      <div class="reflect-note">${txt('layer2_note')}</div>
+      <div class="reflect-row">
+        <input class="reflect-input" id="ri-${key}" maxlength="40"
+          placeholder="${txt('layer2_placeholder')}"
+          oninput="onReflect(this,'${key}')">
+        <button class="skip-btn" id="rs-${key}"
+          onclick="skipReflect('${key}')">${txt('layer2_skip')}</button>
       </div>
     `;
     body.appendChild(div);
   });
 
-  document.getElementById('reflect-next-btn').textContent=t('result_title');
   show('reflect');
 }
 
-function onReflectInput(el, key){
+function onReflect(el, key){
   // Max 3 žodžiai
-  const words=el.value.trim().split(/\s+/).filter(Boolean);
-  if(words.length>3){
-    el.value=words.slice(0,3).join(' ');
-  }
-  reflectAnswers[key]={words:el.value.trim(),skipped:false};
-  const skipBtn=document.getElementById('rs-'+key);
-  if(skipBtn) skipBtn.classList.remove('done');
+  const parts = el.value.trim().split(/\s+/).filter(Boolean);
+  if(parts.length > 3) el.value = parts.slice(0,3).join(' ');
+  reflectAnswers[key] = { words: el.value.trim(), skipped: false };
+  const s = document.getElementById('rs-' + key);
+  if(s) s.classList.remove('skipped');
 }
 
 function skipReflect(key){
-  reflectAnswers[key]={words:'',skipped:true};
-  const input=document.getElementById('ri-'+key);
-  if(input){input.value='';input.disabled=true;}
-  const skipBtn=document.getElementById('rs-'+key);
-  if(skipBtn) skipBtn.classList.add('done');
+  reflectAnswers[key] = { words: '', skipped: true };
+  const inp = document.getElementById('ri-' + key);
+  if(inp){ inp.value = ''; inp.disabled = true; }
+  const s = document.getElementById('rs-' + key);
+  if(s) s.classList.add('skipped');
 }
 
+// ── RESULT ────────────────────────────────────────────
 function goToResult(){
-  // Save reflections
-  SESSION.reflections=Object.entries(reflectAnswers).map(([id,r])=>({
-    image_id:id,words:r.words,skipped:r.skipped
+  SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
+    image_id: id, words: r.words, skipped: r.skipped
   }));
 
-  // Build result
-  const body=document.getElementById('result-body');
-  body.innerHTML='';
+  const body = document.getElementById('result-body');
+  body.innerHTML = '';
 
-  SESSION.choices.forEach(choice=>{
-    const pair=PAIRS.find(p=>p.pair_id===choice.pair_id);
-    let src='';
-    if(pair){
-      src=(pair.image_a.id===choice.selected_image_id?pair.image_a:pair.image_b).src;
-    }
-    const ref=SESSION.reflections.find(r=>r.image_id===choice.selected_image_id);
+  SESSION.choices.forEach(choice => {
+    const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const imgObj = pair
+      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+      : null;
+    const ref = SESSION.reflections.find(r => r.image_id === choice.selected_image_id);
 
-    const div=document.createElement('div');
-    div.className='result-item';
-    div.innerHTML=`
-      <div class="result-thumb"><img src="${src}" alt="" loading="lazy"></div>
-      <div class="${ref&&!ref.skipped&&ref.words?'result-words':'result-words skipped'}">
-        ${ref&&!ref.skipped&&ref.words ? ref.words : '—'}
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    const words = ref && !ref.skipped && ref.words ? ref.words : null;
+    div.innerHTML = `
+      <div class="result-thumb">
+        ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
+      </div>
+      <div class="${words ? 'result-words' : 'result-words empty'}">
+        ${words || '—'}
       </div>
     `;
     body.appendChild(div);
   });
 
-  // Question
-  const q=document.createElement('div');
-  q.className='result-question';
-  q.textContent=t('result_question');
+  const q = document.createElement('div');
+  q.className = 'result-question';
+  q.textContent = txt('result_question');
   body.appendChild(q);
 
   saveSession();
@@ -537,33 +536,34 @@ function goToResult(){
 
 // ── FEEDBACK ──────────────────────────────────────────
 function goToFeedback(){
-  const body=document.getElementById('fb-body');
-  body.innerHTML='';
-  fbAnswers={};
+  const body = document.getElementById('fb-body');
+  body.innerHTML = '';
+  fbAnswers = {};
 
-  const qs=[
-    {key:'surprised',text:'feedback_q1',type:'yn'},
-    {key:'helped_notice',text:'feedback_q2',type:'yn'},
-    {key:'felt_forced',text:'feedback_q3',type:'yn'},
-    {key:'would_repeat',text:'feedback_q4',type:'yn'},
-    {key:'would_repeat_reason',text:'feedback_q4_why',type:'text'},
+  const qs = [
+    { key:'surprised',         text:'feedback_q1', type:'yn' },
+    { key:'helped_notice',     text:'feedback_q2', type:'yn' },
+    { key:'felt_forced',       text:'feedback_q3', type:'yn' },
+    { key:'would_repeat',      text:'feedback_q4', type:'yn' },
+    { key:'repeat_reason',     text:'feedback_q4_why', type:'text' },
   ];
 
-  qs.forEach(q=>{
-    const div=document.createElement('div');
-    div.className='fb-item';
-    if(q.type==='yn'){
-      div.innerHTML=`
-        <div class="fb-q">${t(q.text)}</div>
+  qs.forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'fb-item';
+    if(q.type === 'yn'){
+      div.innerHTML = `
+        <div class="fb-q">${txt(q.text)}</div>
         <div class="fb-yn">
-          <button class="fb-yn-btn" onclick="setFb('${q.key}',true,this)">${t('yes')}</button>
-          <button class="fb-yn-btn" onclick="setFb('${q.key}',false,this)">${t('no')}</button>
+          <button class="fb-btn" onclick="setFb('${q.key}',true,this)">${txt('yes')}</button>
+          <button class="fb-btn" onclick="setFb('${q.key}',false,this)">${txt('no')}</button>
         </div>`;
     } else {
-      div.innerHTML=`
-        <div class="fb-q">${t(q.text)}</div>
-        <textarea class="fb-text" rows="2"
-          oninput="fbAnswers['${q.key}']=this.value" placeholder="..."></textarea>`;
+      div.innerHTML = `
+        <div class="fb-q">${txt(q.text)}</div>
+        <textarea class="fb-textarea" rows="2"
+          oninput="fbAnswers['${q.key}']=this.value"
+          placeholder="..."></textarea>`;
     }
     body.appendChild(div);
   });
@@ -571,14 +571,14 @@ function goToFeedback(){
   show('feedback');
 }
 
-function setFb(key,val,btn){
-  fbAnswers[key]=val;
-  btn.parentElement.querySelectorAll('.fb-yn-btn').forEach(b=>b.classList.remove('on'));
+function setFb(key, val, btn){
+  fbAnswers[key] = val;
+  btn.closest('.fb-yn').querySelectorAll('.fb-btn').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
 }
 
 function submitFeedback(){
-  SESSION.feedback=fbAnswers;
+  SESSION.feedback = fbAnswers;
   saveSession();
   show('done');
 }
@@ -586,33 +586,31 @@ function submitFeedback(){
 // ── STORAGE ───────────────────────────────────────────
 function saveSession(){
   try {
-    const all=JSON.parse(localStorage.getItem(NS+'history')||'[]');
-    const exists=all.findIndex(s=>s.session_id===SESSION.session_id);
-    if(exists>=0) all[exists]=SESSION; else all.push(SESSION);
-    localStorage.setItem(NS+'history',JSON.stringify(all));
-
-    // Debug log
-    const logs=JSON.parse(localStorage.getItem(NS+'debug')||'[]');
-    logs.push({t:Date.now(),event:'session_save',session_id:SESSION.session_id});
-    localStorage.setItem(NS+'debug',JSON.stringify(logs.slice(-100)));
-  } catch(e){console.warn('Storage error:',e);}
+    const all = JSON.parse(localStorage.getItem(NS + 'history') || '[]');
+    const i = all.findIndex(s => s.session_id === SESSION.session_id);
+    if(i >= 0) all[i] = SESSION; else all.push(SESSION);
+    localStorage.setItem(NS + 'history', JSON.stringify(all));
+  } catch(e){ console.warn('Storage:', e); }
 }
 
 function exportDebug(){
-  const data={
+  const data = {
     session: SESSION,
-    history: JSON.parse(localStorage.getItem(NS+'history')||'[]'),
-    debug: JSON.parse(localStorage.getItem(NS+'debug')||'[]'),
+    history: JSON.parse(localStorage.getItem(NS + 'history') || '[]'),
+    debug_log: JSON.parse(localStorage.getItem(NS + 'debug') || '[]'),
+    pairs_loaded: PAIRS.length,
+    l2_indices: L2_INDICES,
     exported_at: new Date().toISOString()
   };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`p0-debug-${SESSION.session_id}.json`;
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `p0-debug-${SESSION.session_id}.json`;
   a.click();
 }
 
-// ── START ─────────────────────────────────────────────
+// ── BOOT ─────────────────────────────────────────────
+document.getElementById('html-root') || document.documentElement.setAttribute('id','html-root');
 init();
 </script>
 </body>
