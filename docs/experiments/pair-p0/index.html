@@ -162,11 +162,13 @@ html,body{
 
 /* DEBUG — tik su ?debug=1 */
 #debug-bar{
-  position:fixed;bottom:0;left:0;right:0;
+  position:fixed;bottom:0;left:0;right:0;height:32px;
   background:#080808;border-top:1px solid #222;
-  padding:6px 12px;font-size:.7rem;color:var(--faint);
-  display:flex;align-items:center;gap:10px;z-index:999;
+  padding:0 12px;font-size:.68rem;color:var(--faint);
+  display:flex;align-items:center;gap:10px;z-index:9999;
+  box-sizing:border-box;
 }
+body.has-debug #app{ height: calc(100dvh - 32px); }
 .dbg-btn{
   padding:3px 10px;border-radius:6px;border:1px solid #333;
   background:transparent;color:var(--faint);font-size:.7rem;cursor:pointer;
@@ -330,6 +332,7 @@ async function init(){
   // Debug bar
   if(IS_DEBUG){
     document.getElementById('debug-bar').style.display = 'flex';
+    document.body.classList.add('has-debug');
   }
 
   // Detect browser lang
