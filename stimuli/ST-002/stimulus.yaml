@@ -1,51 +1,48 @@
-stimulus_id: ST-002
-image: image.png
-primary_axis: aw
+# ConflictLab — ST-002
+# Šaltinis: docs/index.html (v0.7 aktyvus produktas)
+# Sinchronizuota: 2026-08-03
+# SVARBU: Visi aw/cs/cr svoriai yra PROVISIONAL — nevaliduotos hipotezės.
+# Signalų pagrindas neužfiksuotas. Naudoti tik kaip prototipo bazę.
+# Validacija reikalinga per kalibracinį pilotą su žmonėmis.
 
-question: "Ką jaučiau žiūrėdamas į šią sceną?"
+id: ST-002
+status: active
+content_status: provisional
+
+stimulus:
+  family: encounter
+  image_file: media/ax_approach.png
+  primary_axis: aw
+  question: "Kas pirmiausia patraukė dėmesį?"
 
 choices:
-  - id: A
-    text: "Artumas — kažkas sprendžiasi"
+
+  - text: "artėjimas"
     signals:
       aw: +0.50
       cs: +0.20
       cr: +0.15
-    mixed_signal_justification: >
-      cs+ (+0.20) ir cr+ (+0.15) yra antriniai ir pagrįsti:
-      artumas + sprendimo lūkestis natūraliai siejasi su aiškumo
-      siekimu (cs+) ir struktūros jausmu (cr+).
-      Antrinės ašys neviršija pirminės (aw: +0.50).
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-  - id: B
-    text: "Įtampa — per arti"
+  - text: "atstumas"
     signals:
       aw: -0.25
       cs: +0.35
       cr: +0.25
-    mixed_signal_justification: >
-      Šis variantas matuoja aw- (atsitraukimas nuo artumo),
-      bet cs+ ir cr+ yra reikšmingi: įtampa aktyvuoja
-      aiškumo poreikį (cs+) ir kontrolės siekimą (cr+).
-      Mišrus signalas psichologiškai pagrįstas —
-      įtampa dažnai sukelia abu.
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-  - id: C
-    text: "Neutralu — tiesiog du žmonės"
+  - text: "du žmonės"
     signals:
       aw: +0.05
       cs: -0.10
       cr: -0.05
-    mixed_signal_justification: null
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-metadata:
-  context: tarpasmeniniai
-  cultural_flag: >
-    Nuotraukoje matoma vyro ir moters figūra. Gali aktyvuoti
-    lyčių dinamikos schemas nesusijusias su matuojamu konstruktu.
-    Rekomenduojama ateityje pakeisti abstrakčiais siluetais.
-  demographic_flag: >
-    Biuro koridoriaus aplinka. Gali būti mažiau atpažįstama
-    žmonėms neturintiems darbo biure patirties.
-  created: 2026-07-30
-  version: "1.0"
+signal_calibration_status: not_validated
+signal_calibration_note: >
+  Cue–ašių ryšiai priskirti intuityviai prototipo kūrimo metu.
+  Antrinių ašių svoriai neturi užfiksuotos teorinės kilmės.
+  Validacija planuojama per kognityvinį pilotą (žr. beta_research_protocol_v1.md).
