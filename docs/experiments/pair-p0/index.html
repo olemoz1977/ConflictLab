@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ConflictLab P0</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0C0C0F;--card:#121215;--border:#1E1E24;--text:#E2DED6;
+  --dim:#6E6A64;--faint:#32323A;--accent:#7C9E8F;--r:12px
+}
+html,body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;height:100%;padding:0}
+.screen.active{display:flex}
+
+/* ── INTRO ── */
+#screen-intro{align-items:center;justify-content:center;padding:32px 24px;gap:16px}
+.logo{font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+.intro-title{font-size:1.6rem;font-weight:300;text-align:center;line-height:1.3}
+.intro-sub{font-size:.9rem;color:var(--dim);text-align:center;line-height:1.6;max-width:280px}
+.lang-row{display:flex;gap:12px;margin:8px 0}
+.lang-btn{padding:8px 20px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.85rem;cursor:pointer;transition:all 180ms}
+.lang-btn.active{border-color:var(--accent);color:var(--text)}
+.start-btn{margin-top:8px;padding:16px 40px;border-radius:var(--r);background:var(--accent);
+  color:#0C0C0F;font-size:1rem;font-weight:600;border:none;cursor:pointer;width:100%;max-width:280px}
+
+/* ── LAYER 1 — PAIR VIEW ── */
+#screen-pair{flex-direction:column;height:100%}
+.pair-header{
+  flex-shrink:0;padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.pair-prompt{font-size:.8rem;color:var(--dim);flex:1;text-align:center}
+.pair-counter{font-size:.75rem;color:var(--faint);flex-shrink:0}
+.pair-images{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.img-zone{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:opacity 120ms;
+}
+.img-zone:first-child{border-bottom:2px solid var(--bg)}
+.img-zone img{width:100%;height:100%;object-fit:contain;display:block}
+.img-zone .overlay{
+  position:absolute;inset:0;background:rgba(124,158,143,0);
+  transition:background 120ms;pointer-events:none;
+}
+.img-zone:active .overlay{background:rgba(124,158,143,.15)}
+.img-loading{
+  position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;color:var(--faint);font-size:.8rem;
+}
+
+/* ── LAYER 2 — REFLECTION ── */
+#screen-reflect{flex-direction:column;height:100%}
+.reflect-header{
+  flex-shrink:0;padding:16px;border-bottom:1px solid var(--border);
+  text-align:center;
+}
+.reflect-title{font-size:.8rem;color:var(--dim)}
+.reflect-body{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:20px}
+.reflect-item{display:flex;flex-direction:column;gap:10px}
+.reflect-img{width:100%;border-radius:var(--r);overflow:hidden;max-height:200px}
+.reflect-img img{width:100%;height:200px;object-fit:contain;background:#0a0a0c;display:block}
+.reflect-prompt{font-size:.85rem;color:var(--dim);line-height:1.5}
+.reflect-note{font-size:.72rem;color:var(--faint);font-style:italic}
+.reflect-input-row{display:flex;gap:8px}
+.reflect-input{
+  flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;
+  transition:border-color 180ms;
+}
+.reflect-input:focus{border-color:var(--accent)}
+.skip-btn{
+  padding:10px 14px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--faint);font-size:.8rem;cursor:pointer;
+  white-space:nowrap;transition:all 180ms;flex-shrink:0;
+}
+.skip-btn.done{border-color:var(--accent);color:var(--accent)}
+.reflect-next{
+  flex-shrink:0;padding:16px;border-top:1px solid var(--border);
+}
+.next-btn{
+  width:100%;padding:14px;border-radius:var(--r);background:var(--accent);
+  color:#0C0C0F;font-size:.95rem;font-weight:600;border:none;cursor:pointer;
+}
+.next-btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── RESULT ── */
+#screen-result{flex-direction:column;height:100%}
+.result-header{flex-shrink:0;padding:16px;border-bottom:1px solid var(--border);text-align:center}
+.result-title{font-size:1rem;font-weight:400}
+.result-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.result-item{display:flex;gap:12px;align-items:flex-start}
+.result-thumb{width:80px;height:54px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.result-thumb img{width:100%;height:100%;object-fit:contain;background:#0a0a0c}
+.result-words{font-size:.9rem;color:var(--text);padding-top:4px}
+.result-words.skipped{color:var(--faint);font-style:italic}
+.result-question{
+  margin-top:8px;padding:16px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--r);
+  font-size:.95rem;color:var(--dim);text-align:center;
+}
+.result-footer{flex-shrink:0;padding:16px;border-top:1px solid var(--border)}
+.to-feedback-btn{
+  width:100%;padding:14px;border-radius:var(--r);background:transparent;
+  border:1px solid var(--border);color:var(--dim);font-size:.9rem;cursor:pointer;
+}
+
+/* ── FEEDBACK ── */
+#screen-feedback{flex-direction:column;height:100%}
+.fb-header{flex-shrink:0;padding:16px;border-bottom:1px solid var(--border);text-align:center}
+.fb-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px}
+.fb-item{display:flex;flex-direction:column;gap:10px}
+.fb-q{font-size:.9rem;color:var(--dim);line-height:1.5}
+.fb-yn{display:flex;gap:8px}
+.fb-yn-btn{
+  flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--faint);font-size:.85rem;cursor:pointer;
+  transition:all 180ms;
+}
+.fb-yn-btn.on{border-color:var(--accent);color:var(--text)}
+.fb-text{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;resize:none;
+  min-height:60px;line-height:1.5;transition:border-color 180ms;
+}
+.fb-text:focus{border-color:var(--accent)}
+.fb-footer{flex-shrink:0;padding:16px;border-top:1px solid var(--border)}
+.fb-submit{
+  width:100%;padding:14px;border-radius:var(--r);background:var(--accent);
+  color:#0C0C0F;font-size:.95rem;font-weight:600;border:none;cursor:pointer;
+}
+
+/* ── DONE ── */
+#screen-done{align-items:center;justify-content:center;padding:32px;gap:16px}
+.done-icon{font-size:2.5rem}
+.done-title{font-size:1.2rem;font-weight:300;text-align:center}
+.done-sub{font-size:.85rem;color:var(--dim);text-align:center;line-height:1.6}
+
+/* ── NO STIMULI ── */
+#screen-nostimuli{align-items:center;justify-content:center;padding:32px;gap:12px;text-align:center}
+.nostimuli-icon{font-size:2rem;color:var(--faint)}
+.nostimuli-msg{font-size:.9rem;color:var(--dim);line-height:1.6}
+
+/* ── DEBUG ── */
+#debug-bar{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#0a0a0c;border-top:1px solid var(--faint);
+  padding:8px 12px;font-size:.7rem;color:var(--faint);
+  display:flex;align-items:center;gap:12px;
+}
+#debug-bar.show{display:flex}
+.debug-export{
+  padding:4px 10px;border-radius:6px;border:1px solid var(--faint);
+  background:transparent;color:var(--faint);font-size:.7rem;cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- INTRO -->
+  <div id="screen-intro" class="screen active">
+    <div class="logo">ConflictLab</div>
+    <div class="intro-title" data-i18n="intro_subtitle"></div>
+    <div class="intro-sub" data-i18n="intro_instruction"></div>
+    <div class="lang-row">
+      <button class="lang-btn active" onclick="setLang('lt')">LT</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="start-btn" onclick="startExperiment()" data-i18n="intro_start"></button>
+  </div>
+
+  <!-- NO STIMULI -->
+  <div id="screen-nostimuli" class="screen">
+    <div class="nostimuli-icon">🖼</div>
+    <div class="nostimuli-msg" data-i18n="no_stimuli"></div>
+  </div>
+
+  <!-- LAYER 1: PAIR -->
+  <div id="screen-pair" class="screen">
+    <div class="pair-header">
+      <div class="pair-prompt" id="pair-prompt"></div>
+      <div class="pair-counter" id="pair-counter"></div>
+    </div>
+    <div class="pair-images">
+      <div class="img-zone" id="zone-top" onclick="choosePair('top')">
+        <div class="img-loading" id="load-top">⋯</div>
+        <img id="img-top" style="display:none" alt="">
+        <div class="overlay"></div>
+      </div>
+      <div class="img-zone" id="zone-bottom" onclick="choosePair('bottom')">
+        <div class="img-loading" id="load-bottom">⋯</div>
+        <img id="img-bottom" style="display:none" alt="">
+        <div class="overlay"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 2: REFLECT -->
+  <div id="screen-reflect" class="screen">
+    <div class="reflect-header">
+      <div class="reflect-title" data-i18n="layer2_prompt"></div>
+    </div>
+    <div class="reflect-body" id="reflect-body"></div>
+    <div class="reflect-next">
+      <button class="next-btn" id="reflect-next-btn" onclick="goToResult()" data-i18n="result_title"></button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="screen-result" class="screen">
+    <div class="result-header">
+      <div class="result-title" data-i18n="result_title"></div>
+    </div>
+    <div class="result-body" id="result-body"></div>
+    <div class="result-footer">
+      <button class="to-feedback-btn" onclick="goToFeedback()" data-i18n="feedback_title"></button>
+    </div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div id="screen-feedback" class="screen">
+    <div class="fb-header">
+      <div class="result-title" data-i18n="feedback_title"></div>
+    </div>
+    <div class="fb-body" id="fb-body"></div>
+    <div class="fb-footer">
+      <button class="fb-submit" onclick="submitFeedback()" data-i18n="feedback_submit"></button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div id="screen-done" class="screen">
+    <div class="done-icon">✓</div>
+    <div class="done-title" data-i18n="result_title"></div>
+    <div class="done-sub" data-i18n="layer2_note"></div>
+  </div>
+
+</div>
+
+<!-- DEBUG BAR -->
+<div id="debug-bar">
+  <span>P0 debug</span>
+  <button class="debug-export" onclick="exportDebug()">Eksportuoti JSON</button>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────
+const NS = 'cl_pair_p0_';
+const DEBUG = new URLSearchParams(location.search).has('debug');
+
+// ── STATE ────────────────────────────────────────────
+let LANG = {};
+let PAIRS = [];
+let LAYER2_INDICES = []; // 0-based pair indices for layer2
+let SESSION = {
+  session_id: uid(),
+  timestamp: new Date().toISOString(),
+  language: 'lt',
+  viewport_width: window.innerWidth,
+  viewport_height: window.innerHeight,
+  choices: [],
+  reflections: [],
+  feedback: {}
+};
+let currentPairIndex = 0;
+let pairStartTime = 0;
+let reflectAnswers = {};
+let fbAnswers = {};
+
+// ── UTILS ────────────────────────────────────────────
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+
+function t(key){return LANG[key]||key}
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent=t(el.dataset.i18n);
+  });
+  document.getElementById('pair-prompt').textContent=t('layer1_prompt');
+}
+
+function setLang(lang){
+  SESSION.language=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===lang.toUpperCase()));
+  LANG=window.LANGS[lang]||{};
+  applyLang();
+}
+
+// ── INIT ─────────────────────────────────────────────
+async function init(){
+  // Debug bar
+  if(DEBUG) document.getElementById('debug-bar').classList.add('show');
+
+  // Detect language
+  const browserLang = navigator.language?.startsWith('lt') ? 'lt' : 'en';
+
+  // Load lang.json
+  try {
+    const r = await fetch('lang.json');
+    window.LANGS = await r.json();
+    LANG = window.LANGS[browserLang] || window.LANGS['lt'];
+    SESSION.language = browserLang;
+  } catch(e) {
+    window.LANGS = {lt:{},en:{}};
+    console.warn('lang.json nepavyko užkrauti');
+  }
+
+  // Load pair-set.json
+  try {
+    const r = await fetch('pair-set.json');
+    const data = await r.json();
+    PAIRS = (data.pairs || []).filter(p=>p.status==='active');
+
+    // Layer2 indices from manifest (1-based → 0-based)
+    if(data.layer2_fixed_pairs){
+      LAYER2_INDICES = data.layer2_fixed_pairs.map(n=>n-1);
+    }
+  } catch(e) {
+    console.warn('pair-set.json nepavyko užkrauti');
+    PAIRS = [];
+  }
+
+  // Apply lang
+  if(document.querySelector('.lang-btn.active'))
+    document.querySelector('.lang-btn.active').textContent = browserLang.toUpperCase();
+  setLang(browserLang);
+
+  // Mark active lang btn
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent===browserLang.toUpperCase());
+  });
+
+  show('intro');
+}
+
+// ── START ─────────────────────────────────────────────
+function startExperiment(){
+  if(PAIRS.length===0){
+    show('nostimuli');
+    return;
+  }
+  currentPairIndex=0;
+  SESSION.choices=[];
+  showPair(0);
+}
+
+// ── LAYER 1 ───────────────────────────────────────────
+function showPair(idx){
+  if(idx>=PAIRS.length){
+    startLayer2();
+    return;
+  }
+  const pair = PAIRS[idx];
+  const flip = Math.random()<0.5;
+  const topImg = flip ? pair.image_b : pair.image_a;
+  const botImg = flip ? pair.image_a : pair.image_b;
+
+  // Store randomized layout
+  pair._top = topImg;
+  pair._bottom = botImg;
+  pair._flipped = flip;
+
+  // Counter
+  document.getElementById('pair-counter').textContent=`${idx+1} / ${PAIRS.length}`;
+
+  // Load images
+  const imgTop = document.getElementById('img-top');
+  const imgBot = document.getElementById('img-bottom');
+  const loadTop = document.getElementById('load-top');
+  const loadBot = document.getElementById('load-bottom');
+
+  imgTop.style.display='none'; loadTop.style.display='flex';
+  imgBot.style.display='none'; loadBot.style.display='flex';
+
+  let topLoaded=false, botLoaded=false;
+
+  function checkReady(){
+    if(topLoaded&&botLoaded){
+      pairStartTime=Date.now();
+    }
+  }
+
+  imgTop.onload=()=>{imgTop.style.display='block';loadTop.style.display='none';topLoaded=true;checkReady();};
+  imgBot.onload=()=>{imgBot.style.display='block';loadBot.style.display='none';botLoaded=true;checkReady();};
+  imgTop.onerror=()=>{loadTop.textContent='?';topLoaded=true;checkReady();};
+  imgBot.onerror=()=>{loadBot.textContent='?';botLoaded=true;checkReady();};
+
+  imgTop.src=topImg.src;
+  imgBot.src=botImg.src;
+
+  show('pair');
+}
+
+function choosePair(position){
+  if(!pairStartTime) return; // vaizdai dar nekrauti
+  const latency = Date.now()-pairStartTime;
+  const pair = PAIRS[currentPairIndex];
+  const selected = position==='top' ? pair._top : pair._bottom;
+
+  SESSION.choices.push({
+    pair_id: pair.pair_id,
+    pair_order: currentPairIndex+1,
+    top_image_id: pair._top.id,
+    bottom_image_id: pair._bottom.id,
+    selected_image_id: selected.id,
+    selected_position: position,
+    choice_latency_ms: latency
+  });
+
+  currentPairIndex++;
+  showPair(currentPairIndex);
+}
+
+// ── LAYER 2 ───────────────────────────────────────────
+function startLayer2(){
+  const body = document.getElementById('reflect-body');
+  body.innerHTML='';
+  reflectAnswers={};
+
+  // Filter valid layer2 pairs
+  const l2pairs = LAYER2_INDICES
+    .filter(i=>i<SESSION.choices.length)
+    .map(i=>({
+      choice: SESSION.choices[i],
+      pair: PAIRS[i]
+    }));
+
+  l2pairs.forEach(({choice},idx)=>{
+    const imgSrc = PAIRS.find(p=>p.pair_id===choice.pair_id)
+      ? choice.selected_image_id
+      : null;
+
+    // Find src from pairs
+    let src='';
+    const pair = PAIRS.find(p=>p.pair_id===choice.pair_id);
+    if(pair){
+      src = (pair.image_a.id===choice.selected_image_id ? pair.image_a : pair.image_b).src;
+    }
+
+    const key = choice.selected_image_id;
+    reflectAnswers[key]={words:'',skipped:false};
+
+    const div=document.createElement('div');
+    div.className='reflect-item';
+    div.innerHTML=`
+      <div class="reflect-img"><img src="${src}" alt="" loading="lazy"></div>
+      <div class="reflect-prompt">${t('layer2_prompt')}</div>
+      <div class="reflect-note">${t('layer2_note')}</div>
+      <div class="reflect-input-row">
+        <input class="reflect-input" maxlength="40" placeholder="${t('layer2_placeholder')}"
+          oninput="onReflectInput(this,'${key}')" id="ri-${key}">
+        <button class="skip-btn" onclick="skipReflect('${key}')" id="rs-${key}">${t('layer2_skip')}</button>
+      </div>
+    `;
+    body.appendChild(div);
+  });
+
+  document.getElementById('reflect-next-btn').textContent=t('result_title');
+  show('reflect');
+}
+
+function onReflectInput(el, key){
+  // Max 3 žodžiai
+  const words=el.value.trim().split(/\s+/).filter(Boolean);
+  if(words.length>3){
+    el.value=words.slice(0,3).join(' ');
+  }
+  reflectAnswers[key]={words:el.value.trim(),skipped:false};
+  const skipBtn=document.getElementById('rs-'+key);
+  if(skipBtn) skipBtn.classList.remove('done');
+}
+
+function skipReflect(key){
+  reflectAnswers[key]={words:'',skipped:true};
+  const input=document.getElementById('ri-'+key);
+  if(input){input.value='';input.disabled=true;}
+  const skipBtn=document.getElementById('rs-'+key);
+  if(skipBtn) skipBtn.classList.add('done');
+}
+
+function goToResult(){
+  // Save reflections
+  SESSION.reflections=Object.entries(reflectAnswers).map(([id,r])=>({
+    image_id:id,words:r.words,skipped:r.skipped
+  }));
+
+  // Build result
+  const body=document.getElementById('result-body');
+  body.innerHTML='';
+
+  SESSION.choices.forEach(choice=>{
+    const pair=PAIRS.find(p=>p.pair_id===choice.pair_id);
+    let src='';
+    if(pair){
+      src=(pair.image_a.id===choice.selected_image_id?pair.image_a:pair.image_b).src;
+    }
+    const ref=SESSION.reflections.find(r=>r.image_id===choice.selected_image_id);
+
+    const div=document.createElement('div');
+    div.className='result-item';
+    div.innerHTML=`
+      <div class="result-thumb"><img src="${src}" alt="" loading="lazy"></div>
+      <div class="${ref&&!ref.skipped&&ref.words?'result-words':'result-words skipped'}">
+        ${ref&&!ref.skipped&&ref.words ? ref.words : '—'}
+      </div>
+    `;
+    body.appendChild(div);
+  });
+
+  // Question
+  const q=document.createElement('div');
+  q.className='result-question';
+  q.textContent=t('result_question');
+  body.appendChild(q);
+
+  saveSession();
+  show('result');
+}
+
+// ── FEEDBACK ──────────────────────────────────────────
+function goToFeedback(){
+  const body=document.getElementById('fb-body');
+  body.innerHTML='';
+  fbAnswers={};
+
+  const qs=[
+    {key:'surprised',text:'feedback_q1',type:'yn'},
+    {key:'helped_notice',text:'feedback_q2',type:'yn'},
+    {key:'felt_forced',text:'feedback_q3',type:'yn'},
+    {key:'would_repeat',text:'feedback_q4',type:'yn'},
+    {key:'would_repeat_reason',text:'feedback_q4_why',type:'text'},
+  ];
+
+  qs.forEach(q=>{
+    const div=document.createElement('div');
+    div.className='fb-item';
+    if(q.type==='yn'){
+      div.innerHTML=`
+        <div class="fb-q">${t(q.text)}</div>
+        <div class="fb-yn">
+          <button class="fb-yn-btn" onclick="setFb('${q.key}',true,this)">${t('yes')}</button>
+          <button class="fb-yn-btn" onclick="setFb('${q.key}',false,this)">${t('no')}</button>
+        </div>`;
+    } else {
+      div.innerHTML=`
+        <div class="fb-q">${t(q.text)}</div>
+        <textarea class="fb-text" rows="2"
+          oninput="fbAnswers['${q.key}']=this.value" placeholder="..."></textarea>`;
+    }
+    body.appendChild(div);
+  });
+
+  show('feedback');
+}
+
+function setFb(key,val,btn){
+  fbAnswers[key]=val;
+  btn.parentElement.querySelectorAll('.fb-yn-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function submitFeedback(){
+  SESSION.feedback=fbAnswers;
+  saveSession();
+  show('done');
+}
+
+// ── STORAGE ───────────────────────────────────────────
+function saveSession(){
+  try {
+    const all=JSON.parse(localStorage.getItem(NS+'history')||'[]');
+    const exists=all.findIndex(s=>s.session_id===SESSION.session_id);
+    if(exists>=0) all[exists]=SESSION; else all.push(SESSION);
+    localStorage.setItem(NS+'history',JSON.stringify(all));
+
+    // Debug log
+    const logs=JSON.parse(localStorage.getItem(NS+'debug')||'[]');
+    logs.push({t:Date.now(),event:'session_save',session_id:SESSION.session_id});
+    localStorage.setItem(NS+'debug',JSON.stringify(logs.slice(-100)));
+  } catch(e){console.warn('Storage error:',e);}
+}
+
+function exportDebug(){
+  const data={
+    session: SESSION,
+    history: JSON.parse(localStorage.getItem(NS+'history')||'[]'),
+    debug: JSON.parse(localStorage.getItem(NS+'debug')||'[]'),
+    exported_at: new Date().toISOString()
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`p0-debug-${SESSION.session_id}.json`;
+  a.click();
+}
+
+// ── START ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
