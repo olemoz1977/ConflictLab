@@ -16,7 +16,11 @@ html,body{
   height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;
   -webkit-tap-highlight-color:transparent;
 }
-#app{height:100vh;display:flex;flex-direction:column}
+#app{
+  height:100vh;
+  height:100dvh; /* dynamic viewport - atsižvelgia į mobile browser UI */
+  display:flex;flex-direction:column
+}
 
 .screen{display:none;flex-direction:column;height:100%}
 .screen.active{display:flex}
@@ -313,6 +317,15 @@ function setLang(lang){
 }
 
 // ── INIT ─────────────────────────────────────────────
+function setRealVH(){
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+  document.getElementById('app').style.height = `${window.innerHeight}px`;
+}
+window.addEventListener('resize', setRealVH);
+window.addEventListener('orientationchange', () => setTimeout(setRealVH, 200));
+setRealVH();
+
 async function init(){
   // Debug bar
   if(IS_DEBUG){
