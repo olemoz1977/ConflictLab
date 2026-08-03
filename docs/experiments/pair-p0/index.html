@@ -63,7 +63,7 @@ html,body{
 }
 .img-zone+.img-zone{border-top:3px solid var(--bg)}
 .img-zone img{
-  width:100%;height:100%;object-fit:cover;display:block;
+  width:100%;height:100%;object-fit:contain;display:block;
 }
 .img-zone .tap-overlay{
   position:absolute;inset:0;background:rgba(124,158,143,0);
@@ -116,7 +116,7 @@ html,body{
 /* RESULT */
 .result-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
 .result-thumb{width:120px;height:80px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#0a0a0c}
-.result-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.result-thumb img{width:100%;height:100%;object-fit:contain;display:block}
 .result-words{font-size:.9rem;color:var(--text);padding-top:6px;line-height:1.4}
 .result-words.empty{color:var(--faint);font-style:italic}
 .result-question{
