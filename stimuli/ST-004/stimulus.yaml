@@ -1,46 +1,48 @@
-stimulus_id: ST-004
-image: image.png
-primary_axis: cs
+# ConflictLab — ST-004
+# Šaltinis: docs/index.html (v0.7 aktyvus produktas)
+# Sinchronizuota: 2026-08-03
+# SVARBU: Visi aw/cs/cr svoriai yra PROVISIONAL — nevaliduotos hipotezės.
+# Signalų pagrindas neužfiksuotas. Naudoti tik kaip prototipo bazę.
+# Validacija reikalinga per kalibracinį pilotą su žmonėmis.
 
-question: "Kas pirmiausia šovė į galvą?"
+id: ST-004
+status: active
+content_status: provisional
+
+stimulus:
+  family: waiting
+  image_file: media/p1_phone_table.png
+  primary_axis: cs
+  question: "Kas pirmiausia patraukė dėmesį?"
 
 choices:
-  - id: A
-    text: "Ar atsakė?"
+
+  - text: "žinutė"
     signals:
       aw: +0.10
       cs: +0.65
       cr: +0.30
-    mixed_signal_justification: >
-      cr+ pagrįstas: laukimas su aktyviu aiškumo siekimu
-      natūraliai aktyvuoja kontrolės norą.
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-  - id: B
-    text: "Telefonas nutylęs — ir gerai"
+  - text: "tyla"
     signals:
       aw: -0.10
       cs: -0.40
-      cr: -0.25
-    mixed_signal_justification: null
+      cr: -0.20
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-  - id: C
-    text: "Pradėjau galvoti ką daryti toliau"
+  - text: "patikrinti"
     signals:
-      aw: +0.15
-      cs: +0.40
+      aw: +0.20
+      cs: +0.45
       cr: +0.55
-    mixed_signal_justification: >
-      cr+ dominuoja — aktyvus planas yra kontrolės
-      siekimas. cs+ antrinis ir pagrįstas.
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-metadata:
-  context: technologinis
-  cultural_flag: >
-    Telefonas kaip laukimo simbolis — universalus šiuolaikinis
-    kontekstas. Tačiau "skaitytas" statusas gali nebūti
-    žinomas vyresniems vartotojams.
-  demographic_flag: >
-    Stipriau rezonuoja su 20-45 m. amžiaus grupe
-    kuri aktyviai naudoja žinučių programėles.
-  created: 2026-07-30
-  version: "1.0"
+signal_calibration_status: not_validated
+signal_calibration_note: >
+  Cue–ašių ryšiai priskirti intuityviai prototipo kūrimo metu.
+  Antrinių ašių svoriai neturi užfiksuotos teorinės kilmės.
+  Validacija planuojama per kognityvinį pilotą (žr. beta_research_protocol_v1.md).
