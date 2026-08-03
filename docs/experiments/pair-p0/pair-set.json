@@ -1,0 +1,8 @@
+{
+  "version": "P0-alpha",
+  "created": "2026-08-03",
+  "description": "ConflictLab P0 — pair comparison experiment",
+  "layer2_selection_rule": "fixed_positions",
+  "layer2_fixed_pairs": [2, 5, 8],
+  "pairs": []
+}
