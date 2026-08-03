@@ -75,44 +75,49 @@ html,body{
 }
 
 /* REFLECT */
-#screen-reflect{flex-direction:column;overflow:hidden}
+#screen-reflect{flex-direction:column;height:100%;overflow:hidden}
 .section-header{
   flex-shrink:0;padding:14px 16px;border-bottom:1px solid var(--border);
-  text-align:center;font-size:.8rem;color:var(--dim);
+  text-align:center;font-size:.85rem;color:var(--text);font-weight:500;
 }
-.scroll-body{flex:1;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:20px;-webkit-overflow-scrolling:touch}
-.reflect-item{display:flex;flex-direction:column;gap:10px}
-.reflect-img{border-radius:8px;overflow:hidden;background:#0a0a0c}
-.reflect-img img{width:100%;height:160px;object-fit:contain;display:block}
-.reflect-q{font-size:.85rem;color:var(--dim);line-height:1.5}
-.reflect-note{font-size:.72rem;color:var(--faint);font-style:italic;line-height:1.5}
-.reflect-row{display:flex;gap:8px;align-items:center}
+.scroll-body{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  padding:16px 16px 16px;display:flex;flex-direction:column;gap:24px;
+  -webkit-overflow-scrolling:touch;
+}
+.reflect-item{display:flex;flex-direction:column;gap:12px}
+.reflect-img{border-radius:8px;overflow:hidden;background:#0a0a0c;flex-shrink:0}
+.reflect-img img{width:100%;height:180px;object-fit:contain;display:block}
+.reflect-note{
+  font-size:.8rem;color:var(--text);line-height:1.6;
+  padding:10px 12px;background:var(--card);border-radius:8px;
+  border-left:3px solid var(--accent);
+}
+.reflect-row{display:flex;gap:8px;align-items:stretch}
 .reflect-input{
   flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;
-  transition:border-color 180ms;
+  color:var(--text);font-size:1rem;padding:12px;outline:none;
+  transition:border-color 180ms;min-width:0;
 }
 .reflect-input:focus{border-color:var(--accent)}
 .reflect-input:disabled{opacity:.4}
 .skip-btn{
-  padding:8px 12px;border-radius:8px;border:1px solid var(--border);
-  background:transparent;color:var(--faint);font-size:.75rem;cursor:pointer;
-  white-space:nowrap;transition:all 180ms;flex-shrink:0;
+  padding:10px 14px;border-radius:8px;border:1px solid var(--accent);
+  background:transparent;color:var(--accent);font-size:.8rem;font-weight:500;
+  cursor:pointer;white-space:nowrap;transition:all 180ms;flex-shrink:0;
 }
-.skip-btn.skipped{border-color:var(--accent);color:var(--accent)}
-.sticky-footer{
-  flex-shrink:0;
-  padding:12px 16px;
-  border-top:1px solid var(--border);
+.skip-btn.skipped{background:var(--accent);color:#0C0C0F}
+.footer-fixed{
+  flex-shrink:0;padding:14px 16px;border-top:1px solid var(--border);
   background:var(--bg);
 }
 .action-btn{
-  width:100%;padding:14px;border-radius:var(--r);background:var(--accent);
-  color:#0C0C0F;font-size:.95rem;font-weight:600;border:none;cursor:pointer;
+  width:100%;padding:16px;border-radius:var(--r);background:var(--accent);
+  color:#0C0C0F;font-size:1rem;font-weight:700;border:none;cursor:pointer;
 }
 .action-btn:disabled{opacity:.3;cursor:not-allowed}
 .ghost-btn{
-  width:100%;padding:12px;border-radius:var(--r);background:transparent;
+  width:100%;padding:14px;border-radius:var(--r);background:transparent;
   border:1px solid var(--border);color:var(--dim);font-size:.9rem;cursor:pointer;
 }
 
@@ -205,7 +210,7 @@ html,body{
   <div id="screen-reflect" class="screen">
     <div class="section-header" id="txt-reflect-header"></div>
     <div class="scroll-body" id="reflect-body"></div>
-    <div class="sticky-footer">
+    <div class="footer-fixed">
       <button class="action-btn" onclick="goToResult()" id="reflect-next-btn"></button>
     </div>
   </div>
@@ -213,7 +218,7 @@ html,body{
   <div id="screen-result" class="screen">
     <div class="section-header" id="txt-result-header"></div>
     <div class="scroll-body" id="result-body"></div>
-    <div class="sticky-footer">
+    <div class="footer-fixed">
       <button class="ghost-btn" onclick="goToFeedback()" id="txt-to-feedback"></button>
     </div>
   </div>
@@ -221,7 +226,7 @@ html,body{
   <div id="screen-feedback" class="screen">
     <div class="section-header" id="txt-fb-header"></div>
     <div class="scroll-body" id="fb-body"></div>
-    <div class="sticky-footer">
+    <div class="footer-fixed">
       <button class="action-btn" onclick="submitFeedback()" id="txt-fb-submit"></button>
     </div>
   </div>
@@ -437,12 +442,10 @@ function startLayer2(){
   body.innerHTML = '';
   reflectAnswers = {};
 
-  // Parinkti l2 poras
-  // Jei l2 indeksai > choices skaičiaus, rodyti visus turimus choices
   const effectiveL2 = L2_INDICES.filter(i => i < SESSION.choices.length);
   const l2ToUse = effectiveL2.length > 0
     ? effectiveL2
-    : SESSION.choices.map((_, i) => i); // fallback: visi
+    : SESSION.choices.map((_, i) => i);
   const items = l2ToUse
     .map(i => {
       const choice = SESSION.choices[i];
@@ -459,7 +462,11 @@ function startLayer2(){
     return;
   }
 
-  items.forEach(({ choice, imgObj }) => {
+  const skipLabel = txt('layer2_skip') || 'Hard to say';
+  const noteLabel = txt('layer2_note') || '';
+  const placeholderLabel = txt('layer2_placeholder') || '...';
+
+  items.forEach(({ imgObj }) => {
     const key = imgObj.id;
     reflectAnswers[key] = { words: '', skipped: false };
 
@@ -469,25 +476,19 @@ function startLayer2(){
       <div class="reflect-img">
         <img src="${imgObj.src}" alt="" loading="lazy">
       </div>
-      <div class="reflect-note">${txt('layer2_note')}</div>
+      <div class="reflect-note">${noteLabel}</div>
       <div class="reflect-row">
         <input class="reflect-input" id="ri-${key}" maxlength="40"
-          placeholder="${txt('layer2_placeholder')}"
-          oninput="onReflect(this,'${key}')"
-          onblur="scrollToReflectBtn()">
+          placeholder="${placeholderLabel}"
+          oninput="onReflect(this,'${key}')">
         <button class="skip-btn" id="rs-${key}"
-          onclick="skipReflect('${key}')">${txt('layer2_skip')||'—'}</button>
+          onclick="skipReflect('${key}')">${skipLabel}</button>
       </div>
     `;
     body.appendChild(div);
   });
 
   show('reflect');
-  // Scroll į apačią kad mygtukas matytųsi
-  setTimeout(() => {
-    const body = document.getElementById('reflect-body');
-    if(body) body.scrollTop = body.scrollHeight;
-  }, 100);
 }
 
 function onReflect(el, key){
@@ -497,15 +498,6 @@ function onReflect(el, key){
   reflectAnswers[key] = { words: el.value.trim(), skipped: false };
   const s = document.getElementById('rs-' + key);
   if(s) s.classList.remove('skipped');
-}
-
-function scrollToReflectBtn(){
-  // Po klaviatūros uždarymo scroll mygtuką į view
-  setTimeout(() => {
-    const btn = document.getElementById('reflect-next-btn') ||
-                document.querySelector('#screen-reflect .action-btn');
-    if(btn) btn.scrollIntoView({behavior:'smooth', block:'end'});
-  }, 150);
 }
 
 function skipReflect(key){
