@@ -134,17 +134,17 @@ html,body{
 .result-question{
   margin-top:16px;padding:16px;background:var(--card);
   border:1px solid var(--border);border-radius:var(--r);
-  font-size:.95rem;color:var(--dim);text-align:center;line-height:1.5;
+  font-size:1rem;color:var(--text);text-align:center;line-height:1.5;font-weight:500;
 }
 
 /* FEEDBACK */
 .fb-item{display:flex;flex-direction:column;gap:10px}
-.fb-q{font-size:.9rem;color:var(--dim);line-height:1.5}
+.fb-q{font-size:.9rem;color:var(--text);line-height:1.5;font-weight:500}
 .fb-yn{display:flex;gap:8px}
 .fb-btn{
-  flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);
-  background:transparent;color:var(--faint);font-size:.85rem;cursor:pointer;
-  transition:all 180ms;
+  flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:.9rem;font-weight:500;
+  cursor:pointer;transition:all 180ms;
 }
 .fb-btn.on{border-color:var(--accent);color:var(--text);background:rgba(124,158,143,.08)}
 .fb-textarea{
@@ -306,14 +306,14 @@ function setLang(lang){
   document.getElementById('txt-nostimuli').textContent = txt('no_stimuli');
   document.getElementById('pair-prompt').textContent = txt('layer1_prompt');
   document.getElementById('txt-reflect-header').textContent = txt('layer2_prompt');
-  document.getElementById('txt-reflect-next').textContent = txt('see_results') || txt('result_title');
+  document.getElementById('reflect-next-btn').textContent = txt('see_results') || txt('result_title');
   document.getElementById('txt-result-header').textContent = txt('result_title');
   document.getElementById('txt-to-feedback').textContent = txt('feedback_title');
   document.getElementById('txt-fb-header').textContent = txt('feedback_title');
   document.getElementById('txt-fb-submit').textContent = txt('feedback_submit');
   document.getElementById('txt-done-title').textContent = txt('result_title');
   document.getElementById('txt-done-sub').textContent = txt('layer2_note');
-  document.getElementById('html-root').lang = lang;
+  document.documentElement.lang = lang;
 }
 
 // ── INIT ─────────────────────────────────────────────
@@ -636,7 +636,6 @@ function exportDebug(){
 }
 
 // ── BOOT ─────────────────────────────────────────────
-document.getElementById('html-root') || document.documentElement.setAttribute('id','html-root');
 init();
 </script>
 </body>
