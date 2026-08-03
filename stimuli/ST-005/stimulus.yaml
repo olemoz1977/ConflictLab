@@ -1,41 +1,48 @@
-stimulus_id: ST-005
-image: image.png
-primary_axis: cr
+# ConflictLab — ST-005
+# Šaltinis: docs/index.html (v0.7 aktyvus produktas)
+# Sinchronizuota: 2026-08-03
+# SVARBU: Visi aw/cs/cr svoriai yra PROVISIONAL — nevaliduotos hipotezės.
+# Signalų pagrindas neužfiksuotas. Naudoti tik kaip prototipo bazę.
+# Validacija reikalinga per kalibracinį pilotą su žmonėmis.
 
-question: "Kas pirmiausia šovė į galvą?"
+id: ST-005
+status: active
+content_status: provisional
+
+stimulus:
+  family: waiting
+  image_file: media/p4_empty_table.png
+  primary_axis: cr
+  question: "Kas pirmiausia patraukė dėmesį?"
 
 choices:
-  - id: A
-    text: "Kažko čia trūksta"
-    signals:
-      aw: -0.15
-      cs: +0.35
-      cr: +0.45
-    mixed_signal_justification: >
-      cs+ antrinis: "trūksta" aktyvuoja aiškumo poreikį.
-      cr+ pirminė: noras užpildyti = kontrolės siekimas.
 
-  - id: B
-    text: "Ramu — nieko nereikia"
+  - text: "tuščios kėdės"
     signals:
-      aw: -0.10
-      cs: -0.35
-      cr: -0.60
-    mixed_signal_justification: null
+      aw: -0.25
+      cs: -0.30
+      cr: -0.55
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-  - id: C
-    text: "Pagalvojau kas čia sėdės"
+  - text: "tvarka"
+    signals:
+      aw: +0.10
+      cs: +0.20
+      cr: +0.60
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
+
+  - text: "laisva vieta"
     signals:
       aw: +0.30
       cs: +0.20
       cr: +0.15
-    mixed_signal_justification: >
-      aw+ pirminė: mintis apie kitus žmones = artėjimas.
-      Mišrūs signalai silpni ir pagrįsti.
+    signal_status: provisional
+    signal_note: "Nevaliduota hipotezė. Kilmė neužfiksuota. Reikia kalibravimo piloto."
 
-metadata:
-  context: tarpasmeniniai
-  cultural_flag: null
-  demographic_flag: null
-  created: 2026-07-30
-  version: "1.0"
+signal_calibration_status: not_validated
+signal_calibration_note: >
+  Cue–ašių ryšiai priskirti intuityviai prototipo kūrimo metu.
+  Antrinių ašių svoriai neturi užfiksuotos teorinės kilmės.
+  Validacija planuojama per kognityvinį pilotą (žr. beta_research_protocol_v1.md).
