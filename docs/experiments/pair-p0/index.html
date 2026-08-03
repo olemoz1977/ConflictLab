@@ -101,12 +101,12 @@ html,body{
 }
 .skip-btn.skipped{border-color:var(--accent);color:var(--accent)}
 .sticky-footer{
-  flex-shrink:0;padding:12px 16px;border-top:1px solid var(--border);
+  position:fixed;bottom:0;left:0;right:0;
+  padding:12px 16px;border-top:1px solid var(--border);
+  background:var(--bg);z-index:100;
 }
-/* Mobilus: kai klaviatūra atidaryta, mygtukas lieka matomas */
-@media (max-height: 500px) {
-  .sticky-footer { position: sticky; bottom: 0; background: var(--bg); z-index: 10; }
-}
+/* Vieta po fixed footer */
+.scroll-body { padding-bottom: 80px; }
 .action-btn{
   width:100%;padding:14px;border-radius:var(--r);background:var(--accent);
   color:#0C0C0F;font-size:.95rem;font-weight:600;border:none;cursor:pointer;
