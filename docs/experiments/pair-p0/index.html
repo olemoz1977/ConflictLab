@@ -566,32 +566,36 @@ function goToResult(){
   const body = document.getElementById('result-body');
   body.innerHTML = '';
 
-  // Rodyti tik tuos pasirinkimus, kurie turėjo Layer 2 refleksiją —
-  // aiškus ryšys tarp vaizdo ir žodžių, be klaidinančių tuščių įrašų.
-  const reflectedIds = new Set(SESSION.reflections.map(r => r.image_id));
+  // Rodyti VISĄ Layer 1 pasirinkimų seką originalia tvarka.
+  // Layer 2 žodžiai/"Sunku pasakyti" pridedami tik prie tų vaizdų,
+  // kurie pateko į Layer 2 — kiti rodomi be jokio papildomo teksto.
+  SESSION.choices.forEach(choice => {
+    const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const imgObj = pair
+      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+      : null;
+    const ref = SESSION.reflections.find(r => r.image_id === choice.selected_image_id);
 
-  SESSION.choices
-    .filter(choice => reflectedIds.has(choice.selected_image_id))
-    .forEach(choice => {
-      const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
-      const imgObj = pair
-        ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
-        : null;
-      const ref = SESSION.reflections.find(r => r.image_id === choice.selected_image_id);
+    const div = document.createElement('div');
+    div.className = 'result-item';
 
-      const div = document.createElement('div');
-      div.className = 'result-item';
-      const words = ref && !ref.skipped && ref.words ? ref.words : null;
-      div.innerHTML = `
-        <div class="result-thumb">
-          ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
-        </div>
-        <div class="${words ? 'result-words' : 'result-words empty'}">
-          ${words || (txt('layer2_skip') || 'Hard to say')}
-        </div>
-      `;
-      body.appendChild(div);
-    });
+    let wordsHtml = '';
+    if(ref){
+      // Šis vaizdas pateko į Layer 2 — rodyti žodžius arba skip label
+      const words = !ref.skipped && ref.words ? ref.words : (txt('layer2_skip') || 'Hard to say');
+      const cls = (!ref.skipped && ref.words) ? 'result-words' : 'result-words empty';
+      wordsHtml = `<div class="${cls}">${words}</div>`;
+    }
+    // Jei ref nėra — vaizdas rodomas be jokio papildomo teksto (tik Layer 1 dalis)
+
+    div.innerHTML = `
+      <div class="result-thumb">
+        ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
+      </div>
+      ${wordsHtml}
+    `;
+    body.appendChild(div);
+  });
 
   const q = document.createElement('div');
   q.className = 'result-question';
