@@ -1950,8 +1950,15 @@ function showHistory(){
 
   const eligible = getEligibleSessions();
 
+  // KRITINE APSAUGA: jei observation blokas meta klaidą (pvz. dėl neapdorotos
+  // duomenų formos senesnėse sesijose), tai NIEKADA neturi sugriauti likusio
+  // istorijos ekrano — sesijų sąrašas ir radaro nuoroda visada turi būti rodomi.
   if(eligible.length >= COMPARISON_MIN_SESSIONS){
-    renderObservationComparisonBlock(eligible, body);
+    try {
+      renderObservationComparisonBlock(eligible, body);
+    } catch(e){
+      console.warn('renderObservationComparisonBlock failed:', e);
+    }
   }
 
   const radarLink = document.createElement('button');
@@ -2057,24 +2064,39 @@ function showHistoryDetail(sessionId){
 
 function exportDebug(){
   const eligible = getEligibleSessions();
-  const comparison = computePeriodComparison(eligible);
+
+  // KRITINE APSAUGA: bet kokia klaida palyginimo/observation skaičiavime
+  // NIEKADA neturi sugriauti viso debug eksporto. Šie sluoksniai yra
+  // papildomi — pagrindiniai duomenys (sesijos, choices, reflections)
+  // visada turi būti eksportuojami net jei observation analizė nepavyksta.
+  let comparison = null;
+  try {
+    comparison = computePeriodComparison(eligible);
+  } catch(e){
+    console.warn('computePeriodComparison failed:', e);
+  }
 
   let comparisonObservation = null;
-  const windows = getComparisonWindows(eligible);
-  if(windows){
-    const obs = computeComparisonObservation(windows.previousSessions, windows.currentSessions);
-    comparisonObservation = {
-      model_version: obs.model_version,
-      previous_period_session_ids: windows.previousSessions.map(s => s.session_id),
-      current_period_session_ids: windows.currentSessions.map(s => s.session_id),
-      previous_theme_counts: obs.previous_theme_counts,
-      current_theme_counts: obs.current_theme_counts,
-      repeated: obs.repeated,
-      changed: obs.changed,
-      mixed: obs.mixed,
-      evidence: obs.evidence,
-      catalog_mismatches: obs.catalog_mismatches
-    };
+  try {
+    const windows = getComparisonWindows(eligible);
+    if(windows){
+      const obs = computeComparisonObservation(windows.previousSessions, windows.currentSessions);
+      comparisonObservation = {
+        model_version: obs.model_version,
+        previous_period_session_ids: windows.previousSessions.map(s => s.session_id),
+        current_period_session_ids: windows.currentSessions.map(s => s.session_id),
+        previous_theme_counts: obs.previous_theme_counts,
+        current_theme_counts: obs.current_theme_counts,
+        repeated: obs.repeated,
+        changed: obs.changed,
+        mixed: obs.mixed,
+        evidence: obs.evidence,
+        catalog_mismatches: obs.catalog_mismatches
+      };
+    }
+  } catch(e){
+    console.warn('computeComparisonObservation failed:', e);
+    comparisonObservation = { error: String(e) };
   }
 
   const data = {
