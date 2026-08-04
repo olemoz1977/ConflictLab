@@ -30,6 +30,28 @@
       "norming_status": "not_tested",
       "version": "1.0",
       "dev_notes": "Pirma testo pora. Balti batai — AI redaguotas vaizdas (dar netobulas). Juodi — originalas apkirptas 16:9. Naudoti tik UI testui."
+    },
+    {
+      "pair_id": "P0-002",
+      "status": "active",
+      "image_a": {
+        "id": "P0-002-A",
+        "src": "images/p0-002-a.png"
+      },
+      "image_b": {
+        "id": "P0-002-B",
+        "src": "images/p0-002-b.png"
+      },
+      "intended_visual_difference": "vartai atviri vs vartai uždari — ta pati scena, skirtinga būsena",
+      "position_randomization": true,
+      "layer2_order": null,
+      "source_original_filename": "2912.png / 2911.png",
+      "source_prompt_id": "",
+      "pair_generation_method": "AI generated",
+      "visual_audit_status": "not_reviewed",
+      "norming_status": "not_tested",
+      "version": "1.0",
+      "dev_notes": "Antra testo pora. Vienodas formatas abiem vaizdams — geras testas be juodų tarpų."
     }
   ]
 }
