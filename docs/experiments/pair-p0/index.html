@@ -133,6 +133,31 @@ body{min-height:100vh}
 }
 .reflection-skip-btn:active{border-color:var(--accent);color:var(--accent)}
 
+/* ── SESSION REFLECTION ── */
+.session-summary-item{
+  display:flex;align-items:center;gap:12px;padding:10px;
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  margin-bottom:10px;
+}
+.session-summary-thumb{width:64px;height:64px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#0a0a0c}
+.session-summary-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.session-summary-text{font-size:.9rem;color:var(--text);line-height:1.4}
+.session-question{font-size:1rem;color:var(--text);font-weight:600;line-height:1.5;margin:20px 0 6px}
+.session-subnote{font-size:.8rem;color:var(--dim);line-height:1.5;margin-bottom:14px}
+.session-textarea{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.95rem;padding:12px;outline:none;resize:none;
+  min-height:70px;line-height:1.5;transition:border-color 180ms;
+}
+.session-textarea:focus{border-color:var(--accent)}
+.session-charcount{font-size:.72rem;color:var(--faint);text-align:right;margin-top:4px}
+.not-yet-btn{
+  width:100%;margin-top:10px;padding:12px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;color:var(--dim);
+  font-size:.9rem;cursor:pointer;transition:all 180ms;
+}
+.not-yet-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(124,158,143,.12)}
+
 /* ── RESULT ── */
 .result-item{
   display:flex;flex-direction:column;gap:10px;padding:16px;
@@ -248,6 +273,15 @@ body{min-height:100vh}
   </div>
 </div>
 
+<!-- SESSION REFLECTION -->
+<div id="screen-session-reflection" class="screen">
+  <div class="screen-header" id="txt-sr-header"></div>
+  <div class="screen-body" id="sr-body"></div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="sr-next-btn" disabled onclick="confirmSessionReflection()"></button>
+  </div>
+</div>
+
 <!-- RESULT -->
 <div id="screen-result" class="screen">
   <div class="screen-header" id="txt-result-header"></div>
@@ -307,6 +341,7 @@ let microStep = 'cue';
 let microCurrentAnswer = null;
 let reflectAnswers = {};
 let fbAnswers = {};
+let sessionReflection = { response_type: null, text: '' };
 
 let SESSION = {
   session_id: uid(),
@@ -441,6 +476,7 @@ function startExperiment(){
   if(PAIRS.length === 0){ show('nostimuli'); return; }
   currentPairIdx = 0;
   SESSION.choices = [];
+  sessionReflection = { response_type: null, text: '' };
   loadPair(0);
 }
 
@@ -586,7 +622,7 @@ function renderCueStep(item, body, btn){
   microCurrentAnswer = null;
   btn.disabled = true;
   const isLastCue = microIndex === microQueue.length - 1;
-  btn.textContent = isLastCue ? (txt('see_results') || 'See results') : (txt('layer2_next') || 'Next');
+  btn.textContent = isLastCue ? (txt('continue_btn') || 'Continue') : (txt('layer2_next') || 'Next');
   btn.onclick = confirmCueStep;
 }
 
@@ -675,7 +711,7 @@ function renderReflectionStep(item, body, btn){
 
   btn.disabled = false;
   const isLast = microIndex === microQueue.length - 1;
-  btn.textContent = isLast ? (txt('see_results') || 'See results') : (txt('layer2_next') || 'Next');
+  btn.textContent = isLast ? (txt('continue_btn') || 'Continue') : (txt('layer2_next') || 'Next');
   btn.onclick = () => confirmReflectionStep();
 }
 
@@ -698,7 +734,7 @@ function advanceMicroFlow(){
   microIndex++;
   microStep = 'cue';
   microCurrentAnswer = null;
-  if(microIndex >= microQueue.length) goToResult();
+  if(microIndex >= microQueue.length) startSessionReflection();
   else renderMicroStep();
 }
 
@@ -713,6 +749,152 @@ function computeSessionVector(){
     aw:+(sum.aw/n).toFixed(3), cs:+(sum.cs/n).toFixed(3), cr:+(sum.cr/n).toFixed(3),
     sample_size:n, status:'provisional_not_validated'
   };
+}
+
+function startSessionReflection(){
+  logDebugEvent('SESSION_REFLECTION_OPENED');
+
+  document.getElementById('txt-sr-header').textContent = txt('session_reflection_header') || 'Look at your choices together';
+
+  const body = document.getElementById('sr-body');
+  body.innerHTML = '';
+
+  // Pasirinktų vaizdų santrauka originalia seka
+  SESSION.choices.forEach(choice => {
+    const pair = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const imgObj = pair
+      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+      : null;
+    const ref = reflectAnswers[choice.selected_image_id];
+
+    let label = '';
+    if(ref){
+      if(ref.response_type === 'cue') label = ref.cue_text;
+      else if(ref.response_type === 'custom') label = ref.custom_words;
+      else if(ref.response_type === 'hard_to_say') label = (txt('hard_to_say_label') || 'Hard to say');
+    }
+
+    const item = document.createElement('div');
+    item.className = 'session-summary-item';
+    item.innerHTML = `
+      <div class="session-summary-thumb">
+        ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
+      </div>
+      <div class="session-summary-text">${label}</div>
+    `;
+    body.appendChild(item);
+  });
+
+  // Pagrindinis sesijos klausimas
+  const q = document.createElement('div');
+  q.className = 'session-question';
+  q.textContent = txt('session_question') || 'When you see these choices together, what stands out most to you?';
+  body.appendChild(q);
+
+  const sub = document.createElement('div');
+  sub.className = 'session-subnote';
+  sub.textContent = txt('session_subnote') || 'You do not need to explain them. A brief observation is enough.';
+  body.appendChild(sub);
+
+  const textarea = document.createElement('textarea');
+  textarea.className = 'session-textarea';
+  textarea.id = 'session-reflection-textarea';
+  textarea.maxLength = 180;
+  textarea.placeholder = txt('session_placeholder') || 'What do you notice?';
+  textarea.value = sessionReflection.response_type === 'text' ? sessionReflection.text : '';
+  textarea.oninput = onSessionReflectionTyping;
+  body.appendChild(textarea);
+
+  const charcount = document.createElement('div');
+  charcount.className = 'session-charcount';
+  charcount.id = 'session-charcount';
+  charcount.textContent = `${textarea.value.length} / 180`;
+  body.appendChild(charcount);
+
+  const notYetBtn = document.createElement('button');
+  notYetBtn.className = 'not-yet-btn';
+  notYetBtn.id = 'not-yet-btn';
+  notYetBtn.textContent = txt('not_yet') || 'I do not notice anything yet';
+  notYetBtn.onclick = toggleNotYet;
+  if(sessionReflection.response_type === 'not_yet') notYetBtn.classList.add('on');
+  body.appendChild(notYetBtn);
+
+  updateSessionReflectionButton();
+  show('session-reflection');
+}
+
+function onSessionReflectionTyping(){
+  const textarea = document.getElementById('session-reflection-textarea');
+  const trimmed = textarea.value.slice(0, 180);
+  if(textarea.value !== trimmed) textarea.value = trimmed;
+
+  document.getElementById('session-charcount').textContent = `${textarea.value.length} / 180`;
+
+  // Rašymas automatiškai atšaukia "Dar nepastebiu"
+  const notYetBtn = document.getElementById('not-yet-btn');
+  if(notYetBtn) notYetBtn.classList.remove('on');
+
+  sessionReflection = {
+    response_type: textarea.value.length > 0 ? 'text' : null,
+    text: textarea.value
+  };
+
+  logDebugEvent('SESSION_REFLECTION_TEXT_CHANGED');
+  updateSessionReflectionButton();
+}
+
+function toggleNotYet(){
+  const notYetBtn = document.getElementById('not-yet-btn');
+  const textarea = document.getElementById('session-reflection-textarea');
+  const isOn = notYetBtn.classList.contains('on');
+
+  if(isOn){
+    // Atšaukti pasirinkimą
+    notYetBtn.classList.remove('on');
+    sessionReflection = { response_type: null, text: '' };
+  } else {
+    notYetBtn.classList.add('on');
+    textarea.value = '';
+    document.getElementById('session-charcount').textContent = '0 / 180';
+    sessionReflection = { response_type: 'not_yet', text: '' };
+    logDebugEvent('SESSION_REFLECTION_NOT_YET_SELECTED');
+  }
+
+  updateSessionReflectionButton();
+}
+
+function updateSessionReflectionButton(){
+  const btn = document.getElementById('sr-next-btn');
+  if(!btn) return;
+  btn.textContent = txt('view_session') || 'View session';
+
+  const hasText = sessionReflection.response_type === 'text' && sessionReflection.text.trim().length > 0;
+  const isNotYet = sessionReflection.response_type === 'not_yet';
+  btn.disabled = !(hasText || isNotYet);
+}
+
+function confirmSessionReflection(){
+  const finalText = sessionReflection.response_type === 'text'
+    ? sessionReflection.text.trim()
+    : '';
+
+  SESSION.session_reflection = {
+    response_type: sessionReflection.response_type,
+    text: finalText,
+    created_at: new Date().toISOString()
+  };
+
+  logDebugEvent('SESSION_REFLECTION_SAVED');
+  goToResult();
+}
+
+function logDebugEvent(eventName){
+  if(!IS_DEBUG) return;
+  try {
+    const logs = JSON.parse(localStorage.getItem(NS + 'debug') || '[]');
+    logs.push({ t: Date.now(), event: eventName });
+    localStorage.setItem(NS + 'debug', JSON.stringify(logs.slice(-200)));
+  } catch(e){}
 }
 
 function goToResult(){
