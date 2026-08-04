@@ -30,7 +30,8 @@
     "reflection_question": "Kas šiame pasirinkime tau pažįstama?",
     "reflection_placeholder": "Iki 5 žodžių...",
     "reflection_skip": "Praleisti",
-    "micro_progress": "Vaizdas {current} iš {total}"
+    "micro_progress": "Vaizdas {current} iš {total}",
+    "layer2_next": "Toliau"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -63,6 +64,7 @@
     "reflection_question": "What feels familiar about this choice?",
     "reflection_placeholder": "Up to 5 words...",
     "reflection_skip": "Skip",
-    "micro_progress": "Image {current} of {total}"
+    "micro_progress": "Image {current} of {total}",
+    "layer2_next": "Next"
   }
 }
