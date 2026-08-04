@@ -711,7 +711,7 @@ function pickCue(cueId, el){
   const ci = document.getElementById('custom-input');
   if(ci){ ci.classList.remove('show'); ci.value=''; }
 
-  microCurrentAnswer = { response_type:'cue', cue_id:cueId, cue_text: currentLang==='lt'?cue.lt:cue.en, vector: cue.vector };
+  microCurrentAnswer = { response_type:'cue', cue_id:cueId, cue_text: currentLang==='lt'?cue.lt:cue.en, vector: cue.vector, confidence: cue.confidence ?? null };
   document.getElementById('reflect-next-btn').disabled = false;
 }
 
@@ -813,15 +813,42 @@ function advanceMicroFlow(){
 }
 
 // ── RESULT ────────────────────────────────────────────
+// Sesijos vektorius — confidence svertinis vidurkis, naudojant TIK standartinius
+// cue su vektoriumi. custom, hard_to_say, individuali/sesijos refleksija ir latencija
+// niekada nedalyvauja šiame skaičiavime.
 function computeSessionVector(){
-  const vectors = SESSION.reflections.map(r => r.vector).filter(v => v && typeof v === 'object');
-  if(vectors.length === 0) return null;
-  const sum = { aw:0, cs:0, cr:0 };
-  vectors.forEach(v => { sum.aw += v.aw||0; sum.cs += v.cs||0; sum.cr += v.cr||0; });
-  const n = vectors.length;
+  const validEntries = SESSION.reflections.filter(r =>
+    r.response_type === 'cue' && r.vector && typeof r.vector === 'object' &&
+    typeof r.confidence === 'number'
+  );
+
+  if(validEntries.length === 0){
+    return { vector: null, valid_vector_responses: 0, session_vector_confidence: null };
+  }
+
+  const weightedSum = { aw:0, cs:0, cr:0 };
+  let confSum = 0;
+
+  validEntries.forEach(r => {
+    const w = r.confidence;
+    weightedSum.aw += (r.vector.aw || 0) * w;
+    weightedSum.cs += (r.vector.cs || 0) * w;
+    weightedSum.cr += (r.vector.cr || 0) * w;
+    confSum += w;
+  });
+
+  const vector = confSum > 0 ? {
+    aw: +(weightedSum.aw / confSum).toFixed(3),
+    cs: +(weightedSum.cs / confSum).toFixed(3),
+    cr: +(weightedSum.cr / confSum).toFixed(3)
+  } : null;
+
+  const avgConfidence = +(confSum / validEntries.length).toFixed(3);
+
   return {
-    aw:+(sum.aw/n).toFixed(3), cs:+(sum.cs/n).toFixed(3), cr:+(sum.cr/n).toFixed(3),
-    sample_size:n, status:'provisional_not_validated'
+    vector: vector,
+    valid_vector_responses: validEntries.length,
+    session_vector_confidence: avgConfidence
   };
 }
 
@@ -975,9 +1002,15 @@ function goToResult(){
   SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
     image_id:id, response_type:r.response_type||null, cue_id:r.cue_id||null,
     cue_text:r.cue_text||null, custom_words:r.custom_words||null,
-    reflection_text:r.reflection_text||'', vector:r.vector||null
+    reflection_text:r.reflection_text||'', vector:r.vector||null,
+    confidence:r.confidence ?? null
   }));
-  SESSION.session_vector = computeSessionVector();
+
+  const vecResult = computeSessionVector();
+  SESSION.session_vector = vecResult.vector;
+  SESSION.valid_vector_responses = vecResult.valid_vector_responses;
+  SESSION.session_vector_confidence = vecResult.session_vector_confidence;
+  SESSION.vector_model_version = 'pair-cue-v0.1';
 
   const body = document.getElementById('result-body');
   body.innerHTML = '';
@@ -1213,10 +1246,14 @@ function showHistoryDetail(sessionId){
 
     const div = document.createElement('div');
     div.className = 'result-item';
-    div.innerHTML = `
+    let itemHtml = `
       <div class="result-thumb">${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}</div>
       ${mainText ? `<div class="result-words">${mainText}</div>` : ''}
     `;
+    if(ref && ref.reflection_text){
+      itemHtml += `<div style="font-size:.8rem;color:var(--dim);text-align:center;margin-top:4px">${ref.reflection_text}</div>`;
+    }
+    div.innerHTML = itemHtml;
     body.appendChild(div);
   });
 
