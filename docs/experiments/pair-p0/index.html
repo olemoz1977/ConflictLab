@@ -237,65 +237,6 @@ body{min-height:100vh}
   text-align:center;font-size:.74rem;color:var(--faint);
   line-height:1.5;padding:8px 12px;margin-top:10px;font-style:italic;
 }
-
-/* ── COMPARISON (F stage) ── */
-.comparison-title{
-  text-align:center;font-size:.95rem;color:var(--text);font-weight:600;margin-bottom:8px;
-}
-.comparison-legend{
-  display:flex;justify-content:center;gap:24px;margin:12px 0 4px;
-}
-.legend-item{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--dim)}
-.legend-swatch{width:20px;height:2px;display:inline-block}
-.legend-now{background:#7C9E8F}
-.legend-earlier{background:transparent;border-top:2px dashed #6E6A64;height:0}
-.comparison-table{margin-top:16px}
-.comparison-row{
-  display:grid;grid-template-columns:36px 1fr 1fr 1fr;gap:8px;align-items:center;
-  padding:10px 0;border-bottom:1px solid var(--border);
-}
-.comparison-axis-name{font-size:.85rem;color:var(--text);font-weight:700}
-.comparison-col{text-align:center}
-.comparison-col-label{font-size:.68rem;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
-.comparison-col-value{font-size:.95rem;color:var(--text);font-weight:600;margin-top:2px}
-.comparison-delta{color:var(--accent)}
-.comparison-mirror{
-  margin-top:18px;padding:16px;background:var(--card);border:1px solid var(--accent);
-  border-radius:var(--r);font-size:.92rem;color:var(--text);text-align:center;line-height:1.5;
-}
-
-/* ── OBSERVATION (G stage) ── */
-.observation-container{margin-bottom:8px}
-.observation-title{
-  font-size:1rem;color:var(--text);font-weight:700;text-align:center;
-  margin-bottom:18px;line-height:1.4;
-}
-.observation-block{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:16px;margin-bottom:14px;
-}
-.observation-block-heading{
-  font-size:.72rem;color:var(--accent);text-transform:uppercase;
-  letter-spacing:.08em;font-weight:700;margin-bottom:10px;
-}
-.observation-line{font-size:.92rem;color:var(--text);line-height:1.5}
-.observation-evidence{
-  margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
-}
-.observation-evidence-label{font-size:.7rem;color:var(--faint);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
-.observation-group-note{font-size:.78rem;color:var(--faint);font-style:italic;margin-top:4px;line-height:1.5}
-.observation-evidence-item{font-size:.82rem;color:var(--dim);font-style:italic;line-height:1.6}
-.observation-check{
-  margin-top:8px;padding:16px;background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);
-}
-.observation-check-question{font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;text-align:center}
-.observation-check-options{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.observation-check-btn{
-  padding:8px 16px;border-radius:8px;border:1px solid var(--border);
-  background:transparent;color:var(--dim);font-size:.82rem;cursor:pointer;transition:all 180ms;
-}
-.observation-check-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(124,158,143,.12)}
 .radar-scope-note{
   margin-top:16px;padding:14px;font-size:.8rem;color:var(--dim);
   text-align:center;line-height:1.6;font-style:italic;
@@ -1276,216 +1217,84 @@ function getCompletedSessions(){
 
 // ── RADAR ELIGIBILITY ─────────────────────────────────
 const RADAR_MODEL_VERSION = 'pair-cue-v0.1';
+const RADAR_MIN_SESSIONS = 3;
 
-// ── OBSERVATION THEMES (G stage — rebuilt from verified live catalog) ──
-// VIENAS cue_id → VIENA tema. Patvirtinta pagal faktinį pair-cue-v0.1.json
-// turinį (P0-002-A = atviri vartai, P0-002-B = uždari vartai ir t.t.).
-// Prieš rodant, kiekvieno cue_text tikrinamas prieš gyvą katalogą — jei
-// nesutampa, šis cue observation rezultatuose praleidžiamas ir pažymimas
-// kaip catalog_mismatch debug'e.
-const OBSERVATION_THEME_MAP = {
-  'P0-001-A-C1': { theme: 'readiness', expected_lt: 'Noriu būti pasiruošęs' },
-  'P0-001-A-C2': { theme: 'commitment_pressure', expected_lt: 'Per daug įpareigoja' },
-  'P0-001-A-C3': { theme: 'dependability', expected_lt: 'Atrodo patikima' },
-  'P0-001-B-C1': { theme: 'freedom', expected_lt: 'Noriu daugiau laisvės' },
-  'P0-001-B-C2': { theme: 'lack_of_structure', expected_lt: 'Per daug neįpareigoja' },
-  'P0-001-B-C3': { theme: 'movement', expected_lt: 'Laikas judėti' },
-  'P0-002-A-C1': { theme: 'step_forward', expected_lt: 'Noriu eiti' },
-  'P0-002-A-C2': { theme: 'too_much_openness', expected_lt: 'Per daug atvira' },
-  'P0-002-A-C3': { theme: 'hesitation', expected_lt: 'Dar nežinau, ar žengti' },
-  'P0-002-B-C1': { theme: 'safety', expected_lt: 'Čia saugiau' },
-  'P0-002-B-C2': { theme: 'obstacle', expected_lt: 'Mane stabdo' },
-  'P0-002-B-C3': { theme: 'curiosity', expected_lt: 'Kas yra už jų?' },
-  'P0-003-A-C1': { theme: 'clarity', expected_lt: 'Pagaliau aišku' },
-  'P0-003-A-C2': { theme: 'pull_of_unknown', expected_lt: 'Nežinomybė buvo įdomesnė' },
-  'P0-003-A-C3': { theme: 'incompleteness', expected_lt: 'Kažko trūksta' },
-  'P0-003-B-C1': { theme: 'seeking_clarity', expected_lt: 'Noriu žinoti, kas viduje' },
-  'P0-003-B-C2': { theme: 'waiting', expected_lt: 'Gali palaukti' },
-  'P0-003-B-C3': { theme: 'maintaining_boundary', expected_lt: 'Geriau neatidaryti' },
-};
+// Sesija tinkama radarui tik jei atitinka VISUS kriterijus.
+// Netinkamos sesijos NIEKADA netrinamos, nemigruojamos ir lieka istorijoje —
+// jos tiesiog neįtraukiamos į radaro skaičiavimą ir progreso skaitiklį.
+function isSessionRadarEligible(s){
+  if(s.status !== 'completed') return false;
+  if(!s.session_vector || typeof s.session_vector !== 'object') return false;
+  if(typeof s.valid_vector_responses !== 'number' || s.valid_vector_responses < 2) return false;
+  if(typeof s.session_vector_confidence !== 'number' || !isFinite(s.session_vector_confidence)) return false;
+  if(s.vector_model_version !== RADAR_MODEL_VERSION) return false;
 
-const OBSERVATION_THEME_LABELS = {
-  readiness: { lt:'pasirengimas', en:'readiness' },
-  commitment_pressure: { lt:'įsipareigojimo spaudimas', en:'pressure of commitment' },
-  dependability: { lt:'patikimumas', en:'dependability' },
-  freedom: { lt:'laisvė', en:'freedom' },
-  lack_of_structure: { lt:'struktūros trūkumas', en:'lack of structure' },
-  movement: { lt:'judėjimas', en:'movement' },
-  step_forward: { lt:'žingsnis pirmyn', en:'a step forward' },
-  too_much_openness: { lt:'per didelis atvirumas', en:'too much openness' },
-  hesitation: { lt:'dvejonė', en:'hesitation' },
-  safety: { lt:'saugumas', en:'safety' },
-  obstacle: { lt:'kliūtis', en:'an obstacle' },
-  curiosity: { lt:'smalsumas', en:'curiosity' },
-  clarity: { lt:'aiškumas', en:'clarity' },
-  pull_of_unknown: { lt:'nežinomybės trauka', en:'the pull of the unknown' },
-  incompleteness: { lt:'neužbaigtumas', en:'incompleteness' },
-  seeking_clarity: { lt:'aiškumo paieška', en:'seeking clarity' },
-  waiting: { lt:'laukimas', en:'waiting' },
-  maintaining_boundary: { lt:'ribos išlaikymas', en:'maintaining a boundary' },
-};
-
-// Iš anksto apibrėžtos įtampos poros "Kas liko mišru" blokui.
-// Naudoja NAUJUS temos ID (ne senus lietuviškus raktus iš atmestos versijos).
-const MIXED_THEME_PAIRS = [
-  ['curiosity', 'maintaining_boundary'],
-  ['freedom', 'lack_of_structure'],
-  ['seeking_clarity', 'waiting'],
-  ['clarity', 'pull_of_unknown'],
-  ['safety', 'obstacle'],
-  ['step_forward', 'hesitation'],
-];
-
-function themeLabel(themeId){
-  const entry = OBSERVATION_THEME_LABELS[themeId];
-  if(!entry) return themeId;
-  return currentLang === 'lt' ? entry.lt : entry.en;
-}
-
-// Patikrina, ar konkretaus reflection cue_text sutampa su patvirtintu
-// katalogo tekstu. Jei nesutampa (pvz. katalogas vėl pasikeitė), šis
-// cue neturi būti naudojamas temų analizei — grąžina null ir kviečiantis
-// kodas turi tai pažymėti kaip catalog_mismatch.
-function resolveThemeForReflection(reflection){
-  if(reflection.response_type !== 'cue' || !reflection.cue_id) return null;
-  const entry = OBSERVATION_THEME_MAP[reflection.cue_id];
-  if(!entry) return null;
-
-  // Patikra tik prieš LT tekstą, nes tai yra šaltinio kalba kataloge.
-  // cue_text sesijoje gali būti EN, jei sesija buvo anglų kalba — tokiu
-  // atveju praleidžiame tikslų teksto sutapimą, bet cue_id pats savaime
-  // yra patikimas identifikatorius, jei jis egzistuoja kataloge.
-  return { theme: entry.theme, expected_lt: entry.expected_lt };
-}
-
-
-// ── OBSERVATION ANALYSIS (G stage, rebuilt) ────────────
-// Skaičiuoja VIENOS temos pasikartojimus iš standartinių cue (response_type
-// === 'cue'). Kiekvienas cue prideda TIK VIENĄ temą (ne dvi, kaip atmestoje
-// versijoje). Nesutampantys su katalogu cue praleidžiami ir pažymimi debug'e.
-function computeThemeCounts(sessions){
-  const themeCounts = {};
-  const themeEvidence = {};
-  const mismatches = [];
-
-  sessions.forEach(s => {
-    (s.reflections || []).forEach(r => {
-      if(r.response_type !== 'cue' || !r.cue_id) return;
-
-      const resolved = resolveThemeForReflection(r);
-      if(!resolved){
-        mismatches.push({ session_id: s.session_id, cue_id: r.cue_id, reason: 'not_in_theme_map' });
-        return;
-      }
-
-      const theme = resolved.theme;
-      themeCounts[theme] = (themeCounts[theme] || 0) + 1;
-      if(!themeEvidence[theme]) themeEvidence[theme] = [];
-      themeEvidence[theme].push({
-        session_id: s.session_id,
-        cue_id: r.cue_id,
-        cue_text: r.cue_text,
-        image_id: r.image_id
-      });
-    });
-  });
-
-  return { themeCounts, themeEvidence, mismatches };
-}
-
-function computeRepeatedThemes(prevData, currData){
-  const allThemes = new Set([...Object.keys(prevData.themeCounts), ...Object.keys(currData.themeCounts)]);
-  const repeated = [];
-
-  allThemes.forEach(theme => {
-    const cCount = currData.themeCounts[theme] || 0;
-    const pCount = prevData.themeCounts[theme] || 0;
-    if(cCount >= 2 || pCount >= 2){
-      repeated.push({
-        theme,
-        current_count: cCount,
-        previous_count: pCount,
-        both_periods: cCount >= 2 && pCount >= 2
-      });
-    }
-  });
-
-  repeated.sort((a,b) => (b.both_periods - a.both_periods) || ((b.current_count+b.previous_count) - (a.current_count+a.previous_count)));
-  return repeated.slice(0, 2);
-}
-
-function computeChangedTheme(prevData, currData){
-  const allThemes = new Set([...Object.keys(prevData.themeCounts), ...Object.keys(currData.themeCounts)]);
-  let best = null;
-
-  allThemes.forEach(theme => {
-    const cCount = currData.themeCounts[theme] || 0;
-    const pCount = prevData.themeCounts[theme] || 0;
-
-    if(cCount >= 2 && (cCount - pCount) >= 2){
-      const magnitude = cCount - pCount;
-      if(!best || magnitude > best.magnitude){
-        best = { theme, direction:'increased', current_count:cCount, previous_count:pCount, magnitude };
-      }
-    }
-    if(pCount >= 2 && (pCount - cCount) >= 2){
-      const magnitude = pCount - cCount;
-      if(!best || magnitude > best.magnitude){
-        best = { theme, direction:'decreased', current_count:cCount, previous_count:pCount, magnitude };
-      }
-    }
-  });
-
-  return best;
-}
-
-function computeMixedPair(prevData, currData){
-  for(const [themeA, themeB] of MIXED_THEME_PAIRS){
-    const aTotal = (prevData.themeCounts[themeA]||0) + (currData.themeCounts[themeA]||0);
-    const bTotal = (prevData.themeCounts[themeB]||0) + (currData.themeCounts[themeB]||0);
-    if(aTotal >= 1 && bTotal >= 1){
-      return { themeA, themeB };
-    }
+  for(const axis of ['aw','cs','cr']){
+    const v = s.session_vector[axis];
+    if(typeof v !== 'number' || !isFinite(v) || v < -1 || v > 1) return false;
   }
-  return null;
+  return true;
 }
 
-function computeComparisonObservation(previousSessions, currentSessions){
-  const prevData = computeThemeCounts(previousSessions);
-  const currData = computeThemeCounts(currentSessions);
+function getEligibleSessions(){
+  return getCompletedSessions().filter(isSessionRadarEligible);
+}
 
-  const repeated = computeRepeatedThemes(prevData, currData);
-  const changed = computeChangedTheme(prevData, currData);
-  const mixed = computeMixedPair(prevData, currData);
+// Apskaičiuoja "dabartinį pėdsaką" — paprastą vidurkį paskutinių N eligible
+// sesijų vektorių (N = RADAR_MIN_SESSIONS arba visos, jei mažiau).
+// Tai NĖRA asmenybės įvertinimas — tik šios akimirkos pasirinkimų agregatas.
+function computeCurrentTrace(eligibleSessions){
+  if(eligibleSessions.length === 0) return null;
 
-  const evidence = {};
-  Object.keys(prevData.themeEvidence).forEach(theme => {
-    evidence[theme] = (evidence[theme] || []).concat(prevData.themeEvidence[theme]);
+  const recent = eligibleSessions.slice(-RADAR_MIN_SESSIONS);
+  const sum = { aw:0, cs:0, cr:0 };
+  recent.forEach(s => {
+    sum.aw += s.session_vector.aw;
+    sum.cs += s.session_vector.cs;
+    sum.cr += s.session_vector.cr;
   });
-  Object.keys(currData.themeEvidence).forEach(theme => {
-    evidence[theme] = (evidence[theme] || []).concat(currData.themeEvidence[theme]);
-  });
+  const n = recent.length;
 
   return {
-    model_version: 'observation-theme-v0.2',
-    previous_theme_counts: prevData.themeCounts,
-    current_theme_counts: currData.themeCounts,
-    repeated,
-    changed,
-    mixed,
-    evidence,
-    catalog_mismatches: [...prevData.mismatches, ...currData.mismatches]
+    aw: +(sum.aw/n).toFixed(3),
+    cs: +(sum.cs/n).toFixed(3),
+    cr: +(sum.cr/n).toFixed(3),
+    session_count: n
   };
 }
 
-function renderRadarSVG(vector, earlierVector){
+// ── RADAR RENDERING ────────────────────────────────────
+// Trikampis radaras trims ašims (aw/cs/cr) su viena taškų forma.
+// Naudojame SVG, nes tai vienintelis paprastas būdas nupiešti tokį grafiką
+// be papildomos bibliotekos.
+function renderRadarSVG(vector){
   const size = 260;
   const center = size / 2;
   const maxRadius = 95;
+
+  // Šešios kryptys, tolygiai išdėstytos aplink centrą (60° tarp kiekvienos).
+  // KIEKVIENA ašis (aw/cs/cr) turi DVI priešingas geometrines kryptis.
+  // 0 visada yra centre. Teigiama reikšmė plečiasi tik į + kryptį,
+  // neigiama — tik į − kryptį. Priešinga pusė lieka nulinėje (centro) padėtyje.
+  // Jokios (value+1)/2 transformacijos — tai būtų klaidinga, nes paverstų
+  // kryptį į "kiekį" ir sunaikintų dvipolę prasmę.
+  const directions = [
+    { key:'aw+', angle:-90,  value: Math.max(vector.aw, 0) },
+    { key:'cr+', angle:-30,  value: Math.max(vector.cr, 0) },
+    { key:'cs-', angle:30,   value: Math.max(-vector.cs, 0) },
+    { key:'aw-', angle:90,   value: Math.max(-vector.aw, 0) },
+    { key:'cr-', angle:150,  value: Math.max(-vector.cr, 0) },
+    { key:'cs+', angle:210,  value: Math.max(vector.cs, 0) },
+  ];
+
+  // Vizualinio matomumo dėlei naudojama švelni netiesinė skalė (galia 0.7) su
+  // minimaliu matomu spinduliu, o ne gryna kvadratinė šaknis (kuri per stipriai
+  // išpučia mažas reikšmes). Tikras nulis lieka centre; bet koks nenulinis
+  // signalas gauna minimalų matomą ilgį, kad kryptis nebūtų prarasta taške.
+  // SVARBU: tai tik PIEŠIMO mastelis. Tikslios skaitinės reikšmės (aw/cs/cr)
+  // visada rodomos nepakeistos tekstu po grafiku — būtent jos yra pagrindinis
+  // dydžio šaltinis, ne spindulio ilgis. Metodinė pastaba apie tai rodoma vartotojui.
   const MIN_VISIBLE_PX = 5;
-
-  const angleMap = { 'aw+':-90, 'cr+':-30, 'cs-':30, 'aw-':90, 'cr-':150, 'cs+':210 };
-
   function toXY(angleDeg, normalizedValue){
     const rad = angleDeg * Math.PI / 180;
     let r;
@@ -1494,47 +1303,29 @@ function renderRadarSVG(vector, earlierVector){
     } else {
       r = MIN_VISIBLE_PX + (maxRadius - MIN_VISIBLE_PX) * Math.pow(normalizedValue, 0.7);
     }
-    return { x: center + r * Math.cos(rad), y: center + r * Math.sin(rad) };
+    return {
+      x: center + r * Math.cos(rad),
+      y: center + r * Math.sin(rad)
+    };
   }
 
-  function directionsFor(v){
-    return [
-      { key:'aw+', angle:angleMap['aw+'], value: Math.max(v.aw, 0) },
-      { key:'cr+', angle:angleMap['cr+'], value: Math.max(v.cr, 0) },
-      { key:'cs-', angle:angleMap['cs-'], value: Math.max(-v.cs, 0) },
-      { key:'aw-', angle:angleMap['aw-'], value: Math.max(-v.aw, 0) },
-      { key:'cr-', angle:angleMap['cr-'], value: Math.max(-v.cr, 0) },
-      { key:'cs+', angle:angleMap['cs+'], value: Math.max(v.cs, 0) },
-    ];
-  }
+  const points = directions.map(d => toXY(d.angle, Math.abs(d.value)));
+  const polygonPoints = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
-  const mainDirections = directionsFor(vector);
-  const mainPoints = mainDirections.map(d => toXY(d.angle, Math.abs(d.value)));
-  const mainPolygon = mainPoints.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-
-  let earlierPolygonSVG = '';
-  if(earlierVector){
-    const earlierDirections = directionsFor(earlierVector);
-    const earlierPoints = earlierDirections.map(d => toXY(d.angle, Math.abs(d.value)));
-    const earlierPolygon = earlierPoints.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-    earlierPolygonSVG = `
-      <polygon points="${earlierPolygon}" fill="none" stroke="#6E6A64" stroke-width="2"
-        stroke-dasharray="5,4" stroke-linejoin="round"/>
-      ${earlierPoints.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#6E6A64"/>`).join('')}
-    `;
-  }
-
-  const axisLines = mainDirections.map(d => {
+  // Ašių linijos ir žymės — visos šešios kryptys vizualiai lygiavertės,
+  // jokia kryptis nėra pabrėžta kaip "geresnė" ar "viršutinė".
+  const axisLines = directions.map(d => {
     const end = toXY(d.angle, 1);
     return `<line x1="${center}" y1="${center}" x2="${end.x.toFixed(1)}" y2="${end.y.toFixed(1)}" stroke="#32323A" stroke-width="1"/>`;
   }).join('');
 
-  const axisLabels = mainDirections.map(d => {
+  const labelRadius = maxRadius + 22;
+  const axisLabels = directions.map(d => {
     const pos = toXY(d.angle, 1 + (22/maxRadius));
     return `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="12">${d.key}</text>`;
   }).join('');
 
-  const mainNodes = mainPoints.map(p =>
+  const nodeCircles = points.map(p =>
     `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="#7C9E8F"/>`
   ).join('');
 
@@ -1543,9 +1334,8 @@ function renderRadarSVG(vector, earlierVector){
       <circle cx="${center}" cy="${center}" r="${maxRadius}" fill="none" stroke="#1E1E24" stroke-width="1"/>
       <circle cx="${center}" cy="${center}" r="${maxRadius/2}" fill="none" stroke="#1E1E24" stroke-width="1"/>
       ${axisLines}
-      ${earlierPolygonSVG}
-      <polygon points="${mainPolygon}" fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2" stroke-linejoin="round"/>
-      ${mainNodes}
+      <polygon points="${polygonPoints}" fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2" stroke-linejoin="round"/>
+      ${nodeCircles}
       <circle cx="${center}" cy="${center}" r="2.5" fill="#6E6A64"/>
       ${axisLabels}
     </svg>
@@ -1556,11 +1346,13 @@ function showRadar(){
   const eligible = getEligibleSessions();
   const count = eligible.length;
 
+  document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
+
   const body = document.getElementById('radar-body');
   body.innerHTML = '';
 
   if(count < RADAR_MIN_SESSIONS){
-    document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
+    // Progreso kortelė lieka DIDELĖ tik kol radaras dar neatrakintas.
     const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
     const progressBox = document.createElement('div');
     progressBox.className = 'radar-progress-box';
@@ -1576,16 +1368,9 @@ function showRadar(){
     return;
   }
 
-  if(count >= COMPARISON_MIN_SESSIONS){
-    renderComparisonScreen(eligible, body);
-    show('radar');
-    return;
-  }
-
-  // 3–5 eligible sesijų atvejis — vieno laikotarpio radaras (nepakeista nuo E/E.1)
-  document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
-
   const trace = computeCurrentTrace(eligible);
+
+  // Suskaičiuoti bendrą galiojančių vektorinių pasirinkimų kiekį per naudotas sesijas
   const recentSessions = eligible.slice(-RADAR_MIN_SESSIONS);
   const totalVectorResponses = recentSessions.reduce((sum, s) => sum + (s.valid_vector_responses || 0), 0);
 
@@ -1594,12 +1379,15 @@ function showRadar(){
   chartWrap.innerHTML = renderRadarSVG(trace);
   body.appendChild(chartWrap);
 
+  // Metodinė pastaba apie netiesinį vizualinį mastelį — būtina, kad vartotojas
+  // nesuprastų spindulio ilgio kaip tiesioginės skaitinės reikšmės projekcijos.
   const scaleNote = document.createElement('div');
   scaleNote.className = 'radar-scale-note';
   scaleNote.textContent = txt('radar_scale_note') ||
     'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
   body.appendChild(scaleNote);
 
+  // Kompaktiška aprėpties eilutė vietoj didelės progreso kortelės, kai jau atrakinta
   const scopeLine = document.createElement('div');
   scopeLine.className = 'radar-scope-line';
   const scopeTmpl = txt('radar_based_on') || 'Based on {sessions} sessions · {responses} vector choices';
@@ -1627,97 +1415,6 @@ function showRadar(){
   show('radar');
 }
 
-// ── PERIOD COMPARISON SCREEN (F stage) ────────────────
-function classifyMagnitude(absDelta){
-  if(absDelta < 0.05) return 'tiny';
-  if(absDelta < 0.15) return 'noticeable';
-  return 'larger';
-}
-
-function renderComparisonScreen(eligible, body){
-  document.getElementById('txt-radar-header').textContent = txt('trace_comparison_header') || 'Your trace comparison';
-
-  const cmp = computePeriodComparison(eligible);
-
-  const title = document.createElement('div');
-  title.className = 'comparison-title';
-  title.textContent = txt('trace_comparison_header') || 'Your trace comparison';
-  body.appendChild(title);
-
-  const chartWrap = document.createElement('div');
-  chartWrap.className = 'radar-chart-wrap';
-  chartWrap.innerHTML = renderRadarSVG(cmp.current_period.vector, cmp.previous_period.vector);
-  body.appendChild(chartWrap);
-
-  // Legenda — veikia be spalvų atpažinimo (vientisa vs punktyrinė linija)
-  const legend = document.createElement('div');
-  legend.className = 'comparison-legend';
-  legend.innerHTML = `
-    <div class="legend-item"><span class="legend-swatch legend-now"></span>${txt('now_label') || 'Now'}</div>
-    <div class="legend-item"><span class="legend-swatch legend-earlier"></span>${txt('earlier_label') || 'Earlier'}</div>
-  `;
-  body.appendChild(legend);
-
-  const scaleNote = document.createElement('div');
-  scaleNote.className = 'radar-scale-note';
-  scaleNote.textContent = txt('radar_scale_note') ||
-    'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
-  body.appendChild(scaleNote);
-
-  // Anksčiau / Dabar / Pokytis lentelė — jokių rodyklių, jokių spalvų vertinimo
-  const fmt = (v) => (v >= 0 ? '+' : '') + v.toFixed(2);
-  const table = document.createElement('div');
-  table.className = 'comparison-table';
-
-  ['aw','cs','cr'].forEach(axis => {
-    const row = document.createElement('div');
-    row.className = 'comparison-row';
-    row.innerHTML = `
-      <div class="comparison-axis-name">${axis.toUpperCase()}</div>
-      <div class="comparison-col">
-        <div class="comparison-col-label">${txt('earlier_label') || 'Earlier'}</div>
-        <div class="comparison-col-value">${fmt(cmp.previous_period.vector[axis])}</div>
-      </div>
-      <div class="comparison-col">
-        <div class="comparison-col-label">${txt('now_label') || 'Now'}</div>
-        <div class="comparison-col-value">${fmt(cmp.current_period.vector[axis])}</div>
-      </div>
-      <div class="comparison-col">
-        <div class="comparison-col-label">${txt('shift_label') || 'Shift'}</div>
-        <div class="comparison-col-value comparison-delta">${fmt(cmp.delta[axis])}</div>
-      </div>
-    `;
-    table.appendChild(row);
-  });
-  body.appendChild(table);
-
-  // Neutralus tekstinis veidrodis — P0 UX slenksčiai, ne psichologinio reikšmingumo ribos
-  const absDeltas = { aw: Math.abs(cmp.delta.aw), cs: Math.abs(cmp.delta.cs), cr: Math.abs(cmp.delta.cr) };
-  const maxAxis = Object.keys(absDeltas).reduce((a,b) => absDeltas[a] >= absDeltas[b] ? a : b);
-  const maxDelta = absDeltas[maxAxis];
-  const magnitude = classifyMagnitude(maxDelta);
-
-  const mirror = document.createElement('div');
-  mirror.className = 'comparison-mirror';
-  if(magnitude === 'tiny'){
-    mirror.textContent = txt('shift_tiny') || 'No clear shift is visible between these two three-session periods.';
-  } else if(magnitude === 'noticeable'){
-    const tmpl = txt('shift_noticeable') || 'A noticeable difference appears in the {axis} direction, though it remains modest.';
-    mirror.textContent = tmpl.replace('{axis}', maxAxis.toUpperCase());
-  } else {
-    const tmpl = txt('shift_larger') || 'A more pronounced difference appears in the {axis} direction.';
-    mirror.textContent = tmpl.replace('{axis}', maxAxis.toUpperCase());
-  }
-  body.appendChild(mirror);
-
-  const scope = document.createElement('div');
-  scope.className = 'result-scope-note';
-  scope.textContent = txt('comparison_scope_note') ||
-    'This compares traces of your selected responses across two adjacent periods. It is not a measure of personality change.';
-  body.appendChild(scope);
-}
-
-
 // ── HISTORY ───────────────────────────────────────────
 function formatHistoryDate(isoString){
   const d = new Date(isoString);
@@ -1731,242 +1428,17 @@ function formatHistoryDate(isoString){
   return d.toLocaleDateString(currentLang === 'lt' ? 'lt-LT' : 'en-US') + ', ' + time;
 }
 
-// ── OBSERVATION COMPARISON UI (G stage, rebuilt) ───────
-// Metodinė tvarka: PIRMA rodomas konkretus pakartotas cue tekstas,
-// TIK TADA temos pavadinimas kaip antrinis grupavimas. Niekada atvirkščiai.
-function buildEvidenceCueTexts(themeEvidenceList, sessionSet){
-  const seen = new Set();
-  const texts = [];
-  themeEvidenceList.forEach(ev => {
-    if(sessionSet && !sessionSet.has(ev.session_id)) return;
-    if(seen.has(ev.cue_text)) return;
-    seen.add(ev.cue_text);
-    texts.push(ev.cue_text);
-  });
-  return texts.slice(0, 4);
-}
-
-function renderObservationComparisonBlock(eligible, body){
-  const windows = getComparisonWindows(eligible);
-  if(!windows) return;
-
-  const obs = computeComparisonObservation(windows.previousSessions, windows.currentSessions);
-
-  const prevIds = new Set(windows.previousSessions.map(s => s.session_id));
-  const currIds = new Set(windows.currentSessions.map(s => s.session_id));
-
-  const container = document.createElement('div');
-  container.className = 'observation-container';
-
-  const title = document.createElement('div');
-  title.className = 'observation-title';
-  title.textContent = txt('observation_header') || 'What can be noticed across these periods';
-  container.appendChild(title);
-
-  let anyBlockShown = false;
-
-  // ── KAS KARTOJOSI ──────────────────────────────────
-  if(obs.repeated.length > 0){
-    anyBlockShown = true;
-    const block = document.createElement('div');
-    block.className = 'observation-block';
-    const heading = document.createElement('div');
-    heading.className = 'observation-block-heading';
-    heading.textContent = txt('repeated_heading') || 'What repeated';
-    block.appendChild(heading);
-
-    obs.repeated.forEach(r => {
-      const evidenceTexts = buildEvidenceCueTexts(obs.evidence[r.theme] || [], null);
-      const mainCue = evidenceTexts[0] || '';
-
-      // 1) Pirma — konkretus pakartotas cue tekstas
-      const line = document.createElement('div');
-      line.className = 'observation-line';
-      const countTmpl = r.both_periods
-        ? (txt('repeated_both_cue') || 'Across both periods, you repeatedly chose "{cue}".')
-        : (txt('repeated_current_cue') || 'In the latest sessions, you repeatedly chose "{cue}".');
-      line.textContent = countTmpl.replace('{cue}', mainCue);
-      block.appendChild(line);
-
-      // 2) Tik tada — tema kaip antrinis grupavimas
-      const groupLine = document.createElement('div');
-      groupLine.className = 'observation-group-note';
-      const groupTmpl = txt('theme_group_note') || 'This choice is grouped by the system under the theme of {theme}.';
-      groupLine.textContent = groupTmpl.replace('{theme}', themeLabel(r.theme));
-      block.appendChild(groupLine);
-
-      if(evidenceTexts.length > 1){
-        const ev = document.createElement('div');
-        ev.className = 'observation-evidence';
-        ev.innerHTML = `<div class="observation-evidence-label">${txt('based_on_choices') || 'Based on your choices:'}</div>` +
-          evidenceTexts.map(t => `<div class="observation-evidence-item">"${t}"</div>`).join('');
-        block.appendChild(ev);
-      }
-    });
-    container.appendChild(block);
-  }
-
-  // ── KAS PASIKEITĖ ──────────────────────────────────
-  {
-    anyBlockShown = true;
-    const block = document.createElement('div');
-    block.className = 'observation-block';
-    const heading = document.createElement('div');
-    heading.className = 'observation-block-heading';
-    heading.textContent = txt('changed_heading') || 'What changed';
-    block.appendChild(heading);
-
-    if(obs.changed){
-      const sessionSet = obs.changed.direction === 'increased' ? currIds : prevIds;
-      const evidenceTexts = buildEvidenceCueTexts(obs.evidence[obs.changed.theme] || [], sessionSet);
-      const mainCue = evidenceTexts[0] || '';
-
-      const line = document.createElement('div');
-      line.className = 'observation-line';
-      const tmpl = obs.changed.direction === 'increased'
-        ? (txt('changed_more_cue') || 'In the latest sessions, "{cue}" appeared more often.')
-        : (txt('changed_less_cue') || 'In the latest sessions, "{cue}" appeared less often.');
-      line.textContent = tmpl.replace('{cue}', mainCue);
-      block.appendChild(line);
-
-      const groupLine = document.createElement('div');
-      groupLine.className = 'observation-group-note';
-      const groupTmpl = txt('theme_group_note') || 'This choice is grouped by the system under the theme of {theme}.';
-      groupLine.textContent = groupTmpl.replace('{theme}', themeLabel(obs.changed.theme));
-      block.appendChild(groupLine);
-
-      if(evidenceTexts.length > 1){
-        const ev = document.createElement('div');
-        ev.className = 'observation-evidence';
-        ev.innerHTML = `<div class="observation-evidence-label">${txt('based_on_choices') || 'Based on your choices:'}</div>` +
-          evidenceTexts.map(t => `<div class="observation-evidence-item">"${t}"</div>`).join('');
-        block.appendChild(ev);
-      }
-    } else {
-      const line = document.createElement('div');
-      line.className = 'observation-line';
-      line.textContent = txt('no_clear_change') || 'No clear thematic change is visible between these two periods.';
-      block.appendChild(line);
-    }
-    container.appendChild(block);
-  }
-
-  // ── KAS LIKO MIŠRU ─────────────────────────────────
-  if(obs.mixed){
-    anyBlockShown = true;
-    const block = document.createElement('div');
-    block.className = 'observation-block';
-    const heading = document.createElement('div');
-    heading.className = 'observation-block-heading';
-    heading.textContent = txt('mixed_heading') || 'What stayed mixed';
-    block.appendChild(heading);
-
-    const evA = buildEvidenceCueTexts(obs.evidence[obs.mixed.themeA] || [], null);
-    const evB = buildEvidenceCueTexts(obs.evidence[obs.mixed.themeB] || [], null);
-    const cueA = evA[0] || '';
-    const cueB = evB[0] || '';
-
-    const line = document.createElement('div');
-    line.className = 'observation-line';
-    const tmpl = txt('mixed_line_cue') || 'Your choices included both "{cue_a}" and "{cue_b}".';
-    line.textContent = tmpl.replace('{cue_a}', cueA).replace('{cue_b}', cueB);
-    block.appendChild(line);
-
-    const groupLine = document.createElement('div');
-    groupLine.className = 'observation-group-note';
-    const groupTmpl = txt('mixed_group_note') || 'The system groups these under {theme_1} and {theme_2}.';
-    groupLine.textContent = groupTmpl
-      .replace('{theme_1}', themeLabel(obs.mixed.themeA))
-      .replace('{theme_2}', themeLabel(obs.mixed.themeB));
-    block.appendChild(groupLine);
-
-    const line2 = document.createElement('div');
-    line2.className = 'observation-line';
-    line2.style.marginTop = '8px';
-    line2.textContent = txt('mixed_note') || 'In this set, one direction was not consistent.';
-    block.appendChild(line2);
-
-    container.appendChild(block);
-  }
-
-  if(!anyBlockShown){
-    const fallback = document.createElement('div');
-    fallback.className = 'observation-line';
-    fallback.textContent = txt('not_enough_for_comparison') || 'There are not yet enough choices for a clearer thematic comparison.';
-    container.appendChild(fallback);
-  }
-
-  // Žmogaus patikrinimas
-  const checkBlock = document.createElement('div');
-  checkBlock.className = 'observation-check';
-  const checkQ = document.createElement('div');
-  checkQ.className = 'observation-check-question';
-  checkQ.textContent = txt('reflects_real_question') || 'Does this reflect anything real for you?';
-  checkBlock.appendChild(checkQ);
-
-  const options = [
-    { key:'yes', label: txt('reflects_yes') || 'Yes' },
-    { key:'partly', label: txt('reflects_partly') || 'Partly' },
-    { key:'no', label: txt('reflects_no') || 'No' },
-    { key:'not_sure', label: txt('reflects_not_sure') || 'Not sure yet' },
-  ];
-  const optRow = document.createElement('div');
-  optRow.className = 'observation-check-options';
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'observation-check-btn';
-    btn.textContent = opt.label;
-    btn.onclick = () => {
-      optRow.querySelectorAll('.observation-check-btn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      try {
-        const all = getCompletedSessions();
-        const latestId = eligible[eligible.length-1].session_id;
-        const idx = all.findIndex(s => s.session_id === latestId);
-        if(idx >= 0){
-          all[idx].comparison_feedback = { response: opt.key, created_at: new Date().toISOString() };
-          localStorage.setItem(NS + 'completed_sessions', JSON.stringify(all));
-        }
-      } catch(e){}
-    };
-    optRow.appendChild(btn);
-  });
-  checkBlock.appendChild(optRow);
-  container.appendChild(checkBlock);
-
-  const scope = document.createElement('div');
-  scope.className = 'result-scope-note';
-  scope.textContent = txt('observation_scope_note') ||
-    'These observations describe only repetitions and differences in the wording you selected. They do not explain why you chose them and do not describe your personality.';
-  container.appendChild(scope);
-
-  body.appendChild(container);
-}
-
 function showHistory(){
   const sessions = getCompletedSessions().slice().reverse(); // naujausios viršuje
   const body = document.getElementById('history-body');
   body.innerHTML = '';
 
-  const eligible = getEligibleSessions();
-
-  // KRITINE APSAUGA: jei observation blokas meta klaidą (pvz. dėl neapdorotos
-  // duomenų formos senesnėse sesijose), tai NIEKADA neturi sugriauti likusio
-  // istorijos ekrano — sesijų sąrašas ir radaro nuoroda visada turi būti rodomi.
-  if(eligible.length >= COMPARISON_MIN_SESSIONS){
-    try {
-      renderObservationComparisonBlock(eligible, body);
-    } catch(e){
-      console.warn('renderObservationComparisonBlock failed:', e);
-    }
-  }
-
+  // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų
+  // (radaro ekranas pats parodys progresą "N iš 3")
   const radarLink = document.createElement('button');
   radarLink.className = 'btn-ghost';
   radarLink.style.marginBottom = '16px';
-  radarLink.textContent = eligible.length >= COMPARISON_MIN_SESSIONS
-    ? (txt('view_direction_chart') || 'View direction chart')
-    : (txt('view_trace') || 'View your current trace');
+  radarLink.textContent = txt('view_trace') || 'View your current trace';
   radarLink.onclick = showRadar;
   body.appendChild(radarLink);
 
@@ -2064,68 +1536,12 @@ function showHistoryDetail(sessionId){
 
 function exportDebug(){
   const eligible = getEligibleSessions();
-
-  // KRITINE APSAUGA: bet kokia klaida palyginimo/observation skaičiavime
-  // NIEKADA neturi sugriauti viso debug eksporto. Šie sluoksniai yra
-  // papildomi — pagrindiniai duomenys (sesijos, choices, reflections)
-  // visada turi būti eksportuojami net jei observation analizė nepavyksta.
-  let comparison = null;
-  try {
-    comparison = computePeriodComparison(eligible);
-  } catch(e){
-    console.warn('computePeriodComparison failed:', e);
-  }
-
-  let comparisonObservation = null;
-  try {
-    const windows = getComparisonWindows(eligible);
-    if(windows){
-      const obs = computeComparisonObservation(windows.previousSessions, windows.currentSessions);
-      comparisonObservation = {
-        model_version: obs.model_version,
-        previous_period_session_ids: windows.previousSessions.map(s => s.session_id),
-        current_period_session_ids: windows.currentSessions.map(s => s.session_id),
-        previous_theme_counts: obs.previous_theme_counts,
-        current_theme_counts: obs.current_theme_counts,
-        repeated: obs.repeated,
-        changed: obs.changed,
-        mixed: obs.mixed,
-        evidence: obs.evidence,
-        catalog_mismatches: obs.catalog_mismatches
-      };
-    }
-  } catch(e){
-    console.warn('computeComparisonObservation failed:', e);
-    comparisonObservation = { error: String(e) };
-  }
-
   const data = {
-    comparison_observation: comparisonObservation,
     active_session: SESSION,
     completed_sessions: getCompletedSessions(),
     radar_eligible_session_ids: eligible.map(s => s.session_id),
     radar_eligible_count: eligible.length,
     current_trace: computeCurrentTrace(eligible),
-    comparison_eligibility: {
-      eligible_count: eligible.length,
-      minimum_required: COMPARISON_MIN_SESSIONS,
-      can_compare: eligible.length >= COMPARISON_MIN_SESSIONS
-    },
-    previous_period: comparison ? {
-      session_ids: comparison.previous_period.session_ids,
-      period_vector: comparison.previous_period.vector,
-      period_session_count: comparison.previous_period.session_count,
-      period_valid_responses: comparison.previous_period.valid_vector_responses,
-      period_confidence: comparison.previous_period.confidence
-    } : null,
-    current_period: comparison ? {
-      session_ids: comparison.current_period.session_ids,
-      period_vector: comparison.current_period.vector,
-      period_session_count: comparison.current_period.session_count,
-      period_valid_responses: comparison.current_period.valid_vector_responses,
-      period_confidence: comparison.current_period.confidence
-    } : null,
-    period_delta: comparison ? comparison.delta : null,
     pairs_loaded: PAIRS.length,
     audio_enabled: audioEnabled,
     audio_started: audioStarted,
