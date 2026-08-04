@@ -1,0 +1,107 @@
+{
+  "schema_version": "pair-cue-v0.1",
+  "status": "provisional_for_internal_testing",
+  "axis_definitions": {
+    "aw": {"positive": "Artėjimas, įsitraukimas, kontaktas", "negative": "Atsitraukimas, distancija, izoliacija"},
+    "cs": {"positive": "Aiškumo siekimas, struktūros poreikis", "negative": "Neapibrėžtumo tolerancija, atvirumas"},
+    "cr": {"positive": "Kontrolės siekimas, struktūravimas", "negative": "Paleidimas, perdavimas, srautas"}
+  },
+  "rules": {
+    "image_choice_has_vector": false,
+    "vector_source": "selected_layer_2_cue_only",
+    "custom_text_vector": null,
+    "hard_to_say_vector": null,
+    "user_facing_interpretation_after_one_session": false,
+    "radar_data_ready_from_session": true
+  },
+  "pairs": [
+    {
+      "pair_id": "P0-001",
+      "pair_label_lt": "Klasikiniai ir laisvalaikio batai",
+      "images": [
+        {
+          "image_id": "P0-001-A",
+          "label_lt": "Juodi klasikiniai batai",
+          "label_en": "Black formal shoes",
+          "primary_axis": "cr",
+          "cues": [
+            {"cue_id":"P0-001-A-C1","lt":"Noriu būti pasiruošęs","en":"I want to feel prepared","vector":{"aw":0.15,"cs":0.25,"cr":0.55},"confidence":0.60},
+            {"cue_id":"P0-001-A-C2","lt":"Per daug įpareigoja","en":"It feels too demanding","vector":{"aw":-0.40,"cs":0.05,"cr":-0.30},"confidence":0.55},
+            {"cue_id":"P0-001-A-C3","lt":"Atrodo patikima","en":"It feels dependable","vector":{"aw":0.30,"cs":0.20,"cr":0.10},"confidence":0.50}
+          ]
+        },
+        {
+          "image_id": "P0-001-B",
+          "label_lt": "Rudi laisvalaikio batai",
+          "label_en": "Brown casual shoes",
+          "primary_axis": "cr",
+          "cues": [
+            {"cue_id":"P0-001-B-C1","lt":"Noriu daugiau laisvės","en":"I want more freedom","vector":{"aw":0.25,"cs":-0.15,"cr":-0.60},"confidence":0.60},
+            {"cue_id":"P0-001-B-C2","lt":"Per daug neįpareigoja","en":"It feels too unstructured","vector":{"aw":-0.25,"cs":0.30,"cr":0.40},"confidence":0.55},
+            {"cue_id":"P0-001-B-C3","lt":"Laikas judėti","en":"Time to get moving","vector":{"aw":0.55,"cs":0.00,"cr":-0.15},"confidence":0.55}
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "P0-002",
+      "pair_label_lt": "Uždaryti ir atidaryti vartai",
+      "images": [
+        {
+          "image_id": "P0-002-A",
+          "label_lt": "Uždaryti vartai",
+          "label_en": "Closed gate",
+          "primary_axis": "aw",
+          "cues": [
+            {"cue_id":"P0-002-A-C1","lt":"Čia saugiau","en":"It feels safer here","vector":{"aw":0.45,"cs":0.20,"cr":0.20},"confidence":0.60},
+            {"cue_id":"P0-002-A-C2","lt":"Mane stabdo","en":"It holds me back","vector":{"aw":-0.60,"cs":0.05,"cr":-0.10},"confidence":0.65},
+            {"cue_id":"P0-002-A-C3","lt":"Kas yra už jų?","en":"What is beyond them?","vector":{"aw":0.20,"cs":-0.50,"cr":0.00},"confidence":0.60}
+          ]
+        },
+        {
+          "image_id": "P0-002-B",
+          "label_lt": "Atidaryti vartai",
+          "label_en": "Open gate",
+          "primary_axis": "aw",
+          "cues": [
+            {"cue_id":"P0-002-B-C1","lt":"Noriu eiti","en":"I want to go through","vector":{"aw":0.65,"cs":-0.05,"cr":-0.10},"confidence":0.65},
+            {"cue_id":"P0-002-B-C2","lt":"Per daug atvira","en":"It feels too exposed","vector":{"aw":-0.50,"cs":0.25,"cr":0.20},"confidence":0.60},
+            {"cue_id":"P0-002-B-C3","lt":"Dar nežinau, ar žengti","en":"I do not know whether to step in","vector":{"aw":-0.10,"cs":0.50,"cr":0.05},"confidence":0.55}
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "P0-003",
+      "pair_label_lt": "Uždaryta ir atidaryta dėžė",
+      "images": [
+        {
+          "image_id": "P0-003-A",
+          "label_lt": "Uždaryta dėžė",
+          "label_en": "Closed box",
+          "primary_axis": "cs",
+          "cues": [
+            {"cue_id":"P0-003-A-C1","lt":"Noriu žinoti, kas viduje","en":"I want to know what is inside","vector":{"aw":0.25,"cs":0.65,"cr":0.15},"confidence":0.65},
+            {"cue_id":"P0-003-A-C2","lt":"Gali palaukti","en":"It can wait","vector":{"aw":-0.05,"cs":-0.50,"cr":-0.25},"confidence":0.60},
+            {"cue_id":"P0-003-A-C3","lt":"Geriau neatidaryti","en":"Better not to open it","vector":{"aw":-0.55,"cs":0.15,"cr":0.15},"confidence":0.60}
+          ]
+        },
+        {
+          "image_id": "P0-003-B",
+          "label_lt": "Atidaryta dėžė",
+          "label_en": "Open box",
+          "primary_axis": "cs",
+          "cues": [
+            {"cue_id":"P0-003-B-C1","lt":"Pagaliau aišku","en":"Now it is clear","vector":{"aw":0.20,"cs":0.60,"cr":0.10},"confidence":0.65},
+            {"cue_id":"P0-003-B-C2","lt":"Nežinomybė buvo įdomesnė","en":"The unknown was more interesting","vector":{"aw":-0.05,"cs":-0.60,"cr":-0.10},"confidence":0.60},
+            {"cue_id":"P0-003-B-C3","lt":"Kažko trūksta","en":"Something is missing","vector":{"aw":-0.20,"cs":0.40,"cr":0.05},"confidence":0.55}
+          ]
+        }
+      ]
+    }
+  ],
+  "fallbacks": {
+    "custom": {"lt":"Kita mintis","en":"Another thought","vector":null},
+    "hard_to_say": {"lt":"Sunku pasakyti","en":"Hard to say","vector":null}
+  }
+}
