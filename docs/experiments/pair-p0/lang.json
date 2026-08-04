@@ -90,7 +90,14 @@
     "reflects_no": "Ne",
     "reflects_not_sure": "Dar nežinau",
     "view_direction_chart": "Peržiūrėti krypties grafiką",
-    "observation_scope_note": "Šie pastebėjimai aprašo tik tavo pasirinktų formuluočių pasikartojimus ir skirtumus. Jie nepaaiškina, kodėl taip pasirinkai, ir neapibūdina tavo asmenybės."
+    "observation_scope_note": "Šie pastebėjimai aprašo tik tavo pasirinktų formuluočių pasikartojimus ir skirtumus. Jie nepaaiškina, kodėl taip pasirinkai, ir neapibūdina tavo asmenybės.",
+    "repeated_both_cue": "Abiejuose laikotarpiuose kelis kartus pasirinkai „{cue}“.",
+    "repeated_current_cue": "Paskutinėse sesijose kelis kartus pasirinkai „{cue}“.",
+    "theme_group_note": "Šį pasirinkimą sistema grupuoja kaip {theme} temą.",
+    "changed_more_cue": "Paskutinėse sesijose dažniau pasirodė „{cue}“.",
+    "changed_less_cue": "Paskutinėse sesijose rečiau pasirodė „{cue}“.",
+    "mixed_line_cue": "Tavo pasirinkimuose buvo ir „{cue_a}“, ir „{cue_b}“.",
+    "mixed_group_note": "Sistema juos grupuoja kaip {theme_1} ir {theme_2} temas."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -183,6 +190,13 @@
     "reflects_no": "No",
     "reflects_not_sure": "Not sure yet",
     "view_direction_chart": "View direction chart",
-    "observation_scope_note": "These observations describe only repetitions and differences in the wording you selected. They do not explain why you chose them and do not describe your personality."
+    "observation_scope_note": "These observations describe only repetitions and differences in the wording you selected. They do not explain why you chose them and do not describe your personality.",
+    "repeated_both_cue": "Across both periods, you repeatedly chose \"{cue}\".",
+    "repeated_current_cue": "In the latest sessions, you repeatedly chose \"{cue}\".",
+    "theme_group_note": "This choice is grouped by the system under the theme of {theme}.",
+    "changed_more_cue": "In the latest sessions, \"{cue}\" appeared more often.",
+    "changed_less_cue": "In the latest sessions, \"{cue}\" appeared less often.",
+    "mixed_line_cue": "Your choices included both \"{cue_a}\" and \"{cue_b}\".",
+    "mixed_group_note": "The system groups these under {theme_1} and {theme_2}."
   }
 }
