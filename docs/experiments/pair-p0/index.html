@@ -237,6 +237,32 @@ body{min-height:100vh}
   text-align:center;font-size:.74rem;color:var(--faint);
   line-height:1.5;padding:8px 12px;margin-top:10px;font-style:italic;
 }
+
+/* ── COMPARISON (F stage) ── */
+.comparison-title{
+  text-align:center;font-size:.95rem;color:var(--text);font-weight:600;margin-bottom:8px;
+}
+.comparison-legend{
+  display:flex;justify-content:center;gap:24px;margin:12px 0 4px;
+}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--dim)}
+.legend-swatch{width:20px;height:2px;display:inline-block}
+.legend-now{background:#7C9E8F}
+.legend-earlier{background:transparent;border-top:2px dashed #6E6A64;height:0}
+.comparison-table{margin-top:16px}
+.comparison-row{
+  display:grid;grid-template-columns:36px 1fr 1fr 1fr;gap:8px;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.comparison-axis-name{font-size:.85rem;color:var(--text);font-weight:700}
+.comparison-col{text-align:center}
+.comparison-col-label{font-size:.68rem;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.comparison-col-value{font-size:.95rem;color:var(--text);font-weight:600;margin-top:2px}
+.comparison-delta{color:var(--accent)}
+.comparison-mirror{
+  margin-top:18px;padding:16px;background:var(--card);border:1px solid var(--accent);
+  border-radius:var(--r);font-size:.92rem;color:var(--text);text-align:center;line-height:1.5;
+}
 .radar-scope-note{
   margin-top:16px;padding:14px;font-size:.8rem;color:var(--dim);
   text-align:center;line-height:1.6;font-style:italic;
@@ -1218,6 +1244,7 @@ function getCompletedSessions(){
 // ── RADAR ELIGIBILITY ─────────────────────────────────
 const RADAR_MODEL_VERSION = 'pair-cue-v0.1';
 const RADAR_MIN_SESSIONS = 3;
+const COMPARISON_MIN_SESSIONS = 6;
 
 // Sesija tinkama radarui tik jei atitinka VISUS kriterijus.
 // Netinkamos sesijos NIEKADA netrinamos, nemigruojamos ir lieka istorijoje —
@@ -1263,38 +1290,87 @@ function computeCurrentTrace(eligibleSessions){
   };
 }
 
+// ── PERIOD COMPARISON (F stage) ────────────────────────
+// Grąžina du gretimus, nepersidengiančius trijų sesijų langus iš eligible sesijų,
+// surūšiuotų pagal completed_at didėjančia tvarka. Seniausios perteklinės sesijos
+// (jei eligible > 6) lieka istorijoje, bet šiame palyginime nenaudojamos.
+function getComparisonWindows(eligibleSessions){
+  const sorted = eligibleSessions.slice().sort((a,b) =>
+    new Date(a.completed_at) - new Date(b.completed_at)
+  );
+
+  if(sorted.length < COMPARISON_MIN_SESSIONS) return null;
+
+  const currentSessions = sorted.slice(-3);
+  const previousSessions = sorted.slice(-6, -3);
+
+  return { currentSessions, previousSessions };
+}
+
+// Vieno laikotarpio (3 sesijų) vektorius — confidence svertinis vidurkis
+// per SESIJŲ session_vector_confidence (ne per atskirus cue). Tai atskira
+// agregacija nuo computeCurrentTrace, kuri periodų palyginimui naudoja
+// tikslią specifikacijos formulę.
+function computePeriodVector(sessions){
+  if(sessions.length === 0) return null;
+
+  const confSum = sessions.reduce((sum, s) => sum + s.session_vector_confidence, 0);
+  const weighted = { aw:0, cs:0, cr:0 };
+  sessions.forEach(s => {
+    const w = s.session_vector_confidence;
+    weighted.aw += s.session_vector.aw * w;
+    weighted.cs += s.session_vector.cs * w;
+    weighted.cr += s.session_vector.cr * w;
+  });
+
+  const validResponses = sessions.reduce((sum, s) => sum + (s.valid_vector_responses || 0), 0);
+
+  return {
+    session_ids: sessions.map(s => s.session_id),
+    vector: {
+      aw: +(weighted.aw / confSum).toFixed(3),
+      cs: +(weighted.cs / confSum).toFixed(3),
+      cr: +(weighted.cr / confSum).toFixed(3)
+    },
+    session_count: sessions.length,
+    valid_vector_responses: validResponses,
+    confidence: +(confSum / sessions.length).toFixed(3)
+  };
+}
+
+function computePeriodComparison(eligibleSessions){
+  const windows = getComparisonWindows(eligibleSessions);
+  if(!windows) return null;
+
+  const previous_period = computePeriodVector(windows.previousSessions);
+  const current_period = computePeriodVector(windows.currentSessions);
+
+  const delta = {
+    aw: +(current_period.vector.aw - previous_period.vector.aw).toFixed(3),
+    cs: +(current_period.vector.cs - previous_period.vector.cs).toFixed(3),
+    cr: +(current_period.vector.cr - previous_period.vector.cr).toFixed(3)
+  };
+
+  return { previous_period, current_period, delta };
+}
+
 // ── RADAR RENDERING ────────────────────────────────────
 // Trikampis radaras trims ašims (aw/cs/cr) su viena taškų forma.
 // Naudojame SVG, nes tai vienintelis paprastas būdas nupiešti tokį grafiką
 // be papildomos bibliotekos.
-function renderRadarSVG(vector){
+// Vieno ar dviejų perdengtų laikotarpių radaras. Jei perduodamas antrasis
+// (earlierVector), jis piešiamas silpnesniu, punktyriniu kontūru be užpildo —
+// vizualiai aiškiai atskiriamas nuo pagrindinio (dabartinio) net be spalvų
+// atpažinimo. Abi formos naudoja TĄ PATĮ maxRadius ir tą pačią netiesinę skalę,
+// jokio automatinio persiskalinimo pagal savo maksimumą.
+function renderRadarSVG(vector, earlierVector){
   const size = 260;
   const center = size / 2;
   const maxRadius = 95;
-
-  // Šešios kryptys, tolygiai išdėstytos aplink centrą (60° tarp kiekvienos).
-  // KIEKVIENA ašis (aw/cs/cr) turi DVI priešingas geometrines kryptis.
-  // 0 visada yra centre. Teigiama reikšmė plečiasi tik į + kryptį,
-  // neigiama — tik į − kryptį. Priešinga pusė lieka nulinėje (centro) padėtyje.
-  // Jokios (value+1)/2 transformacijos — tai būtų klaidinga, nes paverstų
-  // kryptį į "kiekį" ir sunaikintų dvipolę prasmę.
-  const directions = [
-    { key:'aw+', angle:-90,  value: Math.max(vector.aw, 0) },
-    { key:'cr+', angle:-30,  value: Math.max(vector.cr, 0) },
-    { key:'cs-', angle:30,   value: Math.max(-vector.cs, 0) },
-    { key:'aw-', angle:90,   value: Math.max(-vector.aw, 0) },
-    { key:'cr-', angle:150,  value: Math.max(-vector.cr, 0) },
-    { key:'cs+', angle:210,  value: Math.max(vector.cs, 0) },
-  ];
-
-  // Vizualinio matomumo dėlei naudojama švelni netiesinė skalė (galia 0.7) su
-  // minimaliu matomu spinduliu, o ne gryna kvadratinė šaknis (kuri per stipriai
-  // išpučia mažas reikšmes). Tikras nulis lieka centre; bet koks nenulinis
-  // signalas gauna minimalų matomą ilgį, kad kryptis nebūtų prarasta taške.
-  // SVARBU: tai tik PIEŠIMO mastelis. Tikslios skaitinės reikšmės (aw/cs/cr)
-  // visada rodomos nepakeistos tekstu po grafiku — būtent jos yra pagrindinis
-  // dydžio šaltinis, ne spindulio ilgis. Metodinė pastaba apie tai rodoma vartotojui.
   const MIN_VISIBLE_PX = 5;
+
+  const angleMap = { 'aw+':-90, 'cr+':-30, 'cs-':30, 'aw-':90, 'cr-':150, 'cs+':210 };
+
   function toXY(angleDeg, normalizedValue){
     const rad = angleDeg * Math.PI / 180;
     let r;
@@ -1303,29 +1379,47 @@ function renderRadarSVG(vector){
     } else {
       r = MIN_VISIBLE_PX + (maxRadius - MIN_VISIBLE_PX) * Math.pow(normalizedValue, 0.7);
     }
-    return {
-      x: center + r * Math.cos(rad),
-      y: center + r * Math.sin(rad)
-    };
+    return { x: center + r * Math.cos(rad), y: center + r * Math.sin(rad) };
   }
 
-  const points = directions.map(d => toXY(d.angle, Math.abs(d.value)));
-  const polygonPoints = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  function directionsFor(v){
+    return [
+      { key:'aw+', angle:angleMap['aw+'], value: Math.max(v.aw, 0) },
+      { key:'cr+', angle:angleMap['cr+'], value: Math.max(v.cr, 0) },
+      { key:'cs-', angle:angleMap['cs-'], value: Math.max(-v.cs, 0) },
+      { key:'aw-', angle:angleMap['aw-'], value: Math.max(-v.aw, 0) },
+      { key:'cr-', angle:angleMap['cr-'], value: Math.max(-v.cr, 0) },
+      { key:'cs+', angle:angleMap['cs+'], value: Math.max(v.cs, 0) },
+    ];
+  }
 
-  // Ašių linijos ir žymės — visos šešios kryptys vizualiai lygiavertės,
-  // jokia kryptis nėra pabrėžta kaip "geresnė" ar "viršutinė".
-  const axisLines = directions.map(d => {
+  const mainDirections = directionsFor(vector);
+  const mainPoints = mainDirections.map(d => toXY(d.angle, Math.abs(d.value)));
+  const mainPolygon = mainPoints.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
+  let earlierPolygonSVG = '';
+  if(earlierVector){
+    const earlierDirections = directionsFor(earlierVector);
+    const earlierPoints = earlierDirections.map(d => toXY(d.angle, Math.abs(d.value)));
+    const earlierPolygon = earlierPoints.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    earlierPolygonSVG = `
+      <polygon points="${earlierPolygon}" fill="none" stroke="#6E6A64" stroke-width="2"
+        stroke-dasharray="5,4" stroke-linejoin="round"/>
+      ${earlierPoints.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#6E6A64"/>`).join('')}
+    `;
+  }
+
+  const axisLines = mainDirections.map(d => {
     const end = toXY(d.angle, 1);
     return `<line x1="${center}" y1="${center}" x2="${end.x.toFixed(1)}" y2="${end.y.toFixed(1)}" stroke="#32323A" stroke-width="1"/>`;
   }).join('');
 
-  const labelRadius = maxRadius + 22;
-  const axisLabels = directions.map(d => {
+  const axisLabels = mainDirections.map(d => {
     const pos = toXY(d.angle, 1 + (22/maxRadius));
     return `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="12">${d.key}</text>`;
   }).join('');
 
-  const nodeCircles = points.map(p =>
+  const mainNodes = mainPoints.map(p =>
     `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="#7C9E8F"/>`
   ).join('');
 
@@ -1334,8 +1428,9 @@ function renderRadarSVG(vector){
       <circle cx="${center}" cy="${center}" r="${maxRadius}" fill="none" stroke="#1E1E24" stroke-width="1"/>
       <circle cx="${center}" cy="${center}" r="${maxRadius/2}" fill="none" stroke="#1E1E24" stroke-width="1"/>
       ${axisLines}
-      <polygon points="${polygonPoints}" fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2" stroke-linejoin="round"/>
-      ${nodeCircles}
+      ${earlierPolygonSVG}
+      <polygon points="${mainPolygon}" fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2" stroke-linejoin="round"/>
+      ${mainNodes}
       <circle cx="${center}" cy="${center}" r="2.5" fill="#6E6A64"/>
       ${axisLabels}
     </svg>
@@ -1346,13 +1441,11 @@ function showRadar(){
   const eligible = getEligibleSessions();
   const count = eligible.length;
 
-  document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
-
   const body = document.getElementById('radar-body');
   body.innerHTML = '';
 
   if(count < RADAR_MIN_SESSIONS){
-    // Progreso kortelė lieka DIDELĖ tik kol radaras dar neatrakintas.
+    document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
     const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
     const progressBox = document.createElement('div');
     progressBox.className = 'radar-progress-box';
@@ -1368,9 +1461,16 @@ function showRadar(){
     return;
   }
 
-  const trace = computeCurrentTrace(eligible);
+  if(count >= COMPARISON_MIN_SESSIONS){
+    renderComparisonScreen(eligible, body);
+    show('radar');
+    return;
+  }
 
-  // Suskaičiuoti bendrą galiojančių vektorinių pasirinkimų kiekį per naudotas sesijas
+  // 3–5 eligible sesijų atvejis — vieno laikotarpio radaras (nepakeista nuo E/E.1)
+  document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
+
+  const trace = computeCurrentTrace(eligible);
   const recentSessions = eligible.slice(-RADAR_MIN_SESSIONS);
   const totalVectorResponses = recentSessions.reduce((sum, s) => sum + (s.valid_vector_responses || 0), 0);
 
@@ -1379,15 +1479,12 @@ function showRadar(){
   chartWrap.innerHTML = renderRadarSVG(trace);
   body.appendChild(chartWrap);
 
-  // Metodinė pastaba apie netiesinį vizualinį mastelį — būtina, kad vartotojas
-  // nesuprastų spindulio ilgio kaip tiesioginės skaitinės reikšmės projekcijos.
   const scaleNote = document.createElement('div');
   scaleNote.className = 'radar-scale-note';
   scaleNote.textContent = txt('radar_scale_note') ||
     'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
   body.appendChild(scaleNote);
 
-  // Kompaktiška aprėpties eilutė vietoj didelės progreso kortelės, kai jau atrakinta
   const scopeLine = document.createElement('div');
   scopeLine.className = 'radar-scope-line';
   const scopeTmpl = txt('radar_based_on') || 'Based on {sessions} sessions · {responses} vector choices';
@@ -1414,6 +1511,97 @@ function showRadar(){
 
   show('radar');
 }
+
+// ── PERIOD COMPARISON SCREEN (F stage) ────────────────
+function classifyMagnitude(absDelta){
+  if(absDelta < 0.05) return 'tiny';
+  if(absDelta < 0.15) return 'noticeable';
+  return 'larger';
+}
+
+function renderComparisonScreen(eligible, body){
+  document.getElementById('txt-radar-header').textContent = txt('trace_comparison_header') || 'Your trace comparison';
+
+  const cmp = computePeriodComparison(eligible);
+
+  const title = document.createElement('div');
+  title.className = 'comparison-title';
+  title.textContent = txt('trace_comparison_header') || 'Your trace comparison';
+  body.appendChild(title);
+
+  const chartWrap = document.createElement('div');
+  chartWrap.className = 'radar-chart-wrap';
+  chartWrap.innerHTML = renderRadarSVG(cmp.current_period.vector, cmp.previous_period.vector);
+  body.appendChild(chartWrap);
+
+  // Legenda — veikia be spalvų atpažinimo (vientisa vs punktyrinė linija)
+  const legend = document.createElement('div');
+  legend.className = 'comparison-legend';
+  legend.innerHTML = `
+    <div class="legend-item"><span class="legend-swatch legend-now"></span>${txt('now_label') || 'Now'}</div>
+    <div class="legend-item"><span class="legend-swatch legend-earlier"></span>${txt('earlier_label') || 'Earlier'}</div>
+  `;
+  body.appendChild(legend);
+
+  const scaleNote = document.createElement('div');
+  scaleNote.className = 'radar-scale-note';
+  scaleNote.textContent = txt('radar_scale_note') ||
+    'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
+  body.appendChild(scaleNote);
+
+  // Anksčiau / Dabar / Pokytis lentelė — jokių rodyklių, jokių spalvų vertinimo
+  const fmt = (v) => (v >= 0 ? '+' : '') + v.toFixed(2);
+  const table = document.createElement('div');
+  table.className = 'comparison-table';
+
+  ['aw','cs','cr'].forEach(axis => {
+    const row = document.createElement('div');
+    row.className = 'comparison-row';
+    row.innerHTML = `
+      <div class="comparison-axis-name">${axis.toUpperCase()}</div>
+      <div class="comparison-col">
+        <div class="comparison-col-label">${txt('earlier_label') || 'Earlier'}</div>
+        <div class="comparison-col-value">${fmt(cmp.previous_period.vector[axis])}</div>
+      </div>
+      <div class="comparison-col">
+        <div class="comparison-col-label">${txt('now_label') || 'Now'}</div>
+        <div class="comparison-col-value">${fmt(cmp.current_period.vector[axis])}</div>
+      </div>
+      <div class="comparison-col">
+        <div class="comparison-col-label">${txt('shift_label') || 'Shift'}</div>
+        <div class="comparison-col-value comparison-delta">${fmt(cmp.delta[axis])}</div>
+      </div>
+    `;
+    table.appendChild(row);
+  });
+  body.appendChild(table);
+
+  // Neutralus tekstinis veidrodis — P0 UX slenksčiai, ne psichologinio reikšmingumo ribos
+  const absDeltas = { aw: Math.abs(cmp.delta.aw), cs: Math.abs(cmp.delta.cs), cr: Math.abs(cmp.delta.cr) };
+  const maxAxis = Object.keys(absDeltas).reduce((a,b) => absDeltas[a] >= absDeltas[b] ? a : b);
+  const maxDelta = absDeltas[maxAxis];
+  const magnitude = classifyMagnitude(maxDelta);
+
+  const mirror = document.createElement('div');
+  mirror.className = 'comparison-mirror';
+  if(magnitude === 'tiny'){
+    mirror.textContent = txt('shift_tiny') || 'No clear shift is visible between these two three-session periods.';
+  } else if(magnitude === 'noticeable'){
+    const tmpl = txt('shift_noticeable') || 'A noticeable difference appears in the {axis} direction, though it remains modest.';
+    mirror.textContent = tmpl.replace('{axis}', maxAxis.toUpperCase());
+  } else {
+    const tmpl = txt('shift_larger') || 'A more pronounced difference appears in the {axis} direction.';
+    mirror.textContent = tmpl.replace('{axis}', maxAxis.toUpperCase());
+  }
+  body.appendChild(mirror);
+
+  const scope = document.createElement('div');
+  scope.className = 'result-scope-note';
+  scope.textContent = txt('comparison_scope_note') ||
+    'This compares traces of your selected responses across two adjacent periods. It is not a measure of personality change.';
+  body.appendChild(scope);
+}
+
 
 // ── HISTORY ───────────────────────────────────────────
 function formatHistoryDate(isoString){
@@ -1536,12 +1724,34 @@ function showHistoryDetail(sessionId){
 
 function exportDebug(){
   const eligible = getEligibleSessions();
+  const comparison = computePeriodComparison(eligible);
+
   const data = {
     active_session: SESSION,
     completed_sessions: getCompletedSessions(),
     radar_eligible_session_ids: eligible.map(s => s.session_id),
     radar_eligible_count: eligible.length,
     current_trace: computeCurrentTrace(eligible),
+    comparison_eligibility: {
+      eligible_count: eligible.length,
+      minimum_required: COMPARISON_MIN_SESSIONS,
+      can_compare: eligible.length >= COMPARISON_MIN_SESSIONS
+    },
+    previous_period: comparison ? {
+      session_ids: comparison.previous_period.session_ids,
+      period_vector: comparison.previous_period.vector,
+      period_session_count: comparison.previous_period.session_count,
+      period_valid_responses: comparison.previous_period.valid_vector_responses,
+      period_confidence: comparison.previous_period.confidence
+    } : null,
+    current_period: comparison ? {
+      session_ids: comparison.current_period.session_ids,
+      period_vector: comparison.current_period.vector,
+      period_session_count: comparison.current_period.session_count,
+      period_valid_responses: comparison.current_period.valid_vector_responses,
+      period_confidence: comparison.current_period.confidence
+    } : null,
+    period_delta: comparison ? comparison.delta : null,
     pairs_loaded: PAIRS.length,
     audio_enabled: audioEnabled,
     audio_started: audioStarted,
