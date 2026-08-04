@@ -61,7 +61,8 @@
     "radar_not_enough": "Užbaik daugiau sesijų, kad pamatytum savo dabartinį pėdsaką.",
     "based_on_sessions": "Remiantis {n} sesijomis",
     "radar_scope_note": "Ši forma sudaryta iš tavo pasirinktų reakcijų per paskutines 3 tinkamas sesijas. Ji nėra asmenybės vertinimas.",
-    "radar_based_on": "Pagrįsta {sessions} sesijomis · {responses} vektoriniais pasirinkimais"
+    "radar_based_on": "Pagrįsta {sessions} sesijomis · {responses} vektoriniais pasirinkimais",
+    "radar_scale_note": "Mažos reikšmės grafike vizualiai sustiprintos, kad kryptys būtų matomos. Tikslūs dydžiai pateikti skaičiais žemiau."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -125,6 +126,7 @@
     "radar_not_enough": "Complete more sessions to see your current trace.",
     "based_on_sessions": "Based on {n} sessions",
     "radar_scope_note": "This shape is built from your chosen responses across the last 3 eligible sessions. It is not a personality assessment.",
-    "radar_based_on": "Based on {sessions} sessions · {responses} vector choices"
+    "radar_based_on": "Based on {sessions} sessions · {responses} vector choices",
+    "radar_scale_note": "Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below."
   }
 }
