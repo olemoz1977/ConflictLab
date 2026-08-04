@@ -229,6 +229,10 @@ body{min-height:100vh}
   display:flex;justify-content:space-between;font-size:.78rem;color:var(--dim);
   padding:10px 4px;border-top:1px solid var(--border);margin-top:8px;
 }
+.radar-scope-line{
+  text-align:center;font-size:.78rem;color:var(--faint);
+  margin-bottom:14px;padding-top:4px;
+}
 .radar-scope-note{
   margin-top:16px;padding:14px;font-size:.8rem;color:var(--dim);
   text-align:center;line-height:1.6;font-style:italic;
@@ -1260,52 +1264,63 @@ function computeCurrentTrace(eligibleSessions){
 // Naudojame SVG, nes tai vienintelis paprastas būdas nupiešti tokį grafiką
 // be papildomos bibliotekos.
 function renderRadarSVG(vector){
-  const size = 240;
+  const size = 260;
   const center = size / 2;
-  const maxRadius = 90;
+  const maxRadius = 95;
 
-  // Trys ašys 120° kampu viena nuo kitos (aw viršuje, cs apačioje kairėje, cr apačioje dešinėje)
-  const angles = { aw: -90, cs: 150, cr: 30 }; // laipsniais
+  // Šešios kryptys, tolygiai išdėstytos aplink centrą (60° tarp kiekvienos).
+  // KIEKVIENA ašis (aw/cs/cr) turi DVI priešingas geometrines kryptis.
+  // 0 visada yra centre. Teigiama reikšmė plečiasi tik į + kryptį,
+  // neigiama — tik į − kryptį. Priešinga pusė lieka nulinėje (centro) padėtyje.
+  // Jokios (value+1)/2 transformacijos — tai būtų klaidinga, nes paverstų
+  // kryptį į "kiekį" ir sunaikintų dvipolę prasmę.
+  const directions = [
+    { key:'aw+', angle:-90,  value: Math.max(vector.aw, 0) },
+    { key:'cr+', angle:-30,  value: Math.max(vector.cr, 0) },
+    { key:'cs-', angle:30,   value: Math.max(-vector.cs, 0) },
+    { key:'aw-', angle:90,   value: Math.max(-vector.aw, 0) },
+    { key:'cr-', angle:150,  value: Math.max(-vector.cr, 0) },
+    { key:'cs+', angle:210,  value: Math.max(vector.cs, 0) },
+  ];
 
-  function toXY(axisKey, value){
-    // value yra [-1,1], normalizuojame į [0,1] radiaus atžvilgiu nuo centro
-    const normalized = (value + 1) / 2; // 0..1
-    const r = normalized * maxRadius;
-    const rad = angles[axisKey] * Math.PI / 180;
+  function toXY(angleDeg, normalizedValue){
+    const rad = angleDeg * Math.PI / 180;
+    const r = normalizedValue * maxRadius; // normalizedValue jau yra [0,1], nes abs(v) niekada neviršija 1
     return {
       x: center + r * Math.cos(rad),
       y: center + r * Math.sin(rad)
     };
   }
 
-  const pAw = toXY('aw', vector.aw);
-  const pCs = toXY('cs', vector.cs);
-  const pCr = toXY('cr', vector.cr);
+  const points = directions.map(d => toXY(d.angle, Math.abs(d.value)));
+  const polygonPoints = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
-  // Ašių linijos (nuo centro iki maksimalaus spindulio, kad matytųsi orientacija)
-  function axisEndpoint(axisKey){
-    const rad = angles[axisKey] * Math.PI / 180;
-    return { x: center + maxRadius * Math.cos(rad), y: center + maxRadius * Math.sin(rad) };
-  }
-  const eAw = axisEndpoint('aw');
-  const eCs = axisEndpoint('cs');
-  const eCr = axisEndpoint('cr');
+  // Ašių linijos ir žymės — visos šešios kryptys vizualiai lygiavertės,
+  // jokia kryptis nėra pabrėžta kaip "geresnė" ar "viršutinė".
+  const axisLines = directions.map(d => {
+    const end = toXY(d.angle, 1);
+    return `<line x1="${center}" y1="${center}" x2="${end.x.toFixed(1)}" y2="${end.y.toFixed(1)}" stroke="#32323A" stroke-width="1"/>`;
+  }).join('');
+
+  const labelRadius = maxRadius + 22;
+  const axisLabels = directions.map(d => {
+    const pos = toXY(d.angle, 1 + (22/maxRadius));
+    return `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="12">${d.key}</text>`;
+  }).join('');
+
+  const nodeCircles = points.map(p =>
+    `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="#7C9E8F"/>`
+  ).join('');
 
   return `
     <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
       <circle cx="${center}" cy="${center}" r="${maxRadius}" fill="none" stroke="#1E1E24" stroke-width="1"/>
       <circle cx="${center}" cy="${center}" r="${maxRadius/2}" fill="none" stroke="#1E1E24" stroke-width="1"/>
-      <line x1="${center}" y1="${center}" x2="${eAw.x}" y2="${eAw.y}" stroke="#32323A" stroke-width="1"/>
-      <line x1="${center}" y1="${center}" x2="${eCs.x}" y2="${eCs.y}" stroke="#32323A" stroke-width="1"/>
-      <line x1="${center}" y1="${center}" x2="${eCr.x}" y2="${eCr.y}" stroke="#32323A" stroke-width="1"/>
-      <polygon points="${pAw.x},${pAw.y} ${pCs.x},${pCs.y} ${pCr.x},${pCr.y}"
-        fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2"/>
-      <circle cx="${pAw.x}" cy="${pAw.y}" r="4" fill="#7C9E8F"/>
-      <circle cx="${pCs.x}" cy="${pCs.y}" r="4" fill="#7C9E8F"/>
-      <circle cx="${pCr.x}" cy="${pCr.y}" r="4" fill="#7C9E8F"/>
-      <text x="${center}" y="18" text-anchor="middle" fill="#6E6A64" font-size="11">aw</text>
-      <text x="${eCs.x - 14}" y="${eCs.y + 14}" text-anchor="middle" fill="#6E6A64" font-size="11">cs</text>
-      <text x="${eCr.x + 14}" y="${eCr.y + 14}" text-anchor="middle" fill="#6E6A64" font-size="11">cr</text>
+      ${axisLines}
+      <polygon points="${polygonPoints}" fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2" stroke-linejoin="round"/>
+      ${nodeCircles}
+      <circle cx="${center}" cy="${center}" r="2.5" fill="#6E6A64"/>
+      ${axisLabels}
     </svg>
   `;
 }
@@ -1319,49 +1334,57 @@ function showRadar(){
   const body = document.getElementById('radar-body');
   body.innerHTML = '';
 
-  const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
-  const progressBox = document.createElement('div');
-  progressBox.className = 'radar-progress-box';
-  progressBox.innerHTML = `
-    <div class="radar-progress-text">${progressTmpl.replace('{n}', Math.min(count, RADAR_MIN_SESSIONS)).replace('{total}', RADAR_MIN_SESSIONS)}</div>
-  `;
-  body.appendChild(progressBox);
-
   if(count < RADAR_MIN_SESSIONS){
+    // Progreso kortelė lieka DIDELĖ tik kol radaras dar neatrakintas.
+    const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
+    const progressBox = document.createElement('div');
+    progressBox.className = 'radar-progress-box';
+    progressBox.innerHTML = `
+      <div class="radar-progress-text">${progressTmpl.replace('{n}', count).replace('{total}', RADAR_MIN_SESSIONS)}</div>
+    `;
     const sub = document.createElement('div');
     sub.className = 'radar-progress-sub';
     sub.textContent = txt('radar_not_enough') || 'Complete more sessions to see your current trace.';
     progressBox.appendChild(sub);
+    body.appendChild(progressBox);
     show('radar');
     return;
   }
 
   const trace = computeCurrentTrace(eligible);
 
+  // Suskaičiuoti bendrą galiojančių vektorinių pasirinkimų kiekį per naudotas sesijas
+  const recentSessions = eligible.slice(-RADAR_MIN_SESSIONS);
+  const totalVectorResponses = recentSessions.reduce((sum, s) => sum + (s.valid_vector_responses || 0), 0);
+
   const chartWrap = document.createElement('div');
   chartWrap.className = 'radar-chart-wrap';
   chartWrap.innerHTML = renderRadarSVG(trace);
   body.appendChild(chartWrap);
 
+  // Kompaktiška aprėpties eilutė vietoj didelės progreso kortelės, kai jau atrakinta
+  const scopeLine = document.createElement('div');
+  scopeLine.className = 'radar-scope-line';
+  const scopeTmpl = txt('radar_based_on') || 'Based on {sessions} sessions · {responses} vector choices';
+  scopeLine.textContent = scopeTmpl
+    .replace('{sessions}', trace.session_count)
+    .replace('{responses}', totalVectorResponses);
+  body.appendChild(scopeLine);
+
   const axisValues = document.createElement('div');
   axisValues.className = 'radar-axis-values';
+  const fmt = (v) => (v >= 0 ? '+' : '') + v.toFixed(2);
   axisValues.innerHTML = `
-    <div class="radar-axis-item"><div class="radar-axis-label">aw</div><div class="radar-axis-value">${trace.aw >= 0 ? '+' : ''}${trace.aw}</div></div>
-    <div class="radar-axis-item"><div class="radar-axis-label">cs</div><div class="radar-axis-value">${trace.cs >= 0 ? '+' : ''}${trace.cs}</div></div>
-    <div class="radar-axis-item"><div class="radar-axis-label">cr</div><div class="radar-axis-value">${trace.cr >= 0 ? '+' : ''}${trace.cr}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">AW</div><div class="radar-axis-value">${fmt(trace.aw)}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">CS</div><div class="radar-axis-value">${fmt(trace.cs)}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">CR</div><div class="radar-axis-value">${fmt(trace.cr)}</div></div>
   `;
   body.appendChild(axisValues);
 
-  const meta = document.createElement('div');
-  meta.className = 'radar-meta';
-  const sessionsLabel = txt('based_on_sessions') || 'Based on {n} sessions';
-  meta.innerHTML = `<span>${sessionsLabel.replace('{n}', trace.session_count)}</span>`;
-  body.appendChild(meta);
-
   const scope = document.createElement('div');
-  scope.className = 'radar-scope-note';
+  scope.className = 'result-scope-note';
   scope.textContent = txt('radar_scope_note') ||
-    'This shape is built from your chosen cues across recent sessions. It is not a personality assessment.';
+    'This shape is built from your chosen responses across the last 3 eligible sessions. It is not a personality assessment.';
   body.appendChild(scope);
 
   show('radar');
