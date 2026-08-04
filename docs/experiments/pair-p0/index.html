@@ -30,6 +30,14 @@ html,body{
 .logo{font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
 .intro-title{font-size:1.5rem;font-weight:300;text-align:center}
 .intro-sub{font-size:.9rem;color:var(--dim);text-align:center;line-height:1.6;max-width:280px}
+.audio-toggle{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.8rem;cursor:pointer;
+  transition:all 180ms;
+}
+.audio-toggle.on{border-color:var(--accent);color:var(--accent)}
+.audio-icon{font-size:.9rem}
 .lang-row{display:flex;gap:10px}
 .lang-btn{
   padding:8px 24px;border-radius:20px;border:1px solid var(--border);
@@ -214,6 +222,10 @@ body.has-debug #app{ height: calc(100dvh - 32px); }
       <button class="lang-btn" id="btn-lt" onclick="setLang('lt')">LT</button>
       <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
     </div>
+    <button class="audio-toggle" id="audio-toggle" onclick="toggleAudio()">
+      <span class="audio-icon">🔊</span>
+      <span id="audio-toggle-label"></span>
+    </button>
     <button class="start-btn" id="txt-start" onclick="startExperiment()"></button>
   </div>
 
@@ -279,6 +291,7 @@ body.has-debug #app{ height: calc(100dvh - 32px); }
   <span id="dbg-info" style="margin-left:auto"></span>
 </div>
 
+<audio id="ambient-audio" src="audio/open-window.mp3" loop preload="none"></audio>
 <script>
 // ── NAMESPACE ────────────────────────────────────────
 const NS = 'cl_pair_p0_';
@@ -290,6 +303,8 @@ let LANGS = {};
 let PAIRS = [];
 let L2_INDICES = []; // 0-based
 let CUE_DATA = null; // pair-cue-v0.1.json
+let audioEnabled = false;
+let audioStarted = false;
 let currentLang = 'lt';
 let currentPairIdx = 0;
 let pairStartTime = 0;
@@ -335,6 +350,7 @@ function setLang(lang){
   document.getElementById('txt-instruction').textContent = txt('intro_instruction');
   document.getElementById('txt-start').textContent = txt('intro_start');
   document.getElementById('txt-nostimuli').textContent = txt('no_stimuli');
+  updateAudioToggleUI();
   document.getElementById('pair-prompt').textContent = txt('layer1_prompt');
   document.getElementById('txt-reflect-header').textContent = txt('layer2_prompt');
   document.getElementById('reflect-next-btn').textContent = txt('see_results') || txt('result_title');
@@ -358,6 +374,13 @@ window.addEventListener('orientationchange', () => setTimeout(setRealVH, 200));
 setRealVH();
 
 async function init(){
+  // Audio: užkrauti ankstesnį pasirinkimą iš localStorage
+  try {
+    const saved = localStorage.getItem(NS + 'audio_enabled');
+    audioEnabled = saved === 'true';
+  } catch(e){ audioEnabled = false; }
+  updateAudioToggleUI();
+
   // Debug bar
   if(IS_DEBUG){
     document.getElementById('debug-bar').style.display = 'flex';
@@ -408,6 +431,62 @@ async function init(){
     document.getElementById('dbg-info').textContent =
       `pairs:${PAIRS.length} l2:[${L2_INDICES}]`;
   }
+}
+
+// ── AUDIO ────────────────────────────────────────────
+function updateAudioToggleUI(){
+  const btn = document.getElementById('audio-toggle');
+  const icon = btn ? btn.querySelector('.audio-icon') : null;
+  const label = document.getElementById('audio-toggle-label');
+  if(!btn) return;
+
+  btn.classList.toggle('on', audioEnabled);
+  if(icon) icon.textContent = audioEnabled ? '🔊' : '🔈';
+  if(label) label.textContent = audioEnabled
+    ? (txt('audio_on') || 'Sound')
+    : (txt('audio_off') || 'Sound');
+}
+
+function toggleAudio(){
+  audioEnabled = !audioEnabled;
+  try { localStorage.setItem(NS + 'audio_enabled', String(audioEnabled)); } catch(e){}
+  updateAudioToggleUI();
+
+  const audio = document.getElementById('ambient-audio');
+  if(!audio) return;
+
+  if(audioEnabled){
+    // Pirmas paleidimas — reikalauja vartotojo gesto (šis paspaudimas yra tas gestas)
+    audio.volume = 0.25;
+    audio.play().then(() => {
+      audioStarted = true;
+    }).catch(err => {
+      console.warn('Audio play blocked:', err);
+      audioStarted = false;
+    });
+  } else {
+    audio.pause();
+  }
+}
+
+function stopAudioSmoothly(){
+  const audio = document.getElementById('ambient-audio');
+  if(!audio || audio.paused) return;
+
+  // Švelnus fade-out per ~600ms
+  const steps = 12;
+  const stepTime = 50;
+  const startVol = audio.volume;
+  let i = 0;
+  const fade = setInterval(() => {
+    i++;
+    audio.volume = Math.max(0, startVol * (1 - i / steps));
+    if(i >= steps){
+      clearInterval(fade);
+      audio.pause();
+      audio.volume = startVol; // atstatyti volume kitam kartui
+    }
+  }, stepTime);
 }
 
 // ── START ─────────────────────────────────────────────
@@ -743,6 +822,7 @@ function goToResult(){
 
 // ── FEEDBACK ──────────────────────────────────────────
 function goToFeedback(){
+  stopAudioSmoothly();
   const body = document.getElementById('fb-body');
   body.innerHTML = '';
   fbAnswers = {};
@@ -794,6 +874,7 @@ function submitFeedback(){
     repeat_reason: fbAnswers.repeat_reason || ''
   };
   saveSession();
+  stopAudioSmoothly();
   show('done');
 }
 
@@ -825,6 +906,8 @@ function computeSessionVector(){
 }
 
 function saveSession(){
+  SESSION.audio_enabled = audioEnabled;
+  SESSION.audio_started = audioStarted;
   try {
     const all = JSON.parse(localStorage.getItem(NS + 'history') || '[]');
     const i = all.findIndex(s => s.session_id === SESSION.session_id);
@@ -840,6 +923,8 @@ function exportDebug(){
     debug_log: JSON.parse(localStorage.getItem(NS + 'debug') || '[]'),
     pairs_loaded: PAIRS.length,
     l2_indices: L2_INDICES,
+    audio_enabled: audioEnabled,
+    audio_started: audioStarted,
     exported_at: new Date().toISOString()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
