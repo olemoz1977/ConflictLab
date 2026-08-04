@@ -207,6 +207,22 @@ body{min-height:100vh}
 .done-check{font-size:2.5rem}
 .done-title{font-size:1.2rem;font-weight:300}
 .done-sub{font-size:.85rem;color:var(--dim);line-height:1.6;max-width:260px}
+.done-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-top:12px}
+
+/* ── HISTORY ── */
+.history-item{
+  display:flex;flex-direction:column;gap:8px;padding:16px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:12px;cursor:pointer;transition:border-color 180ms;
+}
+.history-item:active{border-color:var(--accent)}
+.history-date{font-size:.75rem;color:var(--faint)}
+.history-count{font-size:.8rem;color:var(--dim)}
+.history-observation{font-size:.9rem;color:var(--text);font-style:italic}
+.history-empty{text-align:center;color:var(--dim);padding:40px 20px;font-size:.9rem}
+.history-detail-thumbs{display:flex;gap:8px;margin-top:8px}
+.history-detail-thumb{width:56px;height:56px;border-radius:6px;overflow:hidden;background:#0a0a0c;flex-shrink:0}
+.history-detail-thumb img{width:100%;height:100%;object-fit:contain}
 
 /* ── DEBUG BAR — natūraliame flow, ne fixed, kad niekada nedengtų turinio ── */
 #debug-bar{
@@ -315,6 +331,28 @@ body{min-height:100vh}
     <div class="done-check">✓</div>
     <div class="done-title" id="txt-done-title"></div>
     <div class="done-sub" id="txt-done-sub"></div>
+    <div class="done-actions">
+      <button class="btn-primary" onclick="showHistory()" id="txt-view-history"></button>
+      <button class="btn-ghost" onclick="startExperiment()" id="txt-start-another"></button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="screen-history" class="screen">
+  <div class="screen-header" id="txt-history-header"></div>
+  <div class="screen-body" id="history-body"></div>
+  <div class="screen-footer">
+    <button class="btn-ghost" onclick="show('intro')" id="txt-back-to-intro"></button>
+  </div>
+</div>
+
+<!-- HISTORY SESSION DETAIL -->
+<div id="screen-history-detail" class="screen">
+  <div class="screen-header" id="txt-history-detail-header"></div>
+  <div class="screen-body" id="history-detail-body"></div>
+  <div class="screen-footer">
+    <button class="btn-ghost" onclick="showHistory()" id="txt-back-to-history"></button>
   </div>
 </div>
 
@@ -354,12 +392,16 @@ let sessionReflection = { response_type: null, text: '' };
 
 let SESSION = {
   session_id: uid(),
+  status: 'active',
+  started_at: new Date().toISOString(),
+  completed_at: null,
   timestamp: new Date().toISOString(),
   language: 'lt',
   viewport_width: window.innerWidth,
   viewport_height: window.innerHeight,
   choices: [],
   reflections: [],
+  session_reflection: null,
   feedback: {}
 };
 
@@ -392,6 +434,11 @@ function setLang(lang){
   document.getElementById('txt-fb-submit').textContent = txt('feedback_submit');
   document.getElementById('txt-done-title').textContent = txt('done_title') || 'Thank you';
   document.getElementById('txt-done-sub').textContent = txt('done_sub') || '';
+  document.getElementById('txt-view-history').textContent = txt('view_history') || 'View history';
+  document.getElementById('txt-start-another').textContent = txt('start_another') || 'Start another session';
+  document.getElementById('txt-history-header').textContent = txt('your_sessions') || 'Your sessions';
+  document.getElementById('txt-back-to-intro').textContent = txt('back') || 'Back';
+  document.getElementById('txt-back-to-history').textContent = txt('back_to_history') || 'Back to history';
   document.documentElement.lang = lang;
 
   updateAudioToggleUI();
@@ -484,8 +531,26 @@ function stopAudioSmoothly(){
 function startExperiment(){
   if(PAIRS.length === 0){ show('nostimuli'); return; }
   currentPairIdx = 0;
-  SESSION.choices = [];
+
+  // Nauja sesija — visiškai naujas objektas, kad senos aktyvios sesijos
+  // duomenys niekada nepatektų į naujos sesijos rezultatus.
+  SESSION = {
+    session_id: uid(),
+    status: 'active',
+    started_at: new Date().toISOString(),
+    completed_at: null,
+    timestamp: new Date().toISOString(),
+    language: currentLang,
+    viewport_width: window.innerWidth,
+    viewport_height: window.innerHeight,
+    choices: [],
+    reflections: [],
+    session_reflection: null,
+    feedback: {}
+  };
   sessionReflection = { response_type: null, text: '' };
+  reflectAnswers = {};
+
   loadPair(0);
 }
 
@@ -1027,27 +1092,160 @@ function submitFeedback(){
     would_repeat: fbAnswers.would_repeat ?? null,
     repeat_reason: fbAnswers.repeat_reason || ''
   };
-  saveSession();
+  completeSession();
   stopAudioSmoothly();
   show('done');
 }
 
 // ── STORAGE ───────────────────────────────────────────
+// Išsaugo TARPINĘ (dar nebaigtą) sesijos būseną — atskirai nuo užbaigtų sesijų istorijos.
+// Tai leidžia grįžti/perkrauti puslapį nepradant iš naujo, bet neterš completed_sessions,
+// kol sesija realiai nepasiekia Finish veiksmo.
 function saveSession(){
   SESSION.audio_enabled = audioEnabled;
   SESSION.audio_started = audioStarted;
   try {
-    const all = JSON.parse(localStorage.getItem(NS + 'history') || '[]');
-    const i = all.findIndex(s => s.session_id === SESSION.session_id);
-    if(i >= 0) all[i] = SESSION; else all.push(SESSION);
-    localStorage.setItem(NS + 'history', JSON.stringify(all));
+    localStorage.setItem(NS + 'active_session', JSON.stringify(SESSION));
   } catch(e){}
+}
+
+// Sesiją laiko GALUTINAI užbaigta tik po Finish veiksmo (po feedback).
+// Tik tada ji patenka į completed_sessions ir gali būti naudojama istorijai/radarui.
+function completeSession(){
+  SESSION.status = 'completed';
+  SESSION.completed_at = new Date().toISOString();
+  SESSION.audio_enabled = audioEnabled;
+  SESSION.audio_started = audioStarted;
+
+  try {
+    const completed = JSON.parse(localStorage.getItem(NS + 'completed_sessions') || '[]');
+    const i = completed.findIndex(s => s.session_id === SESSION.session_id);
+    if(i >= 0) completed[i] = SESSION; else completed.push(SESSION);
+    localStorage.setItem(NS + 'completed_sessions', JSON.stringify(completed));
+
+    // Užbaigta sesija nebėra "aktyvi" — išvalyti tarpinę būseną
+    localStorage.removeItem(NS + 'active_session');
+  } catch(e){}
+}
+
+function getCompletedSessions(){
+  try {
+    return JSON.parse(localStorage.getItem(NS + 'completed_sessions') || '[]');
+  } catch(e){
+    return [];
+  }
+}
+
+// ── HISTORY ───────────────────────────────────────────
+function formatHistoryDate(isoString){
+  const d = new Date(isoString);
+  const today = new Date();
+  const isToday = d.toDateString() === today.toDateString();
+  const time = d.toLocaleTimeString(currentLang === 'lt' ? 'lt-LT' : 'en-US', {hour:'2-digit', minute:'2-digit'});
+  if(isToday){
+    const todayLabel = txt('today') || 'Today';
+    return `${todayLabel}, ${time}`;
+  }
+  return d.toLocaleDateString(currentLang === 'lt' ? 'lt-LT' : 'en-US') + ', ' + time;
+}
+
+function showHistory(){
+  const sessions = getCompletedSessions().slice().reverse(); // naujausios viršuje
+  const body = document.getElementById('history-body');
+  body.innerHTML = '';
+
+  if(sessions.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'history-empty';
+    empty.textContent = txt('no_history') || 'No completed sessions yet.';
+    body.appendChild(empty);
+    show('history');
+    return;
+  }
+
+  sessions.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.onclick = () => showHistoryDetail(s.session_id);
+
+    const sr = s.session_reflection;
+    let obsText = '';
+    if(sr){
+      if(sr.response_type === 'text' && sr.text) obsText = sr.text;
+      else if(sr.response_type === 'not_yet') obsText = (txt('observation_not_yet') || '');
+    }
+
+    const countTmpl = txt('choices_count') || '{n} choices';
+    item.innerHTML = `
+      <div class="history-date">${formatHistoryDate(s.completed_at || s.started_at)}</div>
+      <div class="history-count">${countTmpl.replace('{n}', s.choices.length)}</div>
+      ${obsText ? `<div class="history-observation">${obsText}</div>` : ''}
+    `;
+    body.appendChild(item);
+  });
+
+  show('history');
+}
+
+function showHistoryDetail(sessionId){
+  const sessions = getCompletedSessions();
+  const s = sessions.find(x => x.session_id === sessionId);
+  if(!s) return;
+
+  document.getElementById('txt-history-detail-header').textContent = formatHistoryDate(s.completed_at || s.started_at);
+
+  const body = document.getElementById('history-detail-body');
+  body.innerHTML = '';
+
+  s.choices.forEach(choice => {
+    const pair = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const imgObj = pair
+      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+      : null;
+    const ref = (s.reflections || []).find(r => r.image_id === choice.selected_image_id);
+
+    let mainText = '';
+    if(ref){
+      if(ref.response_type === 'cue') mainText = ref.cue_text;
+      else if(ref.response_type === 'custom') mainText = ref.custom_words;
+      else if(ref.response_type === 'hard_to_say') mainText = (txt('hard_to_say_label') || 'Hard to say');
+    }
+
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.innerHTML = `
+      <div class="result-thumb">${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}</div>
+      ${mainText ? `<div class="result-words">${mainText}</div>` : ''}
+    `;
+    body.appendChild(div);
+  });
+
+  const sr = s.session_reflection;
+  if(sr){
+    const obsBlock = document.createElement('div');
+    obsBlock.className = 'result-observation';
+    const label = document.createElement('div');
+    label.className = 'result-observation-label';
+    label.textContent = txt('your_observation') || 'Your observation';
+    obsBlock.appendChild(label);
+    const text = document.createElement('div');
+    text.className = 'result-observation-text';
+    if(sr.response_type === 'text' && sr.text) text.textContent = sr.text;
+    else if(sr.response_type === 'not_yet'){
+      text.textContent = txt('observation_not_yet') || '';
+      text.classList.add('empty');
+    }
+    obsBlock.appendChild(text);
+    body.appendChild(obsBlock);
+  }
+
+  show('history-detail');
 }
 
 function exportDebug(){
   const data = {
-    session: SESSION,
-    history: JSON.parse(localStorage.getItem(NS + 'history') || '[]'),
+    active_session: SESSION,
+    completed_sessions: getCompletedSessions(),
     pairs_loaded: PAIRS.length,
     audio_enabled: audioEnabled,
     audio_started: audioStarted,
