@@ -22,7 +22,8 @@
     "loading": "Kraunama...",
     "yes": "Taip",
     "no": "Ne",
-    "see_results": "Žiūrėti rezultatus"
+    "see_results": "Žiūrėti rezultatus",
+    "layer2_other": "Kita mintis"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -47,6 +48,7 @@
     "loading": "Loading...",
     "yes": "Yes",
     "no": "No",
-    "see_results": "See results"
+    "see_results": "See results",
+    "layer2_other": "Another thought"
   }
 }
