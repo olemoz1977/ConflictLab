@@ -41,7 +41,12 @@
     "not_yet": "Dar nepastebiu",
     "view_session": "Žiūrėti sesiją",
     "continue_btn": "Tęsti",
-    "hard_to_say_label": "Sunku pasakyti"
+    "hard_to_say_label": "Sunku pasakyti",
+    "your_session": "Tavo sesija",
+    "your_observation": "Tavo pastebėjimas",
+    "observation_not_yet": "Šį kartą nieko aiškaus dar nepastebėjai.",
+    "result_scope_note": "Tai šios akimirkos pasirinkimų pėdsakas, o ne tavo asmenybės apibūdinimas.",
+    "finish_session": "Baigti sesiją"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -85,6 +90,11 @@
     "not_yet": "I do not notice anything yet",
     "view_session": "View session",
     "continue_btn": "Continue",
-    "hard_to_say_label": "Hard to say"
+    "hard_to_say_label": "Hard to say",
+    "your_session": "Your session",
+    "your_observation": "Your observation",
+    "observation_not_yet": "Nothing clear stood out to you yet this time.",
+    "result_scope_note": "This is a trace of your choices in this moment, not a description of your personality.",
+    "finish_session": "Finish session"
   }
 }
