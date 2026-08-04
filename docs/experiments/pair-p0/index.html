@@ -111,6 +111,25 @@ html,body{
   cursor:pointer;white-space:nowrap;transition:all 180ms;flex-shrink:0;
 }
 .skip-btn.skipped{background:var(--accent);color:#0C0C0F}
+
+/* CUE OPTIONS */
+.cue-options{display:flex;flex-direction:column;gap:8px}
+.cue-btn{
+  padding:14px 16px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:.95rem;text-align:left;
+  cursor:pointer;transition:all 180ms;width:100%;
+}
+.cue-btn:active{border-color:var(--accent);background:rgba(124,158,143,.08)}
+.cue-btn.selected{border-color:var(--accent);background:rgba(124,158,143,.12);color:var(--accent);font-weight:600}
+.cue-btn.custom-active{border-color:var(--accent)}
+.cue-custom-row{display:flex;gap:8px;margin-top:4px}
+.cue-custom-input{
+  flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;
+  transition:border-color 180ms;min-width:0;display:none;
+}
+.cue-custom-input.show{display:block}
+.cue-custom-input:focus{border-color:var(--accent)}
 .footer-fixed{
   flex-shrink:0;padding:14px 16px;border-top:1px solid var(--border);
   background:var(--bg);
@@ -270,6 +289,7 @@ let L = {}; // current lang strings
 let LANGS = {};
 let PAIRS = [];
 let L2_INDICES = []; // 0-based
+let CUE_DATA = null; // pair-cue-v0.1.json
 let currentLang = 'lt';
 let currentPairIdx = 0;
 let pairStartTime = 0;
@@ -371,6 +391,15 @@ async function init(){
     PAIRS = [];
   }
 
+  // Load pair-cue-v0.1.json — provisional cue+vector content
+  try {
+    const r = await fetch('pair-cue-v0.1.json');
+    CUE_DATA = await r.json();
+  } catch(e){
+    console.warn('pair-cue-v0.1.json load failed:', e);
+    CUE_DATA = null;
+  }
+
   // Apply detected language
   setLang(detected);
   show('intro');
@@ -462,6 +491,18 @@ function choosePair(position){
 }
 
 // ── LAYER 2 ───────────────────────────────────────────
+function getCuesForImage(imageId){
+  if(!CUE_DATA) return null;
+  for(const pair of CUE_DATA.pairs || []){
+    for(const img of pair.images || []){
+      if(img.image_id === imageId){
+        return img.cues || [];
+      }
+    }
+  }
+  return null;
+}
+
 function startLayer2(){
   const body = document.getElementById('reflect-body');
   body.innerHTML = '';
@@ -488,33 +529,123 @@ function startLayer2(){
   }
 
   const skipLabel = txt('layer2_skip') || 'Hard to say';
+  const otherLabel = txt('layer2_other') || 'Kita mintis';
   const noteLabel = txt('layer2_note') || '';
   const placeholderLabel = txt('layer2_placeholder') || '...';
+  const lang = currentLang;
 
   items.forEach(({ imgObj }) => {
     const key = imgObj.id;
-    reflectAnswers[key] = { words: '', skipped: false };
+    reflectAnswers[key] = { words: '', skipped: false, cue_id: null, vector: null };
+
+    const cues = getCuesForImage(key);
 
     const div = document.createElement('div');
     div.className = 'reflect-item';
+
+    let optionsHtml = '';
+    if(cues && cues.length > 0){
+      // Cue mygtukai + Kita mintis + Sunku pasakyti
+      const cueButtons = cues.map(c => {
+        const label = lang === 'lt' ? c.lt : c.en;
+        return `<button class="cue-btn" data-cue-id="${c.cue_id}"
+          onclick="selectCue('${key}','${c.cue_id}',this)">${label}</button>`;
+      }).join('');
+
+      optionsHtml = `
+        <div class="cue-options" id="cue-opts-${key}">
+          ${cueButtons}
+          <button class="cue-btn" id="custom-btn-${key}"
+            onclick="toggleCustomCue('${key}',this)">${otherLabel}</button>
+          <input class="cue-custom-input" id="custom-input-${key}" maxlength="40"
+            placeholder="${placeholderLabel}"
+            oninput="onCustomCueInput(this,'${key}')">
+          <button class="cue-btn" id="skip-cue-${key}"
+            onclick="selectHardToSay('${key}',this)">${skipLabel}</button>
+        </div>
+      `;
+    } else {
+      // Fallback — jei nėra cue duomenų šiam vaizdui, senas laisvo teksto laukas
+      optionsHtml = `
+        <div class="reflect-row">
+          <input class="reflect-input" id="ri-${key}" maxlength="40"
+            placeholder="${placeholderLabel}"
+            oninput="onReflect(this,'${key}')">
+          <button class="skip-btn" id="rs-${key}"
+            onclick="skipReflect('${key}')">${skipLabel}</button>
+        </div>
+      `;
+    }
+
     div.innerHTML = `
       <div class="reflect-img">
         <img src="${imgObj.src}" alt="" loading="lazy">
       </div>
       <div class="reflect-note">${noteLabel}</div>
-      <div class="reflect-row">
-        <input class="reflect-input" id="ri-${key}" maxlength="40"
-          placeholder="${placeholderLabel}"
-          oninput="onReflect(this,'${key}')">
-        <button class="skip-btn" id="rs-${key}"
-          onclick="skipReflect('${key}')">${skipLabel}</button>
-      </div>
+      ${optionsHtml}
     `;
     body.appendChild(div);
   });
 
   updateReflectNextState();
   show('reflect');
+}
+
+// ── CUE SELECTION ─────────────────────────────────────
+function selectCue(key, cueId, btn){
+  const cues = getCuesForImage(key);
+  const cue = cues.find(c => c.cue_id === cueId);
+  if(!cue) return;
+
+  reflectAnswers[key] = {
+    words: currentLang === 'lt' ? cue.lt : cue.en,
+    skipped: false,
+    cue_id: cueId,
+    vector: cue.vector
+  };
+
+  // UI state
+  const container = document.getElementById('cue-opts-' + key);
+  container.querySelectorAll('.cue-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // Uždaryti custom input jei buvo atidarytas
+  const customInput = document.getElementById('custom-input-' + key);
+  if(customInput){ customInput.classList.remove('show'); customInput.value=''; }
+
+  updateReflectNextState();
+}
+
+function toggleCustomCue(key, btn){
+  const input = document.getElementById('custom-input-' + key);
+  const container = document.getElementById('cue-opts-' + key);
+  container.querySelectorAll('.cue-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  input.classList.add('show');
+  input.focus();
+
+  reflectAnswers[key] = { words: '', skipped: false, cue_id: 'custom', vector: null };
+  updateReflectNextState();
+}
+
+function onCustomCueInput(el, key){
+  const parts = el.value.trim().split(/\s+/).filter(Boolean);
+  if(parts.length > 3){
+    el.value = parts.slice(0,3).join(' ');
+  }
+  reflectAnswers[key] = {
+    words: el.value.trim(), skipped: false, cue_id: 'custom', vector: null
+  };
+  updateReflectNextState();
+}
+
+function selectHardToSay(key, btn){
+  reflectAnswers[key] = { words: '', skipped: true, cue_id: null, vector: null };
+  const container = document.getElementById('cue-opts-' + key);
+  container.querySelectorAll('.cue-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const customInput = document.getElementById('custom-input-' + key);
+  if(customInput){ customInput.classList.remove('show'); customInput.value=''; }
+  updateReflectNextState();
 }
 
 function onReflect(el, key){
@@ -560,8 +691,12 @@ function updateReflectNextState(){
 // ── RESULT ────────────────────────────────────────────
 function goToResult(){
   SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
-    image_id: id, words: r.words, skipped: r.skipped
+    image_id: id, words: r.words, skipped: r.skipped,
+    cue_id: r.cue_id || null, vector: r.vector || null
   }));
+
+  // Apskaičiuoti sesijos vektorių — saugoma duomenims, NIEKUR NERODOMA vartotojui
+  SESSION.session_vector = computeSessionVector();
 
   const body = document.getElementById('result-body');
   body.innerHTML = '';
@@ -663,6 +798,32 @@ function submitFeedback(){
 }
 
 // ── STORAGE ───────────────────────────────────────────
+function computeSessionVector(){
+  // Susumuoja visus pasirinktus cue vektorius į vieną sesijos vektorių.
+  // NIEKUR NERODOMA VARTOTOJUI — tik saugoma duomenims / būsimam radarui.
+  const vectors = SESSION.reflections
+    .map(r => r.vector)
+    .filter(v => v && typeof v === 'object');
+
+  if(vectors.length === 0) return null;
+
+  const sum = { aw: 0, cs: 0, cr: 0 };
+  vectors.forEach(v => {
+    sum.aw += v.aw || 0;
+    sum.cs += v.cs || 0;
+    sum.cr += v.cr || 0;
+  });
+
+  const n = vectors.length;
+  return {
+    aw: +(sum.aw / n).toFixed(3),
+    cs: +(sum.cs / n).toFixed(3),
+    cr: +(sum.cr / n).toFixed(3),
+    sample_size: n,
+    status: 'provisional_not_validated'
+  };
+}
+
 function saveSession(){
   try {
     const all = JSON.parse(localStorage.getItem(NS + 'history') || '[]');
