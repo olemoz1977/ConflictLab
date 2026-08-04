@@ -233,6 +233,10 @@ body{min-height:100vh}
   text-align:center;font-size:.78rem;color:var(--faint);
   margin-bottom:14px;padding-top:4px;
 }
+.radar-scale-note{
+  text-align:center;font-size:.74rem;color:var(--faint);
+  line-height:1.5;padding:8px 12px;margin-top:10px;font-style:italic;
+}
 .radar-scope-note{
   margin-top:16px;padding:14px;font-size:.8rem;color:var(--dim);
   text-align:center;line-height:1.6;font-style:italic;
@@ -1283,16 +1287,22 @@ function renderRadarSVG(vector){
     { key:'cs+', angle:210,  value: Math.max(vector.cs, 0) },
   ];
 
-  // Vizualinio matomumo dėlei naudojama kvadratinė šaknis vietoj tiesinės skalės.
-  // Tai išplečia mažas reikšmes (pvz. 0.05 -> ~0.22 spindulio dalis) taip, kad
-  // forma būtų įžiūrima net kai skirtumai tarp krypčių nedideli. Santykinė tvarka
-  // tarp krypčių išlieka nepakitusi (didesnė reikšmė visada duoda didesnį spindulį).
-  // Tikslios skaitinės reikšmės (aw/cs/cr) visada rodomos tekstu po grafiku —
-  // vizualinė skalė niekada nekeičia to, kas rodoma kaip skaičius.
+  // Vizualinio matomumo dėlei naudojama švelni netiesinė skalė (galia 0.7) su
+  // minimaliu matomu spinduliu, o ne gryna kvadratinė šaknis (kuri per stipriai
+  // išpučia mažas reikšmes). Tikras nulis lieka centre; bet koks nenulinis
+  // signalas gauna minimalų matomą ilgį, kad kryptis nebūtų prarasta taške.
+  // SVARBU: tai tik PIEŠIMO mastelis. Tikslios skaitinės reikšmės (aw/cs/cr)
+  // visada rodomos nepakeistos tekstu po grafiku — būtent jos yra pagrindinis
+  // dydžio šaltinis, ne spindulio ilgis. Metodinė pastaba apie tai rodoma vartotojui.
+  const MIN_VISIBLE_PX = 5;
   function toXY(angleDeg, normalizedValue){
     const rad = angleDeg * Math.PI / 180;
-    const visualScale = Math.sqrt(normalizedValue); // [0,1] -> [0,1], bet mažos reikšmės pastebimai išplečiamos
-    const r = visualScale * maxRadius;
+    let r;
+    if(normalizedValue <= 0){
+      r = 0;
+    } else {
+      r = MIN_VISIBLE_PX + (maxRadius - MIN_VISIBLE_PX) * Math.pow(normalizedValue, 0.7);
+    }
     return {
       x: center + r * Math.cos(rad),
       y: center + r * Math.sin(rad)
@@ -1368,6 +1378,14 @@ function showRadar(){
   chartWrap.className = 'radar-chart-wrap';
   chartWrap.innerHTML = renderRadarSVG(trace);
   body.appendChild(chartWrap);
+
+  // Metodinė pastaba apie netiesinį vizualinį mastelį — būtina, kad vartotojas
+  // nesuprastų spindulio ilgio kaip tiesioginės skaitinės reikšmės projekcijos.
+  const scaleNote = document.createElement('div');
+  scaleNote.className = 'radar-scale-note';
+  scaleNote.textContent = txt('radar_scale_note') ||
+    'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
+  body.appendChild(scaleNote);
 
   // Kompaktiška aprėpties eilutė vietoj didelės progreso kortelės, kai jau atrakinta
   const scopeLine = document.createElement('div');
