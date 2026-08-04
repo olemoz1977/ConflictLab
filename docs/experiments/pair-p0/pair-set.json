@@ -52,6 +52,28 @@
       "norming_status": "not_tested",
       "version": "1.0",
       "dev_notes": "Antra testo pora. Vienodas formatas abiem vaizdams — geras testas be juodų tarpų."
+    },
+    {
+      "pair_id": "P0-003",
+      "status": "active",
+      "image_a": {
+        "id": "P0-003-A",
+        "src": "images/p0-003-a.png"
+      },
+      "image_b": {
+        "id": "P0-003-B",
+        "src": "images/p0-003-b.png"
+      },
+      "intended_visual_difference": "dėžė atidaryta su popieriumi viduje vs dėžė uždaryta ir užklijuota",
+      "position_randomization": true,
+      "layer2_order": null,
+      "source_original_filename": "2915.png / 2916.png",
+      "source_prompt_id": "",
+      "pair_generation_method": "AI generated",
+      "visual_audit_status": "reviewed",
+      "norming_status": "not_tested",
+      "version": "1.0",
+      "dev_notes": "Trečia testo pora. Vienodas formatas, ta pati aplinka/fonas."
     }
   ]
 }
