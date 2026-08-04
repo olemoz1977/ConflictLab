@@ -46,7 +46,15 @@
     "your_observation": "Tavo pastebėjimas",
     "observation_not_yet": "Šį kartą nieko aiškaus dar nepastebėjai.",
     "result_scope_note": "Tai šios akimirkos pasirinkimų pėdsakas, o ne tavo asmenybės apibūdinimas.",
-    "finish_session": "Baigti sesiją"
+    "finish_session": "Baigti sesiją",
+    "view_history": "Peržiūrėti istoriją",
+    "start_another": "Pradėti kitą sesiją",
+    "your_sessions": "Tavo sesijos",
+    "back": "Atgal",
+    "back_to_history": "Grįžti į istoriją",
+    "today": "Šiandien",
+    "no_history": "Dar nėra užbaigtų sesijų.",
+    "choices_count": "{n} pasirinkimai"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -95,6 +103,14 @@
     "your_observation": "Your observation",
     "observation_not_yet": "Nothing clear stood out to you yet this time.",
     "result_scope_note": "This is a trace of your choices in this moment, not a description of your personality.",
-    "finish_session": "Finish session"
+    "finish_session": "Finish session",
+    "view_history": "View history",
+    "start_another": "Start another session",
+    "your_sessions": "Your sessions",
+    "back": "Back",
+    "back_to_history": "Back to history",
+    "today": "Today",
+    "no_history": "No completed sessions yet.",
+    "choices_count": "{n} choices"
   }
 }
