@@ -1283,9 +1283,16 @@ function renderRadarSVG(vector){
     { key:'cs+', angle:210,  value: Math.max(vector.cs, 0) },
   ];
 
+  // Vizualinio matomumo dėlei naudojama kvadratinė šaknis vietoj tiesinės skalės.
+  // Tai išplečia mažas reikšmes (pvz. 0.05 -> ~0.22 spindulio dalis) taip, kad
+  // forma būtų įžiūrima net kai skirtumai tarp krypčių nedideli. Santykinė tvarka
+  // tarp krypčių išlieka nepakitusi (didesnė reikšmė visada duoda didesnį spindulį).
+  // Tikslios skaitinės reikšmės (aw/cs/cr) visada rodomos tekstu po grafiku —
+  // vizualinė skalė niekada nekeičia to, kas rodoma kaip skaičius.
   function toXY(angleDeg, normalizedValue){
     const rad = angleDeg * Math.PI / 180;
-    const r = normalizedValue * maxRadius; // normalizedValue jau yra [0,1], nes abs(v) niekada neviršija 1
+    const visualScale = Math.sqrt(normalizedValue); // [0,1] -> [0,1], bet mažos reikšmės pastebimai išplečiamos
+    const r = visualScale * maxRadius;
     return {
       x: center + r * Math.cos(rad),
       y: center + r * Math.sin(rad)
