@@ -33,7 +33,15 @@
     "micro_progress": "Vaizdas {current} iš {total}",
     "layer2_next": "Toliau",
     "done_title": "Ačiū",
-    "done_sub": "Tavo atsakymai išsaugoti."
+    "done_sub": "Tavo atsakymai išsaugoti.",
+    "session_reflection_header": "Pažvelk į savo pasirinkimus kartu",
+    "session_question": "Kai matai šiuos pasirinkimus kartu — kas tau labiausiai krinta į akis?",
+    "session_subnote": "Nereikia jų aiškinti. Užtenka trumpo pastebėjimo.",
+    "session_placeholder": "Ką pastebi?",
+    "not_yet": "Dar nepastebiu",
+    "view_session": "Žiūrėti sesiją",
+    "continue_btn": "Tęsti",
+    "hard_to_say_label": "Sunku pasakyti"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -69,6 +77,14 @@
     "micro_progress": "Image {current} of {total}",
     "layer2_next": "Next",
     "done_title": "Thank you",
-    "done_sub": "Your responses have been saved."
+    "done_sub": "Your responses have been saved.",
+    "session_reflection_header": "Look at your choices together",
+    "session_question": "When you see these choices together, what stands out most to you?",
+    "session_subnote": "You do not need to explain them. A brief observation is enough.",
+    "session_placeholder": "What do you notice?",
+    "not_yet": "I do not notice anything yet",
+    "view_session": "View session",
+    "continue_btn": "Continue",
+    "hard_to_say_label": "Hard to say"
   }
 }
