@@ -278,6 +278,7 @@ body{min-height:100vh}
       <span class="audio-icon">🔊</span>
       <span id="audio-toggle-label"></span>
     </button>
+    <button class="btn-ghost" style="max-width:280px" onclick="showHistory()" id="txt-intro-history-link"></button>
   </div>
   <div class="screen-footer">
     <button class="btn-primary" id="txt-start" onclick="startExperiment()"></button>
@@ -478,6 +479,7 @@ function setLang(lang){
   document.documentElement.lang = lang;
 
   updateAudioToggleUI();
+  document.getElementById('txt-intro-history-link').textContent = txt('view_history') || 'View history';
 }
 
 // ── INIT ─────────────────────────────────────────────
