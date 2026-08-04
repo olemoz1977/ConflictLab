@@ -2,7 +2,7 @@
 <html lang="lt">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>ConflictLab P0</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -13,130 +13,92 @@
 html,body{
   background:var(--bg);color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;
-  -webkit-tap-highlight-color:transparent;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
+  margin:0;padding:0;
 }
-#app{
-  height:100vh;
-  height:100dvh; /* dynamic viewport - atsižvelgia į mobile browser UI */
-  display:flex;flex-direction:column
-}
-.footer-fixed{
-  flex-shrink:0;
-  min-height:64px;
-  padding:12px 16px;
-  border-top:1px solid var(--border);
-  background:var(--bg);
-  display:flex;
-  align-items:center;
-}
-.footer-fixed .action-btn,
-.footer-fixed .ghost-btn{
-  min-height:44px;
-}
+/* Nėra jokio dvh/vh eksperimentavimo. Naudojame paprastą min-height:100vh
+   su natūraliu document flow — puslapis gali scrollintis kaip normalus html.
+   Tai stabiliausias variantas visose mobiliose naršyklėse. */
+body{min-height:100vh}
 
-.screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+.screen{display:none;min-height:100vh;flex-direction:column}
 .screen.active{display:flex}
 
-/* INTRO */
-#screen-intro{align-items:center;justify-content:center;padding:32px 24px;gap:20px}
-.logo{font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
-.intro-title{font-size:1.5rem;font-weight:300;text-align:center}
-.intro-sub{font-size:.9rem;color:var(--dim);text-align:center;line-height:1.6;max-width:280px}
-.audio-toggle{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 16px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--dim);font-size:.8rem;cursor:pointer;
-  transition:all 180ms;
+/* Kiekvienas ekranas: header (jei reikia) + body (auga laisvai) + footer (visada apačioje po turiniu, NE fixed) */
+.screen-body{flex:1 1 auto;padding:16px 16px 24px}
+.screen-footer{
+  flex-shrink:0;
+  padding:16px;
+  border-top:1px solid var(--border);
+  background:var(--bg);
 }
-.audio-toggle.on{border-color:var(--accent);color:var(--accent)}
-.audio-icon{font-size:.9rem}
+.screen-header{
+  flex-shrink:0;padding:14px 16px;border-bottom:1px solid var(--border);
+  text-align:center;font-size:.8rem;color:var(--dim);
+}
+
+/* ── INTRO ── */
+#screen-intro .screen-body{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;min-height:80vh;text-align:center;
+}
+.logo{font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+.intro-title{font-size:1.5rem;font-weight:300}
+.intro-sub{font-size:.9rem;color:var(--dim);line-height:1.6;max-width:280px}
 .lang-row{display:flex;gap:10px}
 .lang-btn{
   padding:8px 24px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--dim);font-size:.85rem;cursor:pointer;
-  transition:all 180ms;
+  background:transparent;color:var(--dim);font-size:.85rem;cursor:pointer;transition:all 180ms;
 }
 .lang-btn.active{border-color:var(--accent);color:var(--text);background:rgba(124,158,143,.08)}
-.start-btn{
-  padding:16px;border-radius:var(--r);background:var(--accent);
-  color:#0C0C0F;font-size:1rem;font-weight:600;border:none;cursor:pointer;
-  width:100%;max-width:300px;
+.audio-toggle{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.8rem;cursor:pointer;transition:all 180ms;
 }
-.action-btn{
-  width:100%;padding:16px;border-radius:var(--r);background:var(--accent);
-  color:#0C0C0F;font-size:1rem;font-weight:700;border:none;cursor:pointer;
-  transition:opacity 180ms;
-}
-.action-btn:disabled{opacity:.3;cursor:not-allowed}
-.ghost-btn{
-  width:100%;padding:14px;border-radius:var(--r);background:transparent;
-  border:1px solid var(--border);color:var(--dim);font-size:.9rem;cursor:pointer;
+.audio-toggle.on{border-color:var(--accent);color:var(--accent)}
+
+/* ── NO STIMULI ── */
+#screen-nostimuli .screen-body{
+  display:flex;align-items:center;justify-content:center;min-height:80vh;
+  text-align:center;padding:32px;color:var(--dim);
 }
 
-/* NO STIMULI */
-#screen-nostimuli{align-items:center;justify-content:center;padding:32px;gap:12px;text-align:center}
-.nostimuli-msg{font-size:.9rem;color:var(--dim);line-height:1.6}
-
-/* PAIR */
-#screen-pair{flex-direction:column}
-.pair-header{
-  flex-shrink:0;padding:10px 16px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);min-height:44px;
-}
+/* ── PAIR (Layer 1) ── */
 .pair-prompt{font-size:.8rem;color:var(--dim);flex:1;text-align:center}
-.pair-counter{font-size:.72rem;color:var(--faint);min-width:40px;text-align:right}
-.pair-images{
-  flex:1;display:flex;flex-direction:column;overflow:hidden;
-  height:calc(100vh - 44px);
-}
+.pair-counter{font-size:.72rem;color:var(--faint)}
+.pair-images{display:flex;flex-direction:column;min-height:70vh}
 .img-zone{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;position:relative;overflow:hidden;
-  background:#0a0a0c;
+  flex:1;min-height:280px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;background:#0a0a0c;
 }
 .img-zone+.img-zone{border-top:3px solid var(--bg)}
-.img-zone img{
-  width:100%;height:100%;object-fit:contain;display:block;
-}
-.img-zone .tap-overlay{
-  position:absolute;inset:0;background:rgba(124,158,143,0);
-  transition:background 100ms;
-}
+.img-zone img{width:100%;height:100%;object-fit:contain;display:block}
+.img-zone .tap-overlay{position:absolute;inset:0;background:rgba(124,158,143,0);transition:background 100ms}
 .img-zone:active .tap-overlay{background:rgba(124,158,143,.18)}
-.img-loading{
-  position:absolute;font-size:.8rem;color:var(--faint);
+.img-loading{position:absolute;font-size:.8rem;color:var(--faint)}
+
+/* ── BUTTONS (bendri visiems ekranams) ── */
+.btn-primary{
+  width:100%;min-height:52px;padding:14px;border-radius:var(--r);
+  background:var(--accent);color:#0C0C0F;font-size:1rem;font-weight:700;
+  border:none;cursor:pointer;transition:opacity 180ms;
+}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed}
+.btn-ghost{
+  width:100%;min-height:48px;padding:14px;border-radius:var(--r);
+  background:transparent;border:1px solid var(--border);color:var(--dim);
+  font-size:.9rem;cursor:pointer;
 }
 
-/* REFLECT — dviejų žingsnių mikro-srautas per vaizdą */
-#screen-reflect{flex-direction:column;height:100%;overflow:hidden}
-.section-header{
-  flex-shrink:0;padding:14px 16px;border-bottom:1px solid var(--border);
-  text-align:center;font-size:.8rem;color:var(--dim);font-weight:500;
-}
-.scroll-body{
-  flex:1 1 auto;min-height:0;overflow-y:auto;
-  padding:16px 16px 16px;display:flex;flex-direction:column;gap:16px;
-  -webkit-overflow-scrolling:touch;
-}
-
-/* Progreso indikatorius: 1/3, 2/3... */
-.micro-progress{
-  flex-shrink:0;padding:10px 16px;text-align:center;
-  font-size:.72rem;color:var(--faint);letter-spacing:.05em;
-}
-
-/* Vieno vaizdo mikro-ekranas */
+/* ── MICRO-FLOW (Layer 2) ── */
+.micro-progress{font-size:.72rem;color:var(--faint);letter-spacing:.05em}
 .micro-image{border-radius:8px;overflow:hidden;background:#0a0a0c;margin-bottom:16px}
 .micro-image img{width:100%;height:240px;object-fit:contain;display:block}
-
 .micro-step-label{
   font-size:.72rem;color:var(--faint);text-transform:uppercase;
   letter-spacing:.08em;margin-bottom:10px;font-weight:600;
 }
-
-/* Cue mygtukai */
 .cue-options{display:flex;flex-direction:column;gap:8px}
 .cue-btn{
   padding:14px 16px;border-radius:8px;border:1px solid var(--border);
@@ -147,28 +109,21 @@ html,body{
 .cue-btn.selected{border-color:var(--accent);background:rgba(124,158,143,.12);color:var(--accent);font-weight:600}
 .cue-custom-input{
   background:var(--card);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:.9rem;padding:12px;outline:none;
-  transition:border-color 180ms;display:none;margin-top:4px;width:100%;
+  color:var(--text);font-size:.9rem;padding:12px;outline:none;transition:border-color 180ms;
+  display:none;margin-top:4px;width:100%;
 }
 .cue-custom-input.show{display:block}
 .cue-custom-input:focus{border-color:var(--accent)}
-
-/* Pasirinktas cue kontekste (rodomas Reflection žingsnyje) */
 .chosen-cue-badge{
   display:inline-block;padding:8px 14px;border-radius:8px;
   background:rgba(124,158,143,.12);border:1px solid var(--accent);
   color:var(--accent);font-size:.9rem;font-weight:600;margin-bottom:14px;
 }
-
-/* Reflection žingsnio klausimas */
-.reflection-question{
-  font-size:.95rem;color:var(--text);line-height:1.5;margin-bottom:12px;font-weight:500;
-}
+.reflection-question{font-size:.95rem;color:var(--text);line-height:1.5;margin-bottom:12px;font-weight:500}
 .reflection-row{display:flex;gap:8px;align-items:stretch}
 .reflection-input{
   flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:1rem;padding:12px;outline:none;
-  transition:border-color 180ms;min-width:0;
+  color:var(--text);font-size:1rem;padding:12px;outline:none;transition:border-color 180ms;min-width:0;
 }
 .reflection-input:focus{border-color:var(--accent)}
 .reflection-skip-btn{
@@ -178,29 +133,23 @@ html,body{
 }
 .reflection-skip-btn:active{border-color:var(--accent);color:var(--accent)}
 
-/* RESULT */
+/* ── RESULT ── */
 .result-item{
-  display:flex;flex-direction:column;gap:10px;
-  padding:16px;background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);
+  display:flex;flex-direction:column;gap:10px;padding:16px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:14px;
 }
-.result-thumb{
-  width:100%;border-radius:8px;overflow:hidden;background:#0a0a0c;
-}
+.result-thumb{width:100%;border-radius:8px;overflow:hidden;background:#0a0a0c}
 .result-thumb img{width:100%;height:220px;object-fit:contain;display:block}
-.result-words{
-  font-size:1.05rem;color:var(--accent);font-weight:600;
-  text-align:center;letter-spacing:.02em;
-}
-.result-words.empty{color:var(--faint);font-style:italic;font-weight:400}
+.result-words{font-size:1.05rem;color:var(--accent);font-weight:600;text-align:center;letter-spacing:.02em}
 .result-question{
   margin-top:8px;padding:20px 16px;background:var(--card);
   border:1px solid var(--accent);border-radius:var(--r);
   font-size:1.05rem;color:var(--text);text-align:center;line-height:1.5;font-weight:600;
 }
 
-/* FEEDBACK */
-.fb-item{display:flex;flex-direction:column;gap:10px}
+/* ── FEEDBACK ── */
+.fb-item{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
 .fb-q{font-size:.9rem;color:var(--text);line-height:1.5;font-weight:500}
 .fb-yn{display:flex;gap:8px}
 .fb-btn{
@@ -208,39 +157,40 @@ html,body{
   background:var(--card);color:var(--text);font-size:.9rem;font-weight:500;
   cursor:pointer;transition:all 180ms;
 }
-.fb-btn.on{border-color:var(--accent);color:var(--text);background:rgba(124,158,143,.08)}
+.fb-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(124,158,143,.12)}
 .fb-textarea{
   width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;resize:none;
-  min-height:56px;line-height:1.5;transition:border-color 180ms;
+  color:var(--text);font-size:.9rem;padding:12px;outline:none;resize:none;
+  min-height:60px;line-height:1.5;transition:border-color 180ms;
 }
 .fb-textarea:focus{border-color:var(--accent)}
 
-/* DONE */
-#screen-done{align-items:center;justify-content:center;padding:40px;gap:16px;text-align:center}
+/* ── DONE ── */
+#screen-done .screen-body{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:80vh;text-align:center;gap:16px;padding:32px;
+}
 .done-check{font-size:2.5rem}
 .done-title{font-size:1.2rem;font-weight:300}
 .done-sub{font-size:.85rem;color:var(--dim);line-height:1.6;max-width:260px}
 
-/* DEBUG — tik su ?debug=1 */
+/* ── DEBUG BAR — natūraliame flow, ne fixed, kad niekada nedengtų turinio ── */
 #debug-bar{
-  position:fixed;bottom:0;left:0;right:0;height:32px;
+  display:none;padding:8px 12px;font-size:.7rem;color:var(--faint);
   background:#080808;border-top:1px solid #222;
-  padding:0 12px;font-size:.68rem;color:var(--faint);
-  display:flex;align-items:center;gap:10px;z-index:9999;
-  box-sizing:border-box;
+  align-items:center;gap:10px;flex-wrap:wrap;
 }
-body.has-debug #app{ height: calc(100dvh - 32px); }
 .dbg-btn{
-  padding:3px 10px;border-radius:6px;border:1px solid #333;
+  padding:4px 10px;border-radius:6px;border:1px solid #333;
   background:transparent;color:var(--faint);font-size:.7rem;cursor:pointer;
 }
 </style>
 </head>
 <body>
-<div id="app">
 
-  <div id="screen-intro" class="screen active">
+<!-- INTRO -->
+<div id="screen-intro" class="screen active">
+  <div class="screen-body">
     <div class="logo">ConflictLab</div>
     <div class="intro-title" id="txt-subtitle"></div>
     <div class="intro-sub" id="txt-instruction"></div>
@@ -252,19 +202,26 @@ body.has-debug #app{ height: calc(100dvh - 32px); }
       <span class="audio-icon">🔊</span>
       <span id="audio-toggle-label"></span>
     </button>
-    <button class="start-btn" id="txt-start" onclick="startExperiment()"></button>
   </div>
-
-  <div id="screen-nostimuli" class="screen">
-    <div style="font-size:2rem;color:var(--faint)">🖼</div>
-    <div class="nostimuli-msg" id="txt-nostimuli"></div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="txt-start" onclick="startExperiment()"></button>
   </div>
+</div>
 
-  <div id="screen-pair" class="screen">
-    <div class="pair-header">
-      <div class="pair-prompt" id="pair-prompt"></div>
-      <div class="pair-counter" id="pair-counter"></div>
-    </div>
+<!-- NO STIMULI -->
+<div id="screen-nostimuli" class="screen">
+  <div class="screen-body">
+    <div id="txt-nostimuli"></div>
+  </div>
+</div>
+
+<!-- PAIR (Layer 1) -->
+<div id="screen-pair" class="screen">
+  <div class="screen-header" style="display:flex;justify-content:space-between">
+    <span class="pair-prompt" id="pair-prompt"></span>
+    <span class="pair-counter" id="pair-counter"></span>
+  </div>
+  <div class="screen-body" style="padding:0">
     <div class="pair-images">
       <div class="img-zone" id="zone-top" onclick="choosePair('top')">
         <span class="img-loading" id="load-top">⋯</span>
@@ -278,64 +235,77 @@ body.has-debug #app{ height: calc(100dvh - 32px); }
       </div>
     </div>
   </div>
+</div>
 
-  <div id="screen-reflect" class="screen">
-    <div class="micro-progress" id="micro-progress"></div>
-    <div class="scroll-body" id="reflect-body"></div>
-    <div class="footer-fixed">
-      <button class="action-btn" id="reflect-next-btn" disabled></button>
-    </div>
+<!-- REFLECT (Layer 2 micro-flow) -->
+<div id="screen-reflect" class="screen">
+  <div class="screen-header">
+    <span class="micro-progress" id="micro-progress"></span>
   </div>
-
-  <div id="screen-result" class="screen">
-    <div class="section-header" id="txt-result-header"></div>
-    <div class="scroll-body" id="result-body"></div>
-    <div class="footer-fixed">
-      <button class="ghost-btn" onclick="goToFeedback()" id="txt-to-feedback"></button>
-    </div>
+  <div class="screen-body" id="reflect-body"></div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="reflect-next-btn" disabled></button>
   </div>
+</div>
 
-  <div id="screen-feedback" class="screen">
-    <div class="section-header" id="txt-fb-header"></div>
-    <div class="scroll-body" id="fb-body"></div>
-    <div class="footer-fixed">
-      <button class="action-btn" onclick="submitFeedback()" id="txt-fb-submit"></button>
-    </div>
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <div class="screen-header" id="txt-result-header"></div>
+  <div class="screen-body" id="result-body"></div>
+  <div class="screen-footer">
+    <button class="btn-ghost" onclick="goToFeedback()" id="txt-to-feedback"></button>
   </div>
+</div>
 
-  <div id="screen-done" class="screen">
+<!-- FEEDBACK -->
+<div id="screen-feedback" class="screen">
+  <div class="screen-header" id="txt-fb-header"></div>
+  <div class="screen-body" id="fb-body"></div>
+  <div class="screen-footer">
+    <button class="btn-primary" onclick="submitFeedback()" id="txt-fb-submit"></button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div id="screen-done" class="screen">
+  <div class="screen-body">
     <div class="done-check">✓</div>
     <div class="done-title" id="txt-done-title"></div>
     <div class="done-sub" id="txt-done-sub"></div>
   </div>
-
 </div>
 
-<div id="debug-bar" style="display:none">
+<!-- DEBUG BAR — natūraliame document flow apačioje, scrollinamas kartu su turiniu -->
+<div id="debug-bar">
   <span>P0 debug</span>
   <button class="dbg-btn" onclick="exportDebug()">Eksportuoti JSON</button>
   <span id="dbg-info" style="margin-left:auto"></span>
 </div>
 
 <audio id="ambient-audio" src="audio/open-window.mp3" loop preload="none"></audio>
+
 <script>
 // ── NAMESPACE ────────────────────────────────────────
 const NS = 'cl_pair_p0_';
 const IS_DEBUG = new URLSearchParams(location.search).has('debug');
 
 // ── STATE ────────────────────────────────────────────
-let L = {}; // current lang strings
+let L = {};
 let LANGS = {};
 let PAIRS = [];
-let L2_INDICES = []; // 0-based
-let CUE_DATA = null; // pair-cue-v0.1.json
-let audioEnabled = false;
-let audioStarted = false;
+let CUE_DATA = null;
 let currentLang = 'lt';
 let currentPairIdx = 0;
 let pairStartTime = 0;
 let bothLoaded = false;
-let reflectAnswers = {}; // image_id → {words, skipped}
+let audioEnabled = false;
+let audioStarted = false;
+
+let microQueue = [];
+let microIndex = 0;
+let microStep = 'cue';
+let microCurrentAnswer = null;
+let reflectAnswers = {};
 let fbAnswers = {};
 
 let SESSION = {
@@ -350,15 +320,12 @@ let SESSION = {
 };
 
 // ── UTILS ────────────────────────────────────────────
-function uid(){
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-}
-
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function show(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
 }
-
 function txt(key){ return L[key] || key; }
 
 // ── LANGUAGE ─────────────────────────────────────────
@@ -367,110 +334,78 @@ function setLang(lang){
   SESSION.language = lang;
   L = LANGS[lang] || LANGS['lt'] || {};
 
-  // Update buttons
   document.getElementById('btn-lt').classList.toggle('active', lang === 'lt');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
 
-  // Update all text nodes
   document.getElementById('txt-subtitle').textContent = txt('intro_subtitle');
   document.getElementById('txt-instruction').textContent = txt('intro_instruction');
   document.getElementById('txt-start').textContent = txt('intro_start');
   document.getElementById('txt-nostimuli').textContent = txt('no_stimuli');
-  updateAudioToggleUI();
   document.getElementById('pair-prompt').textContent = txt('layer1_prompt');
-  document.getElementById('txt-reflect-header').textContent = txt('layer2_prompt');
-  document.getElementById('reflect-next-btn').textContent = txt('see_results') || txt('result_title');
   document.getElementById('txt-result-header').textContent = txt('result_title');
   document.getElementById('txt-to-feedback').textContent = txt('feedback_title');
   document.getElementById('txt-fb-header').textContent = txt('feedback_title');
   document.getElementById('txt-fb-submit').textContent = txt('feedback_submit');
   document.getElementById('txt-done-title').textContent = txt('done_title') || 'Thank you';
-  document.getElementById('txt-done-sub').textContent = txt('done_sub');
+  document.getElementById('txt-done-sub').textContent = txt('done_sub') || '';
   document.documentElement.lang = lang;
+
+  updateAudioToggleUI();
 }
 
 // ── INIT ─────────────────────────────────────────────
-function setRealVH(){
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-  document.getElementById('app').style.height = `${window.innerHeight}px`;
-}
-window.addEventListener('resize', setRealVH);
-window.addEventListener('orientationchange', () => setTimeout(setRealVH, 200));
-setRealVH();
-
 async function init(){
-  // Audio: užkrauti ankstesnį pasirinkimą iš localStorage
   try {
     const saved = localStorage.getItem(NS + 'audio_enabled');
     audioEnabled = saved === 'true';
   } catch(e){ audioEnabled = false; }
-  updateAudioToggleUI();
 
-  // Debug bar
   if(IS_DEBUG){
     document.getElementById('debug-bar').style.display = 'flex';
-    document.body.classList.add('has-debug');
   }
 
-  // Detect browser lang
   const bl = navigator.language || 'lt';
   const detected = bl.startsWith('lt') ? 'lt' : 'en';
 
-  // Load lang.json
   try {
-    const r = await fetch('lang.json');
+    const r = await fetch('lang.json?v=' + Date.now());
     LANGS = await r.json();
   } catch(e){
-    console.warn('lang.json load failed:', e);
-    LANGS = { lt:{intro_subtitle:'Eksperimentas',intro_start:'Pradėti',no_stimuli:'Stimulai dar neįkelti.',layer1_prompt:'Kurį vaizdą pasirinktum šią akimirką?',layer2_prompt:'Pažvelk dar kartą.',layer2_note:'',result_title:'Tavo pasirinkimai',feedback_title:'Klausimai',feedback_submit:'Baigti'}, en:{intro_subtitle:'Experiment',intro_start:'Begin',no_stimuli:'Stimuli not yet uploaded.',layer1_prompt:'Which image would you choose right now?',layer2_prompt:'Look again.',layer2_note:'',result_title:'Your choices',feedback_title:'Questions',feedback_submit:'Finish'} };
+    LANGS = { lt:{}, en:{} };
   }
 
-  // Load pair-set.json
   try {
     const r = await fetch('pair-set.json?v=' + Date.now());
     const data = await r.json();
     PAIRS = (data.pairs || []).filter(p => p.status === 'active');
-    // Layer2 indices (1-based in JSON → 0-based)
-    if(Array.isArray(data.layer2_fixed_pairs)){
-      L2_INDICES = data.layer2_fixed_pairs.map(n => n - 1).filter(i => i >= 0);
-    }
   } catch(e){
-    console.warn('pair-set.json load failed:', e);
     PAIRS = [];
   }
 
-  // Load pair-cue-v0.1.json — provisional cue+vector content
   try {
     const r = await fetch('pair-cue-v0.1.json?v=' + Date.now());
     CUE_DATA = await r.json();
   } catch(e){
-    console.warn('pair-cue-v0.1.json load failed:', e);
     CUE_DATA = null;
   }
 
-  // Apply detected language
   setLang(detected);
   show('intro');
 
   if(IS_DEBUG){
-    document.getElementById('dbg-info').textContent =
-      `pairs:${PAIRS.length} micro-flow:all`;
+    document.getElementById('dbg-info').textContent = `pairs:${PAIRS.length}`;
   }
 }
 
 // ── AUDIO ────────────────────────────────────────────
 function updateAudioToggleUI(){
   const btn = document.getElementById('audio-toggle');
-  const icon = btn ? btn.querySelector('.audio-icon') : null;
-  const label = document.getElementById('audio-toggle-label');
   if(!btn) return;
-
+  const icon = btn.querySelector('.audio-icon');
+  const label = document.getElementById('audio-toggle-label');
   btn.classList.toggle('on', audioEnabled);
   if(icon) icon.textContent = audioEnabled ? '🔊' : '🔈';
-  if(label) label.textContent = audioEnabled
-    ? (txt('audio_on') || 'Sound')
-    : (txt('audio_off') || 'Sound');
+  if(label) label.textContent = txt('audio_on') || 'Sound';
 }
 
 function toggleAudio(){
@@ -482,14 +417,8 @@ function toggleAudio(){
   if(!audio) return;
 
   if(audioEnabled){
-    // Pirmas paleidimas — reikalauja vartotojo gesto (šis paspaudimas yra tas gestas)
     audio.volume = 0.25;
-    audio.play().then(() => {
-      audioStarted = true;
-    }).catch(err => {
-      console.warn('Audio play blocked:', err);
-      audioStarted = false;
-    });
+    audio.play().then(() => { audioStarted = true; }).catch(() => { audioStarted = false; });
   } else {
     audio.pause();
   }
@@ -498,29 +427,18 @@ function toggleAudio(){
 function stopAudioSmoothly(){
   const audio = document.getElementById('ambient-audio');
   if(!audio || audio.paused) return;
-
-  // Švelnus fade-out per ~600ms
-  const steps = 12;
-  const stepTime = 50;
-  const startVol = audio.volume;
+  const steps = 12, stepTime = 50, startVol = audio.volume;
   let i = 0;
   const fade = setInterval(() => {
     i++;
     audio.volume = Math.max(0, startVol * (1 - i / steps));
-    if(i >= steps){
-      clearInterval(fade);
-      audio.pause();
-      audio.volume = startVol; // atstatyti volume kitam kartui
-    }
+    if(i >= steps){ clearInterval(fade); audio.pause(); audio.volume = startVol; }
   }, stepTime);
 }
 
 // ── START ─────────────────────────────────────────────
 function startExperiment(){
-  if(PAIRS.length === 0){
-    show('nostimuli');
-    return;
-  }
+  if(PAIRS.length === 0){ show('nostimuli'); return; }
   currentPairIdx = 0;
   SESSION.choices = [];
   loadPair(0);
@@ -528,18 +446,13 @@ function startExperiment(){
 
 // ── LAYER 1 ───────────────────────────────────────────
 function loadPair(idx){
-  if(idx >= PAIRS.length){
-    startLayer2();
-    return;
-  }
+  if(idx >= PAIRS.length){ startLayer2(); return; }
 
   const pair = PAIRS[idx];
   const flip = Math.random() < 0.5;
-
   pair._top    = flip ? pair.image_b : pair.image_a;
   pair._bottom = flip ? pair.image_a : pair.image_b;
 
-  // Counter
   document.getElementById('pair-counter').textContent = `${idx + 1} / ${PAIRS.length}`;
 
   const imgT = document.getElementById('img-top');
@@ -547,22 +460,12 @@ function loadPair(idx){
   const ldT  = document.getElementById('load-top');
   const ldB  = document.getElementById('load-bottom');
 
-  imgT.style.display = 'none';
-  imgB.style.display = 'none';
-  ldT.style.display  = 'block';
-  ldB.style.display  = 'block';
+  imgT.style.display = 'none'; imgB.style.display = 'none';
+  ldT.style.display  = 'block'; ldB.style.display  = 'block';
 
   bothLoaded = false;
   let tOk = false, bOk = false;
-
-  function check(){
-    if(tOk && bOk){
-      bothLoaded = true;
-      pairStartTime = Date.now();
-      if(IS_DEBUG) document.getElementById('dbg-info').textContent =
-        `pair ${idx+1}/${PAIRS.length} loaded`;
-    }
-  }
+  function check(){ if(tOk && bOk){ bothLoaded = true; pairStartTime = Date.now(); } }
 
   imgT.onload  = () => { imgT.style.display='block'; ldT.style.display='none'; tOk=true; check(); };
   imgB.onload  = () => { imgB.style.display='block'; ldB.style.display='none'; bOk=true; check(); };
@@ -576,18 +479,15 @@ function loadPair(idx){
 }
 
 function choosePair(position){
-  if(!bothLoaded){ return; } // vaizdai dar nekrauti
+  if(!bothLoaded) return;
   const latency = Date.now() - pairStartTime;
   const pair = PAIRS[currentPairIdx];
   const selected = position === 'top' ? pair._top : pair._bottom;
 
   SESSION.choices.push({
-    pair_id:          pair.pair_id,
-    pair_order:       currentPairIdx + 1,
-    top_image_id:     pair._top.id,
-    bottom_image_id:  pair._bottom.id,
-    selected_image_id: selected.id,
-    selected_position: position,
+    pair_id: pair.pair_id, pair_order: currentPairIdx + 1,
+    top_image_id: pair._top.id, bottom_image_id: pair._bottom.id,
+    selected_image_id: selected.id, selected_position: position,
     choice_latency_ms: latency
   });
 
@@ -595,32 +495,20 @@ function choosePair(position){
   loadPair(currentPairIdx);
 }
 
-// ── LAYER 2 ───────────────────────────────────────────
+// ── LAYER 2 MICRO-FLOW ────────────────────────────────
 function getCuesForImage(imageId){
   if(!CUE_DATA) return null;
   for(const pair of CUE_DATA.pairs || []){
     for(const img of pair.images || []){
-      if(img.image_id === imageId){
-        return img.cues || [];
-      }
+      if(img.image_id === imageId) return img.cues || [];
     }
   }
   return null;
 }
 
-// ── MICRO-FLOW STATE ──────────────────────────────────
-// Kiekvienas pasirinktas Layer 1 vaizdas eina per du žingsnius:
-// 1) cue pasirinkimas  2) trumpa refleksija susieta su tuo cue.
-// Tik užbaigus abu žingsnius pereinama prie kito vaizdo.
-let microQueue = [];      // [{imgObj, key}, ...] visi Layer 1 pasirinkti vaizdai originalia seka
-let microIndex = 0;       // kurį vaizdą dabar apdorojame
-let microStep = 'cue';    // 'cue' arba 'reflection'
-let microCurrentAnswer = null; // laikinas dabartinio vaizdo atsakymas prieš patvirtinant
-
 function startLayer2(){
-  // Pašalinta l2_indices atranka — apdorojami VISI SESSION.choices originalia seka.
   microQueue = SESSION.choices.map(choice => {
-    const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const pair = PAIRS.find(p => p.pair_id === choice.pair_id);
     const imgObj = pair
       ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
       : null;
@@ -630,10 +518,7 @@ function startLayer2(){
   reflectAnswers = {};
   microIndex = 0;
 
-  if(microQueue.length === 0){
-    goToResult();
-    return;
-  }
+  if(microQueue.length === 0){ goToResult(); return; }
 
   renderMicroStep();
   show('reflect');
@@ -643,25 +528,18 @@ function updateMicroProgress(){
   const el = document.getElementById('micro-progress');
   if(!el) return;
   const tmpl = txt('micro_progress') || 'Image {current} of {total}';
-  el.textContent = tmpl
-    .replace('{current}', microIndex + 1)
-    .replace('{total}', microQueue.length);
+  el.textContent = tmpl.replace('{current}', microIndex + 1).replace('{total}', microQueue.length);
 }
 
 function renderMicroStep(){
   updateMicroProgress();
   const item = microQueue[microIndex];
-  const key = item.key;
   const body = document.getElementById('reflect-body');
   body.innerHTML = '';
-
   const btn = document.getElementById('reflect-next-btn');
 
-  if(microStep === 'cue'){
-    renderCueStep(item, body, btn);
-  } else {
-    renderReflectionStep(item, body, btn);
-  }
+  if(microStep === 'cue') renderCueStep(item, body, btn);
+  else renderReflectionStep(item, body, btn);
 }
 
 function renderCueStep(item, body, btn){
@@ -678,8 +556,7 @@ function renderCueStep(item, body, btn){
   if(cues && cues.length > 0){
     const cueButtons = cues.map(c => {
       const label = lang === 'lt' ? c.lt : c.en;
-      return `<button class="cue-btn" data-cue-id="${c.cue_id}"
-        onclick="pickCue('${c.cue_id}', this)">${label}</button>`;
+      return `<button class="cue-btn" onclick="pickCue('${c.cue_id}', this)">${label}</button>`;
     }).join('');
 
     div.innerHTML = `
@@ -694,7 +571,6 @@ function renderCueStep(item, body, btn){
       </div>
     `;
   } else {
-    // Fallback — nėra cue duomenų šiam vaizdui
     div.innerHTML = `
       <div class="micro-image"><img src="${item.imgObj.src}" alt="" loading="lazy"></div>
       <div class="micro-step-label">${stepLabel}</div>
@@ -707,7 +583,6 @@ function renderCueStep(item, body, btn){
   }
 
   body.appendChild(div);
-
   microCurrentAnswer = null;
   btn.disabled = true;
   const isLastCue = microIndex === microQueue.length - 1;
@@ -726,12 +601,7 @@ function pickCue(cueId, el){
   const ci = document.getElementById('custom-input');
   if(ci){ ci.classList.remove('show'); ci.value=''; }
 
-  microCurrentAnswer = {
-    response_type: 'cue',
-    cue_id: cueId,
-    cue_text: currentLang === 'lt' ? cue.lt : cue.en,
-    vector: cue.vector
-  };
+  microCurrentAnswer = { response_type:'cue', cue_id:cueId, cue_text: currentLang==='lt'?cue.lt:cue.en, vector: cue.vector };
   document.getElementById('reflect-next-btn').disabled = false;
 }
 
@@ -739,18 +609,16 @@ function pickCustomCue(el){
   document.querySelectorAll('#cue-opts .cue-btn').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   const ci = document.getElementById('custom-input');
-  ci.classList.add('show');
-  ci.focus();
-
-  microCurrentAnswer = { response_type: 'custom', custom_words: '', vector: null };
-  document.getElementById('reflect-next-btn').disabled = true; // reikia teksto
+  ci.classList.add('show'); ci.focus();
+  microCurrentAnswer = { response_type:'custom', custom_words:'', vector:null };
+  document.getElementById('reflect-next-btn').disabled = true;
 }
 
 function onCustomCueTyping(el){
   const parts = el.value.trim().split(/\s+/).filter(Boolean);
   if(parts.length > 3) el.value = parts.slice(0,3).join(' ');
   const trimmed = el.value.trim();
-  microCurrentAnswer = { response_type: 'custom', custom_words: trimmed, vector: null };
+  microCurrentAnswer = { response_type:'custom', custom_words:trimmed, vector:null };
   document.getElementById('reflect-next-btn').disabled = trimmed.length === 0;
 }
 
@@ -758,32 +626,27 @@ function onFallbackTyping(el){
   const parts = el.value.trim().split(/\s+/).filter(Boolean);
   if(parts.length > 3) el.value = parts.slice(0,3).join(' ');
   const trimmed = el.value.trim();
-  microCurrentAnswer = { response_type: 'custom', custom_words: trimmed, vector: null };
+  microCurrentAnswer = { response_type:'custom', custom_words:trimmed, vector:null };
   document.getElementById('reflect-next-btn').disabled = trimmed.length === 0;
 }
 
 function pickHardToSay(el){
   document.querySelectorAll('#cue-opts .cue-btn').forEach(b => b.classList.remove('selected'));
   if(el) el.classList.add('selected');
-
-  microCurrentAnswer = { response_type: 'hard_to_say', vector: null };
+  microCurrentAnswer = { response_type:'hard_to_say', vector:null };
   document.getElementById('reflect-next-btn').disabled = false;
 }
 
 function confirmCueStep(){
   if(!microCurrentAnswer) return;
-
   const key = microQueue[microIndex].key;
   reflectAnswers[key] = reflectAnswers[key] || {};
   Object.assign(reflectAnswers[key], microCurrentAnswer, { image_id: key });
 
   if(microCurrentAnswer.response_type === 'hard_to_say' || microCurrentAnswer.response_type === 'custom'){
-    // "Sunku pasakyti" ir "Kita mintis" praleidžia atskirą refleksijos žingsnį —
-    // jie jau yra paties žmogaus žodžiai arba aiškus "negaliu įvardyti".
     reflectAnswers[key].reflection_text = '';
     advanceMicroFlow();
   } else {
-    // Cue pasirinktas — einame į reflection žingsnį susietą su šiuo cue.
     microStep = 'reflection';
     microCurrentAnswer = null;
     renderMicroStep();
@@ -810,10 +673,10 @@ function renderReflectionStep(item, body, btn){
   `;
   body.appendChild(div);
 
-  btn.disabled = false; // refleksija visada neprivaloma — galima iškart tęsti (=skip)
+  btn.disabled = false;
   const isLast = microIndex === microQueue.length - 1;
   btn.textContent = isLast ? (txt('see_results') || 'See results') : (txt('layer2_next') || 'Next');
-  btn.onclick = () => confirmReflectionStep(reflectAnswers[key].reflection_text || '');
+  btn.onclick = () => confirmReflectionStep();
 }
 
 function onReflectionTyping(el){
@@ -826,49 +689,45 @@ function onReflectionTyping(el){
 function skipReflectionStep(){
   const key = microQueue[microIndex].key;
   reflectAnswers[key].reflection_text = '';
-  confirmReflectionStep('');
+  confirmReflectionStep();
 }
 
-function confirmReflectionStep(text){
-  advanceMicroFlow();
-}
+function confirmReflectionStep(){ advanceMicroFlow(); }
 
 function advanceMicroFlow(){
   microIndex++;
   microStep = 'cue';
   microCurrentAnswer = null;
-
-  if(microIndex >= microQueue.length){
-    goToResult();
-  } else {
-    renderMicroStep();
-  }
+  if(microIndex >= microQueue.length) goToResult();
+  else renderMicroStep();
 }
 
 // ── RESULT ────────────────────────────────────────────
-function goToResult(){
-  // Nauja struktūra: kiekvienas reflectAnswers[key] jau turi
-  // response_type, cue_id/cue_text arba custom_words, reflection_text, vector.
-  SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
-    image_id: id,
-    response_type: r.response_type || null,
-    cue_id: r.cue_id || null,
-    cue_text: r.cue_text || null,
-    custom_words: r.custom_words || null,
-    reflection_text: r.reflection_text || '',
-    vector: r.vector || null
-  }));
+function computeSessionVector(){
+  const vectors = SESSION.reflections.map(r => r.vector).filter(v => v && typeof v === 'object');
+  if(vectors.length === 0) return null;
+  const sum = { aw:0, cs:0, cr:0 };
+  vectors.forEach(v => { sum.aw += v.aw||0; sum.cs += v.cs||0; sum.cr += v.cr||0; });
+  const n = vectors.length;
+  return {
+    aw:+(sum.aw/n).toFixed(3), cs:+(sum.cs/n).toFixed(3), cr:+(sum.cr/n).toFixed(3),
+    sample_size:n, status:'provisional_not_validated'
+  };
+}
 
-  // Apskaičiuoti sesijos vektorių — saugoma duomenims, NIEKUR NERODOMA vartotojui
+function goToResult(){
+  SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
+    image_id:id, response_type:r.response_type||null, cue_id:r.cue_id||null,
+    cue_text:r.cue_text||null, custom_words:r.custom_words||null,
+    reflection_text:r.reflection_text||'', vector:r.vector||null
+  }));
   SESSION.session_vector = computeSessionVector();
 
   const body = document.getElementById('result-body');
   body.innerHTML = '';
 
-  // Rodyti VISĄ Layer 1 pasirinkimų seką originalia tvarka.
-  // Kiekvienam vaizdui — jo cue/custom žodžiai ir (jei buvo) reflection tekstas.
   SESSION.choices.forEach(choice => {
-    const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const pair = PAIRS.find(p => p.pair_id === choice.pair_id);
     const imgObj = pair
       ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
       : null;
@@ -884,19 +743,13 @@ function goToResult(){
       else if(ref.response_type === 'hard_to_say') mainText = (txt('layer2_skip') || 'Hard to say');
     }
 
-    let html = `
-      <div class="result-thumb">
-        ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
-      </div>
-    `;
+    let html = `<div class="result-thumb">${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}</div>`;
     if(mainText){
-      const cls = ref.response_type === 'hard_to_say' ? 'result-words empty' : 'result-words';
-      html += `<div class="${cls}">${mainText}</div>`;
+      html += `<div class="result-words">${mainText}</div>`;
       if(ref.reflection_text){
-        html += `<div class="reflect-note" style="margin-top:6px">${ref.reflection_text}</div>`;
+        html += `<div style="font-size:.8rem;color:var(--dim);text-align:center;margin-top:4px">${ref.reflection_text}</div>`;
       }
     }
-
     div.innerHTML = html;
     body.appendChild(div);
   });
@@ -918,11 +771,11 @@ function goToFeedback(){
   fbAnswers = {};
 
   const qs = [
-    { key:'surprised',         text:'feedback_q1', type:'yn' },
-    { key:'helped_notice',     text:'feedback_q2', type:'yn' },
-    { key:'felt_forced',       text:'feedback_q3', type:'yn' },
-    { key:'would_repeat',      text:'feedback_q4', type:'yn' },
-    { key:'repeat_reason',     text:'feedback_q4_why', type:'text' },
+    { key:'surprised', text:'feedback_q1', type:'yn' },
+    { key:'helped_notice', text:'feedback_q2', type:'yn' },
+    { key:'felt_forced', text:'feedback_q3', type:'yn' },
+    { key:'would_repeat', text:'feedback_q4', type:'yn' },
+    { key:'repeat_reason', text:'feedback_q4_why', type:'text' },
   ];
 
   qs.forEach(q => {
@@ -938,9 +791,7 @@ function goToFeedback(){
     } else {
       div.innerHTML = `
         <div class="fb-q">${txt(q.text)}</div>
-        <textarea class="fb-textarea" rows="2"
-          oninput="fbAnswers['${q.key}']=this.value"
-          placeholder="..."></textarea>`;
+        <textarea class="fb-textarea" rows="2" oninput="fbAnswers['${q.key}']=this.value" placeholder="..."></textarea>`;
     }
     body.appendChild(div);
   });
@@ -955,7 +806,6 @@ function setFb(key, val, btn){
 }
 
 function submitFeedback(){
-  // Užtikrinti kad visi laukai turi apibrėžtą reikšmę (null jei nepasirinkta)
   SESSION.feedback = {
     surprised: fbAnswers.surprised ?? null,
     helped_notice: fbAnswers.helped_notice ?? null,
@@ -969,32 +819,6 @@ function submitFeedback(){
 }
 
 // ── STORAGE ───────────────────────────────────────────
-function computeSessionVector(){
-  // Susumuoja visus pasirinktus cue vektorius į vieną sesijos vektorių.
-  // NIEKUR NERODOMA VARTOTOJUI — tik saugoma duomenims / būsimam radarui.
-  const vectors = SESSION.reflections
-    .map(r => r.vector)
-    .filter(v => v && typeof v === 'object');
-
-  if(vectors.length === 0) return null;
-
-  const sum = { aw: 0, cs: 0, cr: 0 };
-  vectors.forEach(v => {
-    sum.aw += v.aw || 0;
-    sum.cs += v.cs || 0;
-    sum.cr += v.cr || 0;
-  });
-
-  const n = vectors.length;
-  return {
-    aw: +(sum.aw / n).toFixed(3),
-    cs: +(sum.cs / n).toFixed(3),
-    cr: +(sum.cr / n).toFixed(3),
-    sample_size: n,
-    status: 'provisional_not_validated'
-  };
-}
-
 function saveSession(){
   SESSION.audio_enabled = audioEnabled;
   SESSION.audio_started = audioStarted;
@@ -1003,16 +827,14 @@ function saveSession(){
     const i = all.findIndex(s => s.session_id === SESSION.session_id);
     if(i >= 0) all[i] = SESSION; else all.push(SESSION);
     localStorage.setItem(NS + 'history', JSON.stringify(all));
-  } catch(e){ console.warn('Storage:', e); }
+  } catch(e){}
 }
 
 function exportDebug(){
   const data = {
     session: SESSION,
     history: JSON.parse(localStorage.getItem(NS + 'history') || '[]'),
-    debug_log: JSON.parse(localStorage.getItem(NS + 'debug') || '[]'),
     pairs_loaded: PAIRS.length,
-    layer2_mode: 'all_choices_micro_flow', // l2_indices logika pašalinta
     audio_enabled: audioEnabled,
     audio_started: audioStarted,
     exported_at: new Date().toISOString()
@@ -1024,7 +846,6 @@ function exportDebug(){
   a.click();
 }
 
-// ── BOOT ─────────────────────────────────────────────
 init();
 </script>
 </body>
