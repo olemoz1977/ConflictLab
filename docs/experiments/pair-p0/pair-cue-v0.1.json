@@ -118,53 +118,12 @@
       "images": [
         {
           "image_id": "P0-002-A",
-          "label_lt": "Uždaryti vartai",
-          "label_en": "Closed gate",
-          "primary_axis": "aw",
-          "cues": [
-            {
-              "cue_id": "P0-002-A-C1",
-              "lt": "Čia saugiau",
-              "en": "It feels safer here",
-              "vector": {
-                "aw": 0.45,
-                "cs": 0.2,
-                "cr": 0.2
-              },
-              "confidence": 0.6
-            },
-            {
-              "cue_id": "P0-002-A-C2",
-              "lt": "Mane stabdo",
-              "en": "It holds me back",
-              "vector": {
-                "aw": -0.6,
-                "cs": 0.05,
-                "cr": -0.1
-              },
-              "confidence": 0.65
-            },
-            {
-              "cue_id": "P0-002-A-C3",
-              "lt": "Kas yra už jų?",
-              "en": "What is beyond them?",
-              "vector": {
-                "aw": 0.2,
-                "cs": -0.5,
-                "cr": 0.0
-              },
-              "confidence": 0.6
-            }
-          ]
-        },
-        {
-          "image_id": "P0-002-B",
           "label_lt": "Atidaryti vartai",
           "label_en": "Open gate",
           "primary_axis": "aw",
           "cues": [
             {
-              "cue_id": "P0-002-B-C1",
+              "cue_id": "P0-002-A-C1",
               "lt": "Noriu eiti",
               "en": "I want to go through",
               "vector": {
@@ -175,7 +134,7 @@
               "confidence": 0.65
             },
             {
-              "cue_id": "P0-002-B-C2",
+              "cue_id": "P0-002-A-C2",
               "lt": "Per daug atvira",
               "en": "It feels too exposed",
               "vector": {
@@ -186,7 +145,7 @@
               "confidence": 0.6
             },
             {
-              "cue_id": "P0-002-B-C3",
+              "cue_id": "P0-002-A-C3",
               "lt": "Dar nežinau, ar žengti",
               "en": "I do not know whether to step in",
               "vector": {
@@ -195,6 +154,47 @@
                 "cr": 0.05
               },
               "confidence": 0.55
+            }
+          ]
+        },
+        {
+          "image_id": "P0-002-B",
+          "label_lt": "Uždaryti vartai",
+          "label_en": "Closed gate",
+          "primary_axis": "aw",
+          "cues": [
+            {
+              "cue_id": "P0-002-B-C1",
+              "lt": "Čia saugiau",
+              "en": "It feels safer here",
+              "vector": {
+                "aw": 0.45,
+                "cs": 0.2,
+                "cr": 0.2
+              },
+              "confidence": 0.6
+            },
+            {
+              "cue_id": "P0-002-B-C2",
+              "lt": "Mane stabdo",
+              "en": "It holds me back",
+              "vector": {
+                "aw": -0.6,
+                "cs": 0.05,
+                "cr": -0.1
+              },
+              "confidence": 0.65
+            },
+            {
+              "cue_id": "P0-002-B-C3",
+              "lt": "Kas yra už jų?",
+              "en": "What is beyond them?",
+              "vector": {
+                "aw": 0.2,
+                "cs": -0.5,
+                "cr": 0.0
+              },
+              "confidence": 0.6
             }
           ]
         }
@@ -206,53 +206,12 @@
       "images": [
         {
           "image_id": "P0-003-A",
-          "label_lt": "Uždaryta dėžė",
-          "label_en": "Closed box",
-          "primary_axis": "cs",
-          "cues": [
-            {
-              "cue_id": "P0-003-A-C1",
-              "lt": "Noriu žinoti, kas viduje",
-              "en": "I want to know what is inside",
-              "vector": {
-                "aw": 0.25,
-                "cs": 0.65,
-                "cr": 0.15
-              },
-              "confidence": 0.65
-            },
-            {
-              "cue_id": "P0-003-A-C2",
-              "lt": "Gali palaukti",
-              "en": "It can wait",
-              "vector": {
-                "aw": -0.05,
-                "cs": -0.5,
-                "cr": -0.25
-              },
-              "confidence": 0.6
-            },
-            {
-              "cue_id": "P0-003-A-C3",
-              "lt": "Geriau neatidaryti",
-              "en": "Better not to open it",
-              "vector": {
-                "aw": -0.55,
-                "cs": 0.15,
-                "cr": 0.15
-              },
-              "confidence": 0.6
-            }
-          ]
-        },
-        {
-          "image_id": "P0-003-B",
           "label_lt": "Atidaryta dėžė",
           "label_en": "Open box",
           "primary_axis": "cs",
           "cues": [
             {
-              "cue_id": "P0-003-B-C1",
+              "cue_id": "P0-003-A-C1",
               "lt": "Pagaliau aišku",
               "en": "Now it is clear",
               "vector": {
@@ -263,7 +222,7 @@
               "confidence": 0.65
             },
             {
-              "cue_id": "P0-003-B-C2",
+              "cue_id": "P0-003-A-C2",
               "lt": "Nežinomybė buvo įdomesnė",
               "en": "The unknown was more interesting",
               "vector": {
@@ -274,7 +233,7 @@
               "confidence": 0.6
             },
             {
-              "cue_id": "P0-003-B-C3",
+              "cue_id": "P0-003-A-C3",
               "lt": "Kažko trūksta",
               "en": "Something is missing",
               "vector": {
@@ -283,6 +242,47 @@
                 "cr": 0.05
               },
               "confidence": 0.55
+            }
+          ]
+        },
+        {
+          "image_id": "P0-003-B",
+          "label_lt": "Uždaryta dėžė",
+          "label_en": "Closed box",
+          "primary_axis": "cs",
+          "cues": [
+            {
+              "cue_id": "P0-003-B-C1",
+              "lt": "Noriu žinoti, kas viduje",
+              "en": "I want to know what is inside",
+              "vector": {
+                "aw": 0.25,
+                "cs": 0.65,
+                "cr": 0.15
+              },
+              "confidence": 0.65
+            },
+            {
+              "cue_id": "P0-003-B-C2",
+              "lt": "Gali palaukti",
+              "en": "It can wait",
+              "vector": {
+                "aw": -0.05,
+                "cs": -0.5,
+                "cr": -0.25
+              },
+              "confidence": 0.6
+            },
+            {
+              "cue_id": "P0-003-B-C3",
+              "lt": "Geriau neatidaryti",
+              "en": "Better not to open it",
+              "vector": {
+                "aw": -0.55,
+                "cs": 0.15,
+                "cr": 0.15
+              },
+              "confidence": 0.6
             }
           ]
         }
