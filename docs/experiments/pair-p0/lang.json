@@ -31,7 +31,9 @@
     "reflection_placeholder": "Iki 5 žodžių...",
     "reflection_skip": "Praleisti",
     "micro_progress": "Vaizdas {current} iš {total}",
-    "layer2_next": "Toliau"
+    "layer2_next": "Toliau",
+    "done_title": "Ačiū",
+    "done_sub": "Tavo atsakymai išsaugoti."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -65,6 +67,8 @@
     "reflection_placeholder": "Up to 5 words...",
     "reflection_skip": "Skip",
     "micro_progress": "Image {current} of {total}",
-    "layer2_next": "Next"
+    "layer2_next": "Next",
+    "done_title": "Thank you",
+    "done_sub": "Your responses have been saved."
   }
 }
