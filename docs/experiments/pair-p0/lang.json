@@ -62,7 +62,15 @@
     "based_on_sessions": "Remiantis {n} sesijomis",
     "radar_scope_note": "Ši forma sudaryta iš tavo pasirinktų reakcijų per paskutines 3 tinkamas sesijas. Ji nėra asmenybės vertinimas.",
     "radar_based_on": "Pagrįsta {sessions} sesijomis · {responses} vektoriniais pasirinkimais",
-    "radar_scale_note": "Mažos reikšmės grafike vizualiai sustiprintos, kad kryptys būtų matomos. Tikslūs dydžiai pateikti skaičiais žemiau."
+    "radar_scale_note": "Mažos reikšmės grafike vizualiai sustiprintos, kad kryptys būtų matomos. Tikslūs dydžiai pateikti skaičiais žemiau.",
+    "trace_comparison_header": "Tavo pėdsako palyginimas",
+    "now_label": "Dabar",
+    "earlier_label": "Anksčiau",
+    "shift_label": "Pokytis",
+    "shift_tiny": "Šiuose dviejuose trijų sesijų laikotarpiuose ryškaus poslinkio nematyti.",
+    "shift_noticeable": "Pastebimas skirtumas matomas {axis} kryptyje, tačiau jis išlieka nedidelis.",
+    "shift_larger": "Ryškesnis skirtumas matomas {axis} kryptyje.",
+    "comparison_scope_note": "Palyginami tavo pasirinktų reakcijų pėdsakai dviejuose gretimuose laikotarpiuose. Tai nėra tavo asmenybės pokyčio matavimas."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -127,6 +135,14 @@
     "based_on_sessions": "Based on {n} sessions",
     "radar_scope_note": "This shape is built from your chosen responses across the last 3 eligible sessions. It is not a personality assessment.",
     "radar_based_on": "Based on {sessions} sessions · {responses} vector choices",
-    "radar_scale_note": "Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below."
+    "radar_scale_note": "Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.",
+    "trace_comparison_header": "Your trace comparison",
+    "now_label": "Now",
+    "earlier_label": "Earlier",
+    "shift_label": "Shift",
+    "shift_tiny": "No clear shift is visible between these two three-session periods.",
+    "shift_noticeable": "A noticeable difference appears in the {axis} direction, though it remains modest.",
+    "shift_larger": "A more pronounced difference appears in the {axis} direction.",
+    "comparison_scope_note": "This compares traces of your selected responses across two adjacent periods. It is not a measure of personality change."
   }
 }
