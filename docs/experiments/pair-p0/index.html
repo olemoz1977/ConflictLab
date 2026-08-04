@@ -86,7 +86,7 @@ html,body{
 }
 .scroll-body{
   flex:1 1 auto;min-height:0;overflow-y:auto;
-  padding:16px 16px 16px;display:flex;flex-direction:column;gap:24px;
+  padding:16px 16px 16px;display:flex;flex-direction:column;gap:16px;
   -webkit-overflow-scrolling:touch;
 }
 .reflect-item{display:flex;flex-direction:column;gap:12px}
@@ -126,15 +126,24 @@ html,body{
 }
 
 /* RESULT */
-.result-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
-.result-thumb{width:120px;height:80px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#0a0a0c}
-.result-thumb img{width:100%;height:100%;object-fit:contain;display:block}
-.result-words{font-size:.9rem;color:var(--text);padding-top:6px;line-height:1.4}
-.result-words.empty{color:var(--faint);font-style:italic}
+.result-item{
+  display:flex;flex-direction:column;gap:10px;
+  padding:16px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);
+}
+.result-thumb{
+  width:100%;border-radius:8px;overflow:hidden;background:#0a0a0c;
+}
+.result-thumb img{width:100%;height:220px;object-fit:contain;display:block}
+.result-words{
+  font-size:1.05rem;color:var(--accent);font-weight:600;
+  text-align:center;letter-spacing:.02em;
+}
+.result-words.empty{color:var(--faint);font-style:italic;font-weight:400}
 .result-question{
-  margin-top:16px;padding:16px;background:var(--card);
-  border:1px solid var(--border);border-radius:var(--r);
-  font-size:1rem;color:var(--text);text-align:center;line-height:1.5;font-weight:500;
+  margin-top:8px;padding:20px 16px;background:var(--card);
+  border:1px solid var(--accent);border-radius:var(--r);
+  font-size:1.05rem;color:var(--text);text-align:center;line-height:1.5;font-weight:600;
 }
 
 /* FEEDBACK */
@@ -217,7 +226,7 @@ body.has-debug #app{ height: calc(100dvh - 32px); }
     <div class="section-header" id="txt-reflect-header"></div>
     <div class="scroll-body" id="reflect-body"></div>
     <div class="footer-fixed">
-      <button class="action-btn" onclick="goToResult()" id="reflect-next-btn"></button>
+      <button class="action-btn" onclick="goToResult()" id="reflect-next-btn" disabled></button>
     </div>
   </div>
 
@@ -504,24 +513,48 @@ function startLayer2(){
     body.appendChild(div);
   });
 
+  updateReflectNextState();
   show('reflect');
 }
 
 function onReflect(el, key){
-  // Max 3 žodžiai
+  // Max 3 žodžiai — realiai apkarpoma, ne tik placeholder
   const parts = el.value.trim().split(/\s+/).filter(Boolean);
-  if(parts.length > 3) el.value = parts.slice(0,3).join(' ');
-  reflectAnswers[key] = { words: el.value.trim(), skipped: false };
+  if(parts.length > 3){
+    el.value = parts.slice(0,3).join(' ');
+  }
+  const trimmed = el.value.trim();
+  reflectAnswers[key] = { words: trimmed, skipped: false };
   const s = document.getElementById('rs-' + key);
   if(s) s.classList.remove('skipped');
+  updateReflectNextState();
 }
 
 function skipReflect(key){
-  reflectAnswers[key] = { words: '', skipped: true };
   const inp = document.getElementById('ri-' + key);
-  if(inp){ inp.value = ''; inp.disabled = true; }
   const s = document.getElementById('rs-' + key);
-  if(s) s.classList.add('skipped');
+  const isSkipped = s && s.classList.contains('skipped');
+
+  if(isSkipped){
+    // Atšaukti "sunku pasakyti" — grąžinti galimybę rašyti
+    reflectAnswers[key] = { words: '', skipped: false };
+    if(inp){ inp.disabled = false; }
+    if(s) s.classList.remove('skipped');
+  } else {
+    reflectAnswers[key] = { words: '', skipped: true };
+    if(inp){ inp.value = ''; inp.disabled = true; }
+    if(s) s.classList.add('skipped');
+  }
+  updateReflectNextState();
+}
+
+function updateReflectNextState(){
+  // Mygtukas aktyvus tik jei VISI reflect įrašai turi žodžius arba yra skipped
+  const allValid = Object.values(reflectAnswers).every(r =>
+    r.skipped === true || (r.words && r.words.length > 0)
+  );
+  const btn = document.getElementById('reflect-next-btn');
+  if(btn) btn.disabled = !allValid;
 }
 
 // ── RESULT ────────────────────────────────────────────
@@ -533,26 +566,32 @@ function goToResult(){
   const body = document.getElementById('result-body');
   body.innerHTML = '';
 
-  SESSION.choices.forEach(choice => {
-    const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
-    const imgObj = pair
-      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
-      : null;
-    const ref = SESSION.reflections.find(r => r.image_id === choice.selected_image_id);
+  // Rodyti tik tuos pasirinkimus, kurie turėjo Layer 2 refleksiją —
+  // aiškus ryšys tarp vaizdo ir žodžių, be klaidinančių tuščių įrašų.
+  const reflectedIds = new Set(SESSION.reflections.map(r => r.image_id));
 
-    const div = document.createElement('div');
-    div.className = 'result-item';
-    const words = ref && !ref.skipped && ref.words ? ref.words : null;
-    div.innerHTML = `
-      <div class="result-thumb">
-        ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
-      </div>
-      <div class="${words ? 'result-words' : 'result-words empty'}">
-        ${words || '—'}
-      </div>
-    `;
-    body.appendChild(div);
-  });
+  SESSION.choices
+    .filter(choice => reflectedIds.has(choice.selected_image_id))
+    .forEach(choice => {
+      const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+      const imgObj = pair
+        ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+        : null;
+      const ref = SESSION.reflections.find(r => r.image_id === choice.selected_image_id);
+
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      const words = ref && !ref.skipped && ref.words ? ref.words : null;
+      div.innerHTML = `
+        <div class="result-thumb">
+          ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
+        </div>
+        <div class="${words ? 'result-words' : 'result-words empty'}">
+          ${words || (txt('layer2_skip') || 'Hard to say')}
+        </div>
+      `;
+      body.appendChild(div);
+    });
 
   const q = document.createElement('div');
   q.className = 'result-question';
@@ -607,7 +646,14 @@ function setFb(key, val, btn){
 }
 
 function submitFeedback(){
-  SESSION.feedback = fbAnswers;
+  // Užtikrinti kad visi laukai turi apibrėžtą reikšmę (null jei nepasirinkta)
+  SESSION.feedback = {
+    surprised: fbAnswers.surprised ?? null,
+    helped_notice: fbAnswers.helped_notice ?? null,
+    felt_forced: fbAnswers.felt_forced ?? null,
+    would_repeat: fbAnswers.would_repeat ?? null,
+    repeat_reason: fbAnswers.repeat_reason || ''
+  };
   saveSession();
   show('done');
 }
