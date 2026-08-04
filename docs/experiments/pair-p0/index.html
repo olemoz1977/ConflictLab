@@ -86,41 +86,34 @@ html,body{
   position:absolute;font-size:.8rem;color:var(--faint);
 }
 
-/* REFLECT */
+/* REFLECT — dviejų žingsnių mikro-srautas per vaizdą */
 #screen-reflect{flex-direction:column;height:100%;overflow:hidden}
 .section-header{
   flex-shrink:0;padding:14px 16px;border-bottom:1px solid var(--border);
-  text-align:center;font-size:.85rem;color:var(--text);font-weight:500;
+  text-align:center;font-size:.8rem;color:var(--dim);font-weight:500;
 }
 .scroll-body{
   flex:1 1 auto;min-height:0;overflow-y:auto;
   padding:16px 16px 16px;display:flex;flex-direction:column;gap:16px;
   -webkit-overflow-scrolling:touch;
 }
-.reflect-item{display:flex;flex-direction:column;gap:12px}
-.reflect-img{border-radius:8px;overflow:hidden;background:#0a0a0c;flex-shrink:0}
-.reflect-img img{width:100%;height:180px;object-fit:contain;display:block}
-.reflect-note{
-  font-size:.8rem;color:var(--text);line-height:1.6;
-  padding:10px 12px;background:var(--card);border-radius:8px;
-  border-left:3px solid var(--accent);
-}
-.reflect-row{display:flex;gap:8px;align-items:stretch}
-.reflect-input{
-  flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:1rem;padding:12px;outline:none;
-  transition:border-color 180ms;min-width:0;
-}
-.reflect-input:focus{border-color:var(--accent)}
-.reflect-input:disabled{opacity:.4}
-.skip-btn{
-  padding:10px 14px;border-radius:8px;border:1px solid var(--accent);
-  background:transparent;color:var(--accent);font-size:.8rem;font-weight:500;
-  cursor:pointer;white-space:nowrap;transition:all 180ms;flex-shrink:0;
-}
-.skip-btn.skipped{background:var(--accent);color:#0C0C0F}
 
-/* CUE OPTIONS */
+/* Progreso indikatorius: 1/3, 2/3... */
+.micro-progress{
+  flex-shrink:0;padding:10px 16px;text-align:center;
+  font-size:.72rem;color:var(--faint);letter-spacing:.05em;
+}
+
+/* Vieno vaizdo mikro-ekranas */
+.micro-image{border-radius:8px;overflow:hidden;background:#0a0a0c;margin-bottom:16px}
+.micro-image img{width:100%;height:240px;object-fit:contain;display:block}
+
+.micro-step-label{
+  font-size:.72rem;color:var(--faint);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:10px;font-weight:600;
+}
+
+/* Cue mygtukai */
 .cue-options{display:flex;flex-direction:column;gap:8px}
 .cue-btn{
   padding:14px 16px;border-radius:8px;border:1px solid var(--border);
@@ -129,28 +122,38 @@ html,body{
 }
 .cue-btn:active{border-color:var(--accent);background:rgba(124,158,143,.08)}
 .cue-btn.selected{border-color:var(--accent);background:rgba(124,158,143,.12);color:var(--accent);font-weight:600}
-.cue-btn.custom-active{border-color:var(--accent)}
-.cue-custom-row{display:flex;gap:8px;margin-top:4px}
 .cue-custom-input{
-  flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;
-  transition:border-color 180ms;min-width:0;display:none;
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.9rem;padding:12px;outline:none;
+  transition:border-color 180ms;display:none;margin-top:4px;width:100%;
 }
 .cue-custom-input.show{display:block}
 .cue-custom-input:focus{border-color:var(--accent)}
-.footer-fixed{
-  flex-shrink:0;padding:14px 16px;border-top:1px solid var(--border);
-  background:var(--bg);
+
+/* Pasirinktas cue kontekste (rodomas Reflection žingsnyje) */
+.chosen-cue-badge{
+  display:inline-block;padding:8px 14px;border-radius:8px;
+  background:rgba(124,158,143,.12);border:1px solid var(--accent);
+  color:var(--accent);font-size:.9rem;font-weight:600;margin-bottom:14px;
 }
-.action-btn{
-  width:100%;padding:16px;border-radius:var(--r);background:var(--accent);
-  color:#0C0C0F;font-size:1rem;font-weight:700;border:none;cursor:pointer;
+
+/* Reflection žingsnio klausimas */
+.reflection-question{
+  font-size:.95rem;color:var(--text);line-height:1.5;margin-bottom:12px;font-weight:500;
 }
-.action-btn:disabled{opacity:.3;cursor:not-allowed}
-.ghost-btn{
-  width:100%;padding:14px;border-radius:var(--r);background:transparent;
-  border:1px solid var(--border);color:var(--dim);font-size:.9rem;cursor:pointer;
+.reflection-row{display:flex;gap:8px;align-items:stretch}
+.reflection-input{
+  flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:1rem;padding:12px;outline:none;
+  transition:border-color 180ms;min-width:0;
 }
+.reflection-input:focus{border-color:var(--accent)}
+.reflection-skip-btn{
+  padding:12px 16px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.85rem;cursor:pointer;
+  white-space:nowrap;transition:all 180ms;flex-shrink:0;
+}
+.reflection-skip-btn:active{border-color:var(--accent);color:var(--accent)}
 
 /* RESULT */
 .result-item{
@@ -254,10 +257,10 @@ body.has-debug #app{ height: calc(100dvh - 32px); }
   </div>
 
   <div id="screen-reflect" class="screen">
-    <div class="section-header" id="txt-reflect-header"></div>
+    <div class="micro-progress" id="micro-progress"></div>
     <div class="scroll-body" id="reflect-body"></div>
     <div class="footer-fixed">
-      <button class="action-btn" onclick="goToResult()" id="reflect-next-btn" disabled></button>
+      <button class="action-btn" id="reflect-next-btn" disabled></button>
     </div>
   </div>
 
@@ -429,7 +432,7 @@ async function init(){
 
   if(IS_DEBUG){
     document.getElementById('dbg-info').textContent =
-      `pairs:${PAIRS.length} l2:[${L2_INDICES}]`;
+      `pairs:${PAIRS.length} micro-flow:all`;
   }
 }
 
@@ -582,196 +585,252 @@ function getCuesForImage(imageId){
   return null;
 }
 
+// ── MICRO-FLOW STATE ──────────────────────────────────
+// Kiekvienas pasirinktas Layer 1 vaizdas eina per du žingsnius:
+// 1) cue pasirinkimas  2) trumpa refleksija susieta su tuo cue.
+// Tik užbaigus abu žingsnius pereinama prie kito vaizdo.
+let microQueue = [];      // [{imgObj, key}, ...] visi Layer 1 pasirinkti vaizdai originalia seka
+let microIndex = 0;       // kurį vaizdą dabar apdorojame
+let microStep = 'cue';    // 'cue' arba 'reflection'
+let microCurrentAnswer = null; // laikinas dabartinio vaizdo atsakymas prieš patvirtinant
+
 function startLayer2(){
-  const body = document.getElementById('reflect-body');
-  body.innerHTML = '';
+  // Pašalinta l2_indices atranka — apdorojami VISI SESSION.choices originalia seka.
+  microQueue = SESSION.choices.map(choice => {
+    const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
+    const imgObj = pair
+      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+      : null;
+    return { imgObj, key: choice.selected_image_id };
+  }).filter(x => x.imgObj);
+
   reflectAnswers = {};
+  microIndex = 0;
 
-  const effectiveL2 = L2_INDICES.filter(i => i < SESSION.choices.length);
-  const l2ToUse = effectiveL2.length > 0
-    ? effectiveL2
-    : SESSION.choices.map((_, i) => i);
-  const items = l2ToUse
-    .map(i => {
-      const choice = SESSION.choices[i];
-      const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
-      const imgObj = pair
-        ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
-        : null;
-      return { choice, imgObj };
-    })
-    .filter(x => x && x.imgObj);
-
-  if(items.length === 0){
+  if(microQueue.length === 0){
     goToResult();
     return;
   }
 
-  const skipLabel = txt('layer2_skip') || 'Hard to say';
-  const otherLabel = txt('layer2_other') || 'Kita mintis';
-  const noteLabel = txt('layer2_note') || '';
-  const placeholderLabel = txt('layer2_placeholder') || '...';
-  const lang = currentLang;
-
-  items.forEach(({ imgObj }) => {
-    const key = imgObj.id;
-    reflectAnswers[key] = { words: '', skipped: false, cue_id: null, vector: null };
-
-    const cues = getCuesForImage(key);
-
-    const div = document.createElement('div');
-    div.className = 'reflect-item';
-
-    let optionsHtml = '';
-    if(cues && cues.length > 0){
-      // Cue mygtukai + Kita mintis + Sunku pasakyti
-      const cueButtons = cues.map(c => {
-        const label = lang === 'lt' ? c.lt : c.en;
-        return `<button class="cue-btn" data-cue-id="${c.cue_id}"
-          onclick="selectCue('${key}','${c.cue_id}',this)">${label}</button>`;
-      }).join('');
-
-      optionsHtml = `
-        <div class="cue-options" id="cue-opts-${key}">
-          ${cueButtons}
-          <button class="cue-btn" id="custom-btn-${key}"
-            onclick="toggleCustomCue('${key}',this)">${otherLabel}</button>
-          <input class="cue-custom-input" id="custom-input-${key}" maxlength="40"
-            placeholder="${placeholderLabel}"
-            oninput="onCustomCueInput(this,'${key}')">
-          <button class="cue-btn" id="skip-cue-${key}"
-            onclick="selectHardToSay('${key}',this)">${skipLabel}</button>
-        </div>
-      `;
-    } else {
-      // Fallback — jei nėra cue duomenų šiam vaizdui, senas laisvo teksto laukas
-      optionsHtml = `
-        <div class="reflect-row">
-          <input class="reflect-input" id="ri-${key}" maxlength="40"
-            placeholder="${placeholderLabel}"
-            oninput="onReflect(this,'${key}')">
-          <button class="skip-btn" id="rs-${key}"
-            onclick="skipReflect('${key}')">${skipLabel}</button>
-        </div>
-      `;
-    }
-
-    div.innerHTML = `
-      <div class="reflect-img">
-        <img src="${imgObj.src}" alt="" loading="lazy">
-      </div>
-      <div class="reflect-note">${noteLabel}</div>
-      ${optionsHtml}
-    `;
-    body.appendChild(div);
-  });
-
-  updateReflectNextState();
+  renderMicroStep();
   show('reflect');
 }
 
-// ── CUE SELECTION ─────────────────────────────────────
-function selectCue(key, cueId, btn){
+function updateMicroProgress(){
+  const el = document.getElementById('micro-progress');
+  if(!el) return;
+  const tmpl = txt('micro_progress') || 'Image {current} of {total}';
+  el.textContent = tmpl
+    .replace('{current}', microIndex + 1)
+    .replace('{total}', microQueue.length);
+}
+
+function renderMicroStep(){
+  updateMicroProgress();
+  const item = microQueue[microIndex];
+  const key = item.key;
+  const body = document.getElementById('reflect-body');
+  body.innerHTML = '';
+
+  const btn = document.getElementById('reflect-next-btn');
+
+  if(microStep === 'cue'){
+    renderCueStep(item, body, btn);
+  } else {
+    renderReflectionStep(item, body, btn);
+  }
+}
+
+function renderCueStep(item, body, btn){
+  const key = item.key;
+  const cues = getCuesForImage(key);
+  const otherLabel = txt('layer2_other') || 'Another thought';
+  const skipLabel = txt('layer2_skip') || 'Hard to say';
+  const stepLabel = txt('step_cue') || 'What caught your attention?';
+  const placeholderLabel = txt('layer2_placeholder') || '...';
+  const lang = currentLang;
+
+  const div = document.createElement('div');
+
+  if(cues && cues.length > 0){
+    const cueButtons = cues.map(c => {
+      const label = lang === 'lt' ? c.lt : c.en;
+      return `<button class="cue-btn" data-cue-id="${c.cue_id}"
+        onclick="pickCue('${c.cue_id}', this)">${label}</button>`;
+    }).join('');
+
+    div.innerHTML = `
+      <div class="micro-image"><img src="${item.imgObj.src}" alt="" loading="lazy"></div>
+      <div class="micro-step-label">${stepLabel}</div>
+      <div class="cue-options" id="cue-opts">
+        ${cueButtons}
+        <button class="cue-btn" id="custom-btn" onclick="pickCustomCue(this)">${otherLabel}</button>
+        <input class="cue-custom-input" id="custom-input" maxlength="40"
+          placeholder="${placeholderLabel}" oninput="onCustomCueTyping(this)">
+        <button class="cue-btn" id="skip-btn" onclick="pickHardToSay(this)">${skipLabel}</button>
+      </div>
+    `;
+  } else {
+    // Fallback — nėra cue duomenų šiam vaizdui
+    div.innerHTML = `
+      <div class="micro-image"><img src="${item.imgObj.src}" alt="" loading="lazy"></div>
+      <div class="micro-step-label">${stepLabel}</div>
+      <div class="reflection-row">
+        <input class="reflection-input" id="fallback-input" maxlength="40"
+          placeholder="${placeholderLabel}" oninput="onFallbackTyping(this)">
+        <button class="reflection-skip-btn" onclick="pickHardToSay(null)">${skipLabel}</button>
+      </div>
+    `;
+  }
+
+  body.appendChild(div);
+
+  microCurrentAnswer = null;
+  btn.disabled = true;
+  btn.textContent = txt('reflection_skip') ? (txt('see_results') || 'Next') : 'Next';
+  btn.onclick = confirmCueStep;
+}
+
+function pickCue(cueId, el){
+  const key = microQueue[microIndex].key;
   const cues = getCuesForImage(key);
   const cue = cues.find(c => c.cue_id === cueId);
   if(!cue) return;
 
-  reflectAnswers[key] = {
-    words: currentLang === 'lt' ? cue.lt : cue.en,
-    skipped: false,
+  document.querySelectorAll('#cue-opts .cue-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const ci = document.getElementById('custom-input');
+  if(ci){ ci.classList.remove('show'); ci.value=''; }
+
+  microCurrentAnswer = {
+    response_type: 'cue',
     cue_id: cueId,
+    cue_text: currentLang === 'lt' ? cue.lt : cue.en,
     vector: cue.vector
   };
-
-  // UI state
-  const container = document.getElementById('cue-opts-' + key);
-  container.querySelectorAll('.cue-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  // Uždaryti custom input jei buvo atidarytas
-  const customInput = document.getElementById('custom-input-' + key);
-  if(customInput){ customInput.classList.remove('show'); customInput.value=''; }
-
-  updateReflectNextState();
+  document.getElementById('reflect-next-btn').disabled = false;
 }
 
-function toggleCustomCue(key, btn){
-  const input = document.getElementById('custom-input-' + key);
-  const container = document.getElementById('cue-opts-' + key);
-  container.querySelectorAll('.cue-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  input.classList.add('show');
-  input.focus();
+function pickCustomCue(el){
+  document.querySelectorAll('#cue-opts .cue-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const ci = document.getElementById('custom-input');
+  ci.classList.add('show');
+  ci.focus();
 
-  reflectAnswers[key] = { words: '', skipped: false, cue_id: 'custom', vector: null };
-  updateReflectNextState();
+  microCurrentAnswer = { response_type: 'custom', custom_words: '', vector: null };
+  document.getElementById('reflect-next-btn').disabled = true; // reikia teksto
 }
 
-function onCustomCueInput(el, key){
+function onCustomCueTyping(el){
   const parts = el.value.trim().split(/\s+/).filter(Boolean);
-  if(parts.length > 3){
-    el.value = parts.slice(0,3).join(' ');
-  }
-  reflectAnswers[key] = {
-    words: el.value.trim(), skipped: false, cue_id: 'custom', vector: null
-  };
-  updateReflectNextState();
-}
-
-function selectHardToSay(key, btn){
-  reflectAnswers[key] = { words: '', skipped: true, cue_id: null, vector: null };
-  const container = document.getElementById('cue-opts-' + key);
-  container.querySelectorAll('.cue-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  const customInput = document.getElementById('custom-input-' + key);
-  if(customInput){ customInput.classList.remove('show'); customInput.value=''; }
-  updateReflectNextState();
-}
-
-function onReflect(el, key){
-  // Max 3 žodžiai — realiai apkarpoma, ne tik placeholder
-  const parts = el.value.trim().split(/\s+/).filter(Boolean);
-  if(parts.length > 3){
-    el.value = parts.slice(0,3).join(' ');
-  }
+  if(parts.length > 3) el.value = parts.slice(0,3).join(' ');
   const trimmed = el.value.trim();
-  reflectAnswers[key] = { words: trimmed, skipped: false };
-  const s = document.getElementById('rs-' + key);
-  if(s) s.classList.remove('skipped');
-  updateReflectNextState();
+  microCurrentAnswer = { response_type: 'custom', custom_words: trimmed, vector: null };
+  document.getElementById('reflect-next-btn').disabled = trimmed.length === 0;
 }
 
-function skipReflect(key){
-  const inp = document.getElementById('ri-' + key);
-  const s = document.getElementById('rs-' + key);
-  const isSkipped = s && s.classList.contains('skipped');
+function onFallbackTyping(el){
+  const parts = el.value.trim().split(/\s+/).filter(Boolean);
+  if(parts.length > 3) el.value = parts.slice(0,3).join(' ');
+  const trimmed = el.value.trim();
+  microCurrentAnswer = { response_type: 'custom', custom_words: trimmed, vector: null };
+  document.getElementById('reflect-next-btn').disabled = trimmed.length === 0;
+}
 
-  if(isSkipped){
-    // Atšaukti "sunku pasakyti" — grąžinti galimybę rašyti
-    reflectAnswers[key] = { words: '', skipped: false };
-    if(inp){ inp.disabled = false; }
-    if(s) s.classList.remove('skipped');
+function pickHardToSay(el){
+  document.querySelectorAll('#cue-opts .cue-btn').forEach(b => b.classList.remove('selected'));
+  if(el) el.classList.add('selected');
+
+  microCurrentAnswer = { response_type: 'hard_to_say', vector: null };
+  document.getElementById('reflect-next-btn').disabled = false;
+}
+
+function confirmCueStep(){
+  if(!microCurrentAnswer) return;
+
+  const key = microQueue[microIndex].key;
+  reflectAnswers[key] = reflectAnswers[key] || {};
+  Object.assign(reflectAnswers[key], microCurrentAnswer, { image_id: key });
+
+  if(microCurrentAnswer.response_type === 'hard_to_say' || microCurrentAnswer.response_type === 'custom'){
+    // "Sunku pasakyti" ir "Kita mintis" praleidžia atskirą refleksijos žingsnį —
+    // jie jau yra paties žmogaus žodžiai arba aiškus "negaliu įvardyti".
+    reflectAnswers[key].reflection_text = '';
+    advanceMicroFlow();
   } else {
-    reflectAnswers[key] = { words: '', skipped: true };
-    if(inp){ inp.value = ''; inp.disabled = true; }
-    if(s) s.classList.add('skipped');
+    // Cue pasirinktas — einame į reflection žingsnį susietą su šiuo cue.
+    microStep = 'reflection';
+    microCurrentAnswer = null;
+    renderMicroStep();
   }
-  updateReflectNextState();
 }
 
-function updateReflectNextState(){
-  // Mygtukas aktyvus tik jei VISI reflect įrašai turi žodžius arba yra skipped
-  const allValid = Object.values(reflectAnswers).every(r =>
-    r.skipped === true || (r.words && r.words.length > 0)
-  );
-  const btn = document.getElementById('reflect-next-btn');
-  if(btn) btn.disabled = !allValid;
+function renderReflectionStep(item, body, btn){
+  const key = item.key;
+  const chosen = reflectAnswers[key];
+  const question = txt('reflection_question') || 'What feels familiar about this choice?';
+  const placeholder = txt('reflection_placeholder') || 'Up to 5 words...';
+  const skipLabel = txt('reflection_skip') || 'Skip';
+
+  const div = document.createElement('div');
+  div.innerHTML = `
+    <div class="micro-image"><img src="${item.imgObj.src}" alt="" loading="lazy"></div>
+    <div class="chosen-cue-badge">${chosen.cue_text}</div>
+    <div class="reflection-question">${question}</div>
+    <div class="reflection-row">
+      <input class="reflection-input" id="reflection-input" maxlength="60"
+        placeholder="${placeholder}" oninput="onReflectionTyping(this)">
+      <button class="reflection-skip-btn" onclick="skipReflectionStep()">${skipLabel}</button>
+    </div>
+  `;
+  body.appendChild(div);
+
+  btn.disabled = false; // refleksija visada neprivaloma — galima iškart tęsti (=skip)
+  btn.onclick = () => confirmReflectionStep(reflectAnswers[key].reflection_text || '');
+}
+
+function onReflectionTyping(el){
+  const parts = el.value.trim().split(/\s+/).filter(Boolean);
+  if(parts.length > 5) el.value = parts.slice(0,5).join(' ');
+  const key = microQueue[microIndex].key;
+  reflectAnswers[key].reflection_text = el.value.trim();
+}
+
+function skipReflectionStep(){
+  const key = microQueue[microIndex].key;
+  reflectAnswers[key].reflection_text = '';
+  confirmReflectionStep('');
+}
+
+function confirmReflectionStep(text){
+  advanceMicroFlow();
+}
+
+function advanceMicroFlow(){
+  microIndex++;
+  microStep = 'cue';
+  microCurrentAnswer = null;
+
+  if(microIndex >= microQueue.length){
+    goToResult();
+  } else {
+    renderMicroStep();
+  }
 }
 
 // ── RESULT ────────────────────────────────────────────
 function goToResult(){
+  // Nauja struktūra: kiekvienas reflectAnswers[key] jau turi
+  // response_type, cue_id/cue_text arba custom_words, reflection_text, vector.
   SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
-    image_id: id, words: r.words, skipped: r.skipped,
-    cue_id: r.cue_id || null, vector: r.vector || null
+    image_id: id,
+    response_type: r.response_type || null,
+    cue_id: r.cue_id || null,
+    cue_text: r.cue_text || null,
+    custom_words: r.custom_words || null,
+    reflection_text: r.reflection_text || '',
+    vector: r.vector || null
   }));
 
   // Apskaičiuoti sesijos vektorių — saugoma duomenims, NIEKUR NERODOMA vartotojui
@@ -781,8 +840,7 @@ function goToResult(){
   body.innerHTML = '';
 
   // Rodyti VISĄ Layer 1 pasirinkimų seką originalia tvarka.
-  // Layer 2 žodžiai/"Sunku pasakyti" pridedami tik prie tų vaizdų,
-  // kurie pateko į Layer 2 — kiti rodomi be jokio papildomo teksto.
+  // Kiekvienam vaizdui — jo cue/custom žodžiai ir (jei buvo) reflection tekstas.
   SESSION.choices.forEach(choice => {
     const pair   = PAIRS.find(p => p.pair_id === choice.pair_id);
     const imgObj = pair
@@ -793,21 +851,27 @@ function goToResult(){
     const div = document.createElement('div');
     div.className = 'result-item';
 
-    let wordsHtml = '';
+    let mainText = null;
     if(ref){
-      // Šis vaizdas pateko į Layer 2 — rodyti žodžius arba skip label
-      const words = !ref.skipped && ref.words ? ref.words : (txt('layer2_skip') || 'Hard to say');
-      const cls = (!ref.skipped && ref.words) ? 'result-words' : 'result-words empty';
-      wordsHtml = `<div class="${cls}">${words}</div>`;
+      if(ref.response_type === 'cue') mainText = ref.cue_text;
+      else if(ref.response_type === 'custom') mainText = ref.custom_words;
+      else if(ref.response_type === 'hard_to_say') mainText = (txt('layer2_skip') || 'Hard to say');
     }
-    // Jei ref nėra — vaizdas rodomas be jokio papildomo teksto (tik Layer 1 dalis)
 
-    div.innerHTML = `
+    let html = `
       <div class="result-thumb">
         ${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}
       </div>
-      ${wordsHtml}
     `;
+    if(mainText){
+      const cls = ref.response_type === 'hard_to_say' ? 'result-words empty' : 'result-words';
+      html += `<div class="${cls}">${mainText}</div>`;
+      if(ref.reflection_text){
+        html += `<div class="reflect-note" style="margin-top:6px">${ref.reflection_text}</div>`;
+      }
+    }
+
+    div.innerHTML = html;
     body.appendChild(div);
   });
 
@@ -922,7 +986,7 @@ function exportDebug(){
     history: JSON.parse(localStorage.getItem(NS + 'history') || '[]'),
     debug_log: JSON.parse(localStorage.getItem(NS + 'debug') || '[]'),
     pairs_loaded: PAIRS.length,
-    l2_indices: L2_INDICES,
+    layer2_mode: 'all_choices_micro_flow', // l2_indices logika pašalinta
     audio_enabled: audioEnabled,
     audio_started: audioStarted,
     exported_at: new Date().toISOString()
