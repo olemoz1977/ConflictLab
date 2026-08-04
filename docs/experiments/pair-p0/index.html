@@ -209,6 +209,32 @@ body{min-height:100vh}
 .done-sub{font-size:.85rem;color:var(--dim);line-height:1.6;max-width:260px}
 .done-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-top:12px}
 
+/* ── RADAR ── */
+.radar-progress-box{
+  text-align:center;padding:24px 16px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;
+}
+.radar-progress-text{font-size:1.1rem;color:var(--text);font-weight:600;margin-bottom:6px}
+.radar-progress-sub{font-size:.8rem;color:var(--dim);line-height:1.5}
+.radar-chart-wrap{
+  display:flex;justify-content:center;align-items:center;
+  padding:20px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:16px;
+}
+.radar-axis-values{display:flex;justify-content:space-around;margin-bottom:16px}
+.radar-axis-item{text-align:center}
+.radar-axis-label{font-size:.72rem;color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+.radar-axis-value{font-size:1.2rem;color:var(--accent);font-weight:700;margin-top:4px}
+.radar-meta{
+  display:flex;justify-content:space-between;font-size:.78rem;color:var(--dim);
+  padding:10px 4px;border-top:1px solid var(--border);margin-top:8px;
+}
+.radar-scope-note{
+  margin-top:16px;padding:14px;font-size:.8rem;color:var(--dim);
+  text-align:center;line-height:1.6;font-style:italic;
+  border-top:1px solid var(--border);
+}
+
 /* ── HISTORY ── */
 .history-item{
   display:flex;flex-direction:column;gap:8px;padding:16px;
@@ -356,6 +382,15 @@ body{min-height:100vh}
   </div>
 </div>
 
+<!-- RADAR -->
+<div id="screen-radar" class="screen">
+  <div class="screen-header" id="txt-radar-header"></div>
+  <div class="screen-body" id="radar-body"></div>
+  <div class="screen-footer">
+    <button class="btn-ghost" onclick="showHistory()" id="txt-radar-back"></button>
+  </div>
+</div>
+
 <!-- DEBUG BAR — natūraliame document flow apačioje, scrollinamas kartu su turiniu -->
 <div id="debug-bar">
   <span>P0 debug</span>
@@ -439,6 +474,7 @@ function setLang(lang){
   document.getElementById('txt-history-header').textContent = txt('your_sessions') || 'Your sessions';
   document.getElementById('txt-back-to-intro').textContent = txt('back') || 'Back';
   document.getElementById('txt-back-to-history').textContent = txt('back_to_history') || 'Back to history';
+  document.getElementById('txt-radar-back').textContent = txt('back_to_history') || 'Back to history';
   document.documentElement.lang = lang;
 
   updateAudioToggleUI();
@@ -1169,6 +1205,166 @@ function getCompletedSessions(){
   }
 }
 
+// ── RADAR ELIGIBILITY ─────────────────────────────────
+const RADAR_MODEL_VERSION = 'pair-cue-v0.1';
+const RADAR_MIN_SESSIONS = 3;
+
+// Sesija tinkama radarui tik jei atitinka VISUS kriterijus.
+// Netinkamos sesijos NIEKADA netrinamos, nemigruojamos ir lieka istorijoje —
+// jos tiesiog neįtraukiamos į radaro skaičiavimą ir progreso skaitiklį.
+function isSessionRadarEligible(s){
+  if(s.status !== 'completed') return false;
+  if(!s.session_vector || typeof s.session_vector !== 'object') return false;
+  if(typeof s.valid_vector_responses !== 'number' || s.valid_vector_responses < 2) return false;
+  if(typeof s.session_vector_confidence !== 'number' || !isFinite(s.session_vector_confidence)) return false;
+  if(s.vector_model_version !== RADAR_MODEL_VERSION) return false;
+
+  for(const axis of ['aw','cs','cr']){
+    const v = s.session_vector[axis];
+    if(typeof v !== 'number' || !isFinite(v) || v < -1 || v > 1) return false;
+  }
+  return true;
+}
+
+function getEligibleSessions(){
+  return getCompletedSessions().filter(isSessionRadarEligible);
+}
+
+// Apskaičiuoja "dabartinį pėdsaką" — paprastą vidurkį paskutinių N eligible
+// sesijų vektorių (N = RADAR_MIN_SESSIONS arba visos, jei mažiau).
+// Tai NĖRA asmenybės įvertinimas — tik šios akimirkos pasirinkimų agregatas.
+function computeCurrentTrace(eligibleSessions){
+  if(eligibleSessions.length === 0) return null;
+
+  const recent = eligibleSessions.slice(-RADAR_MIN_SESSIONS);
+  const sum = { aw:0, cs:0, cr:0 };
+  recent.forEach(s => {
+    sum.aw += s.session_vector.aw;
+    sum.cs += s.session_vector.cs;
+    sum.cr += s.session_vector.cr;
+  });
+  const n = recent.length;
+
+  return {
+    aw: +(sum.aw/n).toFixed(3),
+    cs: +(sum.cs/n).toFixed(3),
+    cr: +(sum.cr/n).toFixed(3),
+    session_count: n
+  };
+}
+
+// ── RADAR RENDERING ────────────────────────────────────
+// Trikampis radaras trims ašims (aw/cs/cr) su viena taškų forma.
+// Naudojame SVG, nes tai vienintelis paprastas būdas nupiešti tokį grafiką
+// be papildomos bibliotekos.
+function renderRadarSVG(vector){
+  const size = 240;
+  const center = size / 2;
+  const maxRadius = 90;
+
+  // Trys ašys 120° kampu viena nuo kitos (aw viršuje, cs apačioje kairėje, cr apačioje dešinėje)
+  const angles = { aw: -90, cs: 150, cr: 30 }; // laipsniais
+
+  function toXY(axisKey, value){
+    // value yra [-1,1], normalizuojame į [0,1] radiaus atžvilgiu nuo centro
+    const normalized = (value + 1) / 2; // 0..1
+    const r = normalized * maxRadius;
+    const rad = angles[axisKey] * Math.PI / 180;
+    return {
+      x: center + r * Math.cos(rad),
+      y: center + r * Math.sin(rad)
+    };
+  }
+
+  const pAw = toXY('aw', vector.aw);
+  const pCs = toXY('cs', vector.cs);
+  const pCr = toXY('cr', vector.cr);
+
+  // Ašių linijos (nuo centro iki maksimalaus spindulio, kad matytųsi orientacija)
+  function axisEndpoint(axisKey){
+    const rad = angles[axisKey] * Math.PI / 180;
+    return { x: center + maxRadius * Math.cos(rad), y: center + maxRadius * Math.sin(rad) };
+  }
+  const eAw = axisEndpoint('aw');
+  const eCs = axisEndpoint('cs');
+  const eCr = axisEndpoint('cr');
+
+  return `
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${center}" cy="${center}" r="${maxRadius}" fill="none" stroke="#1E1E24" stroke-width="1"/>
+      <circle cx="${center}" cy="${center}" r="${maxRadius/2}" fill="none" stroke="#1E1E24" stroke-width="1"/>
+      <line x1="${center}" y1="${center}" x2="${eAw.x}" y2="${eAw.y}" stroke="#32323A" stroke-width="1"/>
+      <line x1="${center}" y1="${center}" x2="${eCs.x}" y2="${eCs.y}" stroke="#32323A" stroke-width="1"/>
+      <line x1="${center}" y1="${center}" x2="${eCr.x}" y2="${eCr.y}" stroke="#32323A" stroke-width="1"/>
+      <polygon points="${pAw.x},${pAw.y} ${pCs.x},${pCs.y} ${pCr.x},${pCr.y}"
+        fill="rgba(124,158,143,0.25)" stroke="#7C9E8F" stroke-width="2"/>
+      <circle cx="${pAw.x}" cy="${pAw.y}" r="4" fill="#7C9E8F"/>
+      <circle cx="${pCs.x}" cy="${pCs.y}" r="4" fill="#7C9E8F"/>
+      <circle cx="${pCr.x}" cy="${pCr.y}" r="4" fill="#7C9E8F"/>
+      <text x="${center}" y="18" text-anchor="middle" fill="#6E6A64" font-size="11">aw</text>
+      <text x="${eCs.x - 14}" y="${eCs.y + 14}" text-anchor="middle" fill="#6E6A64" font-size="11">cs</text>
+      <text x="${eCr.x + 14}" y="${eCr.y + 14}" text-anchor="middle" fill="#6E6A64" font-size="11">cr</text>
+    </svg>
+  `;
+}
+
+function showRadar(){
+  const eligible = getEligibleSessions();
+  const count = eligible.length;
+
+  document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
+
+  const body = document.getElementById('radar-body');
+  body.innerHTML = '';
+
+  const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
+  const progressBox = document.createElement('div');
+  progressBox.className = 'radar-progress-box';
+  progressBox.innerHTML = `
+    <div class="radar-progress-text">${progressTmpl.replace('{n}', Math.min(count, RADAR_MIN_SESSIONS)).replace('{total}', RADAR_MIN_SESSIONS)}</div>
+  `;
+  body.appendChild(progressBox);
+
+  if(count < RADAR_MIN_SESSIONS){
+    const sub = document.createElement('div');
+    sub.className = 'radar-progress-sub';
+    sub.textContent = txt('radar_not_enough') || 'Complete more sessions to see your current trace.';
+    progressBox.appendChild(sub);
+    show('radar');
+    return;
+  }
+
+  const trace = computeCurrentTrace(eligible);
+
+  const chartWrap = document.createElement('div');
+  chartWrap.className = 'radar-chart-wrap';
+  chartWrap.innerHTML = renderRadarSVG(trace);
+  body.appendChild(chartWrap);
+
+  const axisValues = document.createElement('div');
+  axisValues.className = 'radar-axis-values';
+  axisValues.innerHTML = `
+    <div class="radar-axis-item"><div class="radar-axis-label">aw</div><div class="radar-axis-value">${trace.aw >= 0 ? '+' : ''}${trace.aw}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">cs</div><div class="radar-axis-value">${trace.cs >= 0 ? '+' : ''}${trace.cs}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">cr</div><div class="radar-axis-value">${trace.cr >= 0 ? '+' : ''}${trace.cr}</div></div>
+  `;
+  body.appendChild(axisValues);
+
+  const meta = document.createElement('div');
+  meta.className = 'radar-meta';
+  const sessionsLabel = txt('based_on_sessions') || 'Based on {n} sessions';
+  meta.innerHTML = `<span>${sessionsLabel.replace('{n}', trace.session_count)}</span>`;
+  body.appendChild(meta);
+
+  const scope = document.createElement('div');
+  scope.className = 'radar-scope-note';
+  scope.textContent = txt('radar_scope_note') ||
+    'This shape is built from your chosen cues across recent sessions. It is not a personality assessment.';
+  body.appendChild(scope);
+
+  show('radar');
+}
+
 // ── HISTORY ───────────────────────────────────────────
 function formatHistoryDate(isoString){
   const d = new Date(isoString);
@@ -1186,6 +1382,15 @@ function showHistory(){
   const sessions = getCompletedSessions().slice().reverse(); // naujausios viršuje
   const body = document.getElementById('history-body');
   body.innerHTML = '';
+
+  // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų
+  // (radaro ekranas pats parodys progresą "N iš 3")
+  const radarLink = document.createElement('button');
+  radarLink.className = 'btn-ghost';
+  radarLink.style.marginBottom = '16px';
+  radarLink.textContent = txt('view_trace') || 'View your current trace';
+  radarLink.onclick = showRadar;
+  body.appendChild(radarLink);
 
   if(sessions.length === 0){
     const empty = document.createElement('div');
@@ -1280,9 +1485,13 @@ function showHistoryDetail(sessionId){
 }
 
 function exportDebug(){
+  const eligible = getEligibleSessions();
   const data = {
     active_session: SESSION,
     completed_sessions: getCompletedSessions(),
+    radar_eligible_session_ids: eligible.map(s => s.session_id),
+    radar_eligible_count: eligible.length,
+    current_trace: computeCurrentTrace(eligible),
     pairs_loaded: PAIRS.length,
     audio_enabled: audioEnabled,
     audio_started: audioStarted,
