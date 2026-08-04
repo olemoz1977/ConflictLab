@@ -25,7 +25,12 @@
     "see_results": "Žiūrėti rezultatus",
     "layer2_other": "Kita mintis",
     "audio_on": "Garsas",
-    "audio_off": "Garsas"
+    "audio_off": "Garsas",
+    "step_cue": "Kas šiame vaizde patraukė dėmesį?",
+    "reflection_question": "Kas šiame pasirinkime tau pažįstama?",
+    "reflection_placeholder": "Iki 5 žodžių...",
+    "reflection_skip": "Praleisti",
+    "micro_progress": "Vaizdas {current} iš {total}"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -53,6 +58,11 @@
     "see_results": "See results",
     "layer2_other": "Another thought",
     "audio_on": "Sound",
-    "audio_off": "Sound"
+    "audio_off": "Sound",
+    "step_cue": "What caught your attention in this image?",
+    "reflection_question": "What feels familiar about this choice?",
+    "reflection_placeholder": "Up to 5 words...",
+    "reflection_skip": "Skip",
+    "micro_progress": "Image {current} of {total}"
   }
 }
