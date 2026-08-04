@@ -687,7 +687,8 @@ function renderCueStep(item, body, btn){
 
   microCurrentAnswer = null;
   btn.disabled = true;
-  btn.textContent = txt('reflection_skip') ? (txt('see_results') || 'Next') : 'Next';
+  const isLastCue = microIndex === microQueue.length - 1;
+  btn.textContent = isLastCue ? (txt('see_results') || 'See results') : (txt('layer2_next') || 'Next');
   btn.onclick = confirmCueStep;
 }
 
@@ -787,6 +788,8 @@ function renderReflectionStep(item, body, btn){
   body.appendChild(div);
 
   btn.disabled = false; // refleksija visada neprivaloma — galima iškart tęsti (=skip)
+  const isLast = microIndex === microQueue.length - 1;
+  btn.textContent = isLast ? (txt('see_results') || 'See results') : (txt('layer2_next') || 'Next');
   btn.onclick = () => confirmReflectionStep(reflectAnswers[key].reflection_text || '');
 }
 
