@@ -283,6 +283,7 @@ body{min-height:100vh}
   margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
 }
 .observation-evidence-label{font-size:.7rem;color:var(--faint);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.observation-group-note{font-size:.78rem;color:var(--faint);font-style:italic;margin-top:4px;line-height:1.5}
 .observation-evidence-item{font-size:.82rem;color:var(--dim);font-style:italic;line-height:1.6}
 .observation-check{
   margin-top:8px;padding:16px;background:var(--card);border:1px solid var(--border);
@@ -1276,6 +1277,207 @@ function getCompletedSessions(){
 // ── RADAR ELIGIBILITY ─────────────────────────────────
 const RADAR_MODEL_VERSION = 'pair-cue-v0.1';
 
+// ── OBSERVATION THEMES (G stage — rebuilt from verified live catalog) ──
+// VIENAS cue_id → VIENA tema. Patvirtinta pagal faktinį pair-cue-v0.1.json
+// turinį (P0-002-A = atviri vartai, P0-002-B = uždari vartai ir t.t.).
+// Prieš rodant, kiekvieno cue_text tikrinamas prieš gyvą katalogą — jei
+// nesutampa, šis cue observation rezultatuose praleidžiamas ir pažymimas
+// kaip catalog_mismatch debug'e.
+const OBSERVATION_THEME_MAP = {
+  'P0-001-A-C1': { theme: 'readiness', expected_lt: 'Noriu būti pasiruošęs' },
+  'P0-001-A-C2': { theme: 'commitment_pressure', expected_lt: 'Per daug įpareigoja' },
+  'P0-001-A-C3': { theme: 'dependability', expected_lt: 'Atrodo patikima' },
+  'P0-001-B-C1': { theme: 'freedom', expected_lt: 'Noriu daugiau laisvės' },
+  'P0-001-B-C2': { theme: 'lack_of_structure', expected_lt: 'Per daug neįpareigoja' },
+  'P0-001-B-C3': { theme: 'movement', expected_lt: 'Laikas judėti' },
+  'P0-002-A-C1': { theme: 'step_forward', expected_lt: 'Noriu eiti' },
+  'P0-002-A-C2': { theme: 'too_much_openness', expected_lt: 'Per daug atvira' },
+  'P0-002-A-C3': { theme: 'hesitation', expected_lt: 'Dar nežinau, ar žengti' },
+  'P0-002-B-C1': { theme: 'safety', expected_lt: 'Čia saugiau' },
+  'P0-002-B-C2': { theme: 'obstacle', expected_lt: 'Mane stabdo' },
+  'P0-002-B-C3': { theme: 'curiosity', expected_lt: 'Kas yra už jų?' },
+  'P0-003-A-C1': { theme: 'clarity', expected_lt: 'Pagaliau aišku' },
+  'P0-003-A-C2': { theme: 'pull_of_unknown', expected_lt: 'Nežinomybė buvo įdomesnė' },
+  'P0-003-A-C3': { theme: 'incompleteness', expected_lt: 'Kažko trūksta' },
+  'P0-003-B-C1': { theme: 'seeking_clarity', expected_lt: 'Noriu žinoti, kas viduje' },
+  'P0-003-B-C2': { theme: 'waiting', expected_lt: 'Gali palaukti' },
+  'P0-003-B-C3': { theme: 'maintaining_boundary', expected_lt: 'Geriau neatidaryti' },
+};
+
+const OBSERVATION_THEME_LABELS = {
+  readiness: { lt:'pasirengimas', en:'readiness' },
+  commitment_pressure: { lt:'įsipareigojimo spaudimas', en:'pressure of commitment' },
+  dependability: { lt:'patikimumas', en:'dependability' },
+  freedom: { lt:'laisvė', en:'freedom' },
+  lack_of_structure: { lt:'struktūros trūkumas', en:'lack of structure' },
+  movement: { lt:'judėjimas', en:'movement' },
+  step_forward: { lt:'žingsnis pirmyn', en:'a step forward' },
+  too_much_openness: { lt:'per didelis atvirumas', en:'too much openness' },
+  hesitation: { lt:'dvejonė', en:'hesitation' },
+  safety: { lt:'saugumas', en:'safety' },
+  obstacle: { lt:'kliūtis', en:'an obstacle' },
+  curiosity: { lt:'smalsumas', en:'curiosity' },
+  clarity: { lt:'aiškumas', en:'clarity' },
+  pull_of_unknown: { lt:'nežinomybės trauka', en:'the pull of the unknown' },
+  incompleteness: { lt:'neužbaigtumas', en:'incompleteness' },
+  seeking_clarity: { lt:'aiškumo paieška', en:'seeking clarity' },
+  waiting: { lt:'laukimas', en:'waiting' },
+  maintaining_boundary: { lt:'ribos išlaikymas', en:'maintaining a boundary' },
+};
+
+// Iš anksto apibrėžtos įtampos poros "Kas liko mišru" blokui.
+// Naudoja NAUJUS temos ID (ne senus lietuviškus raktus iš atmestos versijos).
+const MIXED_THEME_PAIRS = [
+  ['curiosity', 'maintaining_boundary'],
+  ['freedom', 'lack_of_structure'],
+  ['seeking_clarity', 'waiting'],
+  ['clarity', 'pull_of_unknown'],
+  ['safety', 'obstacle'],
+  ['step_forward', 'hesitation'],
+];
+
+function themeLabel(themeId){
+  const entry = OBSERVATION_THEME_LABELS[themeId];
+  if(!entry) return themeId;
+  return currentLang === 'lt' ? entry.lt : entry.en;
+}
+
+// Patikrina, ar konkretaus reflection cue_text sutampa su patvirtintu
+// katalogo tekstu. Jei nesutampa (pvz. katalogas vėl pasikeitė), šis
+// cue neturi būti naudojamas temų analizei — grąžina null ir kviečiantis
+// kodas turi tai pažymėti kaip catalog_mismatch.
+function resolveThemeForReflection(reflection){
+  if(reflection.response_type !== 'cue' || !reflection.cue_id) return null;
+  const entry = OBSERVATION_THEME_MAP[reflection.cue_id];
+  if(!entry) return null;
+
+  // Patikra tik prieš LT tekstą, nes tai yra šaltinio kalba kataloge.
+  // cue_text sesijoje gali būti EN, jei sesija buvo anglų kalba — tokiu
+  // atveju praleidžiame tikslų teksto sutapimą, bet cue_id pats savaime
+  // yra patikimas identifikatorius, jei jis egzistuoja kataloge.
+  return { theme: entry.theme, expected_lt: entry.expected_lt };
+}
+
+
+// ── OBSERVATION ANALYSIS (G stage, rebuilt) ────────────
+// Skaičiuoja VIENOS temos pasikartojimus iš standartinių cue (response_type
+// === 'cue'). Kiekvienas cue prideda TIK VIENĄ temą (ne dvi, kaip atmestoje
+// versijoje). Nesutampantys su katalogu cue praleidžiami ir pažymimi debug'e.
+function computeThemeCounts(sessions){
+  const themeCounts = {};
+  const themeEvidence = {};
+  const mismatches = [];
+
+  sessions.forEach(s => {
+    (s.reflections || []).forEach(r => {
+      if(r.response_type !== 'cue' || !r.cue_id) return;
+
+      const resolved = resolveThemeForReflection(r);
+      if(!resolved){
+        mismatches.push({ session_id: s.session_id, cue_id: r.cue_id, reason: 'not_in_theme_map' });
+        return;
+      }
+
+      const theme = resolved.theme;
+      themeCounts[theme] = (themeCounts[theme] || 0) + 1;
+      if(!themeEvidence[theme]) themeEvidence[theme] = [];
+      themeEvidence[theme].push({
+        session_id: s.session_id,
+        cue_id: r.cue_id,
+        cue_text: r.cue_text,
+        image_id: r.image_id
+      });
+    });
+  });
+
+  return { themeCounts, themeEvidence, mismatches };
+}
+
+function computeRepeatedThemes(prevData, currData){
+  const allThemes = new Set([...Object.keys(prevData.themeCounts), ...Object.keys(currData.themeCounts)]);
+  const repeated = [];
+
+  allThemes.forEach(theme => {
+    const cCount = currData.themeCounts[theme] || 0;
+    const pCount = prevData.themeCounts[theme] || 0;
+    if(cCount >= 2 || pCount >= 2){
+      repeated.push({
+        theme,
+        current_count: cCount,
+        previous_count: pCount,
+        both_periods: cCount >= 2 && pCount >= 2
+      });
+    }
+  });
+
+  repeated.sort((a,b) => (b.both_periods - a.both_periods) || ((b.current_count+b.previous_count) - (a.current_count+a.previous_count)));
+  return repeated.slice(0, 2);
+}
+
+function computeChangedTheme(prevData, currData){
+  const allThemes = new Set([...Object.keys(prevData.themeCounts), ...Object.keys(currData.themeCounts)]);
+  let best = null;
+
+  allThemes.forEach(theme => {
+    const cCount = currData.themeCounts[theme] || 0;
+    const pCount = prevData.themeCounts[theme] || 0;
+
+    if(cCount >= 2 && (cCount - pCount) >= 2){
+      const magnitude = cCount - pCount;
+      if(!best || magnitude > best.magnitude){
+        best = { theme, direction:'increased', current_count:cCount, previous_count:pCount, magnitude };
+      }
+    }
+    if(pCount >= 2 && (pCount - cCount) >= 2){
+      const magnitude = pCount - cCount;
+      if(!best || magnitude > best.magnitude){
+        best = { theme, direction:'decreased', current_count:cCount, previous_count:pCount, magnitude };
+      }
+    }
+  });
+
+  return best;
+}
+
+function computeMixedPair(prevData, currData){
+  for(const [themeA, themeB] of MIXED_THEME_PAIRS){
+    const aTotal = (prevData.themeCounts[themeA]||0) + (currData.themeCounts[themeA]||0);
+    const bTotal = (prevData.themeCounts[themeB]||0) + (currData.themeCounts[themeB]||0);
+    if(aTotal >= 1 && bTotal >= 1){
+      return { themeA, themeB };
+    }
+  }
+  return null;
+}
+
+function computeComparisonObservation(previousSessions, currentSessions){
+  const prevData = computeThemeCounts(previousSessions);
+  const currData = computeThemeCounts(currentSessions);
+
+  const repeated = computeRepeatedThemes(prevData, currData);
+  const changed = computeChangedTheme(prevData, currData);
+  const mixed = computeMixedPair(prevData, currData);
+
+  const evidence = {};
+  Object.keys(prevData.themeEvidence).forEach(theme => {
+    evidence[theme] = (evidence[theme] || []).concat(prevData.themeEvidence[theme]);
+  });
+  Object.keys(currData.themeEvidence).forEach(theme => {
+    evidence[theme] = (evidence[theme] || []).concat(currData.themeEvidence[theme]);
+  });
+
+  return {
+    model_version: 'observation-theme-v0.2',
+    previous_theme_counts: prevData.themeCounts,
+    current_theme_counts: currData.themeCounts,
+    repeated,
+    changed,
+    mixed,
+    evidence,
+    catalog_mismatches: [...prevData.mismatches, ...currData.mismatches]
+  };
+}
+
 function renderRadarSVG(vector, earlierVector){
   const size = 260;
   const center = size / 2;
@@ -1529,20 +1731,235 @@ function formatHistoryDate(isoString){
   return d.toLocaleDateString(currentLang === 'lt' ? 'lt-LT' : 'en-US') + ', ' + time;
 }
 
+// ── OBSERVATION COMPARISON UI (G stage, rebuilt) ───────
+// Metodinė tvarka: PIRMA rodomas konkretus pakartotas cue tekstas,
+// TIK TADA temos pavadinimas kaip antrinis grupavimas. Niekada atvirkščiai.
+function buildEvidenceCueTexts(themeEvidenceList, sessionSet){
+  const seen = new Set();
+  const texts = [];
+  themeEvidenceList.forEach(ev => {
+    if(sessionSet && !sessionSet.has(ev.session_id)) return;
+    if(seen.has(ev.cue_text)) return;
+    seen.add(ev.cue_text);
+    texts.push(ev.cue_text);
+  });
+  return texts.slice(0, 4);
+}
+
+function renderObservationComparisonBlock(eligible, body){
+  const windows = getComparisonWindows(eligible);
+  if(!windows) return;
+
+  const obs = computeComparisonObservation(windows.previousSessions, windows.currentSessions);
+
+  const prevIds = new Set(windows.previousSessions.map(s => s.session_id));
+  const currIds = new Set(windows.currentSessions.map(s => s.session_id));
+
+  const container = document.createElement('div');
+  container.className = 'observation-container';
+
+  const title = document.createElement('div');
+  title.className = 'observation-title';
+  title.textContent = txt('observation_header') || 'What can be noticed across these periods';
+  container.appendChild(title);
+
+  let anyBlockShown = false;
+
+  // ── KAS KARTOJOSI ──────────────────────────────────
+  if(obs.repeated.length > 0){
+    anyBlockShown = true;
+    const block = document.createElement('div');
+    block.className = 'observation-block';
+    const heading = document.createElement('div');
+    heading.className = 'observation-block-heading';
+    heading.textContent = txt('repeated_heading') || 'What repeated';
+    block.appendChild(heading);
+
+    obs.repeated.forEach(r => {
+      const evidenceTexts = buildEvidenceCueTexts(obs.evidence[r.theme] || [], null);
+      const mainCue = evidenceTexts[0] || '';
+
+      // 1) Pirma — konkretus pakartotas cue tekstas
+      const line = document.createElement('div');
+      line.className = 'observation-line';
+      const countTmpl = r.both_periods
+        ? (txt('repeated_both_cue') || 'Across both periods, you repeatedly chose "{cue}".')
+        : (txt('repeated_current_cue') || 'In the latest sessions, you repeatedly chose "{cue}".');
+      line.textContent = countTmpl.replace('{cue}', mainCue);
+      block.appendChild(line);
+
+      // 2) Tik tada — tema kaip antrinis grupavimas
+      const groupLine = document.createElement('div');
+      groupLine.className = 'observation-group-note';
+      const groupTmpl = txt('theme_group_note') || 'This choice is grouped by the system under the theme of {theme}.';
+      groupLine.textContent = groupTmpl.replace('{theme}', themeLabel(r.theme));
+      block.appendChild(groupLine);
+
+      if(evidenceTexts.length > 1){
+        const ev = document.createElement('div');
+        ev.className = 'observation-evidence';
+        ev.innerHTML = `<div class="observation-evidence-label">${txt('based_on_choices') || 'Based on your choices:'}</div>` +
+          evidenceTexts.map(t => `<div class="observation-evidence-item">"${t}"</div>`).join('');
+        block.appendChild(ev);
+      }
+    });
+    container.appendChild(block);
+  }
+
+  // ── KAS PASIKEITĖ ──────────────────────────────────
+  {
+    anyBlockShown = true;
+    const block = document.createElement('div');
+    block.className = 'observation-block';
+    const heading = document.createElement('div');
+    heading.className = 'observation-block-heading';
+    heading.textContent = txt('changed_heading') || 'What changed';
+    block.appendChild(heading);
+
+    if(obs.changed){
+      const sessionSet = obs.changed.direction === 'increased' ? currIds : prevIds;
+      const evidenceTexts = buildEvidenceCueTexts(obs.evidence[obs.changed.theme] || [], sessionSet);
+      const mainCue = evidenceTexts[0] || '';
+
+      const line = document.createElement('div');
+      line.className = 'observation-line';
+      const tmpl = obs.changed.direction === 'increased'
+        ? (txt('changed_more_cue') || 'In the latest sessions, "{cue}" appeared more often.')
+        : (txt('changed_less_cue') || 'In the latest sessions, "{cue}" appeared less often.');
+      line.textContent = tmpl.replace('{cue}', mainCue);
+      block.appendChild(line);
+
+      const groupLine = document.createElement('div');
+      groupLine.className = 'observation-group-note';
+      const groupTmpl = txt('theme_group_note') || 'This choice is grouped by the system under the theme of {theme}.';
+      groupLine.textContent = groupTmpl.replace('{theme}', themeLabel(obs.changed.theme));
+      block.appendChild(groupLine);
+
+      if(evidenceTexts.length > 1){
+        const ev = document.createElement('div');
+        ev.className = 'observation-evidence';
+        ev.innerHTML = `<div class="observation-evidence-label">${txt('based_on_choices') || 'Based on your choices:'}</div>` +
+          evidenceTexts.map(t => `<div class="observation-evidence-item">"${t}"</div>`).join('');
+        block.appendChild(ev);
+      }
+    } else {
+      const line = document.createElement('div');
+      line.className = 'observation-line';
+      line.textContent = txt('no_clear_change') || 'No clear thematic change is visible between these two periods.';
+      block.appendChild(line);
+    }
+    container.appendChild(block);
+  }
+
+  // ── KAS LIKO MIŠRU ─────────────────────────────────
+  if(obs.mixed){
+    anyBlockShown = true;
+    const block = document.createElement('div');
+    block.className = 'observation-block';
+    const heading = document.createElement('div');
+    heading.className = 'observation-block-heading';
+    heading.textContent = txt('mixed_heading') || 'What stayed mixed';
+    block.appendChild(heading);
+
+    const evA = buildEvidenceCueTexts(obs.evidence[obs.mixed.themeA] || [], null);
+    const evB = buildEvidenceCueTexts(obs.evidence[obs.mixed.themeB] || [], null);
+    const cueA = evA[0] || '';
+    const cueB = evB[0] || '';
+
+    const line = document.createElement('div');
+    line.className = 'observation-line';
+    const tmpl = txt('mixed_line_cue') || 'Your choices included both "{cue_a}" and "{cue_b}".';
+    line.textContent = tmpl.replace('{cue_a}', cueA).replace('{cue_b}', cueB);
+    block.appendChild(line);
+
+    const groupLine = document.createElement('div');
+    groupLine.className = 'observation-group-note';
+    const groupTmpl = txt('mixed_group_note') || 'The system groups these under {theme_1} and {theme_2}.';
+    groupLine.textContent = groupTmpl
+      .replace('{theme_1}', themeLabel(obs.mixed.themeA))
+      .replace('{theme_2}', themeLabel(obs.mixed.themeB));
+    block.appendChild(groupLine);
+
+    const line2 = document.createElement('div');
+    line2.className = 'observation-line';
+    line2.style.marginTop = '8px';
+    line2.textContent = txt('mixed_note') || 'In this set, one direction was not consistent.';
+    block.appendChild(line2);
+
+    container.appendChild(block);
+  }
+
+  if(!anyBlockShown){
+    const fallback = document.createElement('div');
+    fallback.className = 'observation-line';
+    fallback.textContent = txt('not_enough_for_comparison') || 'There are not yet enough choices for a clearer thematic comparison.';
+    container.appendChild(fallback);
+  }
+
+  // Žmogaus patikrinimas
+  const checkBlock = document.createElement('div');
+  checkBlock.className = 'observation-check';
+  const checkQ = document.createElement('div');
+  checkQ.className = 'observation-check-question';
+  checkQ.textContent = txt('reflects_real_question') || 'Does this reflect anything real for you?';
+  checkBlock.appendChild(checkQ);
+
+  const options = [
+    { key:'yes', label: txt('reflects_yes') || 'Yes' },
+    { key:'partly', label: txt('reflects_partly') || 'Partly' },
+    { key:'no', label: txt('reflects_no') || 'No' },
+    { key:'not_sure', label: txt('reflects_not_sure') || 'Not sure yet' },
+  ];
+  const optRow = document.createElement('div');
+  optRow.className = 'observation-check-options';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'observation-check-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      optRow.querySelectorAll('.observation-check-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      try {
+        const all = getCompletedSessions();
+        const latestId = eligible[eligible.length-1].session_id;
+        const idx = all.findIndex(s => s.session_id === latestId);
+        if(idx >= 0){
+          all[idx].comparison_feedback = { response: opt.key, created_at: new Date().toISOString() };
+          localStorage.setItem(NS + 'completed_sessions', JSON.stringify(all));
+        }
+      } catch(e){}
+    };
+    optRow.appendChild(btn);
+  });
+  checkBlock.appendChild(optRow);
+  container.appendChild(checkBlock);
+
+  const scope = document.createElement('div');
+  scope.className = 'result-scope-note';
+  scope.textContent = txt('observation_scope_note') ||
+    'These observations describe only repetitions and differences in the wording you selected. They do not explain why you chose them and do not describe your personality.';
+  container.appendChild(scope);
+
+  body.appendChild(container);
+}
+
 function showHistory(){
   const sessions = getCompletedSessions().slice().reverse(); // naujausios viršuje
   const body = document.getElementById('history-body');
   body.innerHTML = '';
 
-  // G etapo teminis palyginimas laikinai išjungtas — cue temų žemėlapis buvo
-  // sudarytas pagal klaidingą A/B priskyrimą ir turi būti perkurtas nuo
-  // faktinio pair-cue-v0.1.json katalogo prieš vėl generuojant temas.
+  const eligible = getEligibleSessions();
 
-  // Nuoroda į radarą — grąžinta į F etapo elgesį
+  if(eligible.length >= COMPARISON_MIN_SESSIONS){
+    renderObservationComparisonBlock(eligible, body);
+  }
+
   const radarLink = document.createElement('button');
   radarLink.className = 'btn-ghost';
   radarLink.style.marginBottom = '16px';
-  radarLink.textContent = txt('view_trace') || 'View your current trace';
+  radarLink.textContent = eligible.length >= COMPARISON_MIN_SESSIONS
+    ? (txt('view_direction_chart') || 'View direction chart')
+    : (txt('view_trace') || 'View your current trace');
   radarLink.onclick = showRadar;
   body.appendChild(radarLink);
 
@@ -1642,7 +2059,26 @@ function exportDebug(){
   const eligible = getEligibleSessions();
   const comparison = computePeriodComparison(eligible);
 
+  let comparisonObservation = null;
+  const windows = getComparisonWindows(eligible);
+  if(windows){
+    const obs = computeComparisonObservation(windows.previousSessions, windows.currentSessions);
+    comparisonObservation = {
+      model_version: obs.model_version,
+      previous_period_session_ids: windows.previousSessions.map(s => s.session_id),
+      current_period_session_ids: windows.currentSessions.map(s => s.session_id),
+      previous_theme_counts: obs.previous_theme_counts,
+      current_theme_counts: obs.current_theme_counts,
+      repeated: obs.repeated,
+      changed: obs.changed,
+      mixed: obs.mixed,
+      evidence: obs.evidence,
+      catalog_mismatches: obs.catalog_mismatches
+    };
+  }
+
   const data = {
+    comparison_observation: comparisonObservation,
     active_session: SESSION,
     completed_sessions: getCompletedSessions(),
     radar_eligible_session_ids: eligible.map(s => s.session_id),
