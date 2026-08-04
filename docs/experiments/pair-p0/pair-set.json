@@ -14,7 +14,7 @@
       "status": "active",
       "image_a": {
         "id": "P0-001-A",
-        "src": "images/p0-001-a.webp"
+        "src": "images/p0-001-a.png"
       },
       "image_b": {
         "id": "P0-001-B",
@@ -23,13 +23,13 @@
       "intended_visual_difference": "ta pati scena, skirtinga avalynė — laisvalaikio vs formali",
       "position_randomization": true,
       "layer2_order": null,
-      "source_original_filename": "1785773689123_white_shoes.webp / 1785773689123_black_shoes.PNG",
+      "source_original_filename": "2913.png / 2914.png",
       "source_prompt_id": "",
       "pair_generation_method": "KlingAI + AI image editing",
-      "visual_audit_status": "not_reviewed",
+      "visual_audit_status": "reviewed",
       "norming_status": "not_tested",
       "version": "1.0",
-      "dev_notes": "Pirma testo pora. Balti batai — AI redaguotas vaizdas (dar netobulas). Juodi — originalas apkirptas 16:9. Naudoti tik UI testui."
+      "dev_notes": "Pakeista į vienodo formato porą (kvadratinis, ta pati scena/šviesa) — juodi vs rudi batai."
     },
     {
       "pair_id": "P0-002",
