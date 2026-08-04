@@ -961,9 +961,9 @@ function startSessionReflection(){
   const notYetBtn = document.createElement('button');
   notYetBtn.className = 'not-yet-btn';
   notYetBtn.id = 'not-yet-btn';
-  notYetBtn.textContent = txt('not_yet') || 'I do not notice anything yet';
+  notYetBtn.textContent = txt('not_stated') || 'I will not name it this time';
   notYetBtn.onclick = toggleNotYet;
-  if(sessionReflection.response_type === 'not_yet') notYetBtn.classList.add('on');
+  if(sessionReflection.response_type === 'not_stated') notYetBtn.classList.add('on');
   body.appendChild(notYetBtn);
 
   updateSessionReflectionButton();
@@ -1003,8 +1003,8 @@ function toggleNotYet(){
     notYetBtn.classList.add('on');
     textarea.value = '';
     document.getElementById('session-charcount').textContent = '0 / 180';
-    sessionReflection = { response_type: 'not_yet', text: '' };
-    logDebugEvent('SESSION_REFLECTION_NOT_YET_SELECTED');
+    sessionReflection = { response_type: 'not_stated', text: '' };
+    logDebugEvent('SESSION_REFLECTION_NOT_STATED_SELECTED');
   }
 
   updateSessionReflectionButton();
@@ -1016,7 +1016,7 @@ function updateSessionReflectionButton(){
   btn.textContent = txt('view_session') || 'View session';
 
   const hasText = sessionReflection.response_type === 'text' && sessionReflection.text.trim().length > 0;
-  const isNotYet = sessionReflection.response_type === 'not_yet';
+  const isNotYet = sessionReflection.response_type === 'not_stated';
   btn.disabled = !(hasText || isNotYet);
 }
 
@@ -1101,8 +1101,8 @@ function goToResult(){
   obsText.className = 'result-observation-text';
   if(sr.response_type === 'text' && sr.text){
     obsText.textContent = sr.text;
-  } else if(sr.response_type === 'not_yet'){
-    obsText.textContent = txt('observation_not_yet') || 'Nothing clear stood out to you yet this time.';
+  } else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet'){
+    obsText.textContent = txt('observation_not_stated') || 'This time, the overall observation was left unstated.';
     obsText.classList.add('empty');
   } else {
     obsText.textContent = '';
@@ -1460,7 +1460,7 @@ function showHistory(){
     let obsText = '';
     if(sr){
       if(sr.response_type === 'text' && sr.text) obsText = sr.text;
-      else if(sr.response_type === 'not_yet') obsText = (txt('observation_not_yet') || '');
+      else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet') obsText = (txt('observation_not_stated') || '');
     }
 
     const countTmpl = txt('choices_count') || '{n} choices';
@@ -1523,8 +1523,8 @@ function showHistoryDetail(sessionId){
     const text = document.createElement('div');
     text.className = 'result-observation-text';
     if(sr.response_type === 'text' && sr.text) text.textContent = sr.text;
-    else if(sr.response_type === 'not_yet'){
-      text.textContent = txt('observation_not_yet') || '';
+    else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet'){
+      text.textContent = txt('observation_not_stated') || '';
       text.classList.add('empty');
     }
     obsBlock.appendChild(text);
