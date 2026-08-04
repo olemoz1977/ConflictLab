@@ -97,7 +97,9 @@
     "changed_more_cue": "Paskutinėse sesijose dažniau pasirodė „{cue}“.",
     "changed_less_cue": "Paskutinėse sesijose rečiau pasirodė „{cue}“.",
     "mixed_line_cue": "Tavo pasirinkimuose buvo ir „{cue_a}“, ir „{cue_b}“.",
-    "mixed_group_note": "Sistema juos grupuoja kaip {theme_1} ir {theme_2} temas."
+    "mixed_group_note": "Sistema juos grupuoja kaip {theme_1} ir {theme_2} temas.",
+    "not_stated": "Kol kas neįvardysiu",
+    "observation_not_stated": "Šį kartą bendras pastebėjimas liko neįvardytas."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -197,6 +199,8 @@
     "changed_more_cue": "In the latest sessions, \"{cue}\" appeared more often.",
     "changed_less_cue": "In the latest sessions, \"{cue}\" appeared less often.",
     "mixed_line_cue": "Your choices included both \"{cue_a}\" and \"{cue_b}\".",
-    "mixed_group_note": "The system groups these under {theme_1} and {theme_2}."
+    "mixed_group_note": "The system groups these under {theme_1} and {theme_2}.",
+    "not_stated": "I will not name it this time",
+    "observation_not_stated": "This time, the overall observation was left unstated."
   }
 }
