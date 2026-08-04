@@ -54,7 +54,13 @@
     "back_to_history": "Grįžti į istoriją",
     "today": "Šiandien",
     "no_history": "Dar nėra užbaigtų sesijų.",
-    "choices_count": "{n} pasirinkimai"
+    "choices_count": "{n} pasirinkimai",
+    "view_trace": "Žiūrėti dabartinį pėdsaką",
+    "your_trace": "Tavo dabartinis pėdsakas",
+    "radar_progress": "{n} iš {total} sesijų dabartiniam pėdsakui",
+    "radar_not_enough": "Užbaik daugiau sesijų, kad pamatytum savo dabartinį pėdsaką.",
+    "based_on_sessions": "Remiantis {n} sesijomis",
+    "radar_scope_note": "Ši forma sudaryta iš tavo pasirinktų cue per paskutines sesijas. Ji nėra asmenybės vertinimas."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -111,6 +117,12 @@
     "back_to_history": "Back to history",
     "today": "Today",
     "no_history": "No completed sessions yet.",
-    "choices_count": "{n} choices"
+    "choices_count": "{n} choices",
+    "view_trace": "View your current trace",
+    "your_trace": "Your current trace",
+    "radar_progress": "{n} of {total} sessions for your current trace",
+    "radar_not_enough": "Complete more sessions to see your current trace.",
+    "based_on_sessions": "Based on {n} sessions",
+    "radar_scope_note": "This shape is built from your chosen cues across recent sessions. It is not a personality assessment."
   }
 }
