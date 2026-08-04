@@ -23,7 +23,9 @@
     "yes": "Taip",
     "no": "Ne",
     "see_results": "Žiūrėti rezultatus",
-    "layer2_other": "Kita mintis"
+    "layer2_other": "Kita mintis",
+    "audio_on": "Garsas",
+    "audio_off": "Garsas"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -49,6 +51,8 @@
     "yes": "Yes",
     "no": "No",
     "see_results": "See results",
-    "layer2_other": "Another thought"
+    "layer2_other": "Another thought",
+    "audio_on": "Sound",
+    "audio_off": "Sound"
   }
 }
