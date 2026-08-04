@@ -21,6 +21,12 @@ html,body{
   height:100dvh; /* dynamic viewport - atsižvelgia į mobile browser UI */
   display:flex;flex-direction:column
 }
+.footer-fixed{
+  flex-shrink:0;
+  padding:12px 16px;
+  border-top:1px solid var(--border);
+  background:var(--bg);
+}
 
 .screen{display:none;flex-direction:column;height:100%}
 .screen.active{display:flex}
