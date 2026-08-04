@@ -23,9 +23,16 @@ html,body{
 }
 .footer-fixed{
   flex-shrink:0;
+  min-height:64px;
   padding:12px 16px;
   border-top:1px solid var(--border);
   background:var(--bg);
+  display:flex;
+  align-items:center;
+}
+.footer-fixed .action-btn,
+.footer-fixed .ghost-btn{
+  min-height:44px;
 }
 
 .screen{display:none;flex-direction:column;height:100%;overflow:hidden}
@@ -377,8 +384,8 @@ function setLang(lang){
   document.getElementById('txt-to-feedback').textContent = txt('feedback_title');
   document.getElementById('txt-fb-header').textContent = txt('feedback_title');
   document.getElementById('txt-fb-submit').textContent = txt('feedback_submit');
-  document.getElementById('txt-done-title').textContent = txt('result_title');
-  document.getElementById('txt-done-sub').textContent = txt('layer2_note');
+  document.getElementById('txt-done-title').textContent = txt('done_title') || 'Thank you';
+  document.getElementById('txt-done-sub').textContent = txt('done_sub');
   document.documentElement.lang = lang;
 }
 
