@@ -253,7 +253,34 @@ body{min-height:100vh}
 .history-date{font-size:.75rem;color:var(--faint)}
 .history-count{font-size:.8rem;color:var(--dim)}
 .history-observation{font-size:.9rem;color:var(--text);font-style:italic}
-.history-empty{text-align:center;color:var(--dim);padding:40px 20px;font-size:.9rem}
+.history-empty{text-align:center;color:var(--dim);padding:24px 20px 8px;font-size:.9rem;line-height:1.6}
+.history-empty-hint{
+  text-align:center;color:var(--faint);padding:0 20px 32px;font-size:.8rem;line-height:1.6;
+}
+.history-transfer-block{
+  display:flex;gap:10px;margin-bottom:16px;
+}
+.history-transfer-btn{
+  flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer;transition:all 180ms;
+}
+.history-transfer-btn:active{border-color:var(--accent)}
+.history-privacy-note{
+  font-size:.74rem;color:var(--faint);text-align:center;line-height:1.5;
+  margin-bottom:20px;padding:0 8px;
+}
+.history-import-summary{
+  background:var(--card);border:1px solid var(--accent);border-radius:var(--r);
+  padding:14px 16px;margin-bottom:16px;font-size:.85rem;color:var(--text);line-height:1.7;
+}
+.history-import-error{
+  background:var(--card);border:1px solid #7A3030;border-radius:var(--r);
+  padding:14px 16px;margin-bottom:16px;font-size:.85rem;color:#c47878;line-height:1.6;
+}
+.observation-label{
+  font-size:.7rem;color:var(--accent);text-transform:uppercase;
+  letter-spacing:.06em;font-weight:700;margin-bottom:4px;
+}
 .history-detail-thumbs{display:flex;gap:8px;margin-top:8px}
 .history-detail-thumb{width:56px;height:56px;border-radius:6px;overflow:hidden;background:#0a0a0c;flex-shrink:0}
 .history-detail-thumb img{width:100%;height:100%;object-fit:contain}
@@ -381,6 +408,8 @@ body{min-height:100vh}
     <button class="btn-ghost" onclick="show('intro')" id="txt-back-to-intro"></button>
   </div>
 </div>
+
+<input type="file" id="history-import-input" accept=".json,application/json" style="display:none" onchange="handleHistoryImportFile(this)">
 
 <!-- HISTORY SESSION DETAIL -->
 <div id="screen-history-detail" class="screen">
@@ -1433,8 +1462,36 @@ function showHistory(){
   const body = document.getElementById('history-body');
   body.innerHTML = '';
 
+  // ── Eksporto / importo valdikliai ──────────────────
+  const transferBlock = document.createElement('div');
+  transferBlock.className = 'history-transfer-block';
+
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'history-transfer-btn';
+  exportBtn.textContent = txt('export_history') || 'Export history';
+  exportBtn.onclick = exportHistoryFile;
+  transferBlock.appendChild(exportBtn);
+
+  const importBtn = document.createElement('button');
+  importBtn.className = 'history-transfer-btn';
+  importBtn.textContent = txt('import_history') || 'Import history';
+  importBtn.onclick = () => document.getElementById('history-import-input').click();
+  transferBlock.appendChild(importBtn);
+
+  body.appendChild(transferBlock);
+
+  const privacyNote = document.createElement('div');
+  privacyNote.className = 'history-privacy-note';
+  privacyNote.textContent = txt('history_privacy_note') ||
+    'Your history is stored in this browser. You control the export file — ConflictLab does not upload it to a server.';
+  body.appendChild(privacyNote);
+
+  // Vieta importo rezultato pranešimui (užpildoma po importHistoryData())
+  const importStatusHolder = document.createElement('div');
+  importStatusHolder.id = 'history-import-status';
+  body.appendChild(importStatusHolder);
+
   // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų
-  // (radaro ekranas pats parodys progresą "N iš 3")
   const radarLink = document.createElement('button');
   radarLink.className = 'btn-ghost';
   radarLink.style.marginBottom = '16px';
@@ -1445,8 +1502,15 @@ function showHistory(){
   if(sessions.length === 0){
     const empty = document.createElement('div');
     empty.className = 'history-empty';
-    empty.textContent = txt('no_history') || 'No completed sessions yet.';
+    empty.textContent = txt('cannot_find_sessions') || 'Cannot find your earlier sessions?';
     body.appendChild(empty);
+
+    const hint = document.createElement('div');
+    hint.className = 'history-empty-hint';
+    hint.textContent = txt('empty_history_hint') ||
+      'They may be stored in another browser on this device, for example Chrome instead of the in-app browser used by Skool or another app. Open the page in your usual browser or import a previously exported history file.';
+    body.appendChild(hint);
+
     show('history');
     return;
   }
@@ -1458,21 +1522,188 @@ function showHistory(){
 
     const sr = s.session_reflection;
     let obsText = '';
+    let isStated = false;
     if(sr){
-      if(sr.response_type === 'text' && sr.text) obsText = sr.text;
+      if(sr.response_type === 'text' && sr.text){ obsText = sr.text; isStated = true; }
       else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet') obsText = (txt('observation_not_stated') || '');
     }
 
+    const dateDiv = document.createElement('div');
+    dateDiv.className = 'history-date';
+    dateDiv.textContent = formatHistoryDate(s.completed_at || s.started_at);
+    item.appendChild(dateDiv);
+
     const countTmpl = txt('choices_count') || '{n} choices';
-    item.innerHTML = `
-      <div class="history-date">${formatHistoryDate(s.completed_at || s.started_at)}</div>
-      <div class="history-count">${countTmpl.replace('{n}', s.choices.length)}</div>
-      ${obsText ? `<div class="history-observation">${obsText}</div>` : ''}
-    `;
+    const countDiv = document.createElement('div');
+    countDiv.className = 'history-count';
+    countDiv.textContent = countTmpl.replace('{n}', s.choices.length);
+    item.appendChild(countDiv);
+
+    if(obsText){
+      if(isStated){
+        const label = document.createElement('div');
+        label.className = 'observation-label';
+        label.textContent = txt('your_observation') || 'Your observation';
+        item.appendChild(label);
+      }
+      const obsDiv = document.createElement('div');
+      obsDiv.className = 'history-observation';
+      obsDiv.textContent = obsText; // saugus DOM metodas, ne innerHTML
+      item.appendChild(obsDiv);
+    }
+
     body.appendChild(item);
   });
 
   show('history');
+}
+
+// ── HISTORY EXPORT (H stage) ───────────────────────────
+// Švarus perkėlimo failas — TIK completed sesijos, jokios techninės/debug
+// informacijos, jokios aktyvios sesijos. Skiriasi nuo debug JSON eksporto.
+function exportHistoryFile(){
+  const completed = getCompletedSessions().filter(s => s.status === 'completed');
+
+  const exportData = {
+    format: 'conflictlab-history',
+    schema_version: '1.0',
+    app: 'ConflictLab Pair P0',
+    exported_at: new Date().toISOString(),
+    vector_model_version: RADAR_MODEL_VERSION,
+    completed_sessions: completed
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const dateStr = new Date().toISOString().split('T')[0];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `conflictlab-history-${dateStr}.json`;
+  a.click();
+}
+
+// ── HISTORY IMPORT (H stage) ────────────────────────────
+const MAX_IMPORT_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+function handleHistoryImportFile(inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file){
+    // Vartotojas atšaukė pasirinkimą — nieko nekeisti, jokios klaidos.
+    return;
+  }
+
+  if(file.size > MAX_IMPORT_FILE_BYTES){
+    showImportStatus({ error: txt('file_too_large') || 'The file is too large.' });
+    inputEl.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let data;
+    try {
+      data = JSON.parse(e.target.result);
+    } catch(err){
+      showImportStatus({ error: txt('invalid_history_file') || 'This is not a valid ConflictLab history file.' });
+      inputEl.value = '';
+      return;
+    }
+
+    if(data.format !== 'conflictlab-history' || data.schema_version !== '1.0' || !Array.isArray(data.completed_sessions)){
+      showImportStatus({ error: txt('invalid_history_file') || 'This is not a valid ConflictLab history file.' });
+      inputEl.value = '';
+      return;
+    }
+
+    const result = mergeImportedHistory(data.completed_sessions);
+    showImportStatus({ result });
+    inputEl.value = '';
+
+    // Perrenderinti istoriją, kad naujai sujungtos sesijos ir radaras atsispindėtų iš karto.
+    showHistory();
+  };
+  reader.onerror = () => {
+    showImportStatus({ error: txt('invalid_history_file') || 'This is not a valid ConflictLab history file.' });
+    inputEl.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function isValidImportedSession(session){
+  return typeof session.session_id === 'string' &&
+    session.session_id.trim() !== '' &&
+    session.status === 'completed' &&
+    typeof session.completed_at === 'string' &&
+    Array.isArray(session.choices) &&
+    Array.isArray(session.reflections);
+}
+
+// Sujungia importuotas sesijas su esamomis pagal session_id. Vietinis įrašas
+// NIEKADA neperrašomas importuotu — dublikatai tiesiog praleidžiami.
+function mergeImportedHistory(importedSessions){
+  const existing = getCompletedSessions();
+  const existingIds = new Set(existing.map(s => s.session_id));
+
+  let imported = 0;
+  let duplicates = 0;
+  let invalid = 0;
+
+  const toAdd = [];
+
+  importedSessions.forEach(session => {
+    if(!isValidImportedSession(session)){
+      invalid++;
+      return;
+    }
+    if(existingIds.has(session.session_id)){
+      duplicates++;
+      return;
+    }
+    toAdd.push(session);
+    existingIds.add(session.session_id); // apsauga nuo dublikatų pačiame importo faile
+    imported++;
+  });
+
+  const merged = existing.concat(toAdd);
+  merged.sort((a,b) => new Date(a.completed_at) - new Date(b.completed_at));
+
+  try {
+    localStorage.setItem(NS + 'completed_sessions', JSON.stringify(merged));
+  } catch(e){
+    console.warn('Failed to save merged history:', e);
+  }
+
+  return { imported, duplicates, invalid };
+}
+
+function showImportStatus({ result, error }){
+  const holder = document.getElementById('history-import-status');
+  if(!holder) return;
+  holder.innerHTML = '';
+
+  if(error){
+    const box = document.createElement('div');
+    box.className = 'history-import-error';
+    box.textContent = error; // saugus DOM metodas
+    holder.appendChild(box);
+    return;
+  }
+
+  const box = document.createElement('div');
+  box.className = 'history-import-summary';
+
+  const importedLine = document.createElement('div');
+  importedLine.textContent = (txt('imported_count') || 'Imported sessions: {n}').replace('{n}', result.imported);
+  box.appendChild(importedLine);
+
+  const dupLine = document.createElement('div');
+  dupLine.textContent = (txt('already_on_device') || 'Already on this device: {n}').replace('{n}', result.duplicates);
+  box.appendChild(dupLine);
+
+  const invalidLine = document.createElement('div');
+  invalidLine.textContent = (txt('invalid_records') || 'Invalid records: {n}').replace('{n}', result.invalid);
+  box.appendChild(invalidLine);
+
+  holder.appendChild(box);
 }
 
 function showHistoryDetail(sessionId){
@@ -1501,14 +1732,35 @@ function showHistoryDetail(sessionId){
 
     const div = document.createElement('div');
     div.className = 'result-item';
-    let itemHtml = `
-      <div class="result-thumb">${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}</div>
-      ${mainText ? `<div class="result-words">${mainText}</div>` : ''}
-    `;
-    if(ref && ref.reflection_text){
-      itemHtml += `<div style="font-size:.8rem;color:var(--dim);text-align:center;margin-top:4px">${ref.reflection_text}</div>`;
+
+    const thumb = document.createElement('div');
+    thumb.className = 'result-thumb';
+    if(imgObj){
+      const img = document.createElement('img');
+      img.src = imgObj.src;
+      img.alt = '';
+      img.loading = 'lazy';
+      thumb.appendChild(img);
     }
-    div.innerHTML = itemHtml;
+    div.appendChild(thumb);
+
+    if(mainText){
+      const wordsDiv = document.createElement('div');
+      wordsDiv.className = 'result-words';
+      wordsDiv.textContent = mainText; // saugus DOM metodas — mainText gali būti custom_words
+      div.appendChild(wordsDiv);
+    }
+
+    if(ref && ref.reflection_text){
+      const reflDiv = document.createElement('div');
+      reflDiv.style.fontSize = '.8rem';
+      reflDiv.style.color = 'var(--dim)';
+      reflDiv.style.textAlign = 'center';
+      reflDiv.style.marginTop = '4px';
+      reflDiv.textContent = ref.reflection_text; // saugus DOM metodas
+      div.appendChild(reflDiv);
+    }
+
     body.appendChild(div);
   });
 
@@ -1516,18 +1768,26 @@ function showHistoryDetail(sessionId){
   if(sr){
     const obsBlock = document.createElement('div');
     obsBlock.className = 'result-observation';
-    const label = document.createElement('div');
-    label.className = 'result-observation-label';
-    label.textContent = txt('your_observation') || 'Your observation';
-    obsBlock.appendChild(label);
-    const text = document.createElement('div');
-    text.className = 'result-observation-text';
-    if(sr.response_type === 'text' && sr.text) text.textContent = sr.text;
-    else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet'){
+
+    // Žyma "Tavo pastebėjimas" rodoma TIK kai yra realiai įvardytas tekstas.
+    // Neįvardytai refleksijai (not_stated arba senas not_yet) žymos nerodyti.
+    if(sr.response_type === 'text' && sr.text){
+      const label = document.createElement('div');
+      label.className = 'result-observation-label';
+      label.textContent = txt('your_observation') || 'Your observation';
+      obsBlock.appendChild(label);
+
+      const text = document.createElement('div');
+      text.className = 'result-observation-text';
+      text.textContent = sr.text;
+      obsBlock.appendChild(text);
+    } else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet'){
+      const text = document.createElement('div');
+      text.className = 'result-observation-text empty';
       text.textContent = txt('observation_not_stated') || '';
-      text.classList.add('empty');
+      obsBlock.appendChild(text);
     }
-    obsBlock.appendChild(text);
+
     body.appendChild(obsBlock);
   }
 
