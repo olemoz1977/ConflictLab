@@ -108,7 +108,8 @@
     "file_too_large": "Failas per didelis.",
     "imported_count": "Importuotos sesijos: {n}",
     "already_on_device": "Jau buvo šiame įrenginyje: {n}",
-    "invalid_records": "Netinkami įrašai: {n}"
+    "invalid_records": "Netinkami įrašai: {n}",
+    "cannot_find_sessions": "Nerandi ankstesnių sesijų?"
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -219,6 +220,7 @@
     "file_too_large": "The file is too large.",
     "imported_count": "Imported sessions: {n}",
     "already_on_device": "Already on this device: {n}",
-    "invalid_records": "Invalid records: {n}"
+    "invalid_records": "Invalid records: {n}",
+    "cannot_find_sessions": "Cannot find your earlier sessions?"
   }
 }
