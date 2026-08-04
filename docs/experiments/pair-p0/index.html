@@ -56,6 +56,16 @@ html,body{
   color:#0C0C0F;font-size:1rem;font-weight:600;border:none;cursor:pointer;
   width:100%;max-width:300px;
 }
+.action-btn{
+  width:100%;padding:16px;border-radius:var(--r);background:var(--accent);
+  color:#0C0C0F;font-size:1rem;font-weight:700;border:none;cursor:pointer;
+  transition:opacity 180ms;
+}
+.action-btn:disabled{opacity:.3;cursor:not-allowed}
+.ghost-btn{
+  width:100%;padding:14px;border-radius:var(--r);background:transparent;
+  border:1px solid var(--border);color:var(--dim);font-size:.9rem;cursor:pointer;
+}
 
 /* NO STIMULI */
 #screen-nostimuli{align-items:center;justify-content:center;padding:32px;gap:12px;text-align:center}
@@ -411,7 +421,7 @@ async function init(){
 
   // Load pair-set.json
   try {
-    const r = await fetch('pair-set.json');
+    const r = await fetch('pair-set.json?v=' + Date.now());
     const data = await r.json();
     PAIRS = (data.pairs || []).filter(p => p.status === 'active');
     // Layer2 indices (1-based in JSON → 0-based)
@@ -425,7 +435,7 @@ async function init(){
 
   // Load pair-cue-v0.1.json — provisional cue+vector content
   try {
-    const r = await fetch('pair-cue-v0.1.json');
+    const r = await fetch('pair-cue-v0.1.json?v=' + Date.now());
     CUE_DATA = await r.json();
   } catch(e){
     console.warn('pair-cue-v0.1.json load failed:', e);
