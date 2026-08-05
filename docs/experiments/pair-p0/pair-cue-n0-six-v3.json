@@ -1,0 +1,161 @@
+{
+  "schema_version": "pair-cue-v0.1",
+  "cue_set_version": "n0-six-v3",
+  "status": "internal_qa_draft",
+  "note": "DRAFT — INTERNAL QA ONLY. NOT ACTIVE LIBRARY DATA. Cue texts from N0_SIX_PAIR_CUE_DRAFT_v3.md.",
+  "axis_definitions": {
+    "aw": { "positive": "Artėjimas, įsitraukimas, kontaktas", "negative": "Atsitraukimas, distancija, izoliacija" },
+    "cs": { "positive": "Aiškumo siekimas, struktūros poreikis", "negative": "Neapibrėžtumo tolerancija, atvirumas" },
+    "cr": { "positive": "Kontrolės siekimas, struktūravimas", "negative": "Paleidimas, perdavimas, srautas" }
+  },
+  "rules": {
+    "image_choice_has_vector": false,
+    "vector_source": "selected_layer_2_cue_only",
+    "analysis_eligible_required": true
+  },
+  "pairs": [
+    {
+      "pair_id": "P0-001",
+      "images": [
+        {
+          "image_id": "P0-001-A",
+          "cues": [
+            { "cue_id": "P0-001-A-C1", "lt": "Noriu būti pasiruošęs", "en": "I want to feel prepared", "vector": {"aw":0.15,"cs":0.25,"cr":0.55}, "confidence": 0.6 },
+            { "cue_id": "P0-001-A-C2", "lt": "Per daug įpareigoja", "en": "It feels too demanding", "vector": {"aw":-0.4,"cs":0.05,"cr":-0.3}, "confidence": 0.55 },
+            { "cue_id": "P0-001-A-C3", "lt": "Atrodo patikima", "en": "It feels dependable", "vector": {"aw":0.3,"cs":0.2,"cr":0.1}, "confidence": 0.5 }
+          ]
+        },
+        {
+          "image_id": "P0-001-B",
+          "cues": [
+            { "cue_id": "P0-001-B-C1", "lt": "Noriu daugiau laisvės", "en": "I want more freedom", "vector": {"aw":0.25,"cs":-0.15,"cr":-0.6}, "confidence": 0.6 },
+            { "cue_id": "P0-001-B-C2", "lt": "Per daug neįpareigoja", "en": "It feels too unstructured", "vector": {"aw":-0.25,"cs":0.3,"cr":0.4}, "confidence": 0.55 },
+            { "cue_id": "P0-001-B-C3", "lt": "Laikas judėti", "en": "Time to get moving", "vector": {"aw":0.55,"cs":0.0,"cr":-0.15}, "confidence": 0.55 }
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "P0-002",
+      "images": [
+        {
+          "image_id": "P0-002-A",
+          "cues": [
+            { "cue_id": "P0-002-A-C1", "lt": "Noriu eiti", "en": "I want to go through", "vector": {"aw":0.65,"cs":-0.05,"cr":-0.1}, "confidence": 0.65 },
+            { "cue_id": "P0-002-A-C2", "lt": "Per daug atvira", "en": "It feels too exposed", "vector": {"aw":-0.5,"cs":0.25,"cr":0.2}, "confidence": 0.6 },
+            { "cue_id": "P0-002-A-C3", "lt": "Dar nežinau, ar žengti", "en": "I do not know whether to step in", "vector": {"aw":-0.1,"cs":0.5,"cr":0.05}, "confidence": 0.55 }
+          ]
+        },
+        {
+          "image_id": "P0-002-B",
+          "cues": [
+            { "cue_id": "P0-002-B-C1", "lt": "Čia saugiau", "en": "It feels safer here", "vector": {"aw":0.45,"cs":0.2,"cr":0.2}, "confidence": 0.6 },
+            { "cue_id": "P0-002-B-C2", "lt": "Mane stabdo", "en": "It holds me back", "vector": {"aw":-0.6,"cs":0.05,"cr":-0.1}, "confidence": 0.65 },
+            { "cue_id": "P0-002-B-C3", "lt": "Kas yra už jų?", "en": "What is beyond them?", "vector": {"aw":0.2,"cs":-0.5,"cr":0.0}, "confidence": 0.6 }
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "P0-003",
+      "images": [
+        {
+          "image_id": "P0-003-A",
+          "cues": [
+            { "cue_id": "P0-003-A-C1", "lt": "Pagaliau aišku", "en": "Now it is clear", "vector": {"aw":0.2,"cs":0.6,"cr":0.1}, "confidence": 0.65 },
+            { "cue_id": "P0-003-A-C2", "lt": "Nežinomybė buvo įdomesnė", "en": "The unknown was more interesting", "vector": {"aw":-0.05,"cs":-0.6,"cr":-0.1}, "confidence": 0.6 },
+            { "cue_id": "P0-003-A-C3", "lt": "Kažko trūksta", "en": "Something is missing", "vector": {"aw":-0.2,"cs":0.4,"cr":0.05}, "confidence": 0.55 }
+          ]
+        },
+        {
+          "image_id": "P0-003-B",
+          "cues": [
+            { "cue_id": "P0-003-B-C1", "lt": "Noriu žinoti, kas viduje", "en": "I want to know what is inside", "vector": {"aw":0.25,"cs":0.65,"cr":0.15}, "confidence": 0.65 },
+            { "cue_id": "P0-003-B-C2", "lt": "Gali palaukti", "en": "It can wait", "vector": {"aw":-0.05,"cs":-0.5,"cr":-0.25}, "confidence": 0.6 },
+            { "cue_id": "P0-003-B-C3", "lt": "Geriau neatidaryti", "en": "Better not to open it", "vector": {"aw":-0.55,"cs":0.15,"cr":0.15}, "confidence": 0.6 }
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "N0-004",
+      "analysis_eligible": true,
+      "axis_status": "provisional",
+      "cue_version": "v3",
+      "images": [
+        {
+          "image_id": "N0-004-A",
+          "cues": [
+            { "cue_id": "N0-004-A-C1", "lt": "Noriu eiti toliau", "en": "I want to keep going", "vector": null, "confidence": null },
+            { "cue_id": "N0-004-A-C2", "lt": "Smalsu, kas toliau", "en": "I'm curious what's ahead", "vector": null, "confidence": null },
+            { "cue_id": "N0-004-A-C3", "lt": "Dar neskubu pirmyn", "en": "I'm not rushing ahead yet", "vector": null, "confidence": null }
+          ]
+        },
+        {
+          "image_id": "N0-004-B",
+          "cues": [
+            { "cue_id": "N0-004-B-C1", "lt": "Čia galima sustoti", "en": "I could stop here", "vector": null, "confidence": null },
+            { "cue_id": "N0-004-B-C2", "lt": "Čia lengviau atsikvėpti", "en": "It feels easier to breathe here", "vector": null, "confidence": null },
+            { "cue_id": "N0-004-B-C3", "lt": "Toliau nematau kelio", "en": "I can't see where to go from here", "vector": null, "confidence": null }
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "N0-005",
+      "analysis_eligible": false,
+      "axis": null,
+      "axis_status": "unresolved",
+      "exclusion_reason": "axis_unresolved",
+      "cue_version": "v3",
+      "images": [
+        {
+          "image_id": "N0-005-A",
+          "cues": [
+            { "cue_id": "N0-005-A-C1", "lt": "Dar neskubu", "en": "I'm not in a hurry yet", "vector": null, "confidence": null },
+            { "cue_id": "N0-005-A-C2", "lt": "Procesas vis dar vyksta", "en": "The process is still going", "vector": null, "confidence": null },
+            { "cue_id": "N0-005-A-C3", "lt": "Nenoriu, kad baigtųsi", "en": "I don't want it to end", "vector": null, "confidence": null }
+          ]
+        },
+        {
+          "image_id": "N0-005-B",
+          "cues": [
+            { "cue_id": "N0-005-B-C1", "lt": "Daugiau jau praėjo", "en": "More has already passed", "vector": null, "confidence": null },
+            { "cue_id": "N0-005-B-C2", "lt": "Dar yra laiko", "en": "There is still time", "vector": null, "confidence": null },
+            { "cue_id": "N0-005-B-C3", "lt": "Artėja pabaiga", "en": "The end feels closer", "vector": null, "confidence": null }
+          ]
+        }
+      ]
+    },
+    {
+      "pair_id": "N0-006",
+      "analysis_eligible": false,
+      "axis": "cr",
+      "axis_status": "provisional",
+      "exclusion_reason": "placeholder_asset",
+      "cue_version": "v3",
+      "images": [
+        {
+          "image_id": "N0-006-A",
+          "cues": [
+            { "cue_id": "N0-006-A-C1", "lt": "Čia kažkas neapdorota", "en": "Something here is unfinished", "vector": null, "confidence": null },
+            { "cue_id": "N0-006-A-C2", "lt": "Norėčiau paliesti", "en": "I'd want to touch it", "vector": null, "confidence": null },
+            { "cue_id": "N0-006-A-C3", "lt": "Nelygumas trukdo", "en": "The unevenness bothers me", "vector": null, "confidence": null }
+          ]
+        },
+        {
+          "image_id": "N0-006-B",
+          "cues": [
+            { "cue_id": "N0-006-B-C1", "lt": "Čia viskas užbaigta", "en": "Everything here feels finished", "vector": null, "confidence": null },
+            { "cue_id": "N0-006-B-C2", "lt": "Lygu ir ramu", "en": "Smooth and calm", "vector": null, "confidence": null },
+            { "cue_id": "N0-006-B-C3", "lt": "Čia nėra kur užsikabinti", "en": "There's nothing here for me to latch onto", "vector": null, "confidence": null }
+          ]
+        }
+      ]
+    }
+  ],
+  "fallbacks": {
+    "custom": { "lt": "Kita mintis", "en": "Another thought", "vector": null },
+    "hard_to_say": { "lt": "Sunku pasakyti", "en": "Hard to say", "vector": null }
+  }
+}
