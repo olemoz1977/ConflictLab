@@ -43,6 +43,47 @@ body{min-height:100vh}
   gap:20px;min-height:80vh;text-align:center;
 }
 .logo{font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+
+/* ── M0: BETA MODE ── */
+.beta-badge{
+  padding:6px 14px;border-radius:20px;border:1px solid var(--accent);
+  background:rgba(124,158,143,.1);color:var(--accent);font-size:.72rem;
+  font-weight:600;margin-bottom:16px;
+}
+.beta-invalid-text, .beta-risk-text{
+  font-size:.9rem;color:var(--dim);line-height:1.6;text-align:center;
+  max-width:320px;margin:0 auto 20px;
+}
+.beta-risk-actions{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto}
+.beta-progress{
+  text-align:center;font-size:.82rem;color:var(--dim);margin-bottom:16px;
+}
+.beta-recommend-note{
+  text-align:center;font-size:.78rem;color:var(--faint);margin-top:8px;font-style:italic;
+}
+.beta-feedback-block{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px;margin-bottom:16px;
+}
+.beta-question{font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:10px;line-height:1.5}
+.beta-options{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.beta-opt-btn{
+  padding:12px 14px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.85rem;text-align:left;
+  cursor:pointer;transition:all 180ms;
+}
+.beta-opt-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(124,158,143,.1)}
+.beta-optional-input{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.85rem;padding:10px;outline:none;margin-top:8px;
+}
+.beta-interview-progress{text-align:center;font-size:.78rem;color:var(--faint);margin-bottom:16px}
+.beta-interview-item{margin-bottom:20px}
+.beta-interview-q{font-size:.88rem;color:var(--text);font-weight:500;margin-bottom:8px;line-height:1.5}
+.beta-interview-textarea{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.85rem;padding:10px;outline:none;resize:none;min-height:50px;
+}
 .intro-title{font-size:1.5rem;font-weight:300}
 .intro-sub{font-size:.9rem;color:var(--dim);line-height:1.6;max-width:280px}
 .lang-row{display:flex;gap:10px}
@@ -370,6 +411,7 @@ body{min-height:100vh}
 <!-- INTRO -->
 <div id="screen-intro" class="screen active">
   <div class="screen-body">
+    <div class="beta-badge" id="beta-badge" style="display:none"></div>
     <div class="logo">ConflictLab</div>
     <div class="intro-title" id="txt-subtitle"></div>
     <div class="intro-sub" id="txt-instruction"></div>
@@ -514,6 +556,55 @@ body{min-height:100vh}
   </div>
 </div>
 
+<!-- BETA: SESSION FEEDBACK (6 questions) -->
+<div id="screen-beta-feedback" class="screen">
+  <div class="screen-header" id="txt-beta-feedback-header"></div>
+  <div class="screen-body" id="beta-feedback-body"></div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="beta-feedback-continue-btn" onclick="submitBetaSessionFeedback()"></button>
+  </div>
+</div>
+
+<!-- BETA: POST-TEST INTERVIEW (10 questions) -->
+<div id="screen-beta-interview" class="screen">
+  <div class="screen-header" id="txt-beta-interview-header"></div>
+  <div class="screen-body" id="beta-interview-body"></div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="beta-interview-finish-btn" onclick="finishBetaInterview()"></button>
+  </div>
+</div>
+
+<!-- BETA: COMPLETED -->
+<div id="screen-beta-completed" class="screen">
+  <div class="screen-body">
+    <div class="done-check">✓</div>
+    <div class="done-title" id="txt-beta-completed-title"></div>
+    <div class="done-sub" id="txt-beta-completed-sub"></div>
+    <div class="beta-risk-actions" style="margin-top:20px">
+      <button class="btn-primary" onclick="exportBetaResults()" id="txt-export-beta-results"></button>
+      <button class="btn-danger-outline" onclick="openClearModal(false)" id="txt-clear-beta-and-p0"></button>
+    </div>
+  </div>
+</div>
+
+<!-- BETA: INVALID ID -->
+<div id="screen-beta-invalid" class="screen">
+  <div class="screen-body">
+    <div class="beta-invalid-text" id="txt-beta-invalid"></div>
+  </div>
+</div>
+
+<!-- BETA: PRIOR DATA RISK -->
+<div id="screen-beta-risk" class="screen">
+  <div class="screen-body">
+    <div class="beta-risk-text" id="txt-beta-risk"></div>
+    <div class="beta-risk-actions">
+      <button class="btn-primary" id="txt-beta-risk-export-clear" onclick="handleBetaRiskExportClear()"></button>
+      <button class="btn-ghost" id="txt-beta-risk-cancel" onclick="handleBetaRiskCancel()"></button>
+    </div>
+  </div>
+</div>
+
 <!-- DEBUG BAR — natūraliame document flow apačioje, scrollinamas kartu su turiniu -->
 <div id="debug-bar">
   <span>P0 debug</span>
@@ -526,6 +617,104 @@ body{min-height:100vh}
 <script>
 // ── NAMESPACE ────────────────────────────────────────
 const NS = 'cl_pair_p0_';
+const BETA_NS = 'cl_pair_p0_beta_';
+
+// ── M0 STAGE: REMOTE BETA MODE ──────────────────────────
+// Beta režimas aktyvuojamas TIK per validų ?beta=P01 URL parametrą.
+// BETA_NS prasideda NS prefiksu, todėl J0 valymas ('startsWith(NS)')
+// automatiškai apims visus beta raktus be jokių pakeitimų clearAllPairP0Data().
+let betaMode = false;
+let betaParticipantId = null;
+let betaState = null; // { participant_id, beta_version, started_at, completed_at, session_feedback:[], post_test_interview }
+
+function parseBetaParam(){
+  const params = new URLSearchParams(location.search);
+  const raw = params.get('beta');
+  if(!raw) return null;
+  if(!/^P\d{2}$/.test(raw)) return 'INVALID';
+  return raw;
+}
+
+function loadOrCreateBetaState(participantId){
+  const key = BETA_NS + 'participant';
+  try {
+    const existing = JSON.parse(localStorage.getItem(key) || 'null');
+    if(existing && existing.participant_id === participantId){
+      return existing; // atkurti tą patį dalyvį
+    }
+  } catch(e){}
+
+  const fresh = {
+    participant_id: participantId,
+    beta_version: 'remote-beta-v1',
+    started_at: new Date().toISOString(),
+    completed_at: null,
+    session_feedback: [],
+    post_test_interview: null
+  };
+  try { localStorage.setItem(key, JSON.stringify(fresh)); } catch(e){}
+  return fresh;
+}
+
+function saveBetaState(){
+  if(!betaState) return;
+  try { localStorage.setItem(BETA_NS + 'participant', JSON.stringify(betaState)); } catch(e){}
+}
+
+// Patikrina, ar naršyklėje jau yra ankstesnio dalyvio ar ankstesnių Pair P0
+// duomenų prieš leidžiant pradėti naują beta dalyvį — apsauga nuo sesijų susimaišymo.
+function detectPriorBetaRisk(newParticipantId){
+  let existingBetaId = null;
+  try {
+    const existing = JSON.parse(localStorage.getItem(BETA_NS + 'participant') || 'null');
+    if(existing && existing.participant_id) existingBetaId = existing.participant_id;
+  } catch(e){}
+
+  const hasOtherParticipant = existingBetaId && existingBetaId !== newParticipantId;
+  const hasCompletedSessions = getCompletedSessions().length > 0;
+
+  // Rizika: arba kitas beta dalyvis jau užregistruotas, arba yra completed
+  // sesijų, kurios nepriklauso šiam beta dalyviui (pvz. jei beta niekada
+  // nebuvo aktyvuotas, bet žmogus jau naudojo P0 įprastu režimu).
+  if(hasOtherParticipant) return true;
+  if(!existingBetaId && hasCompletedSessions) return true;
+  return false;
+}
+
+function updateBetaBadge(){
+  const badge = document.getElementById('beta-badge');
+  if(!badge) return;
+  if(betaMode && betaParticipantId){
+    const tmpl = txt('beta_badge_label') || 'Beta test · Participant {id}';
+    badge.textContent = tmpl.replace('{id}', betaParticipantId);
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderBetaPriorRiskScreen(){
+  document.getElementById('txt-beta-risk').textContent = txt('beta_prior_risk_text') ||
+    "This browser already contains earlier Pair P0 data. To prevent different participants' sessions from being mixed, export and clear the earlier data before starting.";
+  document.getElementById('txt-beta-risk-export-clear').textContent = txt('export_and_clear') || 'Export and clear';
+  document.getElementById('txt-beta-risk-cancel').textContent = txt('cancel_beta_test') || 'Cancel beta test';
+  show('beta-risk');
+}
+
+function handleBetaRiskExportClear(){
+  // Naudoja jau egzistuojantį J0 saugų eksportavimo+valymo modalą.
+  openClearModal(true);
+}
+
+function handleBetaRiskCancel(){
+  // Atšaukti beta testą — grąžinti į paprastą intro be beta parametro poveikio.
+  betaMode = false;
+  betaParticipantId = null;
+  betaState = null;
+  show('intro');
+}
+
+
 const IS_DEBUG = new URLSearchParams(location.search).has('debug');
 
 // ── STATE ────────────────────────────────────────────
@@ -598,6 +787,8 @@ function setLang(lang){
   document.getElementById('txt-history-header').textContent = txt('your_sessions') || 'Your sessions';
   document.getElementById('txt-back-to-intro').textContent = txt('back') || 'Back';
   document.getElementById('txt-back-to-history').textContent = txt('back_to_history') || 'Back to history';
+  document.getElementById('txt-beta-invalid').textContent = txt('beta_invalid_id') || 'The beta participant ID is invalid.';
+  updateBetaBadge();
   document.getElementById('txt-radar-back').textContent = txt('back_to_history') || 'Back to history';
   document.documentElement.lang = lang;
 
@@ -642,6 +833,28 @@ async function init(){
   }
 
   setLang(detected);
+
+  // ── M0: beta parametro apdorojimas ──────────────────
+  const betaParam = parseBetaParam();
+  if(betaParam === 'INVALID'){
+    show('beta-invalid');
+    if(IS_DEBUG){ document.getElementById('dbg-info').textContent = `pairs:${PAIRS.length}`; }
+    return;
+  }
+  if(betaParam){
+    betaParticipantId = betaParam;
+    betaMode = true;
+
+    if(detectPriorBetaRisk(betaParticipantId)){
+      renderBetaPriorRiskScreen();
+      if(IS_DEBUG){ document.getElementById('dbg-info').textContent = `pairs:${PAIRS.length}`; }
+      return;
+    }
+
+    betaState = loadOrCreateBetaState(betaParticipantId);
+    updateBetaBadge();
+  }
+
   show('intro');
 
   if(IS_DEBUG){
@@ -1438,6 +1651,14 @@ function submitFeedback(){
   };
   completeSession();
   stopAudioSmoothly();
+
+  // M0: beta režime po feedback rodomas papildomas 6 klausimų blokas,
+  // susietas su ką tik užbaigtos sesijos session_id, prieš "Ačiū" ekraną.
+  if(betaMode){
+    renderBetaSessionFeedback();
+    return;
+  }
+
   show('done');
 }
 
@@ -1975,8 +2196,342 @@ function performClearData(){
 
   lastClearStatus = txt('data_cleared_success') || 'Pair P0 data in this browser has been cleared.';
 
+  // M0: jei valymas buvo paleistas dėl beta dalyvio konflikto (prior-risk ekranas),
+  // po sėkmingo valymo automatiškai užregistruoti dabartinį beta dalyvį ir tęsti
+  // į normalų intro, o ne rodyti tuščią istoriją.
+  if(betaMode && betaParticipantId){
+    betaState = loadOrCreateBetaState(betaParticipantId);
+    closeClearModal();
+    updateBetaBadge();
+    show('intro');
+    return;
+  }
+
   closeClearModal();
   showHistory(); // perrenderina — istorija bus tuščia, radaras neberodomas
+}
+
+// ── M0: BETA SESSION FEEDBACK (6 questions) ────────────
+let betaFeedbackAnswers = {};
+
+function countBetaCompletedSessions(){
+  if(!betaState) return 0;
+  return betaState.session_feedback.length;
+}
+
+function renderBetaSessionFeedback(){
+  betaFeedbackAnswers = {};
+  const body = document.getElementById('beta-feedback-body');
+  body.innerHTML = '';
+
+  document.getElementById('txt-beta-feedback-header').textContent = txt('beta_feedback_header') || 'A few quick questions';
+
+  const progress = document.createElement('div');
+  progress.className = 'beta-progress';
+  const doneCount = countBetaCompletedSessions(); // dar neįtraukus šios sesijos
+  const tmpl = txt('beta_sessions_progress') || 'Completed beta sessions: {n} of 3';
+  progress.textContent = tmpl.replace('{n}', doneCount); // atnaujinama po submit
+  body.appendChild(progress);
+
+  // Q1: clarity
+  addBetaChoiceQuestion(body, 'clarity', txt('beta_q1') || 'Was it clear what you were asked to do?', [
+    { key:'yes', label: txt('yes') || 'Yes' },
+    { key:'partly', label: txt('beta_partly') || 'Partly' },
+    { key:'no', label: txt('no') || 'No' }
+  ]);
+
+  // Q2: choice basis (+ other text)
+  addBetaChoiceQuestion(body, 'choice_basis', txt('beta_q2') || 'How did you mainly choose between the images?', [
+    { key:'first_reaction', label: txt('beta_q2_opt1') || 'By my first reaction' },
+    { key:'visual_appeal', label: txt('beta_q2_opt2') || 'By visual appeal' },
+    { key:'familiarity', label: txt('beta_q2_opt3') || 'By familiarity' },
+    { key:'meaning', label: txt('beta_q2_opt4') || 'By what the image meant to me' },
+    { key:'hard_to_say', label: txt('beta_q2_opt5') || 'Hard to say' },
+    { key:'other', label: txt('beta_q2_opt6') || 'Other' }
+  ], true);
+
+  // Q3: cue effect
+  addBetaChoiceQuestion(body, 'cue_effect', txt('beta_q3') || 'The suggested wordings...', [
+    { key:'helped', label: txt('beta_q3_opt1') || 'Helped me describe my reaction' },
+    { key:'helped_but_influenced', label: txt('beta_q3_opt2') || 'Helped somewhat but also influenced me' },
+    { key:'influenced_more', label: txt('beta_q3_opt3') || 'Influenced me more than helped' },
+    { key:'did_not_fit', label: txt('beta_q3_opt4') || 'Did not fit' },
+    { key:'hard_to_say', label: txt('beta_q3_opt5') || 'Hard to say' }
+  ]);
+
+  // Q4: literal helped (+ optional text on yes)
+  addBetaChoiceQuestion(body, 'literal_helped', txt('beta_q4') || 'Did seeing your chosen words together help you notice anything else?', [
+    { key:'yes', label: txt('yes') || 'Yes' },
+    { key:'no', label: txt('no') || 'No' },
+    { key:'unsure', label: txt('beta_hard_to_say') || 'Hard to say' }
+  ], false, 'yes', 'literal_notice_text', txt('beta_q4_followup') || 'What did you notice?');
+
+  // Q5: overclaim signal (+ optional text on yes)
+  addBetaChoiceQuestion(body, 'overclaim_signal', txt('beta_q5') || 'Did anything make it seem that the system knew more about you than it could actually know?', [
+    { key:'yes', label: txt('yes') || 'Yes' },
+    { key:'no', label: txt('no') || 'No' },
+    { key:'unsure', label: txt('beta_hard_to_say') || 'Hard to say' }
+  ], false, 'yes', 'overclaim_text', txt('beta_q5_followup') || 'What specifically?');
+
+  // Q6: return intention (+ optional text always)
+  addBetaChoiceQuestion(body, 'return_intention', txt('beta_q6') || 'Would you want to do another session at another time?', [
+    { key:'yes', label: txt('yes') || 'Yes' },
+    { key:'maybe', label: txt('maybe') || 'Maybe' },
+    { key:'no', label: txt('no') || 'No' }
+  ], false, null, 'return_reason', txt('beta_q6_followup') || 'Why?', true);
+
+  document.getElementById('beta-feedback-continue-btn').textContent = txt('continue_btn') || 'Continue';
+  updateBetaFeedbackContinueState();
+
+  show('beta-feedback');
+}
+
+// Universali pagalbinė funkcija vieno pasirinkimo klausimui su neprivalomu tekstiniu lauku.
+function addBetaChoiceQuestion(body, key, questionText, options, hasOtherText, followupOnKey, followupField, followupLabel, alwaysShowFollowup){
+  const block = document.createElement('div');
+  block.className = 'beta-feedback-block';
+
+  const q = document.createElement('div');
+  q.className = 'beta-question';
+  q.textContent = questionText;
+  block.appendChild(q);
+
+  const opts = document.createElement('div');
+  opts.className = 'beta-options';
+
+  let followupInput = null;
+
+  function ensureFollowup(show){
+    if(followupInput) followupInput.remove();
+    followupInput = null;
+    if(!show) return;
+    followupInput = document.createElement('input');
+    followupInput.className = 'beta-optional-input';
+    followupInput.placeholder = followupLabel || '';
+    followupInput.value = betaFeedbackAnswers[followupField] || '';
+    followupInput.oninput = () => { betaFeedbackAnswers[followupField] = followupInput.value; };
+    block.appendChild(followupInput);
+  }
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'beta-opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      opts.querySelectorAll('.beta-opt-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      betaFeedbackAnswers[key] = opt.key;
+
+      if(hasOtherText && opt.key === 'other'){
+        ensureFollowup(true);
+        if(!followupField){
+          // 'other' teksto laukas naudoja key + '_other' pavadinimą
+          followupInput.oninput = () => { betaFeedbackAnswers[key + '_other'] = followupInput.value; };
+        }
+      } else if(followupField && opt.key === followupOnKey){
+        ensureFollowup(true);
+      } else if(!alwaysShowFollowup){
+        ensureFollowup(false);
+      }
+
+      updateBetaFeedbackContinueState();
+    };
+    opts.appendChild(btn);
+  });
+
+  block.appendChild(opts);
+
+  if(alwaysShowFollowup){
+    ensureFollowup(true);
+  }
+
+  body.appendChild(block);
+}
+
+function updateBetaFeedbackContinueState(){
+  const btn = document.getElementById('beta-feedback-continue-btn');
+  if(!btn) return;
+  const required = ['clarity','choice_basis','cue_effect','literal_helped','overclaim_signal','return_intention'];
+  const allAnswered = required.every(k => betaFeedbackAnswers[k]);
+  btn.disabled = !allAnswered;
+}
+
+function submitBetaSessionFeedback(){
+  const entry = {
+    session_id: SESSION.session_id,
+    session_number: countBetaCompletedSessions() + 1,
+    completed_at: new Date().toISOString(),
+    clarity: betaFeedbackAnswers.clarity || null,
+    choice_basis: betaFeedbackAnswers.choice_basis || null,
+    choice_basis_other: betaFeedbackAnswers.choice_basis_other || '',
+    cue_effect: betaFeedbackAnswers.cue_effect || null,
+    literal_helped: betaFeedbackAnswers.literal_helped || null,
+    literal_notice_text: betaFeedbackAnswers.literal_notice_text || '',
+    overclaim_signal: betaFeedbackAnswers.overclaim_signal || null,
+    overclaim_text: betaFeedbackAnswers.overclaim_text || '',
+    return_intention: betaFeedbackAnswers.return_intention || null,
+    return_reason: betaFeedbackAnswers.return_reason || ''
+  };
+
+  betaState.session_feedback.push(entry);
+  saveBetaState();
+
+  show('done');
+  renderBetaProgressOnDone();
+}
+
+function renderBetaProgressOnDone(){
+  // Papildo esamą "Ačiū" ekraną beta progreso info ir, jei >=3, nuoroda į interviu.
+  const holder = document.getElementById('txt-done-sub');
+  if(!holder || !betaState) return;
+
+  const count = countBetaCompletedSessions();
+  const tmpl = txt('beta_sessions_progress') || 'Completed beta sessions: {n} of 3';
+  let text = tmpl.replace('{n}', count);
+
+  if(count < 3){
+    text += ' ' + (txt('beta_next_session_note') || 'Complete the next session at another time when convenient.');
+  }
+  holder.textContent = text;
+
+  const existingBtn = document.getElementById('beta-complete-interview-btn');
+  if(existingBtn) existingBtn.remove();
+
+  if(count >= 3 && !betaState.completed_at){
+    const btn = document.createElement('button');
+    btn.id = 'beta-complete-interview-btn';
+    btn.className = 'btn-primary';
+    btn.style.marginTop = '16px';
+    btn.textContent = txt('complete_beta_test') || 'Complete beta test';
+    btn.onclick = renderBetaInterview;
+    document.getElementById('screen-done').querySelector('.screen-body').appendChild(btn);
+  }
+}
+
+// ── M0: BETA POST-TEST INTERVIEW (10 questions) ────────
+const BETA_INTERVIEW_QUESTIONS = [
+  { key:'q1', textKey:'beta_iv_q1', fallback:'What did you think the tool was asking you to do?' },
+  { key:'q2', textKey:'beta_iv_q2', fallback:'How did you decide between the images?' },
+  { key:'q3', textKey:'beta_iv_q3', fallback:'Did the suggested wordings help you describe your reaction, or did they influence it?' },
+  { key:'q4', textKey:'beta_iv_q4', fallback:'Did seeing your chosen words together add anything?' },
+  { key:'q5', textKey:'beta_iv_q5', fallback:'Was there a moment when the tool seemed to say more than it could actually know?' },
+  { key:'q6', textKey:'beta_iv_q6', fallback:'What did you think the radar meant?', hasNotShown:true },
+  { key:'q7', textKey:'beta_iv_q7', fallback:'Did the radar add value, confusion, or neither?', skipIfNotShown:true },
+  { key:'q8', textKey:'beta_iv_q8', fallback:'Would you use this again without being asked?' },
+  { key:'q9', textKey:'beta_iv_q9', fallback:'What was the most confusing or least useful part?' },
+  { key:'q10', textKey:'beta_iv_q10', fallback:'In one sentence, what do you think ConflictLab currently does?' },
+];
+
+function renderBetaInterview(){
+  const body = document.getElementById('beta-interview-body');
+  body.innerHTML = '';
+
+  document.getElementById('txt-beta-interview-header').textContent = txt('complete_beta_test') || 'Complete beta test';
+
+  const eligible = getEligibleSessions();
+  const radarWasShown = eligible.length >= RADAR_MIN_SESSIONS;
+
+  const existingAnswers = (betaState.post_test_interview && betaState.post_test_interview.answers) || {};
+
+  const progress = document.createElement('div');
+  progress.className = 'beta-interview-progress';
+  body.appendChild(progress);
+
+  function updateProgress(){
+    const answered = BETA_INTERVIEW_QUESTIONS.filter(q => (existingAnswers[q.key] || '').trim().length > 0).length;
+    const tmpl = txt('beta_interview_progress') || '{n} / 10';
+    progress.textContent = tmpl.replace('{n}', answered);
+  }
+
+  BETA_INTERVIEW_QUESTIONS.forEach(q => {
+    if(q.skipIfNotShown && !radarWasShown) return;
+
+    const item = document.createElement('div');
+    item.className = 'beta-interview-item';
+
+    const qText = document.createElement('div');
+    qText.className = 'beta-interview-q';
+    qText.textContent = txt(q.textKey) || q.fallback;
+    item.appendChild(qText);
+
+    if(q.hasNotShown && !radarWasShown){
+      const notShown = document.createElement('div');
+      notShown.className = 'beta-question';
+      notShown.style.color = 'var(--faint)';
+      notShown.style.fontStyle = 'italic';
+      notShown.textContent = txt('radar_not_shown_note') || 'The radar was not shown.';
+      item.appendChild(notShown);
+      existingAnswers[q.key] = existingAnswers[q.key] || '__not_shown__';
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.className = 'beta-interview-textarea';
+      textarea.value = existingAnswers[q.key] || '';
+      textarea.oninput = () => {
+        existingAnswers[q.key] = textarea.value;
+        betaState.post_test_interview = betaState.post_test_interview || { completed_at:null, answers:{} };
+        betaState.post_test_interview.answers = existingAnswers;
+        saveBetaState();
+        updateProgress();
+      };
+      item.appendChild(textarea);
+    }
+
+    body.appendChild(item);
+  });
+
+  betaState.post_test_interview = betaState.post_test_interview || { completed_at:null, answers:{} };
+  betaState.post_test_interview.answers = existingAnswers;
+  saveBetaState();
+
+  updateProgress();
+
+  document.getElementById('beta-interview-finish-btn').textContent = txt('complete_beta_test') || 'Complete beta test';
+
+  show('beta-interview');
+}
+
+function finishBetaInterview(){
+  betaState.post_test_interview.completed_at = new Date().toISOString();
+  betaState.completed_at = new Date().toISOString();
+  saveBetaState();
+
+  document.getElementById('txt-beta-completed-title').textContent = txt('beta_test_completed') || 'Beta test completed';
+  document.getElementById('txt-beta-completed-sub').textContent = '';
+  document.getElementById('txt-export-beta-results').textContent = txt('export_beta_results') || 'Export beta results';
+  document.getElementById('txt-clear-beta-and-p0').textContent = txt('clear_beta_and_p0') || 'Clear beta and Pair P0 data on this device';
+
+  show('beta-completed');
+}
+
+// ── M0: BETA EXPORT ─────────────────────────────────────
+function exportBetaResults(){
+  const completed = getCompletedSessions(); // šiame naršyklės kontekste tik šio dalyvio sesijos
+
+  const exportData = {
+    format: 'conflictlab-remote-beta',
+    schema_version: '1.0',
+    beta_version: 'remote-beta-v1',
+    participant_id: betaParticipantId,
+    exported_at: new Date().toISOString(),
+    app: 'ConflictLab Pair P0',
+    pair_p0_version: 'pair-p0-j0-stable',
+    sessions: completed,
+    session_feedback: betaState.session_feedback,
+    post_test_interview: betaState.post_test_interview,
+    technical_context: {
+      language: currentLang,
+      viewport_width: window.innerWidth,
+      viewport_height: window.innerHeight,
+      user_agent: navigator.userAgent
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const dateStr = new Date().toISOString().split('T')[0];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `conflictlab-beta-${betaParticipantId}-${dateStr}.json`;
+  a.click();
 }
 
 function exportHistoryFile(){
