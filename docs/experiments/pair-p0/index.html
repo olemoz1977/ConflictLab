@@ -1295,10 +1295,13 @@ function confirmCueStep(){
 
   if(microCurrentAnswer.response_type === 'hard_to_say' || microCurrentAnswer.response_type === 'custom'){
     reflectAnswers[key].reflection_text = '';
+    saveSession(); // fix(resume): cue pasirinkimas išsaugomas iškart, prieš advanceMicroFlow()
     advanceMicroFlow();
   } else {
     microStep = 'reflection';
     microCurrentAnswer = null;
+    saveSession(); // fix(resume): cue jau pasirinktas ir patvirtintas — išsaugoti PRIEŠ
+                    // patenkant į reflection žingsnį, kad perkrovimas negrąžintų atgal į cue
     renderMicroStep();
   }
 }
@@ -1309,6 +1312,9 @@ function renderReflectionStep(item, body, btn){
   const question = txt('reflection_question') || 'What feels familiar about this choice?';
   const placeholder = txt('reflection_placeholder') || 'Up to 5 words...';
   const skipLabel = txt('reflection_skip') || 'Skip';
+  // fix(resume): atkūrus po perkrovimo, jau įvestas (bet dar nepatvirtintas)
+  // tekstas turi būti rodomas teksto lauke, ne tik saugomas atmintyje.
+  const existingText = (chosen.reflection_text || '');
 
   const div = document.createElement('div');
   div.innerHTML = `
@@ -1317,7 +1323,7 @@ function renderReflectionStep(item, body, btn){
     <div class="reflection-question">${question}</div>
     <div class="reflection-row">
       <input class="reflection-input" id="reflection-input" maxlength="60"
-        placeholder="${placeholder}" oninput="onReflectionTyping(this)">
+        placeholder="${placeholder}" value="${existingText.replace(/"/g,'&quot;')}" oninput="onReflectionTyping(this)">
       <button class="reflection-skip-btn" onclick="skipReflectionStep()">${skipLabel}</button>
     </div>
   `;
@@ -1396,6 +1402,9 @@ function computeSessionVector(){
 
 function startSessionReflection(){
   logDebugEvent('SESSION_REFLECTION_OPENED');
+
+  currentSessionStage = 'session-reflection';
+  saveSession(); // fix(resume): žymi tikslų etapą, kad perkrovimas negrąžintų atgal į mikro-srautą
 
   document.getElementById('txt-sr-header').textContent = txt('session_reflection_header') || 'Look at your choices together';
 
