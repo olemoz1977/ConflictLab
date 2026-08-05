@@ -650,6 +650,7 @@ function loadOrCreateBetaState(participantId){
     beta_version: 'remote-beta-v1',
     started_at: new Date().toISOString(),
     completed_at: null,
+    radar_shown: false, // nustatoma true TIK kai radaro ekranas faktiškai atidarytas
     session_feedback: [],
     post_test_interview: null
   };
@@ -1851,6 +1852,14 @@ function showRadar(){
   const body = document.getElementById('radar-body');
   body.innerHTML = '';
 
+  // M0 fix: radar_shown žymima TIK kai radaras realiai atidaromas šiuo iškvietimu
+  // su pakankamu eligible sesijų kiekiu — ne vien todėl, kad eligibility kriterijus
+  // teoriškai įvykdytas. Tai atskiria "galėjo pamatyti" nuo "faktiškai matė".
+  if(betaMode && betaState && count >= RADAR_MIN_SESSIONS){
+    betaState.radar_shown = true;
+    saveBetaState();
+  }
+
   if(count < RADAR_MIN_SESSIONS){
     // Progreso kortelė lieka DIDELĖ tik kol radaras dar neatrakintas.
     const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
@@ -2442,10 +2451,38 @@ function renderBetaInterview(){
 
   document.getElementById('txt-beta-interview-header').textContent = txt('complete_beta_test') || 'Complete beta test';
 
+  // M0 fix: naudoti FAKTINĮ radar_shown įrašą, ne eligibility patikrą.
+  // Griežtas === true palyginimas apsaugo nuo senų beta_state objektų
+  // (prieš šį fix'ą), kuriuose lauko gali visai nebūti (undefined !== true).
+  const radarWasShown = betaState.radar_shown === true;
   const eligible = getEligibleSessions();
-  const radarWasShown = eligible.length >= RADAR_MIN_SESSIONS;
+  const radarCurrentlyEligible = eligible.length >= RADAR_MIN_SESSIONS;
 
   const existingAnswers = (betaState.post_test_interview && betaState.post_test_interview.answers) || {};
+
+  // Jei radaras dar niekada nebuvo faktiškai atidarytas, bet dalyvis JAU
+  // atitinka eligibility kriterijus — duoti jam realią galimybę pažiūrėti
+  // prieš pradedant interviu, o ne tyliai praleisti klausimus.
+  if(!radarWasShown && radarCurrentlyEligible){
+    const viewTraceBlock = document.createElement('div');
+    viewTraceBlock.className = 'beta-feedback-block';
+
+    const note = document.createElement('div');
+    note.className = 'beta-question';
+    note.textContent = txt('beta_view_trace_prompt') || 'Before continuing, you can view your current trace.';
+    viewTraceBlock.appendChild(note);
+
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'btn-primary';
+    viewBtn.style.marginTop = '10px';
+    viewBtn.textContent = txt('view_trace') || 'View your current trace';
+    viewBtn.onclick = () => {
+      showRadar(); // šis iškvietimas pats pažymi radar_shown=true
+    };
+    viewTraceBlock.appendChild(viewBtn);
+
+    body.appendChild(viewTraceBlock);
+  }
 
   const progress = document.createElement('div');
   progress.className = 'beta-interview-progress';
@@ -2458,7 +2495,12 @@ function renderBetaInterview(){
   }
 
   BETA_INTERVIEW_QUESTIONS.forEach(q => {
+    // M0 fix: q6/q7 rodomi TIK kai radaras buvo faktiškai parodytas.
+    // Jei ne — jie visiškai nerodomi ir nelaikomi privalomais, nes
+    // "nematau" čia reikštų klaidingą interpretaciją apie nesupratimą,
+    // kai iš tikrųjų funkcija niekada nebuvo pademonstruota.
     if(q.skipIfNotShown && !radarWasShown) return;
+    if(q.hasNotShown && !radarWasShown) return;
 
     const item = document.createElement('div');
     item.className = 'beta-interview-item';
@@ -2468,27 +2510,17 @@ function renderBetaInterview(){
     qText.textContent = txt(q.textKey) || q.fallback;
     item.appendChild(qText);
 
-    if(q.hasNotShown && !radarWasShown){
-      const notShown = document.createElement('div');
-      notShown.className = 'beta-question';
-      notShown.style.color = 'var(--faint)';
-      notShown.style.fontStyle = 'italic';
-      notShown.textContent = txt('radar_not_shown_note') || 'The radar was not shown.';
-      item.appendChild(notShown);
-      existingAnswers[q.key] = existingAnswers[q.key] || '__not_shown__';
-    } else {
-      const textarea = document.createElement('textarea');
-      textarea.className = 'beta-interview-textarea';
-      textarea.value = existingAnswers[q.key] || '';
-      textarea.oninput = () => {
-        existingAnswers[q.key] = textarea.value;
-        betaState.post_test_interview = betaState.post_test_interview || { completed_at:null, answers:{} };
-        betaState.post_test_interview.answers = existingAnswers;
-        saveBetaState();
-        updateProgress();
-      };
-      item.appendChild(textarea);
-    }
+    const textarea = document.createElement('textarea');
+    textarea.className = 'beta-interview-textarea';
+    textarea.value = existingAnswers[q.key] || '';
+    textarea.oninput = () => {
+      existingAnswers[q.key] = textarea.value;
+      betaState.post_test_interview = betaState.post_test_interview || { completed_at:null, answers:{} };
+      betaState.post_test_interview.answers = existingAnswers;
+      saveBetaState();
+      updateProgress();
+    };
+    item.appendChild(textarea);
 
     body.appendChild(item);
   });
@@ -2529,6 +2561,9 @@ function exportBetaResults(){
     exported_at: new Date().toISOString(),
     app: 'ConflictLab Pair P0',
     pair_p0_version: 'pair-p0-j0-stable',
+    pair_p0_base_version: 'pair-p0-j0-stable',
+    remote_beta_build: 'fix-radar-gate-2026-08-05',
+    radar_shown: betaState.radar_shown === true,
     sessions: completed,
     session_feedback: betaState.session_feedback,
     post_test_interview: betaState.post_test_interview,
