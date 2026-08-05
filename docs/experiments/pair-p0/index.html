@@ -412,6 +412,7 @@ body{min-height:100vh}
 <div id="screen-intro" class="screen active">
   <div class="screen-body">
     <div class="beta-badge" id="beta-badge" style="display:none"></div>
+    <div class="beta-progress" id="beta-start-progress" style="display:none"></div>
     <div class="logo">ConflictLab</div>
     <div class="intro-title" id="txt-subtitle"></div>
     <div class="intro-sub" id="txt-instruction"></div>
@@ -683,13 +684,26 @@ function detectPriorBetaRisk(newParticipantId){
 
 function updateBetaBadge(){
   const badge = document.getElementById('beta-badge');
+  const progress = document.getElementById('beta-start-progress');
   if(!badge) return;
+
   if(betaMode && betaParticipantId){
     const tmpl = txt('beta_badge_label') || 'Beta test · Participant {id}';
     badge.textContent = tmpl.replace('{id}', betaParticipantId);
     badge.style.display = 'inline-block';
+
+    // Rodo sesijų progresą iš karto pradiniame ekrane, ne tik "Ačiū" ekrane.
+    // Skaičiuoja tik sesijas su beta feedback įrašu — ta pati logika kaip
+    // countBetaCompletedSessions(), be jokio pakeitimo skaičiavime.
+    if(progress){
+      const count = countBetaCompletedSessions();
+      const tmpl2 = txt('beta_sessions_progress') || 'Completed beta sessions: {n} of 3';
+      progress.textContent = tmpl2.replace('{n}', count);
+      progress.style.display = 'block';
+    }
   } else {
     badge.style.display = 'none';
+    if(progress) progress.style.display = 'none';
   }
 }
 
