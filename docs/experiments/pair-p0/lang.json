@@ -109,7 +109,20 @@
     "imported_count": "Importuotos sesijos: {n}",
     "already_on_device": "Jau buvo šiame įrenginyje: {n}",
     "invalid_records": "Netinkami įrašai: {n}",
-    "cannot_find_sessions": "Nerandi ankstesnių sesijų?"
+    "cannot_find_sessions": "Nerandi ankstesnių sesijų?",
+    "your_session_choices": "Ką pasirinkai šioje sesijoje",
+    "your_words": "Tavo žodžiai",
+    "chosen_wording": "Pasirinkta formuluotė",
+    "choice_unstated": "Šis pasirinkimas liko neįvardytas.",
+    "choices_closing_line": "Tai yra tavo šios sesijos pasirinkti žodžiai. ConflictLab jų neaiškina už tave.",
+    "connection_question": "Ar matai, kas galėjo sieti šiuos pasirinkimus?",
+    "connection_yes": "Taip, įvardysiu",
+    "connection_not_seen": "Dar nematau",
+    "connection_prefer_not": "Nenoriu įvardyti",
+    "connection_placeholder": "Ką pats pastebi?",
+    "save_observation": "Išsaugoti pastebėjimą",
+    "connection_history_not_seen": "Ryšys tarp pasirinkimų dar neįvardytas.",
+    "connection_history_prefer_not": "Pasirinkta ryšio neįvardyti."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -221,6 +234,19 @@
     "imported_count": "Imported sessions: {n}",
     "already_on_device": "Already on this device: {n}",
     "invalid_records": "Invalid records: {n}",
-    "cannot_find_sessions": "Cannot find your earlier sessions?"
+    "cannot_find_sessions": "Cannot find your earlier sessions?",
+    "your_session_choices": "What you chose in this session",
+    "your_words": "Your words",
+    "chosen_wording": "Chosen wording",
+    "choice_unstated": "This choice was left unstated.",
+    "choices_closing_line": "These are the words you chose in this session. ConflictLab does not interpret them for you.",
+    "connection_question": "Do you notice anything that may connect these choices?",
+    "connection_yes": "Yes, I will name it",
+    "connection_not_seen": "I do not see it yet",
+    "connection_prefer_not": "I prefer not to name it",
+    "connection_placeholder": "What do you notice?",
+    "save_observation": "Save observation",
+    "connection_history_not_seen": "A connection between the choices was not yet named this time.",
+    "connection_history_prefer_not": "Chose not to name a connection this time."
   }
 }
