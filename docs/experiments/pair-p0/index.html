@@ -853,6 +853,11 @@ function setLang(lang){
   document.getElementById('txt-done-sub').textContent = txt('done_sub') || '';
   document.getElementById('txt-view-history').textContent = txt('view_history') || 'View history';
   document.getElementById('txt-start-another').textContent = txt('start_another') || 'Start another session';
+  // fix(three-session-limit): kalbos keitimas neturi atskleisti "Pradėti
+  // kitą sesiją" mygtuko, jei beta dalyvis jau pasiekė 3 sesijų ribą.
+  if(betaMode && betaState && cappedBetaSessionCount() >= 3){
+    document.getElementById('txt-start-another').style.display = 'none';
+  }
   document.getElementById('txt-history-header').textContent = txt('your_sessions') || 'Your sessions';
   document.getElementById('txt-back-to-intro').textContent = txt('back') || 'Back';
   document.getElementById('txt-back-to-history').textContent = txt('back_to_history') || 'Back to history';
@@ -1137,6 +1142,13 @@ function discardUnfinishedSession(){
 }
 
 function startExperiment(){
+  // fix(three-session-limit): neleisti pradėti 4-os beta sesijos. M0 beta
+  // testas visada baigiasi po lygiai 3 — jokia UI kelias (Pradėti kitą
+  // sesiją, tiesioginis URL, ir t.t.) neturi leisti sukurti daugiau.
+  if(betaMode && betaState && countBetaCompletedSessions() >= 3){
+    return; // tyliai neleisti — UI mygtukas šiuo momentu jau turėtų būti paslėptas
+  }
+
   if(PAIRS.length === 0){ show('nostimuli'); return; }
   currentPairIdx = 0;
 
@@ -2579,6 +2591,35 @@ function countBetaCompletedSessions(){
   return betaState.session_feedback.length;
 }
 
+// fix(three-session-limit): M0 beta testas visada baigiasi po LYGIAI 3
+// sesijų. Ši funkcija grąžina progreso skaičių apkarpytą iki 3, kad UI
+// niekada nerodytų "4 iš 3" ar "5 iš 3", net jei dėl senesnės būsenos ar
+// QA klaidos betaState.session_feedback turi daugiau įrašų.
+function cappedBetaSessionCount(){
+  return Math.min(countBetaCompletedSessions(), 3);
+}
+
+// fix(three-session-limit): pirmos 3 beta feedback sesijos (chronologine
+// tvarka pagal completed_at) — TIK jos naudojamos radaro eligibility
+// skaičiavimui ir eksportui. Bet kokios papildomos (4-os, 5-os ir t.t.)
+// sesijos, atsiradusios dėl senesnės būsenos prieš šį fix'ą, laikomos
+// legacy/overflow ir NIEKADA netrinamos, bet ir nenaudojamos naujoje logikoje.
+function firstThreeBetaSessionIds(){
+  if(!betaState) return [];
+  const sorted = betaState.session_feedback
+    .slice()
+    .sort((a, b) => new Date(a.completed_at) - new Date(b.completed_at));
+  return sorted.slice(0, 3).map(f => f.session_id);
+}
+
+// fix(three-session-limit): radaro eligibility skaičiuojama TIK iš sesijų,
+// kurios yra tarp pirmų 3 beta feedback įrašų — ne iš viso completed_sessions
+// sąrašo (kuris gali turėti senesnes, ne-beta arba overflow sesijas).
+function getEligibleBetaSessions(){
+  const allowedIds = new Set(firstThreeBetaSessionIds());
+  return getEligibleSessions().filter(s => allowedIds.has(s.session_id));
+}
+
 function renderBetaSessionFeedback(){
   betaFeedbackAnswers = {};
   const body = document.getElementById('beta-feedback-body');
@@ -2745,15 +2786,17 @@ function renderBetaProgressOnDone(){
   const holder = document.getElementById('txt-done-sub');
   if(!holder || !betaState) return;
 
-  const count = countBetaCompletedSessions();
+  // fix(three-session-limit): rodomas skaičius VISADA apkarpytas iki 3.
+  const count = cappedBetaSessionCount();
 
   // TEMPORARY DEBUG LOG — pašalinti po realaus telefono patvirtinimo.
   console.log({
     point: 'beta-done-render',
     participant: betaState.participant_id,
-    completed: count,
+    completed_raw: countBetaCompletedSessions(),
+    completed_capped: count,
     radar_shown: betaState.radar_shown,
-    eligible: getEligibleSessions().length
+    eligible_beta: getEligibleBetaSessions().length
   });
   const tmpl = txt('beta_sessions_progress') || 'Completed beta sessions: {n} of 3';
   let text = tmpl.replace('{n}', count);
@@ -2763,6 +2806,14 @@ function renderBetaProgressOnDone(){
   }
   holder.textContent = text;
 
+  // fix(three-session-limit): "Pradėti kitą sesiją" mygtukas šiame ekrane
+  // paslėpiamas, kai beta dalyvis jau pasiekė 3 sesijas — M0 beta testas
+  // visada baigiasi po lygiai 3, jokių papildomų sesijų vien "radarui užpildyti".
+  const startAnotherBtn = document.getElementById('txt-start-another');
+  if(startAnotherBtn){
+    startAnotherBtn.style.display = (count >= 3) ? 'none' : '';
+  }
+
   // Pašalinti senus mygtukus prieš perrenderinant (kad nesikauptų dublikatai)
   const existingBtn = document.getElementById('beta-complete-interview-btn');
   if(existingBtn) existingBtn.remove();
@@ -2770,7 +2821,9 @@ function renderBetaProgressOnDone(){
   if(existingTraceBtn) existingTraceBtn.remove();
 
   if(count >= 3 && !betaState.completed_at){
-    const eligible = getEligibleSessions();
+    // fix(three-session-limit): eligibility skaičiuojama TIK iš pirmų 3 beta
+    // sesijų, ne iš viso completed_sessions sąrašo.
+    const eligible = getEligibleBetaSessions();
     const radarEligible = eligible.length >= RADAR_MIN_SESSIONS;
     const radarAlreadyShown = betaState.radar_shown === true;
 
@@ -2837,7 +2890,8 @@ function renderBetaInterview(){
   // Griežtas === true palyginimas apsaugo nuo senų beta_state objektų
   // (prieš šį fix'ą), kuriuose lauko gali visai nebūti (undefined !== true).
   const radarWasShown = betaState.radar_shown === true;
-  const eligible = getEligibleSessions();
+  // fix(three-session-limit): eligibility tikrinama tik iš pirmų 3 beta sesijų.
+  const eligible = getEligibleBetaSessions();
   const radarCurrentlyEligible = eligible.length >= RADAR_MIN_SESSIONS;
 
   const existingAnswers = (betaState.post_test_interview && betaState.post_test_interview.answers) || {};
@@ -2934,7 +2988,14 @@ function finishBetaInterview(){
 
 // ── M0: BETA EXPORT ─────────────────────────────────────
 function exportBetaResults(){
-  const completed = getCompletedSessions(); // šiame naršyklės kontekste tik šio dalyvio sesijos
+  // fix(three-session-limit): eksportuojamos TIK pirmos 3 beta feedback
+  // sesijos. Jei betaState.session_feedback turi daugiau (legacy/overflow
+  // dėl senesnės būsenos prieš šį fix'ą), papildomos sesijos NĖRA
+  // eksportuojamos į naują failą — jos lieka localStorage kaip legacy
+  // duomenys, bet neveikia naujo, griežto 3-sesijų eksporto formato.
+  const allowedIds = new Set(firstThreeBetaSessionIds());
+  const completed = getCompletedSessions().filter(s => allowedIds.has(s.session_id));
+  const limitedFeedback = betaState.session_feedback.filter(f => allowedIds.has(f.session_id));
 
   const exportData = {
     format: 'conflictlab-remote-beta',
@@ -2948,7 +3009,7 @@ function exportBetaResults(){
     remote_beta_build: 'fix-radar-gate-2026-08-05',
     radar_shown: betaState.radar_shown === true,
     sessions: completed,
-    session_feedback: betaState.session_feedback,
+    session_feedback: limitedFeedback,
     post_test_interview: betaState.post_test_interview,
     technical_context: {
       language: currentLang,
