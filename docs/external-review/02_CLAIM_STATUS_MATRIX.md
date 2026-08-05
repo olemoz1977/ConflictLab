@@ -9,6 +9,7 @@ This is the single most important document in this pack. Every substantive claim
 - **EXPERIMENTAL** — implemented but its value or validity is unverified; framed as a hypothesis under test
 - **HYPOTHESIS** — a proposed idea with no current supporting evidence from this project
 - **NOT ESTABLISHED** — no evidence currently exists to support this claim, and it should not be asserted
+- **NO** — the current system explicitly does not make or support this claim
 - **SPECIFIED, NOT IMPLEMENTED** — a specification exists but no code has been written
 - **SUPERSEDED** — an earlier claim or design has been replaced by a later one
 - **ARCHIVED** — historical material, not reflective of current implementation
