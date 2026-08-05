@@ -643,6 +643,13 @@ function loadOrCreateBetaState(participantId){
   try {
     const existing = JSON.parse(localStorage.getItem(key) || 'null');
     if(existing && existing.participant_id === participantId){
+      // fix(radar-gate-root-cause): migracija — jei senas state neturi
+      // radar_shown lauko (arba jis nėra griežtai boolean), priverstinai
+      // nustatyti false. Niekada nemigruoti į true pagal eligibility,
+      // sesijų skaičių ar bet kokį kitą požymį.
+      if(typeof existing.radar_shown !== 'boolean'){
+        existing.radar_shown = false;
+      }
       return existing; // atkurti tą patį dalyvį
     }
   } catch(e){}
@@ -2111,6 +2118,12 @@ function renderRadarSVG(vector){
   `;
 }
 
+// fix(radar-gate-root-cause): showRadar() PATI nebežymi radar_shown. Ši
+// atsakomybė perkelta TIK į tuos iškvietimo taškus, kurie yra privalomas
+// beta interviu srautas (renderBetaProgressOnDone "View trace" mygtukas ir
+// renderBetaInterview apsauginis mygtukas). Taip showRadar() gali būti
+// saugiai kviečiama iš bet kur (pvz. paprasto ne-beta Pair P0 srauto) be
+// šalutinio poveikio beta gating būsenai.
 function showRadar(){
   const eligible = getEligibleSessions();
   const count = eligible.length;
@@ -2119,14 +2132,6 @@ function showRadar(){
 
   const body = document.getElementById('radar-body');
   body.innerHTML = '';
-
-  // M0 fix: radar_shown žymima TIK kai radaras realiai atidaromas šiuo iškvietimu
-  // su pakankamu eligible sesijų kiekiu — ne vien todėl, kad eligibility kriterijus
-  // teoriškai įvykdytas. Tai atskiria "galėjo pamatyti" nuo "faktiškai matė".
-  if(betaMode && betaState && count >= RADAR_MIN_SESSIONS){
-    betaState.radar_shown = true;
-    saveBetaState();
-  }
 
   if(count < RADAR_MIN_SESSIONS){
     // Progreso kortelė lieka DIDELĖ tik kol radaras dar neatrakintas.
@@ -2314,13 +2319,27 @@ function showHistory(){
     showImportStatus(lastImportStatus);
   }
 
-  // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų
+  // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų.
+  // fix(radar-gate-root-cause): ŠI nuoroda buvo TIKRASIS radar_shown gating
+  // apėjimo taškas. showRadar() žymi radar_shown=true kai tik eligibility
+  // patenkinta, o šis mygtukas visada buvo pasiekiamas istorijos ekrane,
+  // nepriklausomai nuo M0 beta srauto "Peržiūrėti dabartinį pėdsaką" žingsnio.
+  // Jei beta dalyvis bet kada tarp sesijų atidarė istoriją ir paspaudė šį
+  // mygtuką būdamas jau eligible, radar_shown užsifiksuodavo true anksčiau,
+  // nei pasiekdavo privalomą pabaigos ekrano žingsnį — todėl gating atrodė
+  // "neveikiantis", nors renderBetaProgressOnDone() logika pati savaime buvo teisinga.
   const radarLink = document.createElement('button');
   radarLink.className = 'btn-ghost';
   radarLink.style.marginBottom = '16px';
   radarLink.textContent = txt('view_trace') || 'View your current trace';
   radarLink.onclick = showRadar;
-  body.appendChild(radarLink);
+  if(!betaMode){
+    // Ne-beta įprastame Pair P0 sraute šis mygtukas lieka kaip buvęs.
+    body.appendChild(radarLink);
+  }
+  // Beta režime ŠIS mygtukas NERODOMAS — vienintelis kelias į radarą beta
+  // sraute yra privalomas "Peržiūrėti dabartinį pėdsaką" žingsnis pabaigos
+  // ekrane (renderBetaProgressOnDone), kuris tinkamai seka radar_shown.
 
   if(sessions.length === 0){
     const empty = document.createElement('div');
@@ -2714,6 +2733,15 @@ function renderBetaProgressOnDone(){
   if(!holder || !betaState) return;
 
   const count = countBetaCompletedSessions();
+
+  // TEMPORARY DEBUG LOG — pašalinti po realaus telefono patvirtinimo.
+  console.log({
+    point: 'beta-done-render',
+    participant: betaState.participant_id,
+    completed: count,
+    radar_shown: betaState.radar_shown,
+    eligible: getEligibleSessions().length
+  });
   const tmpl = txt('beta_sessions_progress') || 'Completed beta sessions: {n} of 3';
   let text = tmpl.replace('{n}', count);
 
@@ -2742,7 +2770,12 @@ function renderBetaProgressOnDone(){
       traceBtn.style.marginTop = '16px';
       traceBtn.textContent = txt('view_trace') || 'View your current trace';
       traceBtn.onclick = () => {
-        showRadar(); // pažymi betaState.radar_shown = true viduje
+        // fix(radar-gate-root-cause): žymėjimas dabar EKSPLICITINIS, tik šiame
+        // konkrečiame, privalomame beta srauto taške — ne pačios showRadar()
+        // vidinė logika, kuri būtų veikusi ir per seną istorijos ekrano nuorodą.
+        showRadar();
+        betaState.radar_shown = true;
+        saveBetaState();
         // Po grįžimo iš radaro ekrano, "Baigti sesiją" mygtukas radaro
         // ekrane veda atgal į showHistory() pagal esamą logiką — bet mums
         // reikia grįžti į DONE ekraną su jau aktyviu Complete beta test.
@@ -2816,7 +2849,10 @@ function renderBetaInterview(){
     viewBtn.style.marginTop = '10px';
     viewBtn.textContent = txt('view_trace') || 'View your current trace';
     viewBtn.onclick = () => {
-      showRadar(); // šis iškvietimas pats pažymi radar_shown=true
+      // fix(radar-gate-root-cause): eksplicitinis žymėjimas, ne showRadar() vidinė logika.
+      showRadar();
+      betaState.radar_shown = true;
+      saveBetaState();
     };
     viewTraceBlock.appendChild(viewBtn);
 
