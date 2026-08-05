@@ -780,10 +780,55 @@ function show(id){
 function txt(key){ return L[key] || key; }
 
 // ── LANGUAGE ─────────────────────────────────────────
+// fix(lt-localization): perskaičiuoja jau pasirinktų standartinių cue tekstus
+// pagal naują kalbą. Custom (vartotojo įvestas) tekstas ir hard_to_say NIEKADA
+// nekeičiami — tik cue_text laukas standartiniams response_type==='cue'
+// pasirinkimams. Naudoja cue_id, kad rastų teisingą lt/en reikšmę CUE_DATA
+// šaltinyje, o ne palieka tekstą užfiksuotą ta kalba, kuria buvo pasirinktas.
+function retranslateChosenCues(lang){
+  if(!CUE_DATA) return;
+
+  function findCueById(cueId){
+    for(const pair of CUE_DATA.pairs || []){
+      for(const img of pair.images || []){
+        for(const c of img.cues || []){
+          if(c.cue_id === cueId) return c;
+        }
+      }
+    }
+    return null;
+  }
+
+  Object.keys(reflectAnswers || {}).forEach(key => {
+    const answer = reflectAnswers[key];
+    if(answer && answer.response_type === 'cue' && answer.cue_id){
+      const cue = findCueById(answer.cue_id);
+      if(cue){
+        answer.cue_text = lang === 'lt' ? cue.lt : cue.en;
+      }
+    }
+  });
+
+  // Taip pat perskaičiuoti jau užbaigtus (SESSION.reflections) įrašus, jei
+  // sesija dar aktyvi ir vartotojas grįžta į rezultato/istorijos ekraną
+  // pakeitęs kalbą prieš baigiant sesiją.
+  if(SESSION && Array.isArray(SESSION.reflections)){
+    SESSION.reflections.forEach(r => {
+      if(r.response_type === 'cue' && r.cue_id){
+        const cue = findCueById(r.cue_id);
+        if(cue){
+          r.cue_text = lang === 'lt' ? cue.lt : cue.en;
+        }
+      }
+    });
+  }
+}
+
 function setLang(lang){
   currentLang = lang;
   SESSION.language = lang;
   L = LANGS[lang] || LANGS['lt'] || {};
+  retranslateChosenCues(lang);
 
   document.getElementById('btn-lt').classList.toggle('active', lang === 'lt');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
