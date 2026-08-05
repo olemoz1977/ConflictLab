@@ -369,7 +369,9 @@ Ambient lighting condition:
 
 `[UNRESOLVED QUESTION]` Whether this inherent valence asymmetry is an acceptable disclosed limitation (analogous to P0-002's open/closed conceptual asymmetry) — or whether it is strong enough to disqualify the concept — requires human methodological decision.
 
-**Status: HOLD — production can be controlled, conceptual valence asymmetry unresolved**
+**Status: REJECT — inherent growth-valence asymmetry**
+
+`[METHODOLOGICAL DECISION]` Replaced by N0-005-C4 (hourglass intermediate states). Human decision recorded 2026-08-05: growth stages carry an inherent valence asymmetry (more leaves / larger plant / fuller silhouette reads as "better result") that cannot be resolved through production control alone. This is a conceptual property of the stimulus family, not a production variable.
 
 ---
 
@@ -396,3 +398,88 @@ Ambient lighting condition:
 `[PRODUCTION FINDING]` The A/B partner must be produced via reference-based edit of the base image — not as a separate generation. Separate A and B generation introduces too many uncontrolled differences across shape, lighting, color temperature, and composition.
 
 `[MANUAL AUDIT JUDGMENT]` In this prototype round, Gemini's reference editing retained scene consistency better than separate Kling generation. This is a specific observation about these prototypes — not a general model quality claim.
+
+---
+
+## N0-005-C4 — Hourglass: intermediate states
+
+**Slot:** N0-005 | **Provisional axis:** CS | **Replaces:** N0-005-C1 (plant stages, rejected) | **Production method:** Single base image → reference edit for A/B
+
+### Human decision (2026-08-05)
+
+N0-005-C1 (plant growth stages) rejected due to inherent growth-valence asymmetry. N0-005-C4 (hourglass) selected as replacement. Human verdict: **ADVANCE TO REFINEMENT**.
+
+### Current status
+
+**ADVANCE TO REFINEMENT**
+
+A prototype pair exists and has been reviewed. The core contrast is readable, the object is matched, and neither state reads as universally preferable.
+
+### Prototype review findings
+
+`[OBSERVED FACT]` Same object, same background, same camera angle, same lighting across both images — production matching is strong.
+
+`[OBSERVED FACT]` Glass silhouette and composition are consistent between A and B.
+
+`[OBSERVED FACT]` Current prototype ratio is approximately 70/30 (Image A) vs 60/40 (Image B) — asymmetric, not the intended contrast.
+
+`[OBSERVED FACT]` Sand mound shape in the lower chamber differs between images.
+
+`[OBSERVED FACT]` Upper sand surface texture differs slightly between images.
+
+`[OBSERVED FACT]` Falling sand stream appears at different widths between images.
+
+`[OBSERVED FACT]` Minor differences in background and glass reflections.
+
+`[MANUAL AUDIT JUDGMENT]` Despite these production inconsistencies, the primary A/B signal — more sand above vs. more sand below — is readable. This is the correct semantic contrast for N0-005.
+
+`[MANUAL AUDIT JUDGMENT]` Neither state reads as "better" or "worse" — both are intermediate process states of a functioning object. This is the key methodological advantage over N0-005-C1.
+
+### Single permitted A/B difference
+
+Sand distribution between upper and lower chamber:
+- **Image A:** approximately 60% sand in upper chamber / 40% in lower
+- **Image B:** approximately 40% sand in upper chamber / 60% in lower
+
+Both states are intermediate — not "full/empty" extremes. Total sand volume must appear identical in both images.
+
+### What must remain identical
+
+- Glass silhouette, shape, and size
+- Sand mound shape in lower chamber (same form for same sand quantity)
+- Falling sand stream width and appearance
+- Background (color, texture, any reflections)
+- Lighting direction and color temperature
+- Camera position, angle, and distance
+- Total visible sand quantity
+
+### Disqualifying confounds
+
+- `[REJECT IF]` Ratio reaches 80/20 or beyond in either direction — extreme states introduce urgency or completion valence
+- `[REJECT IF]` Sand mound shape differs significantly between A and B despite same quantity — shape becomes an independent variable
+- `[REJECT IF]` Falling sand stream differs visibly in width or density — implies different flow rate, not just position
+- `[REJECT IF]` Background, lighting, or glass geometry differs between images
+- `[REJECT IF]` One image appears brighter or warmer than the other
+
+### Known methodological limitation
+
+`[MANUAL AUDIT JUDGMENT]` An hourglass is a culturally loaded time symbol. The interpretive field will be narrower than a non-symbolic process contrast — participants are likely to frame reactions in terms of time passing, remaining, or running out. This is an acceptable and documented limitation, and methodologically preferable to the growth-valence asymmetry of N0-005-C1.
+
+`[UNRESOLVED QUESTION]` Whether "more sand above" vs. "more sand below" activates CS (clarity about process state / ambiguity about remaining time) or a different axis must be confirmed after candidate cues are drafted. Axis is not pre-assigned.
+
+### Acceptance criteria
+
+- The 60/40 vs 40/60 ratio is visually readable without explanation
+- Sand mound shape, stream width, and background are matched
+- Neither state reads as clearly preferable on any universal scale
+- A reviewer unfamiliar with the project can identify the difference as "more sand above" vs. "more sand below" without being told
+
+### Rejection criteria
+
+- Any disqualifying confound above
+- The ratio difference is too subtle to read without side-by-side comparison
+- One state reads as "almost done" or "just starting" — only intermediate states are acceptable
+
+### Next step
+
+Generate a refined prototype with the 60/40 vs 40/60 ratio as the precise target. Apply as reference edit from a single base image. Verify sand mound shape, stream width, and background consistency before proceeding to cue drafting.
