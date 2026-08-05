@@ -1,0 +1,115 @@
+{
+  "version": "n0-six-v3",
+  "created": "2026-08-05",
+  "description": "ConflictLab Pair P0 — N0 six-pair internal QA set. INTERNAL TECHNICAL QA ONLY. Not for methodology analysis.",
+  "qa_mode": true,
+  "qa_label": "INTERNAL TECHNICAL QA — PLACEHOLDER ASSETS",
+  "sessions_total": 2,
+  "pairs_per_session": 3,
+  "layer2_selection_rule": "fixed_positions",
+  "layer2_fixed_pairs": [2, 5],
+  "session_composition": [
+    {
+      "session_index": 1,
+      "pair_ids": ["P0-001", "N0-005", "P0-003"]
+    },
+    {
+      "session_index": 2,
+      "pair_ids": ["N0-004", "P0-002", "N0-006"]
+    }
+  ],
+  "pairs": [
+    {
+      "pair_id": "P0-001",
+      "status": "active",
+      "library_status": "active",
+      "asset_status": "qa_ready",
+      "asset_version": "v1.0",
+      "analysis_eligible": true,
+      "axis": "cr",
+      "axis_status": "confirmed",
+      "methodology_status": "active_library",
+      "image_a": { "id": "P0-001-A", "src": "images/p0-001-a.png" },
+      "image_b": { "id": "P0-001-B", "src": "images/p0-001-b.png" },
+      "position_randomization": true
+    },
+    {
+      "pair_id": "P0-002",
+      "status": "active",
+      "library_status": "active",
+      "asset_status": "qa_ready",
+      "asset_version": "v1.0",
+      "analysis_eligible": true,
+      "axis": "aw",
+      "axis_status": "confirmed",
+      "methodology_status": "active_library",
+      "image_a": { "id": "P0-002-A", "src": "images/p0-002-a.png" },
+      "image_b": { "id": "P0-002-B", "src": "images/p0-002-b.png" },
+      "position_randomization": true
+    },
+    {
+      "pair_id": "P0-003",
+      "status": "active",
+      "library_status": "active",
+      "asset_status": "qa_ready",
+      "asset_version": "v1.0",
+      "analysis_eligible": true,
+      "axis": "cs",
+      "axis_status": "confirmed",
+      "methodology_status": "active_library",
+      "image_a": { "id": "P0-003-A", "src": "images/p0-003-a.png" },
+      "image_b": { "id": "P0-003-B", "src": "images/p0-003-b.png" },
+      "position_randomization": true
+    },
+    {
+      "pair_id": "N0-004",
+      "status": "active",
+      "library_status": "internal_qa",
+      "asset_status": "qa_ready",
+      "asset_version": "v0",
+      "analysis_eligible": true,
+      "axis": "aw",
+      "axis_status": "provisional",
+      "methodology_status": "internal_qa",
+      "cue_version": "v3",
+      "validated": false,
+      "image_a": { "id": "N0-004-A", "src": "images/n0-004-a.webp" },
+      "image_b": { "id": "N0-004-B", "src": "images/n0-004-b.png" },
+      "position_randomization": true
+    },
+    {
+      "pair_id": "N0-005",
+      "status": "active",
+      "library_status": "internal_qa",
+      "asset_status": "placeholder",
+      "asset_version": "placeholder-v0",
+      "analysis_eligible": false,
+      "axis": null,
+      "axis_status": "unresolved",
+      "exclusion_reason": "axis_unresolved",
+      "methodology_status": "experimental",
+      "cue_version": "v3",
+      "validated": false,
+      "image_a": { "id": "N0-005-A", "src": "images/n0-005-a-placeholder-v0.png" },
+      "image_b": { "id": "N0-005-B", "src": "images/n0-005-b-placeholder-v0.png" },
+      "position_randomization": true
+    },
+    {
+      "pair_id": "N0-006",
+      "status": "active",
+      "library_status": "internal_qa",
+      "asset_status": "placeholder",
+      "asset_version": "placeholder-v0",
+      "analysis_eligible": false,
+      "axis": "cr",
+      "axis_status": "provisional",
+      "exclusion_reason": "placeholder_asset",
+      "methodology_status": "internal_qa",
+      "cue_version": "v3",
+      "validated": false,
+      "image_a": { "id": "N0-006-A", "src": "images/n0-006-a-placeholder-v0.png" },
+      "image_b": { "id": "N0-006-B", "src": "images/n0-006-b-placeholder-v0.png" },
+      "position_randomization": true
+    }
+  ]
+}
