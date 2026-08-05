@@ -1,8 +1,27 @@
-# ConflictLab Pair P0 — Būsena (po J0 etapo)
+# ConflictLab Pair P0 — Būsena (po beta test dokumentacijos paketo)
 
 **Data:** 2026-08-05
-**Stabilus tag:** `pair-p0-j0-stable`
-**Statusas:** I ir J0 etapai realiai patvirtinti telefone. Toliau — K0 (External Evaluation Pack).
+**Stabilus tag:** `pair-p0-beta-test-pack-v1`
+**Statusas:** I ir J0 etapai realiai patvirtinti telefone. K0 (External Evaluation Pack) ir beta test dokumentacijos paketas užbaigti. Kitas žingsnis — surasti 5 dalyvius ir pradėti realų testą.
+
+---
+
+## Dokumentacijos paketų statusas
+
+### K0 — External Evaluation Pack
+- **Statusas:** completed
+- **Tag:** `external-review-pack-v1`
+- **Commit:** `f6f1c5ee5581ad797473c6ae774912a76880b328`
+- **Turinys:** 7 dokumentai `docs/external-review/` — epistemines ribas, Claim Status Matrix, metodo ribotumus, realų srautą, atviras tyrimo temas, vertintojo gaires
+
+### Beta test documentation pack
+- **Statusas:** completed
+- **Tag:** `pair-p0-beta-test-pack-v1`
+- **Commit:** `4fc192342440dca034cb4f1c3a90320b4cf19671`
+- **Turinys:** 5 dokumentai `docs/beta-test/` — tester protocol, participant instructions, session observation form, post-test interview (10 pagrindinių klausimų + optional probes), results summary template
+- **Test scope:** 5 participants, minimum 3 sessions each
+- **Purpose:** usability, epistemic safety, reflection value, return intention
+- **Explicit limitation:** this is not a validation study — it is a small usability and reflection-value test
 
 ---
 
