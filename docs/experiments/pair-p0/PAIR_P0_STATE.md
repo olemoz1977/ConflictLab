@@ -1,8 +1,33 @@
-# ConflictLab Pair P0 — Būsena (po beta test dokumentacijos paketo)
+# ConflictLab Pair P0 — Būsena (po M0 stable)
 
 **Data:** 2026-08-05
-**Stabilus tag:** `pair-p0-beta-test-pack-v1`
-**Statusas:** I ir J0 etapai realiai patvirtinti telefone. K0 (External Evaluation Pack) ir beta test dokumentacijos paketas užbaigti. Kitas žingsnis — surasti 5 dalyvius ir pradėti realų testą.
+**Stabilus tag:** `pair-p0-m0-remote-beta-stable`
+**Tag commit:** `dd3ea6bd444f5f538917fd76f3c6d93c1e44caa7`
+**Statusas:** M0 (nuotolinis beta testavimo režimas) pilnai įgyvendintas ir realiai patvirtintas telefone (6/6 QA scenarijų). Kitas žingsnis — N0 (9 porų ir cue balanso auditas).
+
+---
+
+## M0 etapas — nuotolinis beta testavimo režimas
+
+- **Statusas:** implemented and real-device tested (6/6 QA scenarios)
+- **Stable tag:** `pair-p0-m0-remote-beta-stable` → commit `dd3ea6bd444f5f538917fd76f3c6d93c1e44caa7`
+
+### Svarbi architektūrinė pastaba dėl commit atsekamumo
+
+Tag'as `pair-p0-m0-remote-beta-stable` nurodo į commit `dd3ea6b`, tačiau šis commit yra **tik dokumentacijos/pavadinimo žymuo be kodo pakeitimų** (tuščias commit, sukurtas pavadinimo aiškumui). **Tikras funkcinis pakeitimas**, kuris suvienodino radaro duomenų šaltinį su pirmomis 3 beta sesijomis, yra commit **`436218282c0de10ad44d8eeb89f0c486de9a8db1`** ("fix(pair-p0): unify radar data source with beta 3-session scope"). Ateityje analizuojant istoriją, logikos atsiradimą reikia sieti su `4362182`, ne su `dd3ea6b`.
+
+### Realiai patikrinti QA scenarijai (6/6)
+1. Nebaigtos sesijos atkūrimas (tikslus cue/reflection žingsnis)
+2. Discard runtime state pilnas išvalymas
+3. P01/P02 dalyvių atskyrimas
+4. Radaro peržiūra privaloma prieš interviu (abu keliai — istorija ir pabaigos ekranas)
+5. 3 sesijų beta JSON eksportas (patvirtinta su realiais P01, P03 eksportais)
+6. J0 duomenų valymas
+
+### Papildomi fix'ai šiame etape
+- 3 sesijų kieta riba (niekada "4 iš 3" ar "5 iš 3")
+- Radaro eligibility, radaro turinys ir eksportas visi remiasi tuo pačiu pirmų 3 beta sesijų rinkiniu (commit `4362182`)
+- LT cue lokalizacija — persiverčia kalbos keitimo metu
 
 ---
 
