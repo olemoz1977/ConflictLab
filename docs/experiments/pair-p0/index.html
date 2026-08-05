@@ -1035,9 +1035,15 @@ function resumeUnfinishedSession(){
 // Pašalina tik aktyvios sesijos raktą — completed_sessions, beta duomenys ir
 // visi kiti cl_pair_p0_ raktai lieka nepaliesti. Tai NĖRA J0 pilnas valymas.
 function discardUnfinishedSession(){
+  // fix: pašalinti TIK aktyvios sesijos raktą — nieko daugiau iš localStorage.
+  // Niekada nenaudoti localStorage.clear(). Completed sessions, beta state
+  // ir visi kiti cl_pair_p0_ raktai lieka nepaliesti.
   try { localStorage.removeItem(NS + 'active_session'); } catch(e){}
   resumableSnapshot = null;
 
+  // fix: pilnas runtime state išvalymas — visi kintamieji, kurie priklauso
+  // TIK aktyviai (nebaigtai) sesijai, grąžinami į pradinę būseną. Beta state,
+  // completed sessions ir betaParticipantId šia funkcija NIEKADA nelaikomi.
   SESSION = {
     session_id: uid(),
     status: 'active',
@@ -1053,12 +1059,29 @@ function discardUnfinishedSession(){
     feedback: {}
   };
   currentPairIdx = 0;
+  currentSessionStage = 'pair';
+  microIndex = 0;
+  microStep = 'cue';
+  microQueue = [];
+  microCurrentAnswer = null;
   reflectAnswers = {};
   sessionReflection = { response_type: null, text: '' };
   connectionAnswer = { response_type: null, text: '' };
-  currentSessionStage = 'pair';
 
+  // fix: eksplicitiškai perjungti į intro ekraną NEPRIKLAUSOMAI nuo to, koks
+  // ekranas buvo aktyvus prieš tai (rezultatas, feedback, ir t.t.) — show()
+  // pati pašalina 'active' klasę nuo visų ekranų prieš pridedant naują.
   show('intro');
+
+  // fix: po grįžimo į intro, mygtukų būsena (Resume/Discard/Start) turi būti
+  // perskaičiuota iš naujo — dabar aktyvios sesijos jau nėra, todėl
+  // applyIntroButtonState('none') turi rodyti paprastą "Start" mygtuką,
+  // o ne palikti senus Resume/Discard mygtukus matomus.
+  applyIntroButtonState('none');
+
+  // fix: beta žyma ir progresas turi likti matomi nepakitę — updateBetaBadge()
+  // naudoja betaMode/betaParticipantId/betaState, kurių ši funkcija neliečia.
+  updateBetaBadge();
 }
 
 function startExperiment(){
@@ -2162,6 +2185,19 @@ function showHistory(){
     resumeLink.textContent = txt('resume_unfinished_session') || 'Resume unfinished session';
     resumeLink.onclick = resumeUnfinishedSession;
     unfinishedItem.appendChild(resumeLink);
+
+    // fix: leisti pašalinti nebaigtą sesiją tiesiai iš istorijos ekrano, ne
+    // tik iš intro. Po pašalinimo perrenderinti ŠĮ (istorijos) ekraną, kad
+    // naudotojas liktų vietoje, o ne būtų netikėtai nukreiptas kitur.
+    const discardLink = document.createElement('button');
+    discardLink.className = 'btn-ghost';
+    discardLink.style.marginTop = '8px';
+    discardLink.textContent = txt('discard_unfinished_session') || 'Discard unfinished session';
+    discardLink.onclick = () => {
+      discardUnfinishedSession(); // pati funkcija jau daro show('intro'), bet čia norime likti istorijoje
+      showHistory();
+    };
+    unfinishedItem.appendChild(discardLink);
 
     body.appendChild(unfinishedItem);
   }
