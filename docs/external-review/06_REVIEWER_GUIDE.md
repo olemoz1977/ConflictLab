@@ -48,7 +48,7 @@ In particular, **"confidence"** as used throughout this codebase refers to an in
 
 - **v0.4 architecture documents** — historical / archived; do not reflect current implementation
 - **Archived Python modules** — not current implementation
-- **Stage F (session comparison)** — implemented as an experimental secondary layer; not validated
+- **Stage F (session comparison)** — SUPERSEDED / ROLLED BACK; implemented at one point, then removed when Pair P0 was rolled back to a stable state before it; not part of the current implementation
 - **Stage G (thematic comparison)** — rejected; see `01_CURRENT_STATE.md` and `02_CLAIM_STATUS_MATRIX.md` for why
 - **Karpman and other prior theoretical model documents** — historical research material; not current Pair P0 methodology
 - **L0 context variation** — planned, not implemented

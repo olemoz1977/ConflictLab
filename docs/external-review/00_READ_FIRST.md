@@ -8,14 +8,14 @@ This document orients any external reviewer before reading further.
 
 The repository mixes four categories of material that must not be conflated:
 
-1. **ConflictLab v0.7** — the main product line (the "Human Behavior Translator" / Observation Engine architecture)
+1. **ConflictLab v0.7** — the main product line, an experimental epistemic reflection framework built around an Observation Engine architecture ("Human Behavior Translator" was an earlier internal architectural name and is not the current product definition)
 2. **Pair P0** — an isolated, self-contained experiment (`docs/experiments/pair-p0/`) testing a different interaction model (paired image choice → wording → reflection)
 3. **Archived material** — earlier architecture versions, rolled-back stages, and historical theoretical documents that do not reflect current implementation
 4. **Future research ideas** — planned but unimplemented directions (e.g. context variation, multi-session comparison)
 
 ## Critical caveat
 
-**Older documents or modules present in this repository do not necessarily reflect the current state of the product.** Anthropic Claude (acting as implementation assistant) has, at points in this project's history, implemented and then rolled back entire stages after discovering methodological errors (see `03_METHOD_LIMITATIONS.md` and the Claim Status Matrix for specifics). The presence of a document or module in the repo is not evidence that it is current, validated, or endorsed.
+**Older documents or modules present in this repository do not necessarily reflect the current state of the product.** Some stages were implemented and later rolled back after methodological or implementation problems were identified (see `03_METHOD_LIMITATIONS.md` and the Claim Status Matrix for specifics). The presence of a document or module in the repo is not evidence that it is current, validated, or endorsed.
 
 ## How to read this pack
 
