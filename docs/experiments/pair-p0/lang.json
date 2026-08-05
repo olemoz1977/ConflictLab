@@ -181,7 +181,8 @@
     "beta_test_completed": "Beta testas užbaigtas",
     "export_beta_results": "Eksportuoti beta rezultatus",
     "clear_beta_and_p0": "Išvalyti beta ir Pair P0 duomenis šiame įrenginyje",
-    "beta_export_note": "Failas liks tavo įrenginyje. ConflictLab jo automatiškai nesiunčia. Atsiųsk failą testo organizatoriui sutartu būdu."
+    "beta_export_note": "Failas liks tavo įrenginyje. ConflictLab jo automatiškai nesiunčia. Atsiųsk failą testo organizatoriui sutartu būdu.",
+    "beta_view_trace_prompt": "Prieš tęsiant gali peržiūrėti savo dabartinį pėdsaką."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -365,6 +366,7 @@
     "beta_test_completed": "Beta test completed",
     "export_beta_results": "Export beta results",
     "clear_beta_and_p0": "Clear beta and Pair P0 data on this device",
-    "beta_export_note": "The file will remain on your device. ConflictLab does not send it automatically. Send the file to the test organiser using the agreed method."
+    "beta_export_note": "The file will remain on your device. ConflictLab does not send it automatically. Send the file to the test organiser using the agreed method.",
+    "beta_view_trace_prompt": "Before continuing, you can view your current trace."
   }
 }
