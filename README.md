@@ -105,3 +105,48 @@ ConflictLab/
 ---
 
 *ConflictLab — nebe Architecture. Evidence.*
+
+---
+
+## Du atskiri ConflictLab frontas
+
+> **Svarbu naujam AI:** šiame repo yra du visiškai atskiri darbų frontas. Jie dalinasi repozitorija, bet ne architektūra, metodologija ar gamybos statusu.
+
+### 1. Main produktas — v0.7 (Feature Freeze / Beta Ready)
+
+- Gyvas: `https://olemoz1977.github.io/ConflictLab/`
+- Observation Engine + Claude API refleksijų sluoksnis
+- ST-001–ST-010 stimulų biblioteka (10 aktyvių stimulų)
+- Methodology Freeze v1.0 — pakeitimai priimami tik esant beta duomenų įrodymams
+- **Dabartinis statusas:** feature freeze, laukiama beta dalyvių
+- **Blokeris:** generator.html CORS problema (neišspręsta)
+- **Beta protokolas:** `docs/beta_research_protocol_v1.md`
+
+### 2. Pair P0 eksperimentas — izoliuotas metodinis tyrimas
+
+Katalogas: `docs/experiments/pair-p0/`
+
+- **Kas tai:** izoliuotas eksperimentas su vaizdų poromis ir trijų cue rinkiniais
+- **Naudoja LLM:** ne — refleksija remiasi pasirinktu cue ir žmogaus tekstu, ne AI interpretacija
+- **Techninis srautas:** M0 remote beta stabilizuotas; stable tag: `pair-p0-m0-remote-beta-stable`
+- **Realus telefono QA:** 6/6 scenarijai praėjo (Edge mobile)
+- **Dabartinis frontas:** N0 stimulus ir cue metodinis auditas
+- **Tikslas:** 9 porų biblioteka (3 sesijos × 3 poros)
+- **N1 scheduler:** dar nepradėtas — laukia bibliotekos patvirtinimo
+
+**N0 kandidatų dabartiniai statusai:**
+
+| Kandidatas | Statusas |
+|---|---|
+| N0-004-C1 Miško takas | ADVANCE — endpoint refinement needed |
+| N0-005-C1 Augalo stadijos | CONCEPT UNDER REVIEW — inherent valence asymmetry unresolved |
+| N0-006-C1 Akmens tekstūra | ADVANCE TO PROTOTYPE |
+| N0-006-C2 Audinio tekstūra | RESERVE |
+| N0-007-C1 Objekto orientacija | HOLD — concept not operationally clean |
+| N0-008-C1 Debesuota/saulės šviesa | ADVANCE, AXIS UNRESOLVED — do not produce yet |
+| N0-009-C1 Socialinis atstumas | EXPERIMENTAL HOLD |
+
+**Metodologinis atskyrimas:**
+- Branduolinė metodologija (Methodology Freeze v1.0): užšaldyta
+- Stimulus ir cue operacionalizacija (Pair P0): dar neparuošta išoriniam beta testui
+- Pair P0 techninis srautas: stabilus
