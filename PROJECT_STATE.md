@@ -245,3 +245,71 @@ ConflictLab/
 ---
 
 *"Not architecture. Evidence."*
+
+---
+
+## Pair P0 — Izoliuotas eksperimentas (atskiras frontas)
+
+**Last updated:** 2026-08-05
+**Katalogas:** `docs/experiments/pair-p0/`
+
+> **Svarbu:** Pair P0 yra visiškai atskiras nuo v0.7 architektūros. Jis nenaudoja Observation Engine, Claude API refleksijų ar ST-XXX bibliotekos.
+
+### Kas tai
+
+Izoliuotas metodinis eksperimentas su vaizdų poromis ir trijų cue rinkiniais. Dalyvis mato du vaizdus, kiekvienam pasirenka vieną iš trijų cue — tai ir yra visas signalas. Refleksija remiasi pasirinktu cue ir žmogaus tekstu, ne LLM interpretacija.
+
+### Techninis srautas
+
+- **M0 remote beta:** stabilizuotas
+- **Stable tag:** `pair-p0-m0-remote-beta-stable` (commit `dd3ea6bd...`)
+- **Realus funkcinis M0 commit:** `4362182...`
+- **Telefono QA:** 6/6 scenarijai praėjo (Edge mobile; Chrome turi viewport/layout problemą — nenaudoti QA tikslais)
+- **N1 scheduler:** dar nepradėtas
+
+### Dabartinis metodinis frontas — N0 auditas
+
+Tikslas: 9 porų biblioteka (3 sesijos × 3 poros), pilnas dviejų vertintojų cue auditas.
+
+**Užbaigti dokumentai:**
+- `N0_STIMULUS_CUE_BALANCE_AUDIT.md` — 3 esamų porų auditas (išvalytas nuo nepagrįsto tikslumo)
+- `N0_DECISIONS.md` — patvirtinti metodiniai sprendimai
+- `N0_PAIR_DESIGN_SPEC.md` — 6 naujų porų projektavimo reikalavimai
+- `N0_MANUAL_CUE_AUDIT_PROTOCOL.md` — rankinio audito protokolas su kalibravimo taisyklėmis
+- `N0_PAIR_CONCEPT_CANDIDATES.md` — 14 kandidatų su vertinimu
+- `N0_INDEPENDENT_CONCEPT_REVIEW.md` — Claude + Gemini + žmogaus triviečiai sprendimai
+- `N0_CONCEPT_REFINEMENT.md` — gamybos specifikacijos 5 ADVANCE konceptams
+- `N0_PRODUCTION_PROMPTS.md` — N0-005 ir N0-006 gamybos promptai
+
+**N0 kandidatų statusai (2026-08-05):**
+
+| Kandidatas | Stimulų šeima | Prov. ašis | Statusas |
+|---|---|---|---|
+| N0-004-C1 | Erdvinė / miško takas | AW | ADVANCE — endpoint geometry not yet isolated |
+| N0-005-C1 | Proceso / augalo stadijos | CS | CONCEPT UNDER REVIEW — inherent valence asymmetry unresolved |
+| N0-006-C1 | Tekstūros / akmuo | CR | ADVANCE TO PROTOTYPE |
+| N0-006-C2 | Tekstūros / audinys | CR | RESERVE |
+| N0-007-C1 | Krypties / objekto orientacija | AW | HOLD — not operationally clean |
+| N0-008-C1 | Šviesos / oras | CS arba CR | ADVANCE, AXIS UNRESOLVED — do not produce yet |
+| N0-009-C1 | Socialinio atstumo | UNRESOLVED | EXPERIMENTAL HOLD |
+
+**Metodologinis atskyrimas:**
+- Branduolinė metodologija (Methodology Freeze v1.0): **užšaldyta**
+- Stimulus ir cue operacionalizacija: **dar neparuošta išoriniam beta testui**
+- Pair P0 techninis srautas: **stabilus**
+
+### Sekanti gamybos seka (patvirtinta)
+
+1. Užfiksuoti N0-004 ir N0-005 prototipų radinius (`N0_CONCEPT_REFINEMENT.md`)
+2. Sprendimas dėl N0-005 konceptualios valentingumo problemos
+3. N0-006 akmens prototipas
+4. Dviejų vertintojų cue auditas visiems trims poroms
+5. Cue projektavimas
+6. N1 scheduler — tik patvirtinus 9 porų struktūrą
+
+### Kas Pair P0 nėra
+
+- Ne v0.7 stimulus bibliotekos papildymas
+- Ne Observation Engine testavimas
+- Ne Claude API refleksijų testavimas
+- Nepriklausomas nuo Methodology Freeze v1.0 (bet laikosi tų pačių episteminio atsargumo principų)
