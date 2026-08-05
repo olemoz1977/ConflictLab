@@ -1308,6 +1308,24 @@ function renderConnectionQuestion(body){
 
   questionBlock.appendChild(options);
   body.appendChild(questionBlock);
+
+  // Iš pat pradžių bendras CTA neaktyvus, kol nepasirinktas nė vienas variantas.
+  updateFinishButtonState();
+}
+
+// Vienas bendras CTA (jau egzistuojantis 'txt-finish-session' mygtukas) valdomas
+// pagal connectionAnswer būseną. Jokio atskiro "Išsaugoti" mygtuko šiam laukui.
+function updateFinishButtonState(){
+  const btn = document.getElementById('txt-finish-session');
+  if(!btn) return;
+
+  let isValid = false;
+  if(connectionAnswer.response_type === 'text'){
+    isValid = connectionAnswer.text.trim().length > 0;
+  } else if(connectionAnswer.response_type === 'not_seen_yet' || connectionAnswer.response_type === 'prefer_not_to_state'){
+    isValid = true;
+  }
+  btn.disabled = !isValid;
 }
 
 function selectConnectionOption(type, btn, questionBlock){
@@ -1316,10 +1334,11 @@ function selectConnectionOption(type, btn, questionBlock){
 
   // Pašalinti seną teksto lauką, jei buvo (perjungiant tarp variantų)
   const oldInput = questionBlock.querySelector('.connection-text-wrap');
+  const previousText = connectionAnswer.text; // atkurti tekstą, jei grįžtama į 'text' variantą
   if(oldInput) oldInput.remove();
 
   if(type === 'text'){
-    connectionAnswer = { response_type: 'text', text: '' };
+    connectionAnswer = { response_type: 'text', text: previousText || '' };
 
     const wrap = document.createElement('div');
     wrap.className = 'connection-text-wrap';
@@ -1327,43 +1346,36 @@ function selectConnectionOption(type, btn, questionBlock){
     const textarea = document.createElement('textarea');
     textarea.className = 'connection-textarea';
     textarea.placeholder = txt('connection_placeholder') || 'What do you notice?';
+    textarea.value = connectionAnswer.text;
     wrap.appendChild(textarea);
-
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'btn-ghost';
-    saveBtn.style.marginTop = '8px';
-    saveBtn.textContent = txt('save_observation') || 'Save observation';
-    saveBtn.disabled = true; // pradžioje neaktyvus, kol nėra teksto
-    saveBtn.onclick = () => saveConnectionReflection();
-    wrap.appendChild(saveBtn);
-
-    // KRITINIS FIX: mygtuko aktyvumas perskaičiuojamas per input, change IR
-    // compositionend (mobiliai klaviatūrai su IME/predictive text kai kurie
-    // simboliai gali įsivesti tik per composition eigą, kur paprastas
-    // 'input' įvykis kartais neišsišaudo laiku). Nereikia blur/Enter/fokuso
-    // praradimo — mygtukas atsinaujina iš karto, kol vartotojas dar rašo.
-    function refreshSaveBtnState(){
-      const trimmed = textarea.value.trim();
-      connectionAnswer.text = textarea.value;
-      saveBtn.disabled = trimmed.length === 0;
-    }
-    textarea.addEventListener('input', refreshSaveBtnState);
-    textarea.addEventListener('change', refreshSaveBtnState);
-    textarea.addEventListener('compositionend', refreshSaveBtnState);
 
     questionBlock.appendChild(wrap);
     textarea.focus();
+
+    // Tekstas nuolat saugomas realiu laiku — jokio atskiro "Išsaugoti" veiksmo.
+    // Bendras CTA (Tęsti/Baigti sesiją) perskaičiuojamas su kiekvienu pakeitimu.
+    // input/change/compositionend apima visus mobilios klaviatūros/IME atvejus
+    // be reikalavimo prarasti fokusą ar spausti Enter.
+    function refreshTextState(){
+      connectionAnswer.text = textarea.value;
+      updateFinishButtonState();
+    }
+    textarea.addEventListener('input', refreshTextState);
+    textarea.addEventListener('change', refreshTextState);
+    textarea.addEventListener('compositionend', refreshTextState);
   } else {
     connectionAnswer = { response_type: type, text: '' };
-    saveConnectionReflection();
   }
+
+  updateFinishButtonState();
 }
 
 function saveConnectionReflection(){
   const trimmed = connectionAnswer.text.trim();
   if(connectionAnswer.response_type === 'text' && trimmed.length === 0){
-    return; // neleisti vien tarpų / tuščio teksto
+    return; // neleisti vien tarpų / tuščio teksto kaip galutinio atsakymo
   }
+  if(!connectionAnswer.response_type) return; // nepasirinktas nė vienas variantas
 
   SESSION.session_connection_reflection = {
     response_type: connectionAnswer.response_type,
@@ -1375,6 +1387,7 @@ function saveConnectionReflection(){
 }
 
 function goToFeedback(){
+  saveConnectionReflection(); // išsaugoti galutinį session_connection_reflection prieš pereinant toliau
   stopAudioSmoothly();
   const body = document.getElementById('fb-body');
   body.innerHTML = '';
