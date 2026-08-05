@@ -7,15 +7,26 @@
   "sessions_total": 2,
   "pairs_per_session": 3,
   "layer2_selection_rule": "fixed_positions",
-  "layer2_fixed_pairs": [2, 5],
+  "layer2_fixed_pairs": [
+    2,
+    5
+  ],
   "session_composition": [
     {
       "session_index": 1,
-      "pair_ids": ["P0-001", "N0-005", "P0-003"]
+      "pair_ids": [
+        "P0-001",
+        "N0-005",
+        "P0-003"
+      ]
     },
     {
       "session_index": 2,
-      "pair_ids": ["N0-004", "P0-002", "N0-006"]
+      "pair_ids": [
+        "N0-004",
+        "P0-002",
+        "N0-006"
+      ]
     }
   ],
   "pairs": [
@@ -29,8 +40,14 @@
       "axis": "cr",
       "axis_status": "confirmed",
       "methodology_status": "active_library",
-      "image_a": { "id": "P0-001-A", "src": "images/p0-001-a.png" },
-      "image_b": { "id": "P0-001-B", "src": "images/p0-001-b.png" },
+      "image_a": {
+        "id": "P0-001-A",
+        "src": "images/p0-001-a.png"
+      },
+      "image_b": {
+        "id": "P0-001-B",
+        "src": "images/p0-001-b.png"
+      },
       "position_randomization": true
     },
     {
@@ -43,8 +60,14 @@
       "axis": "aw",
       "axis_status": "confirmed",
       "methodology_status": "active_library",
-      "image_a": { "id": "P0-002-A", "src": "images/p0-002-a.png" },
-      "image_b": { "id": "P0-002-B", "src": "images/p0-002-b.png" },
+      "image_a": {
+        "id": "P0-002-A",
+        "src": "images/p0-002-a.png"
+      },
+      "image_b": {
+        "id": "P0-002-B",
+        "src": "images/p0-002-b.png"
+      },
       "position_randomization": true
     },
     {
@@ -57,8 +80,14 @@
       "axis": "cs",
       "axis_status": "confirmed",
       "methodology_status": "active_library",
-      "image_a": { "id": "P0-003-A", "src": "images/p0-003-a.png" },
-      "image_b": { "id": "P0-003-B", "src": "images/p0-003-b.png" },
+      "image_a": {
+        "id": "P0-003-A",
+        "src": "images/p0-003-a.png"
+      },
+      "image_b": {
+        "id": "P0-003-B",
+        "src": "images/p0-003-b.png"
+      },
       "position_randomization": true
     },
     {
@@ -67,15 +96,22 @@
       "library_status": "internal_qa",
       "asset_status": "qa_ready",
       "asset_version": "v0",
-      "analysis_eligible": true,
+      "analysis_eligible": false,
       "axis": "aw",
       "axis_status": "provisional",
-      "methodology_status": "internal_qa",
+      "methodology_status": "cue_qa_only",
       "cue_version": "v3",
       "validated": false,
-      "image_a": { "id": "N0-004-A", "src": "images/n0-004-a.webp" },
-      "image_b": { "id": "N0-004-B", "src": "images/n0-004-b.png" },
-      "position_randomization": true
+      "image_a": {
+        "id": "N0-004-A",
+        "src": "images/n0-004-a.webp"
+      },
+      "image_b": {
+        "id": "N0-004-B",
+        "src": "images/n0-004-b.png"
+      },
+      "position_randomization": true,
+      "exclusion_reason": "cue_vectors_not_reviewed"
     },
     {
       "pair_id": "N0-005",
@@ -90,8 +126,14 @@
       "methodology_status": "experimental",
       "cue_version": "v3",
       "validated": false,
-      "image_a": { "id": "N0-005-A", "src": "images/n0-005-a-placeholder-v0.png" },
-      "image_b": { "id": "N0-005-B", "src": "images/n0-005-b-placeholder-v0.png" },
+      "image_a": {
+        "id": "N0-005-A",
+        "src": "images/n0-005-a-placeholder-v0.png"
+      },
+      "image_b": {
+        "id": "N0-005-B",
+        "src": "images/n0-005-b-placeholder-v0.png"
+      },
       "position_randomization": true
     },
     {
@@ -107,8 +149,14 @@
       "methodology_status": "internal_qa",
       "cue_version": "v3",
       "validated": false,
-      "image_a": { "id": "N0-006-A", "src": "images/n0-006-a-placeholder-v0.png" },
-      "image_b": { "id": "N0-006-B", "src": "images/n0-006-b-placeholder-v0.png" },
+      "image_a": {
+        "id": "N0-006-A",
+        "src": "images/n0-006-a-placeholder-v0.png"
+      },
+      "image_b": {
+        "id": "N0-006-B",
+        "src": "images/n0-006-b-placeholder-v0.png"
+      },
       "position_randomization": true
     }
   ]
