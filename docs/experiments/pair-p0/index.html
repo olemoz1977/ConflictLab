@@ -2417,10 +2417,44 @@ function renderBetaProgressOnDone(){
   }
   holder.textContent = text;
 
+  // Pašalinti senus mygtukus prieš perrenderinant (kad nesikauptų dublikatai)
   const existingBtn = document.getElementById('beta-complete-interview-btn');
   if(existingBtn) existingBtn.remove();
+  const existingTraceBtn = document.getElementById('beta-view-trace-btn');
+  if(existingTraceBtn) existingTraceBtn.remove();
 
   if(count >= 3 && !betaState.completed_at){
+    const eligible = getEligibleSessions();
+    const radarEligible = eligible.length >= RADAR_MIN_SESSIONS;
+    const radarAlreadyShown = betaState.radar_shown === true;
+
+    // Radaras eligible, bet dar nepamatytas — pirmiausia reikalauti peržiūrėti pėdsaką.
+    // Tai VIENINTELIS privalomas kelias į radarą šiame sraute (ne per View history).
+    if(radarEligible && !radarAlreadyShown){
+      const traceBtn = document.createElement('button');
+      traceBtn.id = 'beta-view-trace-btn';
+      traceBtn.className = 'btn-primary';
+      traceBtn.style.marginTop = '16px';
+      traceBtn.textContent = txt('view_trace') || 'View your current trace';
+      traceBtn.onclick = () => {
+        showRadar(); // pažymi betaState.radar_shown = true viduje
+        // Po grįžimo iš radaro ekrano, "Baigti sesiją" mygtukas radaro
+        // ekrane veda atgal į showHistory() pagal esamą logiką — bet mums
+        // reikia grįžti į DONE ekraną su jau aktyviu Complete beta test.
+        // Todėl radaro atgal-mygtuką čia laikinai nukreipiame į šį ekraną.
+        const backBtn = document.getElementById('txt-radar-back');
+        if(backBtn){
+          backBtn.onclick = () => {
+            show('done');
+            renderBetaProgressOnDone(); // perrenderina su radar_shown=true, todėl dabar rodys Complete beta test
+          };
+        }
+      };
+      document.getElementById('screen-done').querySelector('.screen-body').appendChild(traceBtn);
+      return; // Complete beta test dar nerodomas, kol radaras nepamatytas
+    }
+
+    // Radaras arba jau pamatytas, arba neeligible — leisti tęsti į interviu.
     const btn = document.createElement('button');
     btn.id = 'beta-complete-interview-btn';
     btn.className = 'btn-primary';
