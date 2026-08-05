@@ -122,7 +122,19 @@
     "connection_placeholder": "Ką pats pastebi?",
     "save_observation": "Išsaugoti pastebėjimą",
     "connection_history_not_seen": "Ryšys tarp pasirinkimų dar neįvardytas.",
-    "connection_history_prefer_not": "Pasirinkta ryšio neįvardyti."
+    "connection_history_prefer_not": "Pasirinkta ryšio neįvardyti.",
+    "data_management": "Duomenų valdymas",
+    "clear_browser_data": "Išvalyti šios naršyklės duomenis",
+    "export_and_clear": "Eksportuoti ir išvalyti",
+    "clear_data_title": "Išvalyti duomenis",
+    "clear_data_warning": "Bus pašalintos visos šioje naršyklėje išsaugotos Pair P0 sesijos, aktyvi sesija ir techniniai Pair P0 duomenys. Jei nori išsaugoti istoriją, pirmiausia ją eksportuok.",
+    "export_started_note": "Eksporto failo atsisiuntimas pradėtas. Prieš išvalydamas duomenis patikrink, ar failas išsaugotas.",
+    "active_session_will_be_removed": "Pradėta, bet neužbaigta sesija taip pat bus pašalinta.",
+    "clear_checkbox_label": "Suprantu, kad šių duomenų atkurti nepavyks be anksčiau eksportuoto failo.",
+    "cancel": "Atšaukti",
+    "clear_data_confirm": "Išvalyti duomenis",
+    "data_cleared_success": "Šios naršyklės Pair P0 duomenys išvalyti.",
+    "no_data_to_clear": "Šioje naršyklėje nėra Pair P0 duomenų, kuriuos būtų galima išvalyti."
   },
   "en": {
     "intro_title": "ConflictLab",
@@ -247,6 +259,18 @@
     "connection_placeholder": "What do you notice?",
     "save_observation": "Save observation",
     "connection_history_not_seen": "A connection between the choices was not yet named this time.",
-    "connection_history_prefer_not": "Chose not to name a connection this time."
+    "connection_history_prefer_not": "Chose not to name a connection this time.",
+    "data_management": "Data management",
+    "clear_browser_data": "Clear data in this browser",
+    "export_and_clear": "Export and clear",
+    "clear_data_title": "Clear data",
+    "clear_data_warning": "All Pair P0 sessions stored in this browser, the active session, and technical Pair P0 data will be removed. Export your history first if you want to keep it.",
+    "export_started_note": "The export download has started. Before clearing the data, check that the file was saved.",
+    "active_session_will_be_removed": "The started but unfinished session will also be removed.",
+    "clear_checkbox_label": "I understand that this data cannot be restored without a previously exported file.",
+    "cancel": "Cancel",
+    "clear_data_confirm": "Clear data",
+    "data_cleared_success": "Pair P0 data in this browser has been cleared.",
+    "no_data_to_clear": "There is no Pair P0 data to clear in this browser."
   }
 }
