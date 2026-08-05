@@ -775,6 +775,7 @@ let microIndex = 0;
 let microStep = 'cue';
 let microCurrentAnswer = null;
 let reflectAnswers = {};
+let flipByPairId = {}; // pair_id -> boolean: išsaugo A/B randomizaciją visai sesijai
 let fbAnswers = {};
 let lastImportStatus = null; // { result } arba { error } — išlieka per showHistory() perrenderinimus
 let sessionReflection = { response_type: null, text: '' };
@@ -1100,6 +1101,18 @@ function resumeUnfinishedSession(){
   sessionReflection = resumableSnapshot.session_reflection || { response_type: null, text: '' };
   connectionAnswer = resumableSnapshot.connection_answer || { response_type: null, text: '' };
   const stage = resumableSnapshot.screen_stage || 'pair';
+  // Atkurti A/B randomizaciją — naudoti išsaugotą, negeneruoti naujos
+  flipByPairId = resumableSnapshot.flip_by_pair_id || {};
+  // N0 QA: atkurti sesijos indeksą ir porų tvarką
+  if(IS_N0_QA && resumableSnapshot.n0_qa_session_index !== null && resumableSnapshot.n0_qa_session_index !== undefined){
+    n0QaSessionIndex = resumableSnapshot.n0_qa_session_index;
+    // Atkurti PAIRS tą pačią tvarką — ne shuffle iš naujo
+    if(Array.isArray(resumableSnapshot.n0_qa_pair_ids) && window._n0QaAllPairs){
+      PAIRS = resumableSnapshot.n0_qa_pair_ids
+        .map(id => window._n0QaAllPairs.find(p => p.pair_id === id))
+        .filter(Boolean);
+    }
+  }
 
   if(stage === 'pair'){
     loadPair(currentPairIdx);
@@ -1155,8 +1168,11 @@ function discardUnfinishedSession(){
     feedback: {},
     // N0 QA: metaduomenys eksportui
     qa_mode: IS_N0_QA || false,
-    set_id: IS_N0_QA ? ('n0-six-v3-s' + (n0QaSessionIndex + 1)) : null,
-    cue_set_version: IS_N0_QA ? 'v3' : 'pair-cue-v0.1'
+    set_id: IS_N0_QA ? 'n0-six-v3' : null,
+    cue_set_version: IS_N0_QA ? 'v3' : 'pair-cue-v0.1',
+    required_sessions: IS_N0_QA ? 2 : 3,
+    pairs_per_session: 3,
+    n0_qa_session_number: IS_N0_QA ? (n0QaSessionIndex + 1) : null
   };
   currentPairIdx = 0;
   currentSessionStage = 'pair';
@@ -1225,6 +1241,7 @@ function startExperiment(){
   sessionReflection = { response_type: null, text: '' };
   connectionAnswer = { response_type: null, text: '' };
   reflectAnswers = {};
+  flipByPairId = {}; // reset A/B randomizacija naujai sesijai
   currentSessionStage = 'pair';
   saveSession(); // fix(resume): nuo pat pradžios snapshot'as nuoseklus atkūrimui
 
@@ -1236,7 +1253,11 @@ function loadPair(idx){
   if(idx >= PAIRS.length){ startLayer2(); return; }
 
   const pair = PAIRS[idx];
-  const flip = Math.random() < 0.5;
+  // Randomizacija: generuoti tik pirmą kartą; resume metu naudoti išsaugotą
+  if(!(pair.pair_id in flipByPairId)){
+    flipByPairId[pair.pair_id] = Math.random() < 0.5;
+  }
+  const flip = flipByPairId[pair.pair_id];
   pair._top    = flip ? pair.image_b : pair.image_a;
   pair._bottom = flip ? pair.image_a : pair.image_b;
 
@@ -1271,11 +1292,28 @@ function choosePair(position){
   const pair = PAIRS[currentPairIdx];
   const selected = position === 'top' ? pair._top : pair._bottom;
 
+  // Pasirinkimo momentu kopijuojami visi metaduomenys — ateityje JSON gali keistis,
+  // bet šis eksportas išlieka istoriškai tikslus.
+  const choiceMeta = IS_N0_QA ? {
+    qa_mode: true,
+    set_id: SESSION.set_id || null,
+    cue_version: pair.cue_version || null,
+    asset_status: pair.asset_status || null,
+    asset_version: pair.asset_version || null,
+    methodology_status: pair.methodology_status || null,
+    axis: pair.axis || null,
+    axis_status: pair.axis_status || null,
+    analysis_eligible: pair.analysis_eligible ?? null,
+    exclusion_reason: pair.exclusion_reason || null
+  } : { qa_mode: false };
+
   SESSION.choices.push({
     pair_id: pair.pair_id, pair_order: currentPairIdx + 1,
     top_image_id: pair._top.id, bottom_image_id: pair._bottom.id,
     selected_image_id: selected.id, selected_position: position,
-    choice_latency_ms: latency
+    choice_latency_ms: latency,
+    timestamp: new Date().toISOString(),
+    ...choiceMeta
   });
 
   currentPairIdx++;
@@ -2044,7 +2082,12 @@ function saveSession(){
     // kad žinotume, ar reikia grąžinti į poros pasirinkimą, mikro-srautą,
     // sesijos refleksiją ar rezultato ekraną.
     screen_stage: currentSessionStage,
-    beta_participant_id: betaMode ? betaParticipantId : null
+    beta_participant_id: betaMode ? betaParticipantId : null,
+    // Randomizacijos išsaugojimas — resume metu naudojama ta pati A/B pusė
+    flip_by_pair_id: flipByPairId,
+    // N0 QA: sesijos porų tvarka (būtina teisingam resume)
+    n0_qa_session_index: IS_N0_QA ? n0QaSessionIndex : null,
+    n0_qa_pair_ids: IS_N0_QA ? PAIRS.map(p => p.pair_id) : null
   };
 
   try {
