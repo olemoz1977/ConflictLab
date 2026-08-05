@@ -1327,15 +1327,29 @@ function selectConnectionOption(type, btn, questionBlock){
     const textarea = document.createElement('textarea');
     textarea.className = 'connection-textarea';
     textarea.placeholder = txt('connection_placeholder') || 'What do you notice?';
-    textarea.oninput = () => { connectionAnswer.text = textarea.value; };
     wrap.appendChild(textarea);
 
     const saveBtn = document.createElement('button');
     saveBtn.className = 'btn-ghost';
     saveBtn.style.marginTop = '8px';
     saveBtn.textContent = txt('save_observation') || 'Save observation';
+    saveBtn.disabled = true; // pradžioje neaktyvus, kol nėra teksto
     saveBtn.onclick = () => saveConnectionReflection();
     wrap.appendChild(saveBtn);
+
+    // KRITINIS FIX: mygtuko aktyvumas perskaičiuojamas per input, change IR
+    // compositionend (mobiliai klaviatūrai su IME/predictive text kai kurie
+    // simboliai gali įsivesti tik per composition eigą, kur paprastas
+    // 'input' įvykis kartais neišsišaudo laiku). Nereikia blur/Enter/fokuso
+    // praradimo — mygtukas atsinaujina iš karto, kol vartotojas dar rašo.
+    function refreshSaveBtnState(){
+      const trimmed = textarea.value.trim();
+      connectionAnswer.text = textarea.value;
+      saveBtn.disabled = trimmed.length === 0;
+    }
+    textarea.addEventListener('input', refreshSaveBtnState);
+    textarea.addEventListener('change', refreshSaveBtnState);
+    textarea.addEventListener('compositionend', refreshSaveBtnState);
 
     questionBlock.appendChild(wrap);
     textarea.focus();
@@ -1767,14 +1781,6 @@ function showHistory(){
     item.className = 'history-item';
     item.onclick = () => showHistoryDetail(s.session_id);
 
-    const sr = s.session_reflection;
-    let obsText = '';
-    let isStated = false;
-    if(sr){
-      if(sr.response_type === 'text' && sr.text){ obsText = sr.text; isStated = true; }
-      else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet') obsText = (txt('observation_not_stated') || '');
-    }
-
     const dateDiv = document.createElement('div');
     dateDiv.className = 'history-date';
     dateDiv.textContent = formatHistoryDate(s.completed_at || s.started_at);
@@ -1786,36 +1792,55 @@ function showHistory(){
     countDiv.textContent = countTmpl.replace('{n}', s.choices.length);
     item.appendChild(countDiv);
 
-    if(obsText){
-      if(isStated){
+    // PRIORITETO TAISYKLĖ: jei sesija turi session_connection_reflection (I etapas),
+    // rodyti TIK jį. Senas session_reflection (B etapas) tuo atveju visai
+    // neapdorojamas — kad niekada nesusidurtų prieštaringi tekstai vienoje kortelėje.
+    // Tik jei session_connection_reflection neegzistuoja, taikoma sena H logika.
+    const cr = s.session_connection_reflection;
+
+    if(cr && (cr.response_type === 'text' || cr.response_type === 'not_seen_yet' || cr.response_type === 'prefer_not_to_state')){
+      if(cr.response_type === 'text' && cr.text){
         const label = document.createElement('div');
         label.className = 'observation-label';
         label.textContent = txt('your_observation') || 'Your observation';
         item.appendChild(label);
-      }
-      const obsDiv = document.createElement('div');
-      obsDiv.className = 'history-observation';
-      obsDiv.textContent = obsText; // saugus DOM metodas, ne innerHTML
-      item.appendChild(obsDiv);
-    }
 
-    // I etapas: session_connection_reflection glaustas rodymas.
-    // Senoms sesijoms be šio lauko — nieko papildomai nerodoma, jokios klaidos.
-    const cr = s.session_connection_reflection;
-    if(cr && (cr.response_type === 'text' || cr.response_type === 'not_seen_yet' || cr.response_type === 'prefer_not_to_state')){
-      const crDiv = document.createElement('div');
-      crDiv.className = 'history-observation';
-      crDiv.style.marginTop = '6px';
-      if(cr.response_type === 'text' && cr.text){
+        const crDiv = document.createElement('div');
+        crDiv.className = 'history-observation';
         crDiv.textContent = cr.text; // saugus DOM metodas
+        item.appendChild(crDiv);
       } else if(cr.response_type === 'not_seen_yet'){
-        crDiv.textContent = txt('connection_history_not_seen') || 'A connection between the choices was not yet named this time.';
-        crDiv.classList.add('empty');
+        const crDiv = document.createElement('div');
+        crDiv.className = 'history-observation empty';
+        crDiv.textContent = txt('connection_history_not_seen') || 'A connection between the choices has not yet been named.';
+        item.appendChild(crDiv);
       } else if(cr.response_type === 'prefer_not_to_state'){
-        crDiv.textContent = txt('connection_history_prefer_not') || 'Chose not to name a connection this time.';
-        crDiv.classList.add('empty');
+        const crDiv = document.createElement('div');
+        crDiv.className = 'history-observation empty';
+        crDiv.textContent = txt('connection_history_prefer_not') || 'You chose not to name a connection.';
+        item.appendChild(crDiv);
       }
-      item.appendChild(crDiv);
+    } else {
+      // Fallback — sena H etapo logika, naudojama tik kai naujo lauko visai nėra.
+      const sr = s.session_reflection;
+      let obsText = '';
+      let isStated = false;
+      if(sr){
+        if(sr.response_type === 'text' && sr.text){ obsText = sr.text; isStated = true; }
+        else if(sr.response_type === 'not_stated' || sr.response_type === 'not_yet') obsText = (txt('observation_not_stated') || '');
+      }
+      if(obsText){
+        if(isStated){
+          const label = document.createElement('div');
+          label.className = 'observation-label';
+          label.textContent = txt('your_observation') || 'Your observation';
+          item.appendChild(label);
+        }
+        const obsDiv = document.createElement('div');
+        obsDiv.className = 'history-observation';
+        obsDiv.textContent = obsText; // saugus DOM metodas, ne innerHTML
+        item.appendChild(obsDiv);
+      }
     }
 
     body.appendChild(item);
@@ -2148,8 +2173,40 @@ function showHistoryDetail(sessionId){
     body.appendChild(div);
   });
 
+  // PRIORITETO TAISYKLĖ (tas pats principas kaip istorijos sąraše):
+  // jei yra session_connection_reflection, rodyti TIK jį; senas session_reflection
+  // naudojamas kaip fallback tik kai naujo lauko visai nėra.
+  const cr = s.session_connection_reflection;
   const sr = s.session_reflection;
-  if(sr){
+
+  if(cr && (cr.response_type === 'text' || cr.response_type === 'not_seen_yet' || cr.response_type === 'prefer_not_to_state')){
+    const obsBlock = document.createElement('div');
+    obsBlock.className = 'result-observation';
+
+    if(cr.response_type === 'text' && cr.text){
+      const label = document.createElement('div');
+      label.className = 'result-observation-label';
+      label.textContent = txt('your_observation') || 'Your observation';
+      obsBlock.appendChild(label);
+
+      const text = document.createElement('div');
+      text.className = 'result-observation-text';
+      text.textContent = cr.text;
+      obsBlock.appendChild(text);
+    } else if(cr.response_type === 'not_seen_yet'){
+      const text = document.createElement('div');
+      text.className = 'result-observation-text empty';
+      text.textContent = txt('connection_history_not_seen') || 'A connection between the choices has not yet been named.';
+      obsBlock.appendChild(text);
+    } else if(cr.response_type === 'prefer_not_to_state'){
+      const text = document.createElement('div');
+      text.className = 'result-observation-text empty';
+      text.textContent = txt('connection_history_prefer_not') || 'You chose not to name a connection.';
+      obsBlock.appendChild(text);
+    }
+
+    body.appendChild(obsBlock);
+  } else if(sr){
     const obsBlock = document.createElement('div');
     obsBlock.className = 'result-observation';
 
