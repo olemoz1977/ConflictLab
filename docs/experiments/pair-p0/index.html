@@ -2124,6 +2124,22 @@ function renderRadarSVG(vector){
 // renderBetaInterview apsauginis mygtukas). Taip showRadar() gali būti
 // saugiai kviečiama iš bet kur (pvz. paprasto ne-beta Pair P0 srauto) be
 // šalutinio poveikio beta gating būsenai.
+// fix(radar-nav-path): centrinė funkcija radaro atidarymui beta kontekste.
+// Vienintelė vieta, kur radar_shown gali tapti true — po REALAUS showRadar()
+// iškvietimo IR tik jei eligibility patenkinta šiuo momentu (count >=
+// RADAR_MIN_SESSIONS). Naudojama IŠ VISŲ beta srauto vietų (istorijos
+// nuoroda, pabaigos ekrano CTA, interviu apsauginis mygtukas), kad elgesys
+// būtų identiškas nepriklausomai nuo to, kuriuo keliu vartotojas atėjo.
+function openRadarAsBeta(){
+  const eligible = getEligibleSessions();
+  showRadar(); // realus renderis visada įvyksta, nepriklausomai nuo eligibility
+
+  if(eligible.length >= RADAR_MIN_SESSIONS && betaState){
+    betaState.radar_shown = true;
+    saveBetaState();
+  }
+}
+
 function showRadar(){
   const eligible = getEligibleSessions();
   const count = eligible.length;
@@ -2320,26 +2336,23 @@ function showHistory(){
   }
 
   // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų.
-  // fix(radar-gate-root-cause): ŠI nuoroda buvo TIKRASIS radar_shown gating
-  // apėjimo taškas. showRadar() žymi radar_shown=true kai tik eligibility
-  // patenkinta, o šis mygtukas visada buvo pasiekiamas istorijos ekrane,
-  // nepriklausomai nuo M0 beta srauto "Peržiūrėti dabartinį pėdsaką" žingsnio.
-  // Jei beta dalyvis bet kada tarp sesijų atidarė istoriją ir paspaudė šį
-  // mygtuką būdamas jau eligible, radar_shown užsifiksuodavo true anksčiau,
-  // nei pasiekdavo privalomą pabaigos ekrano žingsnį — todėl gating atrodė
-  // "neveikiantis", nors renderBetaProgressOnDone() logika pati savaime buvo teisinga.
+  // fix(radar-nav-path): istorijos ekranas TAIP PAT turi turėti veikiantį
+  // kelią į radarą beta režime — ne tik pabaigos ekranas. Abu keliai naudoja
+  // tą pačią openRadarAsBeta() funkciją, kuri teisingai žymi radar_shown
+  // TIK po realaus radaro ekrano parodymo, nepriklausomai nuo to, per kurį
+  // mygtuką vartotojas ten pateko.
   const radarLink = document.createElement('button');
   radarLink.className = 'btn-ghost';
   radarLink.style.marginBottom = '16px';
   radarLink.textContent = txt('view_trace') || 'View your current trace';
-  radarLink.onclick = showRadar;
-  if(!betaMode){
-    // Ne-beta įprastame Pair P0 sraute šis mygtukas lieka kaip buvęs.
-    body.appendChild(radarLink);
-  }
-  // Beta režime ŠIS mygtukas NERODOMAS — vienintelis kelias į radarą beta
-  // sraute yra privalomas "Peržiūrėti dabartinį pėdsaką" žingsnis pabaigos
-  // ekrane (renderBetaProgressOnDone), kuris tinkamai seka radar_shown.
+  radarLink.onclick = () => {
+    if(betaMode){
+      openRadarAsBeta(); // žymi radar_shown TIK jei realiai eligible ir parodoma
+    } else {
+      showRadar();
+    }
+  };
+  body.appendChild(radarLink);
 
   if(sessions.length === 0){
     const empty = document.createElement('div');
@@ -2770,12 +2783,9 @@ function renderBetaProgressOnDone(){
       traceBtn.style.marginTop = '16px';
       traceBtn.textContent = txt('view_trace') || 'View your current trace';
       traceBtn.onclick = () => {
-        // fix(radar-gate-root-cause): žymėjimas dabar EKSPLICITINIS, tik šiame
-        // konkrečiame, privalomame beta srauto taške — ne pačios showRadar()
-        // vidinė logika, kuri būtų veikusi ir per seną istorijos ekrano nuorodą.
-        showRadar();
-        betaState.radar_shown = true;
-        saveBetaState();
+        // fix(radar-nav-path): naudoja centrinę openRadarAsBeta() — ta pati
+        // funkcija, ta pati žymėjimo logika kaip istorijos nuorodoje.
+        openRadarAsBeta();
         // Po grįžimo iš radaro ekrano, "Baigti sesiją" mygtukas radaro
         // ekrane veda atgal į showHistory() pagal esamą logiką — bet mums
         // reikia grįžti į DONE ekraną su jau aktyviu Complete beta test.
@@ -2849,10 +2859,8 @@ function renderBetaInterview(){
     viewBtn.style.marginTop = '10px';
     viewBtn.textContent = txt('view_trace') || 'View your current trace';
     viewBtn.onclick = () => {
-      // fix(radar-gate-root-cause): eksplicitinis žymėjimas, ne showRadar() vidinė logika.
-      showRadar();
-      betaState.radar_shown = true;
-      saveBetaState();
+      // fix(radar-nav-path): naudoja tą pačią centrinę funkciją kaip kiti keliai.
+      openRadarAsBeta();
     };
     viewTraceBlock.appendChild(viewBtn);
 
