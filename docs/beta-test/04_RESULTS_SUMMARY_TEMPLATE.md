@@ -23,13 +23,15 @@ Used to summarize results across all five participants.
 
 ## C. Comprehension summary
 
-| Question | Yes | Partly | No |
-|---|---|---|---|
-| Understood first task without help | | | |
-| Understood cue purpose | | | |
-| Understood own words vs. system text | | | |
-| Understood history | | | |
-| Understood radar without explanation | | | |
+**Use "Not observed / Not shown" whenever a feature was never presented to the participant (e.g. the radar did not meet eligibility). Do not record this as "No" — "No" means the participant saw it and did not understand it.**
+
+| Question | Yes | Partly | No | Not observed / Not shown |
+|---|---|---|---|---|
+| Understood first task without help | | | | |
+| Understood cue purpose | | | | |
+| Understood own words vs. system text | | | | |
+| Understood history | | | | |
+| Understood radar without explanation | | | | |
 
 ## D. Reflection value
 

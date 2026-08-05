@@ -2,6 +2,13 @@
 
 Complete this form after each session.
 
+**Complete only what was directly observed or explicitly reported. Leave fields blank when the information is unknown.**
+
+**Which sections to fill in:**
+- **Sessions 1 and 2:** Sections A, B, C, G, and H only
+- **Sections D and E:** fill in only when those blocks are actually shown to the participant during that session
+- **Full form (all sections):** completed after Session 3
+
 ## Metadata
 
 - Participant ID: ______
@@ -110,6 +117,12 @@ History helped recall previous sessions:
 - [ ] Unsure
 
 ### Radar
+
+**If the radar was not shown (eligibility not yet met), mark "Not shown" below and skip the remaining radar questions. This is an expected outcome, not a participant failure.**
+
+Radar shown this session:
+- [ ] Yes
+- [ ] Not shown
 
 Understood without explanation:
 - [ ] Yes

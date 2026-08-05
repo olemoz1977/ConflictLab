@@ -8,8 +8,14 @@ This document instructs the tester conducting the test. It exists to ensure all 
 
 - 5 participants
 - Minimum 3 sessions each
-- Sessions performed at different times
-- Preferably not all in one sitting
+- Sessions should be completed at different times when practical. This is preferred, not a condition for inclusion in this small usability test.
+
+## Estimated time
+
+- Each session: approximately 3–5 minutes
+- Post-test interview: approximately 10–15 minutes
+
+These are estimates, not requirements. If a real session takes substantially longer, treat that itself as a UX signal worth noting.
 
 ## Tester role
 
@@ -56,6 +62,7 @@ If a participant pauses or gets stuck:
 - Performed at a different time
 - After the session, the participant views their history
 - The radar is shown only if the system presents it naturally (i.e., only if eligibility criteria are already met)
+- If the radar does not appear, this is not a participant failure — skip the radar-related interview questions entirely and mark "not shown" on the Results Summary
 - The tester does not explain the radar
 - The post-test interview follows this session
 
