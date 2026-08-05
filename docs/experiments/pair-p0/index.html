@@ -2153,7 +2153,13 @@ function openRadarAsBeta(){
 }
 
 function showRadar(){
-  const eligible = getEligibleSessions();
+  // fix(radar-data-source-unify): beta kontekste radaro TURINYS (ne tik
+  // eligibility sprendimas) remiasi TIK pirmomis 3 beta sesijomis — tuo
+  // pačiu rinkiniu, kurį naudoja eligibility patikra ir eksportas. Taip
+  // radaras, "N iš 3" progresas ir eksportuotas JSON visada sutampa.
+  // Ne-beta įprastame Pair P0 sraute elgesys nepakitęs — naudojamas pilnas
+  // getEligibleSessions().
+  const eligible = betaMode ? getEligibleBetaSessions() : getEligibleSessions();
   const count = eligible.length;
 
   document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
@@ -3006,7 +3012,7 @@ function exportBetaResults(){
     app: 'ConflictLab Pair P0',
     pair_p0_version: 'pair-p0-j0-stable',
     pair_p0_base_version: 'pair-p0-j0-stable',
-    remote_beta_build: 'fix-radar-gate-2026-08-05',
+    remote_beta_build: '40bffe8b98e4b81a8ded78960842c9d207bff344', // atnaujinama kiekvieną kartą prieš stable tag; atspindi paskutinį realiai patikrintą commit
     radar_shown: betaState.radar_shown === true,
     sessions: completed,
     session_feedback: limitedFeedback,
