@@ -461,6 +461,7 @@ let microStep = 'cue';
 let microCurrentAnswer = null;
 let reflectAnswers = {};
 let fbAnswers = {};
+let lastImportStatus = null; // { result } arba { error } — išlieka per showHistory() perrenderinimus
 let sessionReflection = { response_type: null, text: '' };
 
 let SESSION = {
@@ -1486,10 +1487,15 @@ function showHistory(){
     'Your history is stored in this browser. You control the export file — ConflictLab does not upload it to a server.';
   body.appendChild(privacyNote);
 
-  // Vieta importo rezultato pranešimui (užpildoma po importHistoryData())
+  // Vieta importo rezultato pranešimui. Jei ankstesnis importas jau įvyko
+  // (lastImportStatus egzistuoja), atkuriame jį iškart — kad santrauka
+  // liktų matoma net po showHistory() perrenderinimo arba grįžus į šį ekraną.
   const importStatusHolder = document.createElement('div');
   importStatusHolder.id = 'history-import-status';
   body.appendChild(importStatusHolder);
+  if(lastImportStatus){
+    showImportStatus(lastImportStatus);
+  }
 
   // Nuoroda į radarą — visada rodoma, net jei dar nepakanka sesijų
   const radarLink = document.createElement('button');
@@ -1615,10 +1621,13 @@ function handleHistoryImportFile(inputEl){
     }
 
     const result = mergeImportedHistory(data.completed_sessions);
-    showImportStatus({ result });
     inputEl.value = '';
 
-    // Perrenderinti istoriją, kad naujai sujungtos sesijos ir radaras atsispindėtų iš karto.
+    // SVARBU: showHistory() perkuria visą ekraną (body.innerHTML=''). Todėl
+    // rezultatą pirmiausia įrašome į lastImportStatus, o showHistory() jį
+    // pati atkuria savo renderinimo pabaigoje — santrauka lieka matoma
+    // vartotojui, o ne parašoma ir iškart ištrinama tos pačios funkcijos viduje.
+    lastImportStatus = { result };
     showHistory();
   };
   reader.onerror = () => {
@@ -1676,6 +1685,7 @@ function mergeImportedHistory(importedSessions){
 }
 
 function showImportStatus({ result, error }){
+  lastImportStatus = { result, error };
   const holder = document.getElementById('history-import-status');
   if(!holder) return;
   holder.innerHTML = '';
