@@ -286,6 +286,13 @@ body{min-height:100vh}
 .done-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-top:12px}
 
 /* ── RADAR ── */
+/* ── N0 QA BANNER ── */
+#n0-qa-banner{
+  background:#1a1200;border:1px solid #5a4000;border-radius:6px;
+  color:#c8900a;font-size:.72rem;font-weight:600;letter-spacing:.04em;
+  text-align:center;padding:6px 12px;margin:0 0 12px;
+  text-transform:uppercase;display:none;
+}
 .radar-progress-box{
   text-align:center;padding:24px 16px;background:var(--card);
   border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;
@@ -412,6 +419,7 @@ body{min-height:100vh}
 <div id="screen-intro" class="screen active">
   <div class="screen-body">
     <div class="beta-badge" id="beta-badge" style="display:none"></div>
+    <div id="n0-qa-banner">INTERNAL TECHNICAL QA — PLACEHOLDER ASSETS</div>
     <div class="beta-progress" id="beta-start-progress" style="display:none"></div>
     <div class="logo">ConflictLab</div>
     <div class="intro-title" id="txt-subtitle"></div>
@@ -739,7 +747,16 @@ function handleBetaRiskCancel(){
 }
 
 
-const IS_DEBUG = new URLSearchParams(location.search).has('debug');
+const IS_DEBUG = new URLSearchParams(location.search).has("debug");
+
+// 25002500 N0 SIX-PAIR QA MODE 25002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500
+const QA_SET_PARAM = new URLSearchParams(location.search).get("set");
+const IS_N0_QA = QA_SET_PARAM === "n0-six-v3";
+const N0_QA_SET_FILE = "pair-set-n0-six-v3.json";
+const N0_QA_CUE_FILE = "pair-cue-n0-six-v3.json";
+const N0_QA_NS = "cl_pair_p0_n0qa_";
+const N0_QA_SESSIONS = [["P0-001","N0-005","P0-003"],["N0-004","P0-002","N0-006"]];
+let n0QaSessionIndex = 0;
 
 // ── STATE ────────────────────────────────────────────
 let L = {};
@@ -891,22 +908,44 @@ async function init(){
     LANGS = { lt:{}, en:{} };
   }
 
+  // ── JSON įkėlimas: M0 default arba N0 QA rinkinys ──
+  const pairSetFile = IS_N0_QA ? N0_QA_SET_FILE : 'pair-set.json';
+  const cueFile     = IS_N0_QA ? N0_QA_CUE_FILE : 'pair-cue-v0.1.json';
+
+  let n0QaSetData = null;
   try {
-    const r = await fetch('pair-set.json?v=' + Date.now());
+    const r = await fetch(pairSetFile + '?v=' + Date.now());
     const data = await r.json();
+    n0QaSetData = data; // išsaugom visą, nes reikia session_composition
     PAIRS = (data.pairs || []).filter(p => p.status === 'active');
   } catch(e){
     PAIRS = [];
   }
 
+  // N0 QA: išsaugoti visas 6 poras, tada filtruoti pagal sesijos kompoziciją
+  if(IS_N0_QA && n0QaSetData){
+    window._n0QaAllPairs = [...PAIRS]; // cache visos 6 poros prieš filtravimą
+    const completedN0 = JSON.parse(localStorage.getItem(N0_QA_NS + 'completed') || '[]');
+    n0QaSessionIndex = completedN0.length < N0_QA_SESSIONS.length ? completedN0.length : 0;
+    const sessionPairIds = N0_QA_SESSIONS[n0QaSessionIndex] || [];
+    const shuffled = [...sessionPairIds].sort(() => Math.random() - 0.5);
+    PAIRS = shuffled.map(id => PAIRS.find(p => p.pair_id === id)).filter(Boolean);
+  }
+
   try {
-    const r = await fetch('pair-cue-v0.1.json?v=' + Date.now());
+    const r = await fetch(cueFile + '?v=' + Date.now());
     CUE_DATA = await r.json();
   } catch(e){
     CUE_DATA = null;
   }
 
   setLang(detected);
+
+  // ── N0 QA banner ───────────────────────────────────────
+  if(IS_N0_QA){
+    const banner = document.getElementById('n0-qa-banner');
+    if(banner) banner.style.display = 'block';
+  }
 
   // ── M0: beta parametro apdorojimas ──────────────────
   const betaParam = parseBetaParam();
@@ -1113,7 +1152,11 @@ function discardUnfinishedSession(){
     choices: [],
     reflections: [],
     session_reflection: null,
-    feedback: {}
+    feedback: {},
+    // N0 QA: metaduomenys eksportui
+    qa_mode: IS_N0_QA || false,
+    set_id: IS_N0_QA ? ('n0-six-v3-s' + (n0QaSessionIndex + 1)) : null,
+    cue_set_version: IS_N0_QA ? 'v3' : 'pair-cue-v0.1'
   };
   currentPairIdx = 0;
   currentSessionStage = 'pair';
@@ -1147,6 +1190,17 @@ function startExperiment(){
   // sesiją, tiesioginis URL, ir t.t.) neturi leisti sukurti daugiau.
   if(betaMode && betaState && countBetaCompletedSessions() >= 3){
     return; // tyliai neleisti — UI mygtukas šiuo momentu jau turėtų būti paslėptas
+  }
+
+  // N0 QA: atnaujinti PAIRS pagal aktyvią sesijos kompoziciją
+  if(IS_N0_QA){
+    const completedN0 = JSON.parse(localStorage.getItem(N0_QA_NS + 'completed') || '[]');
+    n0QaSessionIndex = completedN0.length < N0_QA_SESSIONS.length ? completedN0.length : 0;
+    const sessionPairIds = N0_QA_SESSIONS[n0QaSessionIndex] || [];
+    const shuffled = [...sessionPairIds].sort(() => Math.random() - 0.5);
+    const allPairsFlat = window._n0QaAllPairs || PAIRS;
+    window._n0QaAllPairs = allPairsFlat; // cache vieną kartą
+    PAIRS = shuffled.map(id => allPairsFlat.find(p => p.pair_id === id)).filter(Boolean);
   }
 
   if(PAIRS.length === 0){ show('nostimuli'); return; }
@@ -1454,7 +1508,9 @@ function advanceMicroFlow(){
 function computeSessionVector(){
   const validEntries = SESSION.reflections.filter(r =>
     r.response_type === 'cue' && r.vector && typeof r.vector === 'object' &&
-    typeof r.confidence === 'number'
+    typeof r.confidence === 'number' &&
+    // N0 QA: praleisti įrašus, kur analysis_eligible === false
+    (r.analysis_eligible !== false)
   );
 
   if(validEntries.length === 0){
@@ -1638,12 +1694,32 @@ function logDebugEvent(eventName){
 }
 
 function goToResult(){
-  SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => ({
-    image_id:id, response_type:r.response_type||null, cue_id:r.cue_id||null,
-    cue_text:r.cue_text||null, custom_words:r.custom_words||null,
-    reflection_text:r.reflection_text||'', vector:r.vector||null,
-    confidence:r.confidence ?? null
-  }));
+  SESSION.reflections = Object.entries(reflectAnswers).map(([id, r]) => {
+    // N0 QA: papildomi laukai analizės atsekamumuiui
+    let pairMeta = {};
+    if(IS_N0_QA){
+      // rasti pair pagal image_id
+      const matchPair = PAIRS.find(p => p.image_a && p.image_a.id === id || p.image_b && p.image_b.id === id);
+      if(matchPair){
+        pairMeta = {
+          asset_status: matchPair.asset_status || null,
+          asset_version: matchPair.asset_version || null,
+          axis_status: matchPair.axis_status || null,
+          analysis_eligible: matchPair.analysis_eligible ?? true,
+          exclusion_reason: matchPair.exclusion_reason || null,
+          methodology_status: matchPair.methodology_status || null,
+          cue_version: matchPair.cue_version || null
+        };
+      }
+    }
+    return {
+      image_id:id, response_type:r.response_type||null, cue_id:r.cue_id||null,
+      cue_text:r.cue_text||null, custom_words:r.custom_words||null,
+      reflection_text:r.reflection_text||'', vector:r.vector||null,
+      confidence:r.confidence ?? null,
+      ...pairMeta
+    };
+  });
 
   const vecResult = computeSessionVector();
   SESSION.session_vector = vecResult.vector;
@@ -1989,6 +2065,15 @@ function completeSession(){
     const i = completed.findIndex(s => s.session_id === SESSION.session_id);
     if(i >= 0) completed[i] = SESSION; else completed.push(SESSION);
     localStorage.setItem(NS + 'completed_sessions', JSON.stringify(completed));
+
+    // N0 QA: sekti, kurios N0 sesijos užbaigtos
+    if(IS_N0_QA){
+      const doneN0 = JSON.parse(localStorage.getItem(N0_QA_NS + 'completed') || '[]');
+      if(!doneN0.includes(SESSION.session_id)){
+        doneN0.push(SESSION.session_id);
+        localStorage.setItem(N0_QA_NS + 'completed', JSON.stringify(doneN0));
+      }
+    }
 
     // Užbaigta sesija nebėra "aktyvi" — išvalyti tarpinę būseną
     localStorage.removeItem(NS + 'active_session');
