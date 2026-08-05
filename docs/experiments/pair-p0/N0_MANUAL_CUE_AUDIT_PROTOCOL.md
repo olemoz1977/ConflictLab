@@ -214,3 +214,94 @@ Additional audit considerations for N0-009 that do not apply to other pairs:
 - It does not specify an embedding model, distance metric, or language normalization
 - It does not produce axis assignments (axis is a separate analytical layer)
 - It does not apply to image selection (images are audited by visual balance criteria in N0_PAIR_DESIGN_SPEC.md, not by this protocol)
+
+---
+
+## 10. Inter-rater calibration and disagreement handling
+
+### 10.1 Basic requirements
+
+- Every cue set is assessed by **at least two reviewers independently**.
+- Reviewers do not see each other's decisions before completing their own assessment.
+- Each reviewer submits:
+  - A decision: **PASS / REVISE / REJECT**
+  - A brief justification citing a **specific dimension** (§3.1–3.7) and the **specific cue or phrase** that drove the finding
+  - Not a general impression — a located observation
+
+### 10.2 Agreement
+
+If both reviewers reach the same decision:
+- The decision is accepted.
+- Both justifications are preserved in the audit record — even when they agree on the outcome, they may have flagged different cues or dimensions, and that information is retained.
+
+### 10.3 Disagreement
+
+If reviewers reach different decisions, the record is marked **DISAGREEMENT** on that dimension.
+
+Rules:
+- The more conservative decision is **not automatically adopted**.
+- The more lenient decision is **not automatically adopted**.
+- Both reviewers must identify the specific phrase, cue, or visual feature that led to their different reading.
+- A short calibration discussion follows (see §10.4).
+
+### 10.4 Calibration discussion
+
+Purpose: clarify how each reviewer interpreted the criterion — not to force agreement.
+
+Process:
+1. Each reviewer states which criterion wording they applied and how.
+2. If the disagreement reveals an ambiguity in the protocol itself, that ambiguity is documented (see §10.6) — it is not resolved by picking a winner.
+3. If discussion produces genuine convergence, the agreed decision is recorded with a note that it was reached through discussion.
+4. If no convergence: the cue set is recorded as **UNRESOLVED** (see §10.5).
+
+### 10.5 Unresolved status
+
+A cue set marked UNRESOLVED:
+- Cannot enter the active library as PASS.
+- Remains REVISE or UNRESOLVED until a human methodological decision explicitly resolves it.
+- The unresolved dimension and the specific point of disagreement are preserved in the audit record.
+
+### 10.6 Protocol ambiguity log
+
+When a disagreement reveals that the protocol criterion itself is unclear, the ambiguity is logged separately — not silently resolved by the discussion outcome.
+
+Each ambiguity log entry records:
+- Which dimension (§3.1–3.7)
+- The specific case that exposed the ambiguity
+- Both reviewers' interpretations
+- Whether the criterion wording should be revised (and if so, flagged for human approval before revision)
+
+> Ambiguity entries are methodologically valuable. They are the mechanism by which the protocol improves over time without introducing numeric proxies.
+
+### 10.7 N0-009 social proximity pair — calibration rules
+
+N0-009 uses two additional audit checks (§8: projection check and neutrality check) that have no precedent in the current library. The first 2–3 audit sessions for N0-009 are treated as **calibration cases**, not definitive audits.
+
+Rules specific to N0-009:
+- All disagreements about projection-enabling, relationship-assuming, or emotional loading are documented in a separate N0-009 calibration log.
+- These cases may be used to refine the wording of the projection and neutrality criteria — but only through explicit human approval, and without introducing numeric thresholds.
+- Until the projection and neutrality criteria are considered stable (confirmed after at least 2 calibration sessions with documented disagreement resolution), N0-009 cue sets may not receive a final PASS without a human methodological sign-off.
+
+### 10.8 Calibration record format
+
+For each cue set audited by two reviewers, complete the following table:
+
+| Field | Content |
+|---|---|
+| Image ID | e.g., P0-001-A |
+| Reviewer A decision | PASS / REVISE / REJECT |
+| Reviewer A justification | Dimension cited + specific cue or phrase |
+| Reviewer B decision | PASS / REVISE / REJECT |
+| Reviewer B justification | Dimension cited + specific cue or phrase |
+| Agreement | YES / DISAGREEMENT |
+| Disputed dimension | (if DISAGREEMENT) Which dimension (§3.x) |
+| Evidence cited | Both reviewers' specific observations |
+| Resolution | Converged / UNRESOLVED / Human decision required |
+| Final status | PASS / REVISE / REJECT / UNRESOLVED |
+
+### 10.9 What this section does not introduce
+
+- No inter-rater reliability scores or percentages
+- No Cohen's kappa or equivalent psychometric metrics
+- No numeric confidence levels
+- No majority-voting rule when more than two reviewers are involved (additional reviewers add observations, not votes)
