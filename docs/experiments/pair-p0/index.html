@@ -427,7 +427,9 @@ body{min-height:100vh}
     <button class="btn-ghost" style="max-width:280px" onclick="showHistory()" id="txt-intro-history-link"></button>
   </div>
   <div class="screen-footer">
-    <button class="btn-primary" id="txt-start" onclick="startExperiment()"></button>
+    <button class="btn-primary" id="txt-start" onclick="startExperiment()" style="display:none"></button>
+    <button class="btn-primary" id="txt-resume-session" onclick="resumeUnfinishedSession()" style="display:none"></button>
+    <button class="btn-ghost" id="txt-discard-session" onclick="discardUnfinishedSession()" style="display:none;margin-top:8px"></button>
   </div>
 </div>
 
@@ -870,6 +872,10 @@ async function init(){
     updateBetaBadge();
   }
 
+  // ── fix(resume): patikrinti neužbaigtą aktyvią sesiją prieš rodant intro ──
+  const resumeCheck = checkForResumableSession();
+  applyIntroButtonState(resumeCheck);
+
   show('intro');
 
   if(IS_DEBUG){
@@ -917,6 +923,144 @@ function stopAudioSmoothly(){
 }
 
 // ── START ─────────────────────────────────────────────
+// ── fix(resume): UNFINISHED SESSION RESUME ─────────────
+let resumableSnapshot = null; // globaliai pasiekiamas snapshot, jei rastas galimas atkūrimas
+
+// Grąžina: 'none' (nėra aktyvios sesijos), 'resumable' (galima saugiai atkurti),
+// arba 'corrupt' (yra duomenų, bet trūksta būtinos struktūros — nerodyti klaidingo Tęsti).
+function applyIntroButtonState(resumeCheck){
+  const startBtn = document.getElementById('txt-start');
+  const resumeBtn = document.getElementById('txt-resume-session');
+  const discardBtn = document.getElementById('txt-discard-session');
+
+  if(resumeCheck === 'resumable'){
+    startBtn.style.display = 'none';
+    resumeBtn.style.display = 'block';
+    resumeBtn.textContent = txt('resume_unfinished_session') || 'Resume unfinished session';
+    discardBtn.style.display = 'block';
+    discardBtn.textContent = txt('discard_unfinished_session') || 'Discard unfinished session';
+  } else if(resumeCheck === 'corrupt'){
+    startBtn.style.display = 'block';
+    startBtn.textContent = txt('intro_start') || 'Start';
+    resumeBtn.style.display = 'none';
+    discardBtn.style.display = 'block';
+    discardBtn.textContent = txt('discard_unfinished_session') || 'Discard unfinished session';
+  } else {
+    startBtn.style.display = 'block';
+    startBtn.textContent = txt('intro_start') || 'Start';
+    resumeBtn.style.display = 'none';
+    discardBtn.style.display = 'none';
+  }
+}
+
+function checkForResumableSession(){
+  let raw;
+  try {
+    raw = localStorage.getItem(NS + 'active_session');
+  } catch(e){
+    return 'none';
+  }
+  if(!raw) return 'none';
+
+  let snapshot;
+  try {
+    snapshot = JSON.parse(raw);
+  } catch(e){
+    resumableSnapshot = null;
+    return 'corrupt';
+  }
+
+  // Būtina minimali struktūra atkūrimui — jei ko nors trūksta, laikoma sugadinta.
+  if(!snapshot || typeof snapshot !== 'object' ||
+     !snapshot.session || snapshot.session.status === 'completed' ||
+     !Array.isArray(snapshot.session.choices)){
+    resumableSnapshot = null;
+    return snapshot && snapshot.session ? 'corrupt' : 'none';
+  }
+
+  // Beta atskyrimo apsauga: jei snapshot priklauso kitam beta dalyviui
+  // (arba buvo sukurtas ne-beta režime, o dabar atidaroma su ?beta=),
+  // arba atvirkščiai — neleisti tęsti kaip savo sesijos.
+  const snapshotBetaId = snapshot.beta_participant_id || null;
+  const currentBetaId = betaMode ? betaParticipantId : null;
+  if(snapshotBetaId !== currentBetaId){
+    resumableSnapshot = null;
+    return 'none'; // svetimo konteksto sesija — traktuoti kaip nesamą, ne kaip klaidą
+  }
+
+  resumableSnapshot = snapshot;
+  return 'resumable';
+}
+
+// Atkuria visą runtime būseną iš snapshot'o ir nukreipia į teisingą ekraną/žingsnį.
+function resumeUnfinishedSession(){
+  if(!resumableSnapshot) return;
+
+  SESSION = resumableSnapshot.session;
+  currentPairIdx = resumableSnapshot.current_pair_idx || 0;
+  microIndex = resumableSnapshot.micro_index || 0;
+  microStep = resumableSnapshot.micro_step || 'cue';
+  reflectAnswers = resumableSnapshot.reflect_answers || {};
+  sessionReflection = resumableSnapshot.session_reflection || { response_type: null, text: '' };
+  connectionAnswer = resumableSnapshot.connection_answer || { response_type: null, text: '' };
+  const stage = resumableSnapshot.screen_stage || 'pair';
+
+  if(stage === 'pair'){
+    loadPair(currentPairIdx);
+  } else if(stage === 'reflect'){
+    // Atkurti microQueue iš SESSION.choices (ta pati logika kaip startLayer2())
+    microQueue = SESSION.choices.map(choice => {
+      const pair = PAIRS.find(p => p.pair_id === choice.pair_id);
+      const imgObj = pair
+        ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
+        : null;
+      return { imgObj, key: choice.selected_image_id };
+    }).filter(x => x.imgObj);
+
+    if(microIndex >= microQueue.length){
+      startSessionReflection();
+    } else {
+      renderMicroStep();
+      show('reflect');
+    }
+  } else if(stage === 'session-reflection'){
+    startSessionReflection();
+  } else if(stage === 'result'){
+    goToResult();
+  } else {
+    loadPair(currentPairIdx);
+  }
+}
+
+// Pašalina tik aktyvios sesijos raktą — completed_sessions, beta duomenys ir
+// visi kiti cl_pair_p0_ raktai lieka nepaliesti. Tai NĖRA J0 pilnas valymas.
+function discardUnfinishedSession(){
+  try { localStorage.removeItem(NS + 'active_session'); } catch(e){}
+  resumableSnapshot = null;
+
+  SESSION = {
+    session_id: uid(),
+    status: 'active',
+    started_at: new Date().toISOString(),
+    completed_at: null,
+    timestamp: new Date().toISOString(),
+    language: currentLang,
+    viewport_width: window.innerWidth,
+    viewport_height: window.innerHeight,
+    choices: [],
+    reflections: [],
+    session_reflection: null,
+    feedback: {}
+  };
+  currentPairIdx = 0;
+  reflectAnswers = {};
+  sessionReflection = { response_type: null, text: '' };
+  connectionAnswer = { response_type: null, text: '' };
+  currentSessionStage = 'pair';
+
+  show('intro');
+}
+
 function startExperiment(){
   if(PAIRS.length === 0){ show('nostimuli'); return; }
   currentPairIdx = 0;
@@ -938,7 +1082,10 @@ function startExperiment(){
     feedback: {}
   };
   sessionReflection = { response_type: null, text: '' };
+  connectionAnswer = { response_type: null, text: '' };
   reflectAnswers = {};
+  currentSessionStage = 'pair';
+  saveSession(); // fix(resume): nuo pat pradžios snapshot'as nuoseklus atkūrimui
 
   loadPair(0);
 }
@@ -991,6 +1138,8 @@ function choosePair(position){
   });
 
   currentPairIdx++;
+  currentSessionStage = 'pair';
+  saveSession(); // fix(resume): saugoti po KIEKVIENO pasirinkimo, ne tik pabaigoje
   loadPair(currentPairIdx);
 }
 
@@ -1016,6 +1165,8 @@ function startLayer2(){
 
   reflectAnswers = {};
   microIndex = 0;
+  currentSessionStage = 'reflect';
+  saveSession();
 
   if(microQueue.length === 0){ goToResult(); return; }
 
@@ -1183,6 +1334,7 @@ function onReflectionTyping(el){
   if(parts.length > 5) el.value = parts.slice(0,5).join(' ');
   const key = microQueue[microIndex].key;
   reflectAnswers[key].reflection_text = el.value.trim();
+  debouncedSaveSession(); // fix(resume): dalinis tekstas turi išlikti po perkrovimo
 }
 
 function skipReflectionStep(){
@@ -1197,6 +1349,7 @@ function advanceMicroFlow(){
   microIndex++;
   microStep = 'cue';
   microCurrentAnswer = null;
+  saveSession(); // fix(resume): išsaugoti kiekvieno mikro-srauto žingsnio pabaigoje
   if(microIndex >= microQueue.length) startSessionReflection();
   else renderMicroStep();
 }
@@ -1331,6 +1484,7 @@ function onSessionReflectionTyping(){
 
   logDebugEvent('SESSION_REFLECTION_TEXT_CHANGED');
   updateSessionReflectionButton();
+  debouncedSaveSession(); // fix(resume): dalinis sesijos pastebėjimo tekstas turi išlikti
 }
 
 function toggleNotYet(){
@@ -1502,6 +1656,11 @@ function goToResult(){
 // Sistema niekada nesujungia "dar nematau" su "nenoriu įvardyti" į vieną būseną.
 let connectionAnswer = { response_type: null, text: '' };
 
+// Fiksuoja, kuriame sesijos etape vartotojas šiuo metu yra — naudojama
+// tik atkūrimo po perkrovimo logikai, niekur kitur nekeičia elgesio.
+// Galimos reikšmės: 'pair' | 'reflect' | 'session-reflection' | 'result'
+let currentSessionStage = 'pair';
+
 function renderConnectionQuestion(body){
   connectionAnswer = { response_type: null, text: '' };
 
@@ -1587,6 +1746,7 @@ function selectConnectionOption(type, btn, questionBlock){
     function refreshTextState(){
       connectionAnswer.text = textarea.value;
       updateFinishButtonState();
+      debouncedSaveSession(); // fix(resume): dalinis ryšio teksto įvedimas turi išlikti
     }
     textarea.addEventListener('input', refreshTextState);
     textarea.addEventListener('change', refreshTextState);
@@ -1681,11 +1841,42 @@ function submitFeedback(){
 // Išsaugo TARPINĘ (dar nebaigtą) sesijos būseną — atskirai nuo užbaigtų sesijų istorijos.
 // Tai leidžia grįžti/perkrauti puslapį nepradant iš naujo, bet neterš completed_sessions,
 // kol sesija realiai nepasiekia Finish veiksmo.
+// Saugo pilną runtime snapshot'ą (ne tik SESSION objektą), kad puslapio
+// perkrovimas galėtų atkurti TIKSLŲ tašką sraute — kurią porą rodyti, kurį
+// mikro-srauto žingsnį, kokie atsakymai jau įvesti. Iškviečiama po
+// KIEKVIENO reikšmingo veiksmo (pasirinkimo, cue, refleksijos), ne tik
+// sesijos pabaigoje.
+let saveSessionDebounceTimer = null;
+// Debounced versija — naudojama teksto įvedimo įvykiuose, kad kiekvienas
+// simbolis nekurtų atskiro localStorage.setItem() iškvietimo. Galutinis
+// tekstas visada išsaugomas per 400ms po paskutinio simbolio arba iš karto
+// per tikrąją saveSession() bet kuriame kitame perėjimo taške.
+function debouncedSaveSession(){
+  if(saveSessionDebounceTimer) clearTimeout(saveSessionDebounceTimer);
+  saveSessionDebounceTimer = setTimeout(saveSession, 400);
+}
+
 function saveSession(){
   SESSION.audio_enabled = audioEnabled;
   SESSION.audio_started = audioStarted;
+
+  const snapshot = {
+    session: SESSION,
+    current_pair_idx: currentPairIdx,
+    micro_index: microIndex,
+    micro_step: microStep,
+    reflect_answers: reflectAnswers,
+    session_reflection: sessionReflection,
+    connection_answer: connectionAnswer,
+    // Ekranas, kuriame vartotojas paliko sesiją — naudojamas atkūrimo metu,
+    // kad žinotume, ar reikia grąžinti į poros pasirinkimą, mikro-srautą,
+    // sesijos refleksiją ar rezultato ekraną.
+    screen_stage: currentSessionStage,
+    beta_participant_id: betaMode ? betaParticipantId : null
+  };
+
   try {
-    localStorage.setItem(NS + 'active_session', JSON.stringify(SESSION));
+    localStorage.setItem(NS + 'active_session', JSON.stringify(snapshot));
   } catch(e){}
 }
 
@@ -1941,6 +2132,30 @@ function showHistory(){
   const sessions = getCompletedSessions().slice().reverse(); // naujausios viršuje
   const body = document.getElementById('history-body');
   body.innerHTML = '';
+
+  // fix(resume): nebaigta aktyvi sesija rodoma ATSKIRAI nuo completed sąrašo,
+  // su aiškia "Nebaigta sesija" žyma ir "Tęsti" veiksmu. Niekada nerodoma
+  // kaip užbaigta istorijos kortelė, niekada neskaičiuojama beta/radaro logikoje.
+  const resumeCheckInHistory = checkForResumableSession();
+  if(resumeCheckInHistory === 'resumable'){
+    const unfinishedItem = document.createElement('div');
+    unfinishedItem.className = 'history-item';
+    unfinishedItem.style.borderColor = 'var(--accent)';
+
+    const label = document.createElement('div');
+    label.className = 'observation-label';
+    label.textContent = txt('unfinished_session_label') || 'Unfinished session';
+    unfinishedItem.appendChild(label);
+
+    const resumeLink = document.createElement('button');
+    resumeLink.className = 'btn-primary';
+    resumeLink.style.marginTop = '10px';
+    resumeLink.textContent = txt('resume_unfinished_session') || 'Resume unfinished session';
+    resumeLink.onclick = resumeUnfinishedSession;
+    unfinishedItem.appendChild(resumeLink);
+
+    body.appendChild(unfinishedItem);
+  }
 
   // ── Eksporto / importo valdikliai ──────────────────
   const transferBlock = document.createElement('div');
