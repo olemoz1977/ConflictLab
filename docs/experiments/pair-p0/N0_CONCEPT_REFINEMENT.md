@@ -69,7 +69,7 @@ Refine the generated prototype: constrain the endpoint to be a flat, same-bright
 
 ## N0-005-C1 — Plant: early sprout vs. established growth
 
-**Slot:** N0-005 | **Provisional axis:** CS | **Production method:** Same plant, same pot, same camera angle — either grown over time (real photography) or generated with strict matching constraints
+**Slot:** N0-005 | **Provisional axis:** CS | **Production method:** Generated controlled prototype first — real photography over time introduces too many uncontrolled variables (soil changes, light shifts, pot weathering) to produce a reliably matched pair
 
 ### Current status
 
@@ -173,9 +173,18 @@ Produce a test image pair with controlled lateral lighting (45-degree angle from
 
 ### Current status
 
-**ADVANCE, OBJECT UNRESOLVED**
+**HOLD — directional object concept not yet operationally clean**
 
-The object has not been selected. Human decision required: three neutral object candidates are proposed below for human selection. No AI selection is made here.
+`[MANUAL AUDIT JUDGMENT]` Review of the three object candidates (ceramic vessel, stool, geometric form) revealed a structural problem with the concept itself, not only with the specific objects proposed:
+
+- An object without a clear front does not produce a readable orientation contrast — "facing toward" and "facing away" are not distinguishable
+- An object with a clear front (functional opening, decorated face, or designed front surface) typically carries functional, social, or cultural associations tied to that front — introducing a confound stronger than the orientation itself
+- Rotating an object 180 degrees changes the visible surface area, silhouette, or opening — these changes may become the primary visual signal rather than the orientation direction
+- None of the three proposed candidates (A / B / C) is confirmed for production
+
+`[UNRESOLVED QUESTION]` Whether a methodologically clean directional object concept is achievable requires further concept development before any production decision. The concept is not rejected — it is held until an operationally viable object and setup can be defined.
+
+No production brief will be written for N0-007 until the concept is operationally resolved.
 
 ### Single permitted A/B difference
 
@@ -294,7 +303,7 @@ Ambient lighting condition:
 
 ### Next step
 
-Generate a test image pair with a simple outdoor scene (path, courtyard edge, or open field corner). Confirm the lighting difference reads as quality-of-light before moving to cue drafting.
+**Do not produce before contrast refinement.** The overcast/sunlit contrast risks becoming a general scene attractiveness test rather than a quality-of-light probe — the specific scene, framing, and lighting parameters must be specified more precisely before any image is generated. Production is deferred until the contrast can be defined in terms that are verifiably distinct from "nicer weather."
 
 ---
 
@@ -305,8 +314,8 @@ Generate a test image pair with a simple outdoor scene (path, courtyard edge, or
 | N0-004-C1 Forest path | N0-004 | AW | Generated prototype → real photo audit | Yes — requires endpoint refinement | **ADVANCE, endpoint geometry needs correction** | Clearing must not be brighter or more inviting than path |
 | N0-005-C1 Plant sprout | N0-005 | CS | Same plant, same pot — photo over time or generated | No | **ADVANCE TO CONCEPT REFINEMENT** | Production path: real photo vs. generated |
 | N0-006-C1 Stone surface | N0-006 | CR | Generated or photo — strict lighting angle control | No | **ADVANCE TO CONCEPT REFINEMENT** | Reflectivity: first impression must be texture, not brightness |
-| N0-007-C1 Object facing | N0-007 | AW | Generated or photo — object rotation | No | **ADVANCE, OBJECT UNRESOLVED** | Object selection from 3 candidates — human decision |
-| N0-008-C1 Overcast/sunlit | N0-008 | CS or CR | Generated — weather condition as sole variable | No | **ADVANCE, AXIS UNRESOLVED** | Axis confirmed only after image pair + cue review |
+| N0-007-C1 Object facing | N0-007 | AW | — | No | **HOLD — directional object concept not yet operationally clean** | Concept requires further development before any production decision |
+| N0-008-C1 Overcast/sunlit | N0-008 | CS or CR | Generated — deferred | No | **ADVANCE, AXIS UNRESOLVED — do not produce before contrast refinement** | Scene and lighting parameters must be more precisely specified first |
 
 ---
 
