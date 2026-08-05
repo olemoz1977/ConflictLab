@@ -167,6 +167,41 @@ body{min-height:100vh}
 .result-thumb{width:100%;border-radius:8px;overflow:hidden;background:#0a0a0c}
 .result-thumb img{width:100%;height:220px;object-fit:contain;display:block}
 .result-words{font-size:1.05rem;color:var(--accent);font-weight:600;text-align:center;letter-spacing:.02em}
+/* ── I STAGE: literal choice reflection ── */
+.choice-reflect-title{
+  font-size:1rem;color:var(--text);font-weight:700;margin-bottom:14px;line-height:1.4;
+}
+.choice-reflect-item{
+  display:flex;gap:6px;padding:10px 0;font-size:.92rem;line-height:1.5;
+  border-bottom:1px solid var(--border);
+}
+.choice-reflect-number{color:var(--faint);flex-shrink:0}
+.choice-reflect-text{color:var(--text)}
+.choice-reflect-text.empty{color:var(--dim);font-style:italic}
+.choice-reflect-closing{
+  margin-top:14px;padding:12px 14px;font-size:.8rem;color:var(--dim);
+  line-height:1.6;font-style:italic;background:var(--card);border-radius:8px;
+}
+.connection-question-block{
+  margin-top:20px;padding:16px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);
+}
+.connection-question-text{font-size:.92rem;color:var(--text);font-weight:500;margin-bottom:12px;line-height:1.5}
+.connection-options{display:flex;flex-direction:column;gap:8px}
+.connection-opt-btn{
+  padding:12px 14px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--dim);font-size:.85rem;text-align:left;
+  cursor:pointer;transition:all 180ms;
+}
+.connection-opt-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(124,158,143,.08)}
+.connection-text-wrap{margin-top:12px}
+.connection-textarea{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;resize:none;
+  min-height:60px;line-height:1.5;transition:border-color 180ms;
+}
+.connection-textarea:focus{border-color:var(--accent)}
+
 .result-observation{
   margin-top:16px;padding:18px 16px;background:var(--card);
   border:1px solid var(--accent);border-radius:var(--r);
@@ -1091,33 +1126,65 @@ function goToResult(){
   const body = document.getElementById('result-body');
   body.innerHTML = '';
 
-  // Tavo pasirinkimai — visi vaizdai originalia seka su jų cue/custom/hard-to-say
-  SESSION.choices.forEach(choice => {
-    const pair = PAIRS.find(p => p.pair_id === choice.pair_id);
-    const imgObj = pair
-      ? (pair.image_a.id === choice.selected_image_id ? pair.image_a : pair.image_b)
-      : null;
+  // ── I ETAPAS: "Ką pasirinkai šioje sesijoje" — konkretus atspindys ──
+  // Šaltinio prioritetas kiekvienam pasirinkimui: žmogaus tekstas > cue > neįvardyta.
+  // Sistema NIEKADA nepriskiria temos, motyvo ar interpretacijos.
+  const choiceReflectHeader = document.createElement('div');
+  choiceReflectHeader.className = 'choice-reflect-title';
+  choiceReflectHeader.textContent = txt('your_session_choices') || 'What you chose in this session';
+  body.appendChild(choiceReflectHeader);
+
+  SESSION.choices.forEach((choice, idx) => {
     const ref = SESSION.reflections.find(r => r.image_id === choice.selected_image_id);
 
-    const div = document.createElement('div');
-    div.className = 'result-item';
+    let displayText = null;
+    let sourceLabel = null;
 
-    let mainText = null;
     if(ref){
-      if(ref.response_type === 'cue') mainText = ref.cue_text;
-      else if(ref.response_type === 'custom') mainText = ref.custom_words;
-      else if(ref.response_type === 'hard_to_say') mainText = (txt('layer2_skip') || 'Hard to say');
+      const humanText = (ref.custom_words && ref.custom_words.trim()) ||
+                         (ref.reflection_text && ref.reflection_text.trim());
+      if(humanText){
+        displayText = humanText;
+        sourceLabel = txt('your_words') || 'Your words';
+      } else if(ref.cue_text && ref.cue_text.trim()){
+        displayText = ref.cue_text;
+        sourceLabel = txt('chosen_wording') || 'Chosen wording';
+      }
     }
 
-    let html = `<div class="result-thumb">${imgObj ? `<img src="${imgObj.src}" alt="" loading="lazy">` : ''}</div>`;
-    if(mainText){
-      html += `<div class="result-words">${mainText}</div>`;
+    const item = document.createElement('div');
+    item.className = 'choice-reflect-item';
+
+    const numberSpan = document.createElement('span');
+    numberSpan.className = 'choice-reflect-number';
+    numberSpan.textContent = (idx + 1) + '. ';
+    item.appendChild(numberSpan);
+
+    if(displayText){
+      const textSpan = document.createElement('span');
+      textSpan.className = 'choice-reflect-text';
+      textSpan.textContent = '"' + displayText + '"'; // saugus DOM metodas
+      item.appendChild(textSpan);
+    } else {
+      const emptySpan = document.createElement('span');
+      emptySpan.className = 'choice-reflect-text empty';
+      emptySpan.textContent = txt('choice_unstated') || 'This choice was left unstated.';
+      item.appendChild(emptySpan);
     }
-    div.innerHTML = html;
-    body.appendChild(div);
+
+    body.appendChild(item);
   });
 
-  // Tavo pastebėjimas — žmogaus session_reflection, be interpretacijos
+  const closingLine = document.createElement('div');
+  closingLine.className = 'choice-reflect-closing';
+  closingLine.textContent = txt('choices_closing_line') ||
+    'These are the words you chose in this session. ConflictLab does not interpret them for you.';
+  body.appendChild(closingLine);
+
+  // ── Refleksinis klausimas: ar žmogus pats mato ryšį? ──
+  renderConnectionQuestion(body);
+
+  // ── Tavo pastebėjimas — esamas session_reflection (B etapas), nepakeista ──
   const sr = SESSION.session_reflection || { response_type: null, text: '' };
   const obsBlock = document.createElement('div');
   obsBlock.className = 'result-observation';
@@ -1152,6 +1219,97 @@ function goToResult(){
 }
 
 // ── FEEDBACK ──────────────────────────────────────────
+// ── I ETAPAS: Refleksinis klausimas apie ryšį tarp pasirinkimų ──
+// Trys atsakymai — "taip", "dar ne", "nenoriu" — VISADA saugomi atskirai.
+// Sistema niekada nesujungia "dar nematau" su "nenoriu įvardyti" į vieną būseną.
+let connectionAnswer = { response_type: null, text: '' };
+
+function renderConnectionQuestion(body){
+  connectionAnswer = { response_type: null, text: '' };
+
+  const questionBlock = document.createElement('div');
+  questionBlock.className = 'connection-question-block';
+
+  const q = document.createElement('div');
+  q.className = 'connection-question-text';
+  q.textContent = txt('connection_question') || 'Do you notice anything that may connect these choices?';
+  questionBlock.appendChild(q);
+
+  const options = document.createElement('div');
+  options.className = 'connection-options';
+
+  const optYes = document.createElement('button');
+  optYes.className = 'connection-opt-btn';
+  optYes.textContent = txt('connection_yes') || 'Yes, I will name it';
+  optYes.onclick = () => selectConnectionOption('text', optYes, questionBlock);
+  options.appendChild(optYes);
+
+  const optNotYet = document.createElement('button');
+  optNotYet.className = 'connection-opt-btn';
+  optNotYet.textContent = txt('connection_not_seen') || 'I do not see it yet';
+  optNotYet.onclick = () => selectConnectionOption('not_seen_yet', optNotYet, questionBlock);
+  options.appendChild(optNotYet);
+
+  const optPrefer = document.createElement('button');
+  optPrefer.className = 'connection-opt-btn';
+  optPrefer.textContent = txt('connection_prefer_not') || 'I prefer not to name it';
+  optPrefer.onclick = () => selectConnectionOption('prefer_not_to_state', optPrefer, questionBlock);
+  options.appendChild(optPrefer);
+
+  questionBlock.appendChild(options);
+  body.appendChild(questionBlock);
+}
+
+function selectConnectionOption(type, btn, questionBlock){
+  questionBlock.querySelectorAll('.connection-opt-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+
+  // Pašalinti seną teksto lauką, jei buvo (perjungiant tarp variantų)
+  const oldInput = questionBlock.querySelector('.connection-text-wrap');
+  if(oldInput) oldInput.remove();
+
+  if(type === 'text'){
+    connectionAnswer = { response_type: 'text', text: '' };
+
+    const wrap = document.createElement('div');
+    wrap.className = 'connection-text-wrap';
+
+    const textarea = document.createElement('textarea');
+    textarea.className = 'connection-textarea';
+    textarea.placeholder = txt('connection_placeholder') || 'What do you notice?';
+    textarea.oninput = () => { connectionAnswer.text = textarea.value; };
+    wrap.appendChild(textarea);
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-ghost';
+    saveBtn.style.marginTop = '8px';
+    saveBtn.textContent = txt('save_observation') || 'Save observation';
+    saveBtn.onclick = () => saveConnectionReflection();
+    wrap.appendChild(saveBtn);
+
+    questionBlock.appendChild(wrap);
+    textarea.focus();
+  } else {
+    connectionAnswer = { response_type: type, text: '' };
+    saveConnectionReflection();
+  }
+}
+
+function saveConnectionReflection(){
+  const trimmed = connectionAnswer.text.trim();
+  if(connectionAnswer.response_type === 'text' && trimmed.length === 0){
+    return; // neleisti vien tarpų / tuščio teksto
+  }
+
+  SESSION.session_connection_reflection = {
+    response_type: connectionAnswer.response_type,
+    text: connectionAnswer.response_type === 'text' ? trimmed : '',
+    created_at: new Date().toISOString()
+  };
+
+  saveSession();
+}
+
 function goToFeedback(){
   stopAudioSmoothly();
   const body = document.getElementById('fb-body');
@@ -1556,6 +1714,25 @@ function showHistory(){
       obsDiv.className = 'history-observation';
       obsDiv.textContent = obsText; // saugus DOM metodas, ne innerHTML
       item.appendChild(obsDiv);
+    }
+
+    // I etapas: session_connection_reflection glaustas rodymas.
+    // Senoms sesijoms be šio lauko — nieko papildomai nerodoma, jokios klaidos.
+    const cr = s.session_connection_reflection;
+    if(cr && (cr.response_type === 'text' || cr.response_type === 'not_seen_yet' || cr.response_type === 'prefer_not_to_state')){
+      const crDiv = document.createElement('div');
+      crDiv.className = 'history-observation';
+      crDiv.style.marginTop = '6px';
+      if(cr.response_type === 'text' && cr.text){
+        crDiv.textContent = cr.text; // saugus DOM metodas
+      } else if(cr.response_type === 'not_seen_yet'){
+        crDiv.textContent = txt('connection_history_not_seen') || 'A connection between the choices was not yet named this time.';
+        crDiv.classList.add('empty');
+      } else if(cr.response_type === 'prefer_not_to_state'){
+        crDiv.textContent = txt('connection_history_prefer_not') || 'Chose not to name a connection this time.';
+        crDiv.classList.add('empty');
+      }
+      item.appendChild(crDiv);
     }
 
     body.appendChild(item);
