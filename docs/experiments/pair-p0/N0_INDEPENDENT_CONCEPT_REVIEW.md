@@ -248,7 +248,7 @@
 | N0-008-C2 Window/artificial | HOLD | REJECT | Whether natural light aesthetic preference is strong enough to be disqualifying | Human confirms REJECT: analogous to staircase light/shadow — cultural loading pre-resolves contrast |
 | N0-009-C2 Occupied bench | HOLD | REJECT | Whether single seated figure's projection risk is structural or recoverable | Human confirms REJECT: seated posture is narratively loaded as a structural property |
 
-**Pattern:** In all four divergences, Claude applied HOLD (recoverable pending further assessment) and Gemini applied REJECT (structural, not recoverable). Human confirmed REJECT in all four cases. This pattern suggests Claude's initial assessments were systematically more lenient on structural confounds — a calibration note for future audits.
+**Calibration observation:** In this specific 14-candidate audit there were 4 divergences. In all 4 cases Claude proposed HOLD and Gemini proposed REJECT; in all 4 cases the human decision was REJECT. This is documented as a calibration observation from this audit — not as evidence of a general model reliability or bias pattern.
 
 ---
 
