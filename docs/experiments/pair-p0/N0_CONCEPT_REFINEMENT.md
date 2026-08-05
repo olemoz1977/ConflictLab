@@ -330,3 +330,69 @@ Ambient lighting condition:
 4. **N0-007-C1** — which of the three object candidates (ceramic vessel, stool, geometric form) is selected? Or alternative proposed by human?
 
 5. **N0-008-C1** — after first generated image pair: does the lighting difference read as quality-of-light or as brightness/warmth? Human confirmation required before cue drafting.
+
+---
+
+## Prototype findings (2026-08-05)
+
+> **Annotation type key:** `[OBSERVED FACT]` — directly observed from prototype images; `[MANUAL AUDIT JUDGMENT]` — qualitative assessment during review; `[PRODUCTION FINDING]` — conclusion about production method.
+
+---
+
+### N0-004 — Forest path prototype findings
+
+`[OBSERVED FACT]` A reference-based Gemini edit retains scene consistency better than separate Kling generation — same forest, same lighting, same framing across A and B.
+
+`[OBSERVED FACT]` The strongest prototype has sufficiently matched forest density, lighting, and camera framing between the two images.
+
+`[OBSERVED FACT]` Remaining defect: in the "path ends" variant, the path also changes geometry — it curves or turns before ending. The geometric change is a confound independent of the endpoint itself.
+
+`[METHODOLOGICAL REQUIREMENT]` In the next iteration, only the far end of the path may change. Path width, foreground, mid-ground geometry, tree density, lighting, and color temperature must remain identical. The path must arrive at an open area without first curving or turning.
+
+**Status: ADVANCE — visually matched, endpoint not yet isolated**
+
+---
+
+### N0-005 — Plant growth stage prototype findings
+
+`[OBSERVED FACT]` Multiple plant prototypes were generated across two iterations.
+
+`[OBSERVED FACT]` Reference-based editing improved pot, background, and scene matching significantly — the third iteration had a well-matched pot, soil texture, lighting, and camera angle.
+
+`[OBSERVED FACT]` Even with improved technical matching, a conceptual valence asymmetry persists: more leaves, greater height, and a fuller silhouette are consistently readable as a "better result," independent of cue wording.
+
+`[MANUAL AUDIT JUDGMENT]` The large-difference prototype (clear early sprout vs. established plant) was rejected — Image B was visibly more appealing: richer green, larger leaves, stronger visual presence.
+
+`[MANUAL AUDIT JUDGMENT]` The small-difference prototype (two similar seedling stages) passed technical matching but failed semantic contrast — the A/B difference was too subtle to produce meaningful ambiguity.
+
+`[MANUAL AUDIT JUDGMENT]` The valence asymmetry in this concept is not a production problem — it is a conceptual property of growth stages. A later growth stage carries completion signals that are difficult to neutralize without making the plant appear unhealthy or stunted, which would introduce a different valence problem.
+
+`[UNRESOLVED QUESTION]` Whether this inherent valence asymmetry is an acceptable disclosed limitation (analogous to P0-002's open/closed conceptual asymmetry) — or whether it is strong enough to disqualify the concept — requires human methodological decision.
+
+**Status: HOLD — production can be controlled, conceptual valence asymmetry unresolved**
+
+---
+
+### N0-006 — Stone texture prototype findings
+
+`[OBSERVED FACT]` A first stone texture prototype pair was produced.
+
+`[OBSERVED FACT]` The A/B mismatch was too large across multiple dimensions simultaneously: different shape outline, different contour, different tilt angle, different color tone, visible cracks in Image A, different shadow direction.
+
+`[MANUAL AUDIT JUDGMENT]` The AI rendered roughness as damage and age — rough surface read as cracked, weathered, or degraded rather than simply unfinished. This introduced a condition/quality valence asymmetry rather than a texture contrast.
+
+`[OBSERVED FACT]` The smooth stone image (Image B from the prototype) is visually clean — same rounded form, neutral grey, matte surface, no gloss. It can serve as a reference base for the next iteration.
+
+`[PRODUCTION FINDING]` The next iteration must use the smooth stone image as the reference base and apply only micro-texture change — no cracks, no grooves, no color shift, no change in shadow direction or stone contour. The rough surface must read as unfinished, not damaged.
+
+**Status: REVISE — same-object reference edit required**
+
+---
+
+### General production finding
+
+`[PRODUCTION FINDING]` A base image may be generated independently.
+
+`[PRODUCTION FINDING]` The A/B partner must be produced via reference-based edit of the base image — not as a separate generation. Separate A and B generation introduces too many uncontrolled differences across shape, lighting, color temperature, and composition.
+
+`[MANUAL AUDIT JUDGMENT]` In this prototype round, Gemini's reference editing retained scene consistency better than separate Kling generation. This is a specific observation about these prototypes — not a general model quality claim.
