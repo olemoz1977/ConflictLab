@@ -1372,6 +1372,8 @@ function renderMicroStep(){
 }
 
 function renderCueStep(item, body, btn){
+  // Cue tvarka deterministinė: naudojamas JSON eilės indeksas, ne Math.random().
+  // Todėl refresh atkuria tą pačią cue tvarką be papildomo snapshot'o lauko.
   const key = item.key;
   const cues = getCuesForImage(key);
   const otherLabel = txt('layer2_other') || 'Another thought';
