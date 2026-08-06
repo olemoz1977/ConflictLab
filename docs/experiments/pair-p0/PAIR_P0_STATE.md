@@ -175,3 +175,5 @@ Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` por
 <!-- deploy-trigger: 2026-08-06T13:26:04Z -->
 
 <!-- redeploy after image compression -->
+
+<!-- workflow-build-trigger -->
