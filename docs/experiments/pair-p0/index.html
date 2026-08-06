@@ -821,6 +821,8 @@ const P9_CUE_FILE = "pair-cue-prototype-nine-v1.json";
 const P9_NS = "cl_pair_p0_p9_";
 const P9_STATE_KEY = P9_NS + 'ui_state'; // tracks expectation_intro_seen, etc.
 const P9_EL_VERSION = 'first-radar-v1'; // expectation layer version
+const BUILD_ID = 'p9-2026-08-06-provenance-v1';
+const SOURCE_BASE_COMMIT = '75efb81';
 const P9_FIRST_RADAR_AFTER = 3;
 const P9_PAIRS_PER_SESSION = 3;
 // Sesijų kompozicija — fiksuota iki pirmo radaro (porų eilė sesijoje randomizuojama)
@@ -1058,7 +1060,11 @@ async function init(){
   if(IS_P9){
     const banner = document.getElementById('n0-qa-banner');
     if(banner){
-      banner.textContent = 'PROTOTYPE — 3 SESIJOS IKI PIRMO RADARO';
+      const p9DoneForBanner = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+      const radarUnlockedForBanner = p9DoneForBanner.length >= P9_FIRST_RADAR_AFTER;
+      banner.textContent = radarUnlockedForBanner
+        ? 'PROTOTYPE — PIRMAS RADARAS ATRAKINTAS'
+        : 'PROTOTYPE — 3 SESIJOS IKI PIRMO RADARO';
       banner.style.display = 'block';
     }
   }
@@ -1339,7 +1345,9 @@ function discardUnfinishedSession(){
     radar_unlocked: QA_SET_PARAM === 'prototype-nine-v1' ? isRadarUnlocked() : null,
     session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (p9SessionIndex + 1)
                  : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
-                 :                                         null
+                 :                                         null,
+    build_id: BUILD_ID,
+    source_base_commit: SOURCE_BASE_COMMIT
   };
   currentPairIdx = 0;
   currentSessionStage = 'pair';
