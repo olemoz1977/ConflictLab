@@ -2233,7 +2233,9 @@ function submitFeedback(){
   }
 
   // P9: route to correct screen after session (expectation/progress/radar)
-  if(IS_P9){
+  // Use SESSION.set_id as authoritative source — IS_P9 could be stale if URL changed
+  const isP9Session = IS_P9 || SESSION.set_id === 'prototype-nine-v1';
+  if(isP9Session){
     routeP9AfterSession();
     return;
   }
