@@ -758,6 +758,24 @@ const N0_QA_NS = "cl_pair_p0_n0qa_";
 const N0_QA_SESSIONS = [["P0-001","N0-005","P0-003"],["N0-004","P0-002","N0-006"]];
 let n0QaSessionIndex = 0;
 
+// ── PROTOTYPE NINE V1 MODE ───────────────────────────
+// Aktyvuojamas tik per ?set=prototype-nine-v1 URL parametrą.
+const IS_P9 = QA_SET_PARAM === "prototype-nine-v1";
+const P9_SET_FILE = "pair-set-prototype-nine-v1.json";
+const P9_CUE_FILE = "pair-cue-prototype-nine-v1.json";
+const P9_NS = "cl_pair_p0_p9_";
+const P9_FIRST_RADAR_AFTER = 3;
+const P9_PAIRS_PER_SESSION = 3;
+// Sesijų kompozicija — fiksuota iki pirmo radaro (porų eilė sesijoje randomizuojama)
+const P9_SESSIONS = [
+  ["P0-001","N0-004","N0-008"],
+  ["P0-002","N0-005","N0-007"],
+  ["P0-003","N0-006","N0-009"]
+];
+let p9AllPairs = [];
+let p9SessionIndex = 0;
+let p9RadarUnlocked = false;
+
 // ── STATE ────────────────────────────────────────────
 let L = {};
 let LANGS = {};
@@ -910,8 +928,8 @@ async function init(){
   }
 
   // ── JSON įkėlimas: M0 default arba N0 QA rinkinys ──
-  const pairSetFile = IS_N0_QA ? N0_QA_SET_FILE : 'pair-set.json';
-  const cueFile     = IS_N0_QA ? N0_QA_CUE_FILE : 'pair-cue-v0.1.json';
+  const pairSetFile = IS_N0_QA ? N0_QA_SET_FILE : IS_P9 ? P9_SET_FILE : 'pair-set.json';
+  const cueFile     = IS_N0_QA ? N0_QA_CUE_FILE : IS_P9 ? P9_CUE_FILE : 'pair-cue-v0.1.json';
 
   let n0QaSetData = null;
   try {
@@ -925,12 +943,33 @@ async function init(){
 
   // N0 QA: išsaugoti visas 6 poras, tada filtruoti pagal sesijos kompoziciją
   if(IS_N0_QA && n0QaSetData){
-    window._n0QaAllPairs = [...PAIRS]; // cache visos 6 poros prieš filtravimą
+    window._n0QaAllPairs = [...PAIRS];
     const completedN0 = JSON.parse(localStorage.getItem(N0_QA_NS + 'completed') || '[]');
     n0QaSessionIndex = completedN0.length < N0_QA_SESSIONS.length ? completedN0.length : 0;
     const sessionPairIds = N0_QA_SESSIONS[n0QaSessionIndex] || [];
     const shuffled = [...sessionPairIds].sort(() => Math.random() - 0.5);
     PAIRS = shuffled.map(id => PAIRS.find(p => p.pair_id === id)).filter(Boolean);
+  }
+
+  // P9: išsaugoti visas 9 poras, filtruoti pagal sesijos kompoziciją
+  if(IS_P9 && n0QaSetData){
+    p9AllPairs = [...PAIRS];
+    const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+    p9RadarUnlocked = p9Done.length >= P9_FIRST_RADAR_AFTER;
+    // Kurią sesiją rodyti: iki radaro — fiksuota kompozicija; po radaro — dar nematytos
+    if(!p9RadarUnlocked){
+      p9SessionIndex = p9Done.length < P9_SESSIONS.length ? p9Done.length : P9_SESSIONS.length - 1;
+      const sessionPairIds = P9_SESSIONS[p9SessionIndex] || [];
+      const shuffled = [...sessionPairIds].sort(() => Math.random() - 0.5);
+      PAIRS = shuffled.map(id => p9AllPairs.find(p => p.pair_id === id)).filter(Boolean);
+    } else {
+      // Po radaro: pirmiausia dar nematytos poros, paskui leisti kartojimą
+      const seenIds = new Set(p9Done.flatMap(s => s.pair_ids || []));
+      const unseen = p9AllPairs.filter(p => !seenIds.has(p.pair_id));
+      const pool = unseen.length >= P9_PAIRS_PER_SESSION ? unseen : p9AllPairs;
+      const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, P9_PAIRS_PER_SESSION);
+      PAIRS = shuffled;
+    }
   }
 
   try {
@@ -946,6 +985,13 @@ async function init(){
   if(IS_N0_QA){
     const banner = document.getElementById('n0-qa-banner');
     if(banner) banner.style.display = 'block';
+  }
+  if(IS_P9){
+    const banner = document.getElementById('n0-qa-banner');
+    if(banner){
+      banner.textContent = 'PROTOTYPE — 3 SESIJOS IKI PIRMO RADARO';
+      banner.style.display = 'block';
+    }
   }
 
   // ── M0: beta parametro apdorojimas ──────────────────
@@ -1103,6 +1149,16 @@ function resumeUnfinishedSession(){
   const stage = resumableSnapshot.screen_stage || 'pair';
   // Atkurti A/B randomizaciją — naudoti išsaugotą, negeneruoti naujos
   flipByPairId = resumableSnapshot.flip_by_pair_id || {};
+  // P9: atkurti sesijos indeksą
+  if(IS_P9 && resumableSnapshot.p9_session_index !== undefined){
+    p9SessionIndex = resumableSnapshot.p9_session_index;
+    p9RadarUnlocked = resumableSnapshot.p9_radar_unlocked || false;
+    if(Array.isArray(resumableSnapshot.p9_pair_ids) && p9AllPairs.length > 0){
+      PAIRS = resumableSnapshot.p9_pair_ids
+        .map(id => p9AllPairs.find(p => p.pair_id === id))
+        .filter(Boolean);
+    }
+  }
   // N0 QA: atkurti sesijos indeksą ir porų tvarką
   if(IS_N0_QA && resumableSnapshot.n0_qa_session_index !== null && resumableSnapshot.n0_qa_session_index !== undefined){
     n0QaSessionIndex = resumableSnapshot.n0_qa_session_index;
@@ -1166,13 +1222,14 @@ function discardUnfinishedSession(){
     reflections: [],
     session_reflection: null,
     feedback: {},
-    // N0 QA: metaduomenys eksportui
-    qa_mode: IS_N0_QA || false,
-    set_id: IS_N0_QA ? 'n0-six-v3' : null,
-    cue_set_version: IS_N0_QA ? 'v3' : 'pair-cue-v0.1',
-    required_sessions: IS_N0_QA ? 2 : 3,
+    // QA/Prototype: metaduomenys eksportui
+    qa_mode: (IS_N0_QA || IS_P9) || false,
+    set_id: IS_N0_QA ? 'n0-six-v3' : IS_P9 ? 'prototype-nine-v1' : null,
+    cue_set_version: IS_N0_QA ? 'v3' : IS_P9 ? 'prototype-nine-v1' : 'pair-cue-v0.1',
+    first_radar_after_sessions: IS_P9 ? P9_FIRST_RADAR_AFTER : null,
     pairs_per_session: 3,
-    n0_qa_session_number: IS_N0_QA ? (n0QaSessionIndex + 1) : null
+    radar_unlocked: IS_P9 ? p9RadarUnlocked : null,
+    session_index: IS_P9 ? (p9SessionIndex + 1) : IS_N0_QA ? (n0QaSessionIndex + 1) : null
   };
   currentPairIdx = 0;
   currentSessionStage = 'pair';
@@ -1217,6 +1274,23 @@ function startExperiment(){
     const allPairsFlat = window._n0QaAllPairs || PAIRS;
     window._n0QaAllPairs = allPairsFlat; // cache vieną kartą
     PAIRS = shuffled.map(id => allPairsFlat.find(p => p.pair_id === id)).filter(Boolean);
+  }
+
+  // P9: atnaujinti PAIRS pagal P9 sesijos logiką
+  if(IS_P9){
+    const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+    p9RadarUnlocked = p9Done.length >= P9_FIRST_RADAR_AFTER;
+    const allP9 = p9AllPairs.length > 0 ? p9AllPairs : PAIRS;
+    if(!p9RadarUnlocked){
+      p9SessionIndex = p9Done.length < P9_SESSIONS.length ? p9Done.length : P9_SESSIONS.length - 1;
+      const ids = P9_SESSIONS[p9SessionIndex] || [];
+      PAIRS = [...ids].sort(() => Math.random() - 0.5).map(id => allP9.find(p => p.pair_id === id)).filter(Boolean);
+    } else {
+      const seenIds = new Set(p9Done.flatMap(s => s.pair_ids || []));
+      const unseen = allP9.filter(p => !seenIds.has(p.pair_id));
+      const pool = unseen.length >= P9_PAIRS_PER_SESSION ? unseen : allP9;
+      PAIRS = [...pool].sort(() => Math.random() - 0.5).slice(0, P9_PAIRS_PER_SESSION);
+    }
   }
 
   if(PAIRS.length === 0){ show('nostimuli'); return; }
@@ -1546,12 +1620,16 @@ function advanceMicroFlow(){
 // cue su vektoriumi. custom, hard_to_say, individuali/sesijos refleksija ir latencija
 // niekada nedalyvauja šiame skaičiavime.
 function computeSessionVector(){
-  const validEntries = SESSION.reflections.filter(r =>
-    r.response_type === 'cue' && r.vector && typeof r.vector === 'object' &&
-    typeof r.confidence === 'number' &&
-    // N0 QA: praleisti įrašus, kur analysis_eligible === false
-    (r.analysis_eligible !== false)
-  );
+  // P9 prototype mode: use prototype_vector for ineligible pairs
+  const validEntries = SESSION.reflections.filter(r => {
+    if(r.response_type !== 'cue') return false;
+    if(IS_P9 && r.vector === null && r.prototype_vector && typeof r.prototype_vector === 'object'){
+      return true; // prototype_vector accepted in P9 mode
+    }
+    return r.vector && typeof r.vector === 'object' &&
+      typeof r.confidence === 'number' &&
+      (r.analysis_eligible !== false);
+  });
 
   if(validEntries.length === 0){
     return { vector: null, valid_vector_responses: 0, session_vector_confidence: null };
@@ -1561,10 +1639,11 @@ function computeSessionVector(){
   let confSum = 0;
 
   validEntries.forEach(r => {
-    const w = r.confidence;
-    weightedSum.aw += (r.vector.aw || 0) * w;
-    weightedSum.cs += (r.vector.cs || 0) * w;
-    weightedSum.cr += (r.vector.cr || 0) * w;
+    const v = (IS_P9 && r.vector === null && r.prototype_vector) ? r.prototype_vector : r.vector;
+    const w = r.confidence ?? 0.5;
+    weightedSum.aw += (v.aw || 0) * w;
+    weightedSum.cs += (v.cs || 0) * w;
+    weightedSum.cr += (v.cr || 0) * w;
     confSum += w;
   });
 
@@ -1752,10 +1831,23 @@ function goToResult(){
         };
       }
     }
+    // P9: enrich reflection with prototype_vector from cue data
+    let protoVec = null;
+    if(IS_P9 && r.cue_id && CUE_DATA){
+      for(const pair of CUE_DATA.pairs || []){
+        for(const img of pair.images || []){
+          const cue = (img.cues || []).find(c => c.cue_id === r.cue_id);
+          if(cue){ protoVec = cue.prototype_vector || null; break; }
+        }
+        if(protoVec !== null) break;
+      }
+    }
     return {
       image_id:id, response_type:r.response_type||null, cue_id:r.cue_id||null,
       cue_text:r.cue_text||null, custom_words:r.custom_words||null,
       reflection_text:r.reflection_text||'', vector:r.vector||null,
+      prototype_vector: protoVec,
+      vector_source: IS_P9 ? (r.vector ? 'reviewed' : protoVec ? 'prototype_only' : null) : null,
       confidence:r.confidence ?? null,
       ...pairMeta
     };
@@ -2089,7 +2181,11 @@ function saveSession(){
     flip_by_pair_id: flipByPairId,
     // N0 QA: sesijos porų tvarka (būtina teisingam resume)
     n0_qa_session_index: IS_N0_QA ? n0QaSessionIndex : null,
-    n0_qa_pair_ids: IS_N0_QA ? PAIRS.map(p => p.pair_id) : null
+    n0_qa_pair_ids: IS_N0_QA ? PAIRS.map(p => p.pair_id) : null,
+    // P9: sesijos būsena resume
+    p9_session_index: IS_P9 ? p9SessionIndex : null,
+    p9_radar_unlocked: IS_P9 ? p9RadarUnlocked : null,
+    p9_pair_ids: IS_P9 ? PAIRS.map(p => p.pair_id) : null
   };
 
   try {
@@ -2117,6 +2213,23 @@ function completeSession(){
       if(!doneN0.includes(SESSION.session_id)){
         doneN0.push(SESSION.session_id);
         localStorage.setItem(N0_QA_NS + 'completed', JSON.stringify(doneN0));
+      }
+    }
+
+    // P9: sekti užbaigtas sesijas ir porų sąrašą (būtina nematytų porų logikai)
+    if(IS_P9){
+      const doneP9 = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+      if(!doneP9.find(s => s.session_id === SESSION.session_id)){
+        doneP9.push({
+          session_id: SESSION.session_id,
+          session_index: p9SessionIndex,
+          pair_ids: PAIRS.map(p => p.pair_id)
+        });
+        localStorage.setItem(P9_NS + 'completed', JSON.stringify(doneP9));
+        // Atrakinti radarą po P9_FIRST_RADAR_AFTER sesijų
+        if(doneP9.length >= P9_FIRST_RADAR_AFTER){
+          p9RadarUnlocked = true;
+        }
       }
     }
 
@@ -2283,6 +2396,18 @@ function openRadarAsBeta(){
 }
 
 function showRadar(){
+  // P9: add provisional label
+  if(IS_P9){
+    const existing = document.getElementById('p9-radar-label');
+    if(!existing){
+      const lbl = document.createElement('div');
+      lbl.id = 'p9-radar-label';
+      lbl.style.cssText = 'text-align:center;font-size:.7rem;font-weight:600;letter-spacing:.06em;color:#c8900a;text-transform:uppercase;margin-bottom:8px';
+      lbl.textContent = 'PROTOTIPO RADARAS — PRELIMINARUS';
+      const radarEl = document.getElementById('radar-area') || document.querySelector('.radar-wrap');
+      if(radarEl) radarEl.prepend(lbl);
+    }
+  }
   // fix(radar-data-source-unify): beta kontekste radaro TURINYS (ne tik
   // eligibility sprendimas) remiasi TIK pirmomis 3 beta sesijomis — tuo
   // pačiu rinkiniu, kurį naudoja eligibility patikra ir eksportas. Taip
