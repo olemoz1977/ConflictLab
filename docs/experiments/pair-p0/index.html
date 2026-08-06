@@ -1935,8 +1935,9 @@ function goToResult(){
       }
     }
     // P9: enrich reflection with prototype_vector from cue data
+    // Use SESSION.set_id as authoritative source — IS_P9 may be stale if URL changed
     let protoVec = null;
-    if(IS_P9 && r.cue_id && CUE_DATA){
+    if((IS_P9 || SESSION.set_id === 'prototype-nine-v1') && r.cue_id && CUE_DATA){
       for(const pair of CUE_DATA.pairs || []){
         for(const img of pair.images || []){
           const cue = (img.cues || []).find(c => c.cue_id === r.cue_id);
@@ -1945,13 +1946,25 @@ function goToResult(){
         if(protoVec !== null) break;
       }
     }
+    // Provenance fields — use SESSION.set_id as authoritative source (not IS_P9 which may be stale)
+    const isP9Refl = SESSION.set_id === 'prototype-nine-v1';
+    const reflProvenance = (isP9Refl || IS_N0_QA) ? {
+      set_id: SESSION.set_id || CURRENT_SET_ID,
+      qa_mode: SESSION.qa_mode ?? false,
+      radar_mode: SESSION.radar_mode || CURRENT_RADAR_MODE
+    } : {
+      set_id: 'm0-default',
+      qa_mode: false,
+      radar_mode: 'reviewed'
+    };
     return {
       image_id:id, response_type:r.response_type||null, cue_id:r.cue_id||null,
       cue_text:r.cue_text||null, custom_words:r.custom_words||null,
       reflection_text:r.reflection_text||'', vector:r.vector||null,
       prototype_vector: protoVec,
-      vector_source: IS_P9 ? (r.vector ? 'reviewed' : protoVec ? 'prototype_only' : null) : null,
+      vector_source: isP9Refl ? (r.vector ? 'reviewed' : protoVec ? 'prototype_only' : null) : null,
       confidence:r.confidence ?? null,
+      ...reflProvenance,
       ...pairMeta
     };
   });
