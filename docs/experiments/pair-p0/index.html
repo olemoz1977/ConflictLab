@@ -482,7 +482,7 @@ body{min-height:100vh}
   </div>
   <div class="screen-footer">
     <button class="btn-primary" id="txt-p9-prog-continue" onclick="startExperiment()"></button>
-    <button class="btn-ghost" id="txt-p9-prog-later" onclick="show('intro')" style="margin-top:8px;"></button>
+    <button class="btn-ghost" id="txt-p9-prog-later" onclick="p9ReturnLater()" style="margin-top:8px;"></button>
   </div>
 </div>
 
@@ -1089,25 +1089,34 @@ async function init(){
   applyIntroButtonState(resumeCheck);
 
   // ── P9: route to correct screen based on progress (after resumeCheck) ───────
+  // Priority: 1) unfinished session resume 2) radar (≥3) 3) progress (1-2) 4) expectation (0, unseen) 5) start
+  // Progress screen wins over resumableSnapshot check — completed sessions are the canonical truth source.
   if(IS_P9){
     const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
-    const p9RadarAlready = p9Done.length >= P9_FIRST_RADAR_AFTER;
+    const p9CompletedCount = p9Done.length;
+    const p9RadarAlready = p9CompletedCount >= P9_FIRST_RADAR_AFTER;
 
-    if(p9RadarAlready && !resumableSnapshot){
+    // 1. Unfinished P9 session in progress — resume it
+    if(resumableSnapshot && resumableSnapshot.session && resumableSnapshot.session.set_id === 'prototype-nine-v1'){
+      // Let normal resume UI handle — show('intro') with resume buttons
+    }
+    // 2. Radar already unlocked — show result screen
+    else if(p9RadarAlready){
       showRadar();
       return;
     }
-    if(resumableSnapshot){
-      // Unfinished session — let normal resume UI handle it (Tęsti/Pašalinti buttons)
-      // show('intro') below will display resume buttons via applyIntroButtonState
-    } else if(p9Done.length === 0 && !p9ExpectationIntroSeen()){
+    // 3. Progress: 1 or 2 sessions done — show progress screen regardless of other state
+    else if(p9CompletedCount >= 1 && p9CompletedCount < P9_FIRST_RADAR_AFTER){
+      renderP9ProgressScreen(p9CompletedCount);
+      return;
+    }
+    // 4. No sessions, expectation not yet seen
+    else if(p9CompletedCount === 0 && !p9ExpectationIntroSeen()){
       setP9UiState({intro_seen: true});
       renderP9ExpectationScreen();
       return;
-    } else if(p9Done.length > 0 && p9Done.length < P9_FIRST_RADAR_AFTER){
-      renderP9ProgressScreen(p9Done.length);
-      return;
     }
+    // 5. No sessions, expectation already seen — fall through to show('intro') with Pradėti
   }
 
   show('intro');
@@ -2567,6 +2576,17 @@ function renderP9ExpectationScreen(){
   });
 
   show('p9-expectation');
+}
+
+function p9ReturnLater(){
+  // "Grįžti vėliau" — do NOT create a new session snapshot.
+  // On next load, init() will read p9_completed and route to the correct progress screen.
+  // Clear any active_session that may have been created by an aborted startExperiment call.
+  try { localStorage.removeItem(NS + 'active_session'); } catch(e){}
+  resumableSnapshot = null;
+  show('intro');
+  // Update intro button state to show clean "Pradėti" (no resume)
+  applyIntroButtonState('none');
 }
 
 function renderP9ProgressScreen(sessionsDone){
