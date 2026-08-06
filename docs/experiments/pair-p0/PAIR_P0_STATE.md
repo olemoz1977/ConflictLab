@@ -177,3 +177,5 @@ Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` por
 <!-- redeploy after image compression -->
 
 <!-- workflow-build-trigger -->
+
+<!-- trigger after public -->
