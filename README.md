@@ -1,4 +1,4 @@
-# ConflictLab
+ # ConflictLab
 
 **Epistemic Reflection Framework** — savirefleksijos platforma, padedanti žmonėms geriau stebėti savo spontaniškas reakcijų dėsningumus.
 
