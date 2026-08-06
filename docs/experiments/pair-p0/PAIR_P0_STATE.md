@@ -171,3 +171,5 @@ Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` por
 **Dar nepatikrinta rankiniu testu:** ar skaičiai dinamiškai keičiasi, kai vienoje poroje pasirenkama „Sunku pasakyti" (turėtų sumažėti prototipo skaičius).
 
 **Statusas:** CODE FIXED — rankinis testas laukia.
+
+<!-- deploy-trigger: 2026-08-06T13:26:04Z -->
