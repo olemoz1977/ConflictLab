@@ -761,6 +761,16 @@ let n0QaSessionIndex = 0;
 // ── PROTOTYPE NINE V1 MODE ───────────────────────────
 // Aktyvuojamas tik per ?set=prototype-nine-v1 URL parametrą.
 const IS_P9 = QA_SET_PARAM === "prototype-nine-v1";
+
+// ── SESIJOS KILMĖS ŠALTINIS ──────────────────────────
+// Vienintelis šaltinis, naudojamas SESSION kūrime, radaro filtre ir eksporte.
+const CURRENT_SET_ID =
+  IS_P9      ? 'prototype-nine-v1' :
+  IS_N0_QA   ? 'n0-six-v3'        :
+               'm0-default';
+
+const CURRENT_RADAR_MODE =
+  IS_P9 ? 'prototype' : 'reviewed';
 const P9_SET_FILE = "pair-set-prototype-nine-v1.json";
 const P9_CUE_FILE = "pair-cue-prototype-nine-v1.json";
 const P9_NS = "cl_pair_p0_p9_";
@@ -1222,9 +1232,10 @@ function discardUnfinishedSession(){
     reflections: [],
     session_reflection: null,
     feedback: {},
-    // QA/Prototype: metaduomenys eksportui
-    qa_mode: (IS_N0_QA || IS_P9) || false,
-    set_id: IS_N0_QA ? 'n0-six-v3' : IS_P9 ? 'prototype-nine-v1' : null,
+    // QA/Prototype: metaduomenys eksportui — naudoti CURRENT_SET_ID kaip vieną šaltinį
+    qa_mode: IS_P9 || IS_N0_QA,
+    set_id: CURRENT_SET_ID,
+    radar_mode: CURRENT_RADAR_MODE,
     cue_set_version: IS_N0_QA ? 'v3' : IS_P9 ? 'prototype-nine-v1' : 'pair-cue-v0.1',
     first_radar_after_sessions: IS_P9 ? P9_FIRST_RADAR_AFTER : null,
     pairs_per_session: 3,
@@ -1368,9 +1379,10 @@ function choosePair(position){
 
   // Pasirinkimo momentu kopijuojami visi metaduomenys — ateityje JSON gali keistis,
   // bet šis eksportas išlieka istoriškai tikslus.
-  const choiceMeta = IS_N0_QA ? {
-    qa_mode: true,
-    set_id: SESSION.set_id || null,
+  const choiceMeta = (IS_N0_QA || IS_P9) ? {
+    qa_mode: SESSION.qa_mode,
+    set_id: CURRENT_SET_ID,
+    radar_mode: CURRENT_RADAR_MODE,
     cue_version: pair.cue_version || null,
     asset_status: pair.asset_status || null,
     asset_version: pair.asset_version || null,
@@ -1379,7 +1391,7 @@ function choosePair(position){
     axis_status: pair.axis_status || null,
     analysis_eligible: pair.analysis_eligible ?? null,
     exclusion_reason: pair.exclusion_reason || null
-  } : { qa_mode: false };
+  } : { qa_mode: false, set_id: 'm0-default', radar_mode: 'reviewed' };
 
   SESSION.choices.push({
     pair_id: pair.pair_id, pair_order: currentPairIdx + 1,
@@ -2267,8 +2279,8 @@ function getCompletedSessionCount(){
       return Array.isArray(done) ? done.length : 0;
     } catch(e){ return 0; }
   }
-  // M0 / beta: existing eligible session count
-  return (betaMode ? getEligibleBetaSessions() : getEligibleSessions()).length;
+  // M0 / beta: pass 'm0' mode explicitly
+  return (betaMode ? getEligibleBetaSessions() : getEligibleSessions('m0')).length;
 }
 
 function getFirstRadarThreshold(){
@@ -2282,22 +2294,46 @@ function isRadarUnlocked(){
 // Sesija tinkama radarui tik jei atitinka VISUS kriterijus.
 // Netinkamos sesijos NIEKADA netrinamos, nemigruojamos ir lieka istorijoje —
 // jos tiesiog neįtraukiamos į radaro skaičiavimą ir progreso skaitiklį.
-function isSessionRadarEligible(s){
-  if(s.status !== 'completed') return false;
-  if(!s.session_vector || typeof s.session_vector !== 'object') return false;
-  if(typeof s.valid_vector_responses !== 'number' || s.valid_vector_responses < 2) return false;
-  if(typeof s.session_vector_confidence !== 'number' || !isFinite(s.session_vector_confidence)) return false;
-  if(s.vector_model_version !== RADAR_MODEL_VERSION) return false;
+// Senos M0 sesijos (sukurtos prieš set_id lauką) — tik tos, kuriose VISOS poros yra P0
+const LEGACY_M0_PAIR_IDS = new Set(['P0-001','P0-002','P0-003']);
 
-  for(const axis of ['aw','cs','cr']){
-    const v = s.session_vector[axis];
-    if(typeof v !== 'number' || !isFinite(v) || v < -1 || v > 1) return false;
+function isSessionRadarEligible(s, mode){
+  if(s.status !== 'completed') return false;
+
+  // Nustatyti tikrąjį režimą iš set_id
+  const sid = s.set_id || null;
+
+  if(mode === 'prototype'){
+    // P9 radaras: tik prototype-nine-v1 sesijos
+    return sid === 'prototype-nine-v1';
   }
-  return true;
+
+  // M0 radaras (default)
+  if(sid === 'm0-default' || sid === null){
+    // Suderinamumas su senomis sesijomis be set_id: tik jei VISOS poros yra P0
+    if(sid === null){
+      const choices = s.choices || [];
+      if(choices.length === 0) return false;
+      if(!choices.every(c => LEGACY_M0_PAIR_IDS.has(c.pair_id))) return false;
+    }
+    // Vektoriaus kokybės patikrinimai
+    if(!s.session_vector || typeof s.session_vector !== 'object') return false;
+    if(typeof s.valid_vector_responses !== 'number' || s.valid_vector_responses < 2) return false;
+    if(typeof s.session_vector_confidence !== 'number' || !isFinite(s.session_vector_confidence)) return false;
+    for(const axis of ['aw','cs','cr']){
+      const v = s.session_vector[axis];
+      if(typeof v !== 'number' || !isFinite(v) || v < -1 || v > 1) return false;
+    }
+    return true;
+  }
+
+  // n0-six-v3 ir bet koks kitas set_id — nei M0, nei P9 radare
+  return false;
 }
 
-function getEligibleSessions(){
-  return getCompletedSessions().filter(isSessionRadarEligible);
+function getEligibleSessions(mode){
+  const m = mode || (IS_P9 ? 'prototype' : 'm0');
+  return getCompletedSessions().filter(s => isSessionRadarEligible(s, m));
 }
 
 // Apskaičiuoja "dabartinį pėdsaką" — paprastą vidurkį paskutinių N eligible
@@ -2451,8 +2487,8 @@ function showRadar(){
   // P9: radar content uses prototype vectors from P9 sessions
   // M0/beta: uses eligible sessions as before
   const eligible = IS_P9
-    ? [] // P9 computes trace separately below
-    : (betaMode ? getEligibleBetaSessions() : getEligibleSessions());
+    ? [] // P9 computes trace from P9 sessions below
+    : (betaMode ? getEligibleBetaSessions() : getEligibleSessions('m0'));
 
   document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
 
@@ -2478,16 +2514,25 @@ function showRadar(){
 
   // P9: compute trace from prototype vectors stored in completed sessions
   let trace;
+  let p9ReviewedCount = 0;
+  let p9ProtoCount = 0;
   if(IS_P9){
     try {
       const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
-      // Collect all completed sessions from NS that match P9 session_ids
       const p9SessionIds = new Set(p9Done.map(s => s.session_id));
       const p9Sessions = getCompletedSessions().filter(s => p9SessionIds.has(s.session_id));
+      // Count reviewed vs prototype responses
+      p9Sessions.forEach(s => {
+        (s.reflections || []).forEach(r => {
+          if(r.response_type === 'cue'){
+            if(r.vector && r.vector_source === 'reviewed') p9ReviewedCount++;
+            else if(r.prototype_vector && r.vector_source === 'prototype_only') p9ProtoCount++;
+          }
+        });
+      });
       trace = p9Sessions.length > 0 ? computeCurrentTrace(p9Sessions) : null;
     } catch(e){ trace = null; }
     if(!trace){
-      // Fallback: show generic radar with neutral vector
       trace = { vector: {aw:0, cs:0, cr:0}, session_count: count, valid_vector_responses: 0 };
     }
   } else {
@@ -2515,10 +2560,21 @@ function showRadar(){
   // Kompaktiška aprėpties eilutė vietoj didelės progreso kortelės, kai jau atrakinta
   const scopeLine = document.createElement('div');
   scopeLine.className = 'radar-scope-line';
-  const scopeTmpl = txt('radar_based_on') || 'Based on {sessions} sessions · {responses} vector choices';
-  scopeLine.textContent = scopeTmpl
-    .replace('{sessions}', trace.session_count)
-    .replace('{responses}', totalVectorResponses);
+  // P9: show prototype vs reviewed breakdown; M0: standard text
+  let scopeTmpl;
+  if(IS_P9){
+    const total = p9ReviewedCount + p9ProtoCount;
+    scopeTmpl = `Pagrįsta ${count} sesijomis · ${total} įtraukti pasirinkimai (${p9ReviewedCount} peržiūrėti · ${p9ProtoCount} prototipo)`;
+  } else {
+    scopeTmpl = txt('radar_based_on') || 'Based on {sessions} sessions · {responses} vector choices';
+  }
+  if(IS_P9){
+    scopeLine.textContent = scopeTmpl; // already built with counts above
+  } else {
+    scopeLine.textContent = scopeTmpl
+      .replace('{sessions}', trace.session_count)
+      .replace('{responses}', totalVectorResponses);
+  }
   body.appendChild(scopeLine);
 
   const axisValues = document.createElement('div');
