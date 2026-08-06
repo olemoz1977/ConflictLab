@@ -133,3 +133,41 @@ Tag'as `pair-p0-m0-remote-beta-stable` nurodo į commit `dd3ea6b`, tačiau šis 
 3. Ar istorijos peržiūra padeda prisiminti ankstesnes reakcijas?
 4. Ar radaras suteikia prasmės savaime, be paaiškinimo?
 5. Ar žmogus norėtų grįžti ir atlikti dar vieną sesiją savanoriškai?
+
+---
+
+## Atvirų klausimų žurnalas — 2026-08-06
+
+### OQ-001: Prototipo vektorių izoliacijos reikalingumas
+
+**Kontekstas:** Prototype-nine-v1 QA metu įdiegta griežta P9/M0 sesijų izoliacija radaro skaičiavime. Vėliau iškilo klausimas — ar ši izoliacija iš viso reikalinga.
+
+**Problema:**
+Prototipo vektoriai (`vector_source: "prototype_only"`) yra arbitraliai priskirti skaičiai — ne išmatuoti, ne kalibruoti. Jei jie patenka į tą patį radarą kaip P0 kalibruoti vektoriai, radaras tampa metodologiškai beprasmis tame sraute.
+
+**Kodėl izoliacija gali būti nereikalinga:**
+- Viešame produkte N0 poros bus arba patvirtintos (su tikrais vektoriais), arba pašalintos
+- Jei visos poros viešame produkte turės kalibruotus vektorius — atskiro prototipo sluoksnio nereikia
+- Izoliacija reikalinga tik prototipo etape, kol viename sraute egzistuoja dviejų skirtingų kokybių duomenys
+
+**Kodėl izoliacija gali būti reikalinga:**
+- Kol N0 vektoriai nėra kalibruoti, jie neturėtų veikti radaro — nepriklausomai nuo to, ar tai prototipas ar ne
+- `analysis_eligible: false` yra metodologinis sprendimas, ne tik techninis žymeklis
+- Jei prototipo duomenys patenka į radarą ir vartotojas jais remiasi — tai klaidinantis rezultatas
+
+**Neišspręstas klausimas:**
+Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` pora egzistuoja kartu su `analysis_eligible: true` poromis tame pačiame sesijų sraute? Jei taip — izoliacija reikalinga. Jei ne — ją galima supaprastinti.
+
+**Statusas:** OPEN — sprendimas atidėtas iki viešo produkto architektūros patvirtinimo.
+
+---
+
+### OQ-002: Prototipo radaro vektorių skaičiaus rodmuo
+
+**Problema:** Po 3 P9 sesijų radaras rodė `„0 vektorinių pasirinkimų"` net kai sesijos buvo užbaigtos su cue pasirinkimais. Priežastis: `valid_vector_responses` skaičiuojamas iš `reviewed` vektorių — prototipo vektoriai į šį skaičių neįeina.
+
+**Įdiegtas taisymas:** Radaro ekrane dabar rodoma `„X įtraukti pasirinkimai (Y peržiūrėti · Z prototipo)"`.
+
+**Dar nepatikrinta rankiniu testu:** ar skaičiai dinamiškai keičiasi, kai vienoje poroje pasirenkama „Sunku pasakyti" (turėtų sumažėti prototipo skaičius).
+
+**Statusas:** CODE FIXED — rankinis testas laukia.
