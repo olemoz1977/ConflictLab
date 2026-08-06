@@ -1428,7 +1428,21 @@ function startExperiment(){
     choices: [],
     reflections: [],
     session_reflection: null,
-    feedback: {}
+    feedback: {},
+    qa_mode: QA_SET_PARAM === 'prototype-nine-v1' || QA_SET_PARAM === 'n0-six-v3',
+    set_id: QA_SET_PARAM === 'prototype-nine-v1' ? 'prototype-nine-v1'
+          : QA_SET_PARAM === 'n0-six-v3'        ? 'n0-six-v3'
+          :                                        'm0-default',
+    radar_mode: QA_SET_PARAM === 'prototype-nine-v1' ? 'prototype' : 'reviewed',
+    expectation_layer_version: QA_SET_PARAM === 'prototype-nine-v1' ? P9_EL_VERSION : null,
+    first_radar_after_sessions: QA_SET_PARAM === 'prototype-nine-v1' ? P9_FIRST_RADAR_AFTER : null,
+    pairs_per_session: 3,
+    radar_unlocked: QA_SET_PARAM === 'prototype-nine-v1' ? isRadarUnlocked() : null,
+    session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (p9SessionIndex + 1)
+                 : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
+                 :                                         null,
+    build_id: BUILD_ID,
+    source_base_commit: SOURCE_BASE_COMMIT
   };
   sessionReflection = { response_type: null, text: '' };
   connectionAnswer = { response_type: null, text: '' };
