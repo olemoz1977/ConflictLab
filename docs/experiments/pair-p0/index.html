@@ -2138,6 +2138,12 @@ function submitFeedback(){
     return;
   }
 
+  // P9: po trečios sesijos iš karto rodyti radarą (ne done ekraną)
+  if(IS_P9 && isRadarUnlocked()){
+    showRadar();
+    return;
+  }
+
   show('done');
 }
 
@@ -2227,9 +2233,8 @@ function completeSession(){
         });
         localStorage.setItem(P9_NS + 'completed', JSON.stringify(doneP9));
         // Atrakinti radarą po P9_FIRST_RADAR_AFTER sesijų
-        if(doneP9.length >= P9_FIRST_RADAR_AFTER){
-          p9RadarUnlocked = true;
-        }
+        // p9RadarUnlocked synced from isRadarUnlocked() — single source
+        p9RadarUnlocked = isRadarUnlocked();
       }
     }
 
@@ -2249,6 +2254,30 @@ function getCompletedSessions(){
 // ── RADAR ELIGIBILITY ─────────────────────────────────
 const RADAR_MODEL_VERSION = 'pair-cue-v0.1';
 const RADAR_MIN_SESSIONS = 3;
+
+// ── REŽIMO ŠALTINIS: sesijų skaičius ir radaro vartai ──────────────────────
+// Vienintelis šaltinis, kurį naudoja ir radaro vartai, ir skaitiklio tekstas.
+// M0 / beta: skaičiuoja isSessionRadarEligible() sesiją.
+// P9: skaičiuoja užbaigtas P9 sesiją iš cl_pair_p0_p9_ namespace.
+
+function getCompletedSessionCount(){
+  if(IS_P9){
+    try {
+      const done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+      return Array.isArray(done) ? done.length : 0;
+    } catch(e){ return 0; }
+  }
+  // M0 / beta: existing eligible session count
+  return (betaMode ? getEligibleBetaSessions() : getEligibleSessions()).length;
+}
+
+function getFirstRadarThreshold(){
+  return RADAR_MIN_SESSIONS; // 3 visada
+}
+
+function isRadarUnlocked(){
+  return getCompletedSessionCount() >= getFirstRadarThreshold();
+}
 
 // Sesija tinkama radarui tik jei atitinka VISUS kriterijus.
 // Netinkamos sesijos NIEKADA netrinamos, nemigruojamos ir lieka istorijoje —
@@ -2414,21 +2443,29 @@ function showRadar(){
   // radaras, "N iš 3" progresas ir eksportuotas JSON visada sutampa.
   // Ne-beta įprastame Pair P0 sraute elgesys nepakitęs — naudojamas pilnas
   // getEligibleSessions().
-  const eligible = betaMode ? getEligibleBetaSessions() : getEligibleSessions();
-  const count = eligible.length;
+  // Naudoti vieningą režimo šaltinį — veikia M0, beta ir P9 režimuose
+  const count = getCompletedSessionCount();
+  const threshold = getFirstRadarThreshold();
+  const unlocked = isRadarUnlocked();
+
+  // P9: radar content uses prototype vectors from P9 sessions
+  // M0/beta: uses eligible sessions as before
+  const eligible = IS_P9
+    ? [] // P9 computes trace separately below
+    : (betaMode ? getEligibleBetaSessions() : getEligibleSessions());
 
   document.getElementById('txt-radar-header').textContent = txt('your_trace') || 'Your current trace';
 
   const body = document.getElementById('radar-body');
   body.innerHTML = '';
 
-  if(count < RADAR_MIN_SESSIONS){
+  if(!unlocked){
     // Progreso kortelė lieka DIDELĖ tik kol radaras dar neatrakintas.
     const progressTmpl = txt('radar_progress') || '{n} of {total} sessions for your current trace';
     const progressBox = document.createElement('div');
     progressBox.className = 'radar-progress-box';
     progressBox.innerHTML = `
-      <div class="radar-progress-text">${progressTmpl.replace('{n}', count).replace('{total}', RADAR_MIN_SESSIONS)}</div>
+      <div class="radar-progress-text">${progressTmpl.replace('{n}', count).replace('{total}', threshold)}</div>
     `;
     const sub = document.createElement('div');
     sub.className = 'radar-progress-sub';
@@ -2439,10 +2476,27 @@ function showRadar(){
     return;
   }
 
-  const trace = computeCurrentTrace(eligible);
+  // P9: compute trace from prototype vectors stored in completed sessions
+  let trace;
+  if(IS_P9){
+    try {
+      const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+      // Collect all completed sessions from NS that match P9 session_ids
+      const p9SessionIds = new Set(p9Done.map(s => s.session_id));
+      const p9Sessions = getCompletedSessions().filter(s => p9SessionIds.has(s.session_id));
+      trace = p9Sessions.length > 0 ? computeCurrentTrace(p9Sessions) : null;
+    } catch(e){ trace = null; }
+    if(!trace){
+      // Fallback: show generic radar with neutral vector
+      trace = { vector: {aw:0, cs:0, cr:0}, session_count: count, valid_vector_responses: 0 };
+    }
+  } else {
+    trace = computeCurrentTrace(eligible);
+  }
 
   // Suskaičiuoti bendrą galiojančių vektorinių pasirinkimų kiekį per naudotas sesijas
-  const recentSessions = eligible.slice(-RADAR_MIN_SESSIONS);
+  const sessionsForStats = IS_P9 ? [] : eligible.slice(-RADAR_MIN_SESSIONS);
+  const recentSessions = sessionsForStats;
   const totalVectorResponses = recentSessions.reduce((sum, s) => sum + (s.valid_vector_responses || 0), 0);
 
   const chartWrap = document.createElement('div');
