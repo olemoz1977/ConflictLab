@@ -1322,16 +1322,24 @@ function discardUnfinishedSession(){
     reflections: [],
     session_reflection: null,
     feedback: {},
-    // QA/Prototype: metaduomenys eksportui — naudoti CURRENT_SET_ID kaip vieną šaltinį
-    qa_mode: IS_P9 || IS_N0_QA,
-    set_id: CURRENT_SET_ID,
-    radar_mode: CURRENT_RADAR_MODE,
-    expectation_layer_version: IS_P9 ? P9_EL_VERSION : null,
-    cue_set_version: IS_N0_QA ? 'v3' : IS_P9 ? 'prototype-nine-v1' : 'pair-cue-v0.1',
-    first_radar_after_sessions: IS_P9 ? P9_FIRST_RADAR_AFTER : null,
+    // QA/Prototype: metaduomenys eksportui
+    // Skaičiuoti iš QA_SET_PARAM kiekvieną kartą — ne iš konstantų,
+    // kurios galėjo būti nustatytos klaidingu URL parametro metu.
+    qa_mode: QA_SET_PARAM === 'prototype-nine-v1' || QA_SET_PARAM === 'n0-six-v3',
+    set_id: QA_SET_PARAM === 'prototype-nine-v1' ? 'prototype-nine-v1'
+          : QA_SET_PARAM === 'n0-six-v3'        ? 'n0-six-v3'
+          :                                        'm0-default',
+    radar_mode: QA_SET_PARAM === 'prototype-nine-v1' ? 'prototype' : 'reviewed',
+    expectation_layer_version: QA_SET_PARAM === 'prototype-nine-v1' ? P9_EL_VERSION : null,
+    cue_set_version: QA_SET_PARAM === 'n0-six-v3'        ? 'v3'
+                   : QA_SET_PARAM === 'prototype-nine-v1' ? 'prototype-nine-v1'
+                   :                                        'pair-cue-v0.1',
+    first_radar_after_sessions: QA_SET_PARAM === 'prototype-nine-v1' ? P9_FIRST_RADAR_AFTER : null,
     pairs_per_session: 3,
-    radar_unlocked: IS_P9 ? isRadarUnlocked() : null,
-    session_index: IS_P9 ? (p9SessionIndex + 1) : IS_N0_QA ? (n0QaSessionIndex + 1) : null
+    radar_unlocked: QA_SET_PARAM === 'prototype-nine-v1' ? isRadarUnlocked() : null,
+    session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (p9SessionIndex + 1)
+                 : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
+                 :                                         null
   };
   currentPairIdx = 0;
   currentSessionStage = 'pair';
