@@ -286,6 +286,18 @@ body{min-height:100vh}
 .done-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-top:12px}
 
 /* ── RADAR ── */
+/* ── P9 EXPECTATION LAYER ── */
+.p9-step{
+  display:flex;align-items:center;gap:10px;
+  font-size:.9rem;color:var(--text-secondary,#aaa);
+  padding:10px 14px;border-radius:8px;
+  background:rgba(255,255,255,0.04);
+}
+.p9-step-num{
+  font-size:.75rem;font-weight:700;color:#c8900a;
+  min-width:24px;text-align:center;
+}
+
 /* ── N0 QA BANNER ── */
 #n0-qa-banner{
   background:#1a1200;border:1px solid #5a4000;border-radius:6px;
@@ -438,6 +450,39 @@ body{min-height:100vh}
     <button class="btn-primary" id="txt-start" onclick="startExperiment()" style="display:none"></button>
     <button class="btn-primary" id="txt-resume-session" onclick="resumeUnfinishedSession()" style="display:none"></button>
     <button class="btn-ghost" id="txt-discard-session" onclick="discardUnfinishedSession()" style="display:none;margin-top:8px"></button>
+  </div>
+</div>
+
+<!-- P9 EXPECTATION: shown only before first P9 session -->
+<div id="screen-p9-expectation" class="screen">
+  <div class="screen-body">
+    <div id="p9-qa-banner-exp" style="background:#1a1200;border:1px solid #5a4000;border-radius:6px;color:#c8900a;font-size:.72rem;font-weight:600;letter-spacing:.04em;text-align:center;padding:6px 12px;margin:0 0 20px;text-transform:uppercase;">PROTOTYPE — 3 SESIJOS IKI PIRMO RADARO</div>
+    <div class="intro-title" id="txt-p9-exp-title"></div>
+    <div class="intro-sub" id="txt-p9-exp-desc"></div>
+    <div id="p9-path-steps" style="margin:24px 0;display:flex;flex-direction:column;gap:10px;">
+      <div class="p9-step" id="txt-p9-step-1"></div>
+      <div class="p9-step" id="txt-p9-step-2"></div>
+      <div class="p9-step" id="txt-p9-step-3"></div>
+    </div>
+    <div class="intro-sub" id="txt-p9-exp-pause"></div>
+    <div class="result-scope-note" id="txt-p9-exp-note" style="margin-top:16px;"></div>
+  </div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="txt-p9-start-btn" onclick="startExperiment()"></button>
+  </div>
+</div>
+
+<!-- P9 PROGRESS: shown after session 1 and 2 -->
+<div id="screen-p9-progress" class="screen">
+  <div class="screen-body">
+    <div class="radar-progress-box" style="margin-bottom:24px;">
+      <div class="radar-progress-text" id="txt-p9-prog-title"></div>
+    </div>
+    <div class="intro-sub" id="txt-p9-prog-desc"></div>
+  </div>
+  <div class="screen-footer">
+    <button class="btn-primary" id="txt-p9-prog-continue" onclick="startExperiment()"></button>
+    <button class="btn-ghost" id="txt-p9-prog-later" onclick="show('intro')" style="margin-top:8px;"></button>
   </div>
 </div>
 
@@ -774,6 +819,8 @@ const CURRENT_RADAR_MODE =
 const P9_SET_FILE = "pair-set-prototype-nine-v1.json";
 const P9_CUE_FILE = "pair-cue-prototype-nine-v1.json";
 const P9_NS = "cl_pair_p0_p9_";
+const P9_STATE_KEY = P9_NS + 'ui_state'; // tracks expectation_intro_seen, etc.
+const P9_EL_VERSION = 'first-radar-v1'; // expectation layer version
 const P9_FIRST_RADAR_AFTER = 3;
 const P9_PAIRS_PER_SESSION = 3;
 // Sesijų kompozicija — fiksuota iki pirmo radaro (porų eilė sesijoje randomizuojama)
@@ -784,6 +831,18 @@ const P9_SESSIONS = [
 ];
 let p9AllPairs = [];
 let p9SessionIndex = 0;
+
+// ── P9 UI STATE HELPERS ──────────────────────────────
+function getP9UiState(){
+  try { return JSON.parse(localStorage.getItem(P9_STATE_KEY) || '{}'); } catch(e){ return {}; }
+}
+function setP9UiState(patch){
+  const s = getP9UiState();
+  localStorage.setItem(P9_STATE_KEY, JSON.stringify({...s, ...patch}));
+}
+function p9ExpectationIntroSeen(){
+  return !!getP9UiState().intro_seen;
+}
 let p9RadarUnlocked = false;
 
 // ── STATE ────────────────────────────────────────────
@@ -1029,6 +1088,28 @@ async function init(){
   const resumeCheck = checkForResumableSession();
   applyIntroButtonState(resumeCheck);
 
+  // ── P9: route to correct screen based on progress (after resumeCheck) ───────
+  if(IS_P9){
+    const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+    const p9RadarAlready = p9Done.length >= P9_FIRST_RADAR_AFTER;
+
+    if(p9RadarAlready && !resumableSnapshot){
+      showRadar();
+      return;
+    }
+    if(resumableSnapshot){
+      // Unfinished session — let normal resume UI handle it (Tęsti/Pašalinti buttons)
+      // show('intro') below will display resume buttons via applyIntroButtonState
+    } else if(p9Done.length === 0 && !p9ExpectationIntroSeen()){
+      setP9UiState({intro_seen: true});
+      renderP9ExpectationScreen();
+      return;
+    } else if(p9Done.length > 0 && p9Done.length < P9_FIRST_RADAR_AFTER){
+      renderP9ProgressScreen(p9Done.length);
+      return;
+    }
+  }
+
   show('intro');
 
   if(IS_DEBUG){
@@ -1236,10 +1317,11 @@ function discardUnfinishedSession(){
     qa_mode: IS_P9 || IS_N0_QA,
     set_id: CURRENT_SET_ID,
     radar_mode: CURRENT_RADAR_MODE,
+    expectation_layer_version: IS_P9 ? P9_EL_VERSION : null,
     cue_set_version: IS_N0_QA ? 'v3' : IS_P9 ? 'prototype-nine-v1' : 'pair-cue-v0.1',
     first_radar_after_sessions: IS_P9 ? P9_FIRST_RADAR_AFTER : null,
     pairs_per_session: 3,
-    radar_unlocked: IS_P9 ? p9RadarUnlocked : null,
+    radar_unlocked: IS_P9 ? isRadarUnlocked() : null,
     session_index: IS_P9 ? (p9SessionIndex + 1) : IS_N0_QA ? (n0QaSessionIndex + 1) : null
   };
   currentPairIdx = 0;
@@ -2150,9 +2232,9 @@ function submitFeedback(){
     return;
   }
 
-  // P9: po trečios sesijos iš karto rodyti radarą (ne done ekraną)
-  if(IS_P9 && isRadarUnlocked()){
-    showRadar();
+  // P9: route to correct screen after session (expectation/progress/radar)
+  if(IS_P9){
+    routeP9AfterSession();
     return;
   }
 
@@ -2447,6 +2529,177 @@ function renderRadarSVG(vector){
 // fix(radar-nav-path): centrinė funkcija radaro atidarymui beta kontekste.
 // Vienintelė vieta, kur radar_shown gali tapti true — po REALAUS showRadar()
 // iškvietimo IR tik jei eligibility patenkinta šiuo momentu (count >=
+// ── P9 EXPECTATION & PROGRESS SCREENS ───────────────────────────────────────
+
+function renderP9ExpectationScreen(){
+  // Populate all text elements
+  const lt = {
+    title: 'Pirmas bendras vaizdas — po 3 trumpų sesijų',
+    desc: 'Kiekvienoje sesijoje pamatysi 3 skirtingas situacijų poras. Po trečios sesijos parodysime, kas kartojosi visuose 9 pasirinkimuose.',
+    pause: 'Tarp sesijų gali sustoti — progresas išliks.',
+    note: 'Tai nėra asmenybės testas ir ne galutinis tavo apibūdinimas.',
+    steps: ['1 sesija — pirmas sluoksnis','2 sesija — palyginimas','3 sesija — bendras pėdsakas'],
+    btn: 'Pradėti 1 sesiją'
+  };
+  const en = {
+    title: 'Your first full picture — after 3 short sessions',
+    desc: 'In each session you will see 3 different situation pairs. After the third session we will show what repeated across all 9 choices.',
+    pause: 'You can pause between sessions — your progress is saved.',
+    note: 'This is not a personality test and not a final description of you.',
+    steps: ['Session 1 — first layer','Session 2 — comparison','Session 3 — full picture'],
+    btn: 'Start session 1'
+  };
+  const t = currentLang === 'en' ? en : lt;
+
+  document.getElementById('txt-p9-exp-title').textContent = t.title;
+  document.getElementById('txt-p9-exp-desc').textContent = t.desc;
+  document.getElementById('txt-p9-exp-pause').textContent = t.pause;
+  document.getElementById('txt-p9-exp-note').textContent = t.note;
+  document.getElementById('txt-p9-start-btn').textContent = t.btn;
+
+  const stepIds = ['txt-p9-step-1','txt-p9-step-2','txt-p9-step-3'];
+  const stepNums = ['1','2','3'];
+  stepIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.innerHTML = `<span class="p9-step-num">${stepNums[i]}</span><span>${t.steps[i]}</span>`;
+  });
+
+  show('p9-expectation');
+}
+
+function renderP9ProgressScreen(sessionsDone){
+  const n = sessionsDone;
+  const lt = {
+    1: {
+      title: '1 iš 3 sesijų',
+      desc: 'Užfiksuotas pirmasis pasirinkimų sluoksnis. Vienos sesijos dar per mažai bendram pėdsakui — kitos situacijos padės patikrinti, kas kartojasi.',
+      btn: 'Tęsti 2 sesiją', later: 'Grįžti vėliau'
+    },
+    2: {
+      title: '2 iš 3 sesijų',
+      desc: 'Jau turime šešias skirtingas situacijas. Liko viena sesija, kad galėtume parodyti ne vienkartinę reakciją, o platesnį pasirinkimų vaizdą.',
+      btn: 'Tęsti 3 sesiją', later: 'Grįžti vėliau'
+    }
+  };
+  const en = {
+    1: {
+      title: '1 of 3 sessions',
+      desc: 'The first layer of choices is recorded. One session is not enough for a full picture — more situations will help show what repeats.',
+      btn: 'Continue to session 2', later: 'Return later'
+    },
+    2: {
+      title: '2 of 3 sessions',
+      desc: 'We now have six different situations. One more session will let us show a broader pattern of choices, not just a single moment.',
+      btn: 'Continue to session 3', later: 'Return later'
+    }
+  };
+  const t = (currentLang === 'en' ? en : lt)[n] || lt[1];
+  document.getElementById('txt-p9-prog-title').textContent = t.title;
+  document.getElementById('txt-p9-prog-desc').textContent = t.desc;
+  document.getElementById('txt-p9-prog-continue').textContent = t.btn;
+  document.getElementById('txt-p9-prog-later').textContent = t.later;
+  show('p9-progress');
+}
+
+// ── P9 RADAR RESULT ENRICHMENT ───────────────────────────────────────────────
+function renderP9RadarResultLayer(body){
+  // Prepend header context to radar body
+  const lt = {
+    header: 'Tavo dabartinis pasirinkimų pėdsakas',
+    context: 'Šis vaizdas sudarytas iš 9 pasirinkimų per 3 skirtingas sesijas.',
+    boundary: 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo pasirinkimai šiose situacijose.',
+    reflTitle: 'Ką verta pastebėti',
+    reflText: 'Per tris sesijas susidarė pirmas palyginamas tavo pasirinkimų vaizdas. Kryptys pasiskirstė nevienodai — kai kurios reakcijos kartojosi, kitos keitėsi priklausomai nuo situacijos.',
+    question: 'Kuri šio pėdsako kryptis tau atrodo labiausiai pažįstama — ir kur ją pastebi savo kasdieniuose sprendimuose?',
+    btnContinue: 'Tęsti dar vieną sesiją',
+    btnFinish: 'Baigti dabar'
+  };
+  const en = {
+    header: 'Your current choice trace',
+    context: 'This picture is built from 9 choices across 3 different sessions.',
+    boundary: 'This is not your type and not a final description. It is a trace left by your choices in these situations.',
+    reflTitle: 'Worth noticing',
+    reflText: 'Over three sessions a first comparable picture of your choices has formed. Directions were not evenly distributed — some reactions repeated, others shifted depending on the situation.',
+    question: 'Which direction in this trace feels most familiar — and where do you notice it in your everyday decisions?',
+    btnContinue: 'Continue with another session',
+    btnFinish: 'Finish for now'
+  };
+  const t = currentLang === 'en' ? en : lt;
+
+  // Header override
+  const headerEl = document.getElementById('txt-radar-header');
+  if(headerEl) headerEl.textContent = t.header;
+
+  // Context block — prepend to body
+  const ctx = document.createElement('div');
+  ctx.className = 'result-scope-note';
+  ctx.style.marginBottom = '8px';
+  ctx.textContent = t.context;
+  body.prepend(ctx);
+
+  // Boundary statement — append after radar SVG
+  const boundary = document.createElement('div');
+  boundary.className = 'result-scope-note';
+  boundary.style.cssText = 'margin-top:16px;font-style:normal;font-weight:500;';
+  boundary.textContent = t.boundary;
+  body.appendChild(boundary);
+
+  // Reflection block
+  const reflWrap = document.createElement('div');
+  reflWrap.style.cssText = 'margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);';
+
+  const reflTitle = document.createElement('div');
+  reflTitle.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:10px;';
+  reflTitle.textContent = t.reflTitle;
+
+  const reflText = document.createElement('div');
+  reflText.className = 'intro-sub';
+  reflText.style.cssText = 'text-align:left;margin-bottom:16px;';
+  reflText.textContent = t.reflText;
+
+  const question = document.createElement('div');
+  question.style.cssText = 'font-size:.95rem;font-style:italic;color:var(--text-primary,#eee);line-height:1.6;padding:14px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:24px;';
+  question.textContent = t.question;
+
+  // Action buttons
+  const btnWrap = document.createElement('div');
+  btnWrap.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+
+  const btnContinue = document.createElement('button');
+  btnContinue.className = 'btn-primary';
+  btnContinue.textContent = t.btnContinue;
+  btnContinue.onclick = () => startExperiment();
+
+  const btnFinish = document.createElement('button');
+  btnFinish.className = 'btn-ghost';
+  btnFinish.textContent = t.btnFinish;
+  btnFinish.onclick = () => show('history');
+
+  btnWrap.appendChild(btnContinue);
+  btnWrap.appendChild(btnFinish);
+
+  reflWrap.appendChild(reflTitle);
+  reflWrap.appendChild(reflText);
+  reflWrap.appendChild(question);
+  reflWrap.appendChild(btnWrap);
+  body.appendChild(reflWrap);
+
+  // Mark result seen
+  setP9UiState({result_screen_seen: true});
+}
+
+// ── P9 SCREEN ROUTER: called instead of show('done') for P9 ─────────────────
+function routeP9AfterSession(){
+  const done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+  const n = done.length;
+  if(n >= P9_FIRST_RADAR_AFTER){
+    setP9UiState({continued_after_first_radar: true});
+    showRadar();
+  } else {
+    renderP9ProgressScreen(n);
+  }
+}
+
 // RADAR_MIN_SESSIONS). Naudojama IŠ VISŲ beta srauto vietų (istorijos
 // nuoroda, pabaigos ekrano CTA, interviu apsauginis mygtukas), kad elgesys
 // būtų identiškas nepriklausomai nuo to, kuriuo keliu vartotojas atėjo.
@@ -2540,6 +2793,11 @@ function showRadar(){
   }
 
   // Suskaičiuoti bendrą galiojančių vektorinių pasirinkimų kiekį per naudotas sesijas
+  // P9: enrich radar screen with result layer (header, boundary, reflection, actions)
+  if(IS_P9 && unlocked){
+    // renderP9RadarResultLayer is called after body is populated, at end of showRadar
+  }
+
   const sessionsForStats = IS_P9 ? [] : eligible.slice(-RADAR_MIN_SESSIONS);
   const recentSessions = sessionsForStats;
   const totalVectorResponses = recentSessions.reduce((sum, s) => sum + (s.valid_vector_responses || 0), 0);
@@ -2592,6 +2850,11 @@ function showRadar(){
   scope.textContent = txt('radar_scope_note') ||
     'This shape is built from your chosen responses across the last 3 eligible sessions. It is not a personality assessment.';
   body.appendChild(scope);
+
+  // P9: add enrichment layer (boundary, reflection, question, actions)
+  if(IS_P9 && unlocked){
+    renderP9RadarResultLayer(body);
+  }
 
   show('radar');
 }
