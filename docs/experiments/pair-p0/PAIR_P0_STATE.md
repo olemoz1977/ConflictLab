@@ -173,3 +173,5 @@ Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` por
 **Statusas:** CODE FIXED — rankinis testas laukia.
 
 <!-- deploy-trigger: 2026-08-06T13:26:04Z -->
+
+<!-- redeploy after image compression -->
