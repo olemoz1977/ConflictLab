@@ -2927,8 +2927,8 @@ function showP9BlockRadar(blockIndex){
   axisValues.className = 'radar-axis-values';
   axisValues.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0;text-align:center;';
   const axisLabels = currentLang === 'en'
-    ? [['AW','Approach ↔ Withdrawal'],['CS','Clarity ↔ Openness'],['CR','Structure ↔ Release']]
-    : [['AW','Artėti ↔ Atsitraukti'],['CS','Aiškumas ↔ Neapibrėžtumas'],['CR','Struktūra ↔ Laisvumas']];
+    ? [['AW','+ Approach ↔ − Withdrawal'],['CS','+ Clarity ↔ − Openness'],['CR','+ Structure ↔ − Release']]
+    : [['AW','+ Artėti ↔ − Atsitraukti'],['CS','+ Aiškumas ↔ − Neapibrėžtumas'],['CR','+ Struktūra ↔ − Laisvumas']];
   const axisVals = [trace.aw, trace.cs, trace.cr];
   axisValues.innerHTML = axisLabels.map((pair, i) => `
     <div class="radar-axis-item">
@@ -2938,6 +2938,14 @@ function showP9BlockRadar(blockIndex){
     </div>
   `).join('');
   body.appendChild(axisValues);
+
+  // Poliariškumo pastaba
+  const polarNote = document.createElement('div');
+  polarNote.style.cssText = 'font-size:.75rem;color:var(--text-secondary,#aaa);text-align:center;margin-top:6px;margin-bottom:4px;line-height:1.5;';
+  polarNote.textContent = currentLang === 'en'
+    ? '+ and − do not mean better or worse — they mark two different directions.'
+    : '+ ir − čia nereiškia geriau ar blogiau — jie tik žymi dvi skirtingas kryptis.';
+  body.appendChild(polarNote);
 
   // Bloko 2+ palyginimas
   if(blockIndex >= 2 && isP9BlockComplete(blockIndex - 1)){
