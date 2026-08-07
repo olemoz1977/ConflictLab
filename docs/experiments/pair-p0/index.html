@@ -2913,40 +2913,6 @@ function showP9BlockRadar(blockIndex){
     : 'Kuo toliau nuo centro, tuo ryškiau ši kryptis atsispindėjo šio bloko pasirinkimuose. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
   body.appendChild(scaleNote);
 
-  // Scope line — tik bloko numeris, be reviewed/proto QA skaičių
-  const scopeLine = document.createElement('div');
-  scopeLine.className = 'radar-scope-line';
-  scopeLine.textContent = currentLang === 'en'
-    ? `Block ${blockIndex} · ${trace.session_count} sessions`
-    : `Blokas ${blockIndex} · ${trace.session_count} sesijos`;
-  body.appendChild(scopeLine);
-
-  // Axis values su žmogaus kalbos pavadinimais
-  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
-  const axisValues = document.createElement('div');
-  axisValues.className = 'radar-axis-values';
-  axisValues.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0;text-align:center;';
-  const axisLabels = currentLang === 'en'
-    ? [['AW','+ Approach ↔ − Withdrawal'],['CS','+ Clarity ↔ − Openness'],['CR','+ Structure ↔ − Release']]
-    : [['AW','+ Artėti ↔ − Atsitraukti'],['CS','+ Aiškumas ↔ − Neapibrėžtumas'],['CR','+ Struktūra ↔ − Laisvumas']];
-  const axisVals = [trace.aw, trace.cs, trace.cr];
-  axisValues.innerHTML = axisLabels.map((pair, i) => `
-    <div class="radar-axis-item">
-      <div class="radar-axis-label">${pair[0]}</div>
-      <div class="radar-axis-value">${fmt(axisVals[i])}</div>
-      <div style="font-size:.7rem;color:var(--text-secondary,#aaa);margin-top:4px;line-height:1.3;">${pair[1]}</div>
-    </div>
-  `).join('');
-  body.appendChild(axisValues);
-
-  // Poliariškumo pastaba
-  const polarNote = document.createElement('div');
-  polarNote.style.cssText = 'font-size:.75rem;color:var(--text-secondary,#aaa);text-align:center;margin-top:6px;margin-bottom:4px;line-height:1.5;';
-  polarNote.textContent = currentLang === 'en'
-    ? '+ and − do not mean better or worse — they mark two different directions.'
-    : '+ ir − čia nereiškia geriau ar blogiau — jie tik žymi dvi skirtingas kryptis.';
-  body.appendChild(polarNote);
-
   // Bloko 2+ palyginimas
   if(blockIndex >= 2 && isP9BlockComplete(blockIndex - 1)){
     const prevTrace = computeP9BlockTrace(blockIndex - 1);
@@ -2981,13 +2947,6 @@ function showP9RadarWithBlockProgress(blockIndex, blockProgress){
 
 // Palyginimo blokas tarp dviejų radarų
 function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
-  const delta = {
-    aw: +(currTrace.aw - prevTrace.aw).toFixed(3),
-    cs: +(currTrace.cs - prevTrace.cs).toFixed(3),
-    cr: +(currTrace.cr - prevTrace.cr).toFixed(3)
-  };
-  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
-  const fmtDelta = v => (v > 0 ? '↑ +' : v < 0 ? '↓ ' : '→ ') + Math.abs(v).toFixed(2);
 
   const compWrap = document.createElement('div');
   compWrap.style.cssText = 'margin-top:24px;padding:16px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);';
@@ -3008,35 +2967,36 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
     : 'PROTOTIPAS — KARTOJAMI STIMULAI';
   compWrap.appendChild(protoBadge);
 
-  // Intro sakinys prieš lentelę
-  const intro = document.createElement('div');
-  intro.style.cssText = 'font-size:.85rem;color:var(--text-secondary,#aaa);margin-bottom:12px;';
-  intro.textContent = currentLang === 'en'
-    ? `Compared to Block ${blockIndex - 1}:`
-    : `Palyginti su Bloku ${blockIndex - 1}:`;
-  compWrap.appendChild(intro);
-
+  // Palyginimo antraštė
   const title = document.createElement('div');
-  title.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:12px;text-align:center;';
+  title.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:14px;text-align:center;';
   title.textContent = currentLang === 'en'
-    ? `Block ${blockIndex} vs Block ${blockIndex - 1}`
-    : `Blokas ${blockIndex} palyginti su Bloku ${blockIndex - 1}`;
+    ? 'Difference between two blocks'
+    : 'Skirtumas tarp dviejų blokų';
   compWrap.appendChild(title);
 
+  // 3 eilutės — žmogaus kalba, be delta, be AW/CS/CR kodų
+  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
+  const axisRows = currentLang === 'en'
+    ? [
+        ['Approach ↔ Withdrawal',   prevTrace.aw, currTrace.aw],
+        ['Clarity ↔ Openness',      prevTrace.cs, currTrace.cs],
+        ['Structure ↔ Release',     prevTrace.cr, currTrace.cr]
+      ]
+    : [
+        ['Artėti ↔ Atsitraukti',       prevTrace.aw, currTrace.aw],
+        ['Aiškumas ↔ Neapibrėžtumas',  prevTrace.cs, currTrace.cs],
+        ['Struktūra ↔ Laisvumas',      prevTrace.cr, currTrace.cr]
+      ];
+
   const table = document.createElement('div');
-  table.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;font-size:.85rem;';
-  table.innerHTML = `
-    <div style="font-weight:600;color:var(--text-secondary,#aaa)"></div>
-    <div style="font-weight:600;color:var(--text-secondary,#aaa)">${currentLang==='en'?'Block':'Blokas'} ${blockIndex-1}</div>
-    <div style="font-weight:600;color:var(--text-secondary,#aaa)">${currentLang==='en'?'Block':'Blokas'} ${blockIndex}</div>
-    <div style="font-weight:600;color:var(--text-secondary,#aaa)">${currentLang==='en'?'Change':'Pokytis'}</div>
-    <div style="font-weight:600">AW</div>
-    <div>${fmt(prevTrace.aw)}</div><div>${fmt(currTrace.aw)}</div><div>${fmtDelta(delta.aw)}</div>
-    <div style="font-weight:600">CS</div>
-    <div>${fmt(prevTrace.cs)}</div><div>${fmt(currTrace.cs)}</div><div>${fmtDelta(delta.cs)}</div>
-    <div style="font-weight:600">CR</div>
-    <div>${fmt(prevTrace.cr)}</div><div>${fmt(currTrace.cr)}</div><div>${fmtDelta(delta.cr)}</div>
-  `;
+  table.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+  table.innerHTML = axisRows.map(([label, prev, curr]) => `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:.85rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <span style="color:var(--text-secondary,#aaa);flex:1;">${label}</span>
+      <span style="font-weight:600;min-width:80px;text-align:right;">${fmt(prev)} → ${fmt(curr)}</span>
+    </div>
+  `).join('');
   compWrap.appendChild(table);
 
   // Refleksijos klausimai po lentelės
