@@ -823,6 +823,26 @@ const P9_STATE_KEY = P9_NS + 'ui_state'; // tracks expectation_intro_seen, etc.
 const P9_EL_VERSION = 'first-radar-v1'; // expectation layer version
 const BUILD_ID = 'p9-2026-08-06-provenance-v1';
 const SOURCE_BASE_COMMIT = '75efb81';
+// ── P9 DISPLAY CALIBRATION ──────────────────────────────────────────────────
+// RAW AW/CS/CR naudojamas visiems calculations, export, delta, comparison.
+// DISPLAY sluoksnis taikomas TIK bipolar map SVG taškų koordinatėms.
+// Grįsta attainable envelope auditu (tests/pair_p0_attainable_envelope.py):
+// realus P9 cue max absoliutus dydis = 0.65 visose ašyse.
+// Viena bendra skalė visoms ašims — apsaugo cross-axis geometrijos proporcijas.
+const P9_DISPLAY_CALIBRATION_VERSION = 'p9-display-v1';
+const P9_DISPLAY_BOUND = 0.65;
+
+// Transformacija: raw → display koordinatė SVG'ui.
+// Clamp apsaugo tik SVG koordinates — RAW reikšmė NIEKADA nekeičiama.
+function p9RawToDisplay(rawValue){
+  const d = rawValue / P9_DISPLAY_BOUND;
+  const clamped = Math.max(-1, Math.min(1, d));
+  if(clamped !== d && typeof console !== 'undefined'){
+    console.debug('[P9 display clamp] raw=' + rawValue + ' display=' + d + ' clamped=' + clamped);
+  }
+  return clamped;
+}
+
 const P9_FIRST_RADAR_AFTER = 3;
 const P9_PAIRS_PER_SESSION = 3;
 // Sesijų kompozicija — fiksuota iki pirmo radaro (porų eilė sesijoje randomizuojama)
@@ -1354,7 +1374,12 @@ function discardUnfinishedSession(){
                  : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
                  :                                         null,
     build_id: BUILD_ID,
-    source_base_commit: SOURCE_BASE_COMMIT
+    source_base_commit: SOURCE_BASE_COMMIT,
+    display_calibration: QA_SET_PARAM === 'prototype-nine-v1' ? {
+      version: P9_DISPLAY_CALIBRATION_VERSION,
+      bound: P9_DISPLAY_BOUND,
+      transform: 'linear_uniform'
+    } : null
   };
   currentPairIdx = 0;
   currentSessionStage = 'pair';
@@ -1449,7 +1474,12 @@ function startExperiment(){
                  : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
                  :                                         null,
     build_id: BUILD_ID,
-    source_base_commit: SOURCE_BASE_COMMIT
+    source_base_commit: SOURCE_BASE_COMMIT,
+    display_calibration: QA_SET_PARAM === 'prototype-nine-v1' ? {
+      version: P9_DISPLAY_CALIBRATION_VERSION,
+      bound: P9_DISPLAY_BOUND,
+      transform: 'linear_uniform'
+    } : null
   };
   sessionReflection = { response_type: null, text: '' };
   connectionAnswer = { response_type: null, text: '' };
@@ -2748,7 +2778,9 @@ function renderP9BipolarMapSVG(trace1, opts){
     <circle cx="${cx}" cy="${cy}" r="2.5" fill="#6E6A64"/>`;
 
   function makeShape(trace, color, sw, fo, dr){
-    const pts = axes.map((a,i) => toXY(a.posAngle, traceVal(trace, i)));
+    // p9RawToDisplay: raw → calibrated display value for SVG coordinates only.
+    // Raw values (trace.aw/cs/cr) are never modified.
+    const pts = axes.map((a,i) => toXY(a.posAngle, p9RawToDisplay(traceVal(trace, i))));
     const poly = pts.map(p => `${p.x},${p.y}`).join(' ');
     const dots = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="${dr}" fill="${color}"/>`).join('');
     return `<polygon points="${poly}" fill="${color}" fill-opacity="${fo}" stroke="${color}" stroke-width="${sw}" stroke-linejoin="round"/>${dots}`;
