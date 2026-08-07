@@ -2614,7 +2614,14 @@ function renderRadarSVG(vector){
   // neigiama — tik į − kryptį. Priešinga pusė lieka nulinėje (centro) padėtyje.
   // Jokios (value+1)/2 transformacijos — tai būtų klaidinga, nes paverstų
   // kryptį į "kiekį" ir sunaikintų dvipolę prasmę.
-  const directions = [
+  const directions = currentLang === 'en' ? [
+    { key:'Approach',    angle:-90,  value: Math.max(vector.aw, 0) },
+    { key:'Structure',   angle:-30,  value: Math.max(vector.cr, 0) },
+    { key:'Ambiguity',   angle:30,   value: Math.max(-vector.cs, 0) },
+    { key:'Step back',   angle:90,   value: Math.max(-vector.aw, 0) },
+    { key:'Flexibility', angle:150,  value: Math.max(-vector.cr, 0) },
+    { key:'Clarity',     angle:210,  value: Math.max(vector.cs, 0) },
+  ] : [
     { key:'Artėti',          angle:-90,  value: Math.max(vector.aw, 0) },
     { key:'Struktūra',       angle:-30,  value: Math.max(vector.cr, 0) },
     { key:'Neapibrėžtumas',  angle:30,   value: Math.max(-vector.cs, 0) },
@@ -2784,9 +2791,9 @@ function renderP9RadarResultLayer(body){
   };
   const en = {
     header: 'Your current choice trace',
-    context: 'This picture shows how your choices were distributed across 3 sessions.',
-    boundary: 'This is not your type and not a final description. It is a trace left by your reactions and choices in these image pairs.',
-    reflTitle: 'Worth noticing',
+    context: 'This view shows how your choices were distributed across 3 sessions.',
+    boundary: 'This is not your type or a final description of you. It is a trace left by your reactions and choices across these image pairs.',
+    reflTitle: 'What to notice',
     question1: 'Which image did you choose almost without thinking? What drew you to it?',
     question2: 'What did you notice at that moment — an emotion, a thought, or an inner impulse to choose?',
     btnContinue: 'Continue with another session',
@@ -2909,7 +2916,7 @@ function showP9BlockRadar(blockIndex){
   const scaleNote = document.createElement('div');
   scaleNote.className = 'radar-scale-note';
   scaleNote.textContent = currentLang === 'en'
-    ? 'The further from center, the more clearly that direction was reflected in this block\'s choices. Near center means no clear tendency appeared.'
+    ? 'The farther from the center, the more clearly that direction appeared in this block of choices. Values near the center mean that no clear preference emerged.'
     : 'Kuo toliau nuo centro, tuo ryškiau ši kryptis atsispindėjo šio bloko pasirinkimuose. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
   body.appendChild(scaleNote);
 
@@ -2955,7 +2962,7 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const protoNote = document.createElement('div');
   protoNote.style.cssText = 'font-size:.8rem;color:#c8900a;margin-bottom:14px;line-height:1.5;';
   protoNote.textContent = currentLang === 'en'
-    ? 'In this prototype the same images repeated in the second block, so differences cannot be treated as a clean measurement of change.'
+    ? 'In this prototype, the same images were repeated in the second block, so the differences should not be treated as a clean measure of change.'
     : 'Šiame prototipe antrame bloke kartojosi tie patys vaizdai, todėl skirtumų negalima laikyti švariu pokyčio matavimu.';
   compWrap.appendChild(protoNote);
 
@@ -2971,7 +2978,7 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const title = document.createElement('div');
   title.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:14px;text-align:center;';
   title.textContent = currentLang === 'en'
-    ? 'Difference between two blocks'
+    ? 'Difference between the two blocks'
     : 'Skirtumas tarp dviejų blokų';
   compWrap.appendChild(title);
 
@@ -2979,9 +2986,9 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
   const axisRows = currentLang === 'en'
     ? [
-        ['Approach ↔ Withdrawal',   prevTrace.aw, currTrace.aw],
-        ['Clarity ↔ Openness',      prevTrace.cs, currTrace.cs],
-        ['Structure ↔ Release',     prevTrace.cr, currTrace.cr]
+        ['Approach ↔ Step back',  prevTrace.aw, currTrace.aw],
+        ['Clarity ↔ Ambiguity',   prevTrace.cs, currTrace.cs],
+        ['Structure ↔ Flexibility', prevTrace.cr, currTrace.cr]
       ]
     : [
         ['Artėti ↔ Atsitraukti',       prevTrace.aw, currTrace.aw],
@@ -3012,7 +3019,7 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const q2 = document.createElement('div');
   q2.style.cssText = 'font-size:.85rem;color:var(--text-secondary,#aaa);line-height:1.6;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;';
   q2.textContent = currentLang === 'en'
-    ? 'If so — what was different: the choice, the emotion, a thought, or how quickly you decided?'
+    ? 'If so, what felt different — the choice itself, an emotion, a thought, or how quickly you decided?'
     : 'Jei taip — kas buvo kitaip: pasirinkimas, emocija, mintis ar apsisprendimo greitis?';
 
   reflWrap.appendChild(q1);
@@ -3034,7 +3041,7 @@ function renderP9BlockResultActions(body){
   boundary.className = 'result-scope-note';
   boundary.style.cssText = 'margin-top:16px;font-style:normal;font-weight:500;';
   boundary.textContent = currentLang === 'en'
-    ? 'This is not your type and not a final description. It is a trace left by your reactions and choices in these image pairs.'
+    ? 'This is not your type or a final description of you. It is a trace left by your reactions and choices across these image pairs.'
     : 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo reakcijos ir pasirinkimai šiose vaizdų porose.';
   body.appendChild(boundary);
 
