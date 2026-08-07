@@ -2805,14 +2805,7 @@ function renderP9RadarResultLayer(body){
   ctx.textContent = t.context;
   body.prepend(ctx);
 
-  // Boundary statement
-  const boundary = document.createElement('div');
-  boundary.className = 'result-scope-note';
-  boundary.style.cssText = 'margin-top:16px;font-style:normal;font-weight:500;';
-  boundary.textContent = t.boundary;
-  body.appendChild(boundary);
-
-  // Reflection block
+  // Reflection block — prieš boundary
   const reflWrap = document.createElement('div');
   reflWrap.style.cssText = 'margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);';
 
@@ -2850,6 +2843,13 @@ function renderP9RadarResultLayer(body){
   reflWrap.appendChild(q2);
   reflWrap.appendChild(btnWrap);
   body.appendChild(reflWrap);
+
+  // Boundary — ramus uždarymas po refleksijos ir mygtukų
+  const boundary = document.createElement('div');
+  boundary.className = 'result-scope-note';
+  boundary.style.cssText = 'margin-top:20px;font-style:normal;font-weight:400;font-size:.82rem;opacity:0.7;';
+  boundary.textContent = t.boundary;
+  body.appendChild(boundary);
 
   // Mark result seen
   setP9UiState({result_screen_seen: true});
@@ -2909,16 +2909,16 @@ function showP9BlockRadar(blockIndex){
   const scaleNote = document.createElement('div');
   scaleNote.className = 'radar-scale-note';
   scaleNote.textContent = currentLang === 'en'
-    ? 'The further from center, the more often choices leaned in that direction. Near center means no clear tendency appeared.'
-    : 'Kuo toliau nuo centro, tuo dažniau pasirinkimai krypo į tą pusę. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
+    ? 'The further from center, the more clearly that direction was reflected in this block\'s choices. Near center means no clear tendency appeared.'
+    : 'Kuo toliau nuo centro, tuo ryškiau ši kryptis atsispindėjo šio bloko pasirinkimuose. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
   body.appendChild(scaleNote);
 
   // Scope line — tik bloko numeris, be reviewed/proto QA skaičių
   const scopeLine = document.createElement('div');
   scopeLine.className = 'radar-scope-line';
   scopeLine.textContent = currentLang === 'en'
-    ? `Block ${blockIndex} · based on ${trace.session_count} sessions`
-    : `Blokas ${blockIndex} · pagrįsta ${trace.session_count} sesijomis`;
+    ? `Block ${blockIndex} · ${trace.session_count} sessions`
+    : `Blokas ${blockIndex} · ${trace.session_count} sesijos`;
   body.appendChild(scopeLine);
 
   // Axis values su žmogaus kalbos pavadinimais
@@ -3038,14 +3038,14 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const q1 = document.createElement('div');
   q1.style.cssText = 'font-size:.9rem;font-style:italic;color:var(--text-primary,#eee);line-height:1.6;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:8px;';
   q1.textContent = currentLang === 'en'
-    ? 'Did you notice yourself reacting differently to the images this time?'
-    : 'Ar pats pastebėjai, kad šį kartą į vaizdus reagavai kitaip?';
+    ? 'Did you notice any difference between the first and second block?'
+    : 'Ar pats pastebėjai kokį nors skirtumą tarp pirmo ir antro bloko?';
 
   const q2 = document.createElement('div');
   q2.style.cssText = 'font-size:.85rem;color:var(--text-secondary,#aaa);line-height:1.6;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;';
   q2.textContent = currentLang === 'en'
-    ? 'What was different — the choice itself, the emotion, or how quickly you decided?'
-    : 'Kas buvo kitaip — pats pasirinkimas, emocija ar tai, kaip greitai apsisprendei?';
+    ? 'If so — what was different: the choice, the emotion, a thought, or how quickly you decided?'
+    : 'Jei taip — kas buvo kitaip: pasirinkimas, emocija, mintis ar apsisprendimo greitis?';
 
   reflWrap.appendChild(q1);
   reflWrap.appendChild(q2);
