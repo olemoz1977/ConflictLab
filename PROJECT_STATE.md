@@ -1,203 +1,119 @@
 # ConflictLab — Project State
-**Last updated:** 2026-07-31
+
+**Last updated:** 2026-08-08
 **Purpose:** AI context document. Read this first in every new conversation.
 
-> *"Not architecture. Evidence."*
-> We are no longer building theories. We are collecting evidence from real people.
+---
+
+## Strategic Direction (decided 2026-08-08)
+
+> **ConflictLab v0.7 — Frozen Product Baseline.**
+> **Pair P0 — Active Candidate Architecture for v0.8.**
+> **prototype-nine-v1 — technical/UX stable reference, not a methodologically final stimulus set.**
+> **A clean multi-block comparison requires 18 unique methodologically acceptable pairs.**
+
+| Product | Status | Live |
+|---|---|---|
+| **v0.7** (`docs/index.html`) | Frozen baseline. Deployment architecture uses direct Claude API calls from browser — not resolved for public use. Source of reusable methodological components. | `olemoz1977.github.io/ConflictLab/` |
+| **Pair P0** (`docs/experiments/pair-p0/index.html`) | **Active development.** No runtime AI dependency. Works fully as static GitHub Pages. | `olemoz1977.github.io/ConflictLab/experiments/pair-p0/?set=prototype-nine-v1` |
 
 ---
 
-## Current Version
-
-**v0.7 — Feature Freeze / Beta Ready**
-
-Live at: `https://olemoz1977.github.io/ConflictLab/`
-
-**This document MUST be updated before every beta milestone or release.**
-
----
-
-## What ConflictLab IS
+## Core Philosophy
 
 An **Epistemic Reflection Framework** — a transparent signal interpretation system for self-reflection.
 
-Core philosophy:
-> "We don't help people understand themselves faster. We help them learn to better observe themselves."
+> *"We don't help people understand themselves faster. We help them learn to better observe themselves."*
 
-**NOT:**
-- Personality assessment
-- Psychological diagnosis
-- Human scoring system
-- Behavioral prediction engine
+**NOT:** personality assessment, psychological diagnosis, human scoring, behavioral prediction.
+
+**Observation principle:** Never infer causes, never explain personality traits, never predict behavior, never create facts beyond provided data.
 
 ---
 
-## Current Blocker (Technical)
+## Pair P0 — Current Active State
 
-### Stimulus Generator CORS problem — unresolved
-`docs/generator.html` calls Anthropic API directly from browser.
-GitHub Pages blocks this (CORS). Generator UI is functional — API calls fail.
+**Stable tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
+**URL:** `?set=prototype-nine-v1`
+**Phone QA:** sessions 1–6 = PASS (2026-08-08)
 
-**Options not yet decided:**
-- Local Python server (`python -m http.server`)
-- Proxy solution
-- Accept manual YAML creation for now
+### What is verified
 
-This is the only current technical blocker before beta can begin.
+- 3-session blocks × 3 pairs = 9 choices per radar
+- Radar shown only after a complete 3-session block (sessions 3, 6, 9...)
+- Progress-only screens between blocks (no partial radar)
+- Block 1 vs Block 2 overlay comparison (bipolar map)
+- P9/M0 isolation by `set_id`
+- Full provenance export (SESSION, choices, reflections)
+- Display calibration `p9-display-v1`, `BOUND=0.65`
+- LT + EN parity
+
+### What is not yet done
+
+- **18 unique pairs** needed for clean Block 1 vs Block 2 (currently 9, sessions 4–6 repeat stimuli)
+- N0-004–009: 6 pairs are `prototype_only`, not methodologically validated
+- N0-005 axis assignment unresolved
+- N0-010–018: not yet created (3 AW + 3 CS + 3 CR)
+- Second radar block uses `comparison_status: "prototype_repeated_stimuli"` — not a clean measurement
+
+### Milestone path to v0.8
+
+| Milestone | Requirement |
+|---|---|
+| `prototype-nine-v1-radar-ux-stable` ✅ | 3×3 flow, bipolar map, block comparison, QA pass |
+| Intermediate (9 reviewed pairs) | ≥9 methodologically acceptable pairs, all `reviewed` vectors |
+| **v0.8 candidate** | 18 unique pairs, clean Block 1 vs Block 2 without repeated stimuli |
 
 ---
 
-## Architecture (Current — Do NOT redesign)
+## v0.7 — Frozen Baseline
 
-### Session structure: 3×4
-- 3 sessions minimum per user
-- 4 stimuli per session (image-based)
-- Pattern detection activates after session 3
+**Do not actively develop.** Use as reference for:
+- Methodology documents (`docs/methodology/`)
+- Language standards (R1–R8, S1–S5, F1–F7)
+- Architecture concepts (Observation Engine ADR-010, DSM, Reflection Engine)
+- Python engine (`src/`) — validated, not live-integrated
 
-### Signal Axes (3 axes, scale −1.0 to +1.0)
-| Internal | Semantic signal | Description |
+**Known issue:** `docs/index.html` calls Anthropic API directly from browser. CORS/authentication not resolved for public deployment. Treat as architecture problem, not confirmed broken product.
+
+---
+
+## Signal Axes (shared by v0.7 and Pair P0)
+
+| Code | Positive | Negative |
 |---|---|---|
-| `aw+` | `approach_impulse` | Engagement toward situation |
-| `aw-` | `withdrawal_impulse` | Distancing from situation |
-| `cs+` | `clarity_seeking` | Drive to reduce uncertainty |
-| `cs-` | `ambiguity_tolerance` | Openness to uncertainty |
-| `cr+` | `structure_seeking` | Control / structuring |
-| `cr-` | `release_impulse` | Surrender of structure |
+| AW | Artėti / Approach | Atsitraukti / Step back |
+| CS | Aiškumas / Clarity | Neapibrėžtumas / Ambiguity |
+| CR | Struktūra / Structure | Laisvumas / Flexibility |
 
-**No positive/negative moral labels. Values are directional, not evaluative.**
-
-### Pipeline
-```
-Stimuli → Signal Engine (aw/cs/cr) → Observation Engine → Claude API → Reflection
-```
-
-### Active Python Engine (`src/engine/behavior_translation/`)
-- **Pattern Detection:** P1–P9 (P9=trajectory is highest priority)
-- **AHA Detection:** K1–K4 filters
-- **Reflection Engine:** generates CandidateInsight
-- All 13 tests passing
-
-### Observation Engine (ADR-010) — implemented in index.html
-Translates raw axis signals → semantic observations before Claude API.
-Constitutional rule: NEVER infer causes, NEVER explain personality traits, NEVER predict behavior, NEVER create facts beyond provided data.
-
-### Dialogue State Machine (micro_dialogue_dsm_v1.md) — specified, partially implemented
-```
-Reflection → STATE 0 (Agreement) → STATE 2A/2B/2C → STATE 3 (Mirror) → STATE 4 (Bridge)
-```
-User responses: TAIP / NE / NEŽINAU
+Scale: [-1.0, +1.0]. No moral valence. Directional, not evaluative.
 
 ---
 
-## Methodology Status
+## Source of Truth Hierarchy
 
-**The methodology is frozen for implementation, not for critique.**
-Do not propose changes unless they are supported by beta evidence or explicitly requested.
-
-If you find a logical flaw — name it clearly. Do not implement it without Oleg's decision.
-
-**Frozen documents:**
-- `conflictlab_voice_v1.md` — how system speaks
-- `behavior_translation_architecture_v1.md` — Reflection Engine
-- `stimulus_validation_protocol.md` — stimulus evaluation
-- `stimulus_matrix_v1.md` — library planning
-- `stimulus_cue_rules_v1.md` (F1–F7) — cue creation rules
-- `stimulus_lifecycle_v1.md` — production process
-- `beta_research_protocol_v1.md` — H1–H4 research hypotheses
-
----
-
-## Language Standards
-
-### Reflection Language (R1–R8)
-- R1: Describe only what was observed
-- R2: Never explain WHY
-- R3: End with a question, not a conclusion
-- R4: Acknowledge what the system cannot know
-- R5: Subject = person's attention, not the system
-- R6: Calm, curious, humble tone
-- R7: No diagnostic language
-- R8: Scope declaration required
-
-### Reflection Safety (S1–S5)
-- S1: Never create a personality label
-- S2: Never predict future behavior
-- S3: Never explain the cause of a reaction
-- S4: Never claim the observation applies beyond this session
-- S5: Never compare the person to others
-
-### Stimulus Language (F1–F7)
-- F7 key rule: Semantic Independence — cues created fresh per stimulus, NOT standardized across library
-
----
-
-## Stimulus Library
-
-**10 active stimuli:** ST-001 through ST-010
-- Located in `stimuli/ST-XXX/` with `stimulus.yaml`, `status.yaml`, `review.md`
-- Known gap: cs axis underrepresented (22% vs optimal 33%)
-- Known issue: ST-001 and ST-006 both aw− with single figure — may cause monotony
-
----
-
-## Beta Research Protocol
-
-**Target:** 10–15 participants, ≥3 sessions each
-
-**Hypotheses:**
-| ID | Hypothesis | Success criterion |
-|---|---|---|
-| H1 | ≥70% participants rate ≥1 insight as "hadn't noticed this" | ≥7/10 participants |
-| H2 | Fallback rate ≤20% of sessions | ≤1 fallback per 5 sessions |
-| H3 | P9 insights cause more AHA moments than P5 | P9 Q2 ≥ P5 Q2 + 15% |
-| H4 | Disagreements include specific reason ≥60% | Q3 field analysis |
-
-**Success Criteria (SC1–SC5):**
-- SC1: Natural reaction — user chooses spontaneously
-- SC2: Reflection resonance — feels personal, not generic
-- SC3: AHA moment — "hadn't thought of this"
-- SC4: Trust — user doesn't feel evaluated or diagnosed
-- SC5: Return — user wants to come back
-
----
-
-## Open Design Questions
-
-These questions are NOT yet decided. Do not assume they are resolved.
-
-- **What creates the strongest AHA moment?** P9 is theorized to be highest — not yet confirmed by data.
-- **Adaptive stimulus selection:** should it happen before beta or after? Currently random within axis balance rules.
-- **Observation Engine branching:** when should the dialogue branch based on signal type (clarity_seeking vs withdrawal_impulse)?
-- **Generator CORS:** local server, proxy, or manual YAML — which path?
-- **cs axis gap:** 22% representation vs optimal 33% — how many new stimuli are needed before beta?
+| Document | Purpose |
+|---|---|
+| `PROJECT_STATE.md` | **This file.** Short current state. Read first. |
+| `REPOSITORY_INVENTORY.md` | Full file/module categorization |
+| `docs/experiments/pair-p0/PAIR_P0_STATE.md` | Pair P0 milestone history and OQ log |
+| `docs/experiments/pair-p0/RADAR_BLOCK_MODEL_V1.md` | Pair P0 architecture specification |
+| `docs/experiments/pair-p0/PROGRESS.md` | Chronological log |
+| `docs/methodology/METHODOLOGY_FREEZE_v1.md` | v0.7 methodology (frozen) |
+| `README.md` | Public-facing description |
 
 ---
 
 ## What Has Been Tried and Rejected (Do NOT repeat)
 
-- ❌ 12-stimulus session → reduced to 4 (users fatigued)
-- ❌ Raw axis numbers shown to users (aw=−0.09) → removed, replaced with dot on line
-- ❌ alert() dialogs → replaced with UI screens
-- ❌ Attention Anchors / FC-004 → rejected (assigning axis weights to visual elements = speculation)
-- ❌ Standardized cues across library → violates F7 Semantic Independence
-- ❌ Single session pattern detection → needs ≥3 sessions
-- ❌ Personality labels in reflections → forbidden by S1
-- ❌ "Evidence Engine" naming → changed to "Observation Engine" (observation ≠ evidence about personality)
-
----
-
-## Archived Modules (exist in archive/, not active)
-
-Well-written Python modules — NOT integrated into active UI. v0.4 architecture.
-
-- `signal_orientation.py` — SignalOrientation dataclass, axes [−1.0, +1.0]
-- `evidence_graph.py` — EvidenceNode + EvidenceGraph + provenance chain
-- `event_log.py` — immutable append-only EventLog
-- `uncertainty_engine.py` — 5-dimensional UncertaintyProfile (never collapsed to single score)
-- `model_registry.py` — 14 registered frameworks with assumptions + blind spots
-- `reflection_contract.py` — ReflectionContract, 7 required fields + validation
-
-Integration decision: deferred until after beta.
+- ❌ Cumulative 1–6 radar (mixed block sizes)
+- ❌ Partial block radar display (radar after 1/3 or 2/3 of block)
+- ❌ `hasUnlockedRadar()` triggering radar display (it means "exists", not "show now")
+- ❌ Per-axis display scaling (distorts cross-axis geometry)
+- ❌ `MIN_VISIBLE_PX` / `pow(0.7)` amplification in P9 (removed, linear only)
+- ❌ Raw axis numbers shown directly to users
+- ❌ Personality labels in reflections (S1)
+- ❌ `localStorage.clear()` (use namespace-scoped clearing only)
 
 ---
 
@@ -205,126 +121,48 @@ Integration decision: deferred until after beta.
 
 ```
 ConflictLab/
-├── README.md
 ├── PROJECT_STATE.md          ← this file
-├── REPOSITORY_INVENTORY.md
+├── REPOSITORY_INVENTORY.md   ← full file inventory
+├── README.md                 ← public description
+├── WHY_CONFLICTLAB.md        ← philosophy
 ├── docs/
-│   ├── index.html            ← ACTIVE PRODUCT (GitHub Pages)
-│   ├── generator.html        ← Stimulus Generator (CORS blocker)
-│   ├── media/                ← stimulus images + video
+│   ├── index.html            ← v0.7 FROZEN baseline
+│   ├── generator.html        ← stimulus generator (CORS issue)
+│   ├── media/                ← v0.7 stimulus images + video
 │   ├── methodology/          ← frozen methodology docs
-│   ├── adr/                  ← ADR-009, ADR-010
-│   ├── beta_research_protocol_v1.md
-│   └── tester_instructions.md
-├── stimuli/                  ← ST-001 to ST-010 + templates
-├── src/engine/behavior_translation/  ← active Python engine
-├── tests/                    ← 13/13 passing
-├── validation/               ← disagreement log + feedback
-└── archive/                  ← everything historical
+│   ├── adr/                  ← Architecture Decision Records
+│   └── experiments/
+│       └── pair-p0/          ← ACTIVE DEVELOPMENT
+│           ├── index.html    ← main app (4500+ lines)
+│           ├── pair-set-prototype-nine-v1.json
+│           ├── pair-cue-prototype-nine-v1.json
+│           ├── PAIR_P0_STATE.md
+│           ├── RADAR_BLOCK_MODEL_V1.md
+│           └── PROGRESS.md
+├── src/engine/               ← v0.7 Python engine (frozen, not live)
+├── stimuli/ST-001–010        ← v0.7 stimuli (PROVISIONAL, frozen)
+├── tests/                    ← v0.7 Python tests + P0 audit script
+├── validation/               ← LEGACY v0.4 era
+└── archive/                  ← historical content
 ```
 
 ---
 
-## How to Work With This Project
+## Git Tags (Pair P0 milestones)
 
-**Role of the human (Oleg):** product architect and methodologist. Final authority on all decisions. Works primarily from mobile.
-
-**For AI assistants:**
-1. Methodology is frozen for implementation — critique is welcome, changes require beta evidence or explicit request
-2. Architecture is frozen — do not redesign
-3. Current priority is BETA — getting real people to test
-4. If uncertain about methodology, ask — do not invent
-5. Changes to `index.html` require understanding ConflictLab Voice (`conflictlab_voice_v1.md`)
-6. Stimulus creation follows F1–F7 rules — read `stimulus_cue_rules_v1.md` first
-
-**Current immediate priorities (in order):**
-1. Start beta with 10–15 participants using current `docs/index.html`
-2. Solve generator.html CORS problem
-3. Monitor H1–H4 results
+| Tag | Meaning |
+|---|---|
+| `pair-p0-m0-remote-beta-stable` | M0 remote beta |
+| `pair-p0-prototype-nine-v1-flow-stable` | 3×3 flow, provenance, radar unlocked |
+| `pair-p0-prototype-nine-v1-radar-ux-stable` | Bipolar map, calibration v1, routing fix, QA pass |
 
 ---
 
-*"Not architecture. Evidence."*
+## For AI Assistants
 
----
-
-## Pair P0 — Izoliuotas eksperimentas (atskiras frontas)
-
-**Last updated:** 2026-08-05
-**Katalogas:** `docs/experiments/pair-p0/`
-
-> **Svarbu:** Pair P0 yra visiškai atskiras nuo v0.7 architektūros. Jis nenaudoja Observation Engine, Claude API refleksijų ar ST-XXX bibliotekos.
-
-### Kas tai
-
-Izoliuotas metodinis eksperimentas su vaizdų poromis ir trijų cue rinkiniais. Dalyvis mato du vaizdus, kiekvienam pasirenka vieną iš trijų cue — tai ir yra visas signalas. Refleksija remiasi pasirinktu cue ir žmogaus tekstu, ne LLM interpretacija.
-
-### Techninis srautas
-
-- **M0 remote beta:** stabilizuotas
-- **Dabartinis milestone:** `prototype-nine-v1` — **FLOW STABLE**
-- **Stable tag:** `pair-p0-prototype-nine-v1-flow-stable` → commit `b3dcbf69201d55aa209b9d3a5470a6e067f9e2b2`
-- **Build ID:** `p9-2026-08-06-provenance-v1`
-- **Ankstesnis M0 stable tag:** `pair-p0-m0-remote-beta-stable` → commit `dd3ea6bd` (funkcinis: `4362182`)
-
-**Patvirtinta:**
-- 3×3 flow, pirmas radaras po sesijos 3
-- Expectation / progress (1/3, 2/3) / payoff layer
-- P9/M0 izoliacija pagal set_id
-- Provenance eksporte (SESSION, choices, reflections)
-- build_id, radar_unlocked eksporte teisingas
-
-**Nebaigta (neblokuoja):**
-- Antras radaro blokas (sesijos 4–6)
-- 18 porų biblioteka (yra tik 9)
-- N0-004–009 metodologiniai trūkumai
-- **Realus funkcinis M0 commit:** `4362182...`
-- **Telefono QA:** 6/6 scenarijai praėjo (Edge mobile; Chrome turi viewport/layout problemą — nenaudoti QA tikslais)
-- **N1 scheduler:** dar nepradėtas
-
-### Dabartinis metodinis frontas — N0 auditas
-
-Tikslas: 9 porų biblioteka (3 sesijos × 3 poros), pilnas dviejų vertintojų cue auditas.
-
-**Užbaigti dokumentai:**
-- `N0_STIMULUS_CUE_BALANCE_AUDIT.md` — 3 esamų porų auditas (išvalytas nuo nepagrįsto tikslumo)
-- `N0_DECISIONS.md` — patvirtinti metodiniai sprendimai
-- `N0_PAIR_DESIGN_SPEC.md` — 6 naujų porų projektavimo reikalavimai
-- `N0_MANUAL_CUE_AUDIT_PROTOCOL.md` — rankinio audito protokolas su kalibravimo taisyklėmis
-- `N0_PAIR_CONCEPT_CANDIDATES.md` — 14 kandidatų su vertinimu
-- `N0_INDEPENDENT_CONCEPT_REVIEW.md` — Claude + Gemini + žmogaus triviečiai sprendimai
-- `N0_CONCEPT_REFINEMENT.md` — gamybos specifikacijos 5 ADVANCE konceptams
-- `N0_PRODUCTION_PROMPTS.md` — N0-005 ir N0-006 gamybos promptai
-
-**N0 kandidatų statusai (2026-08-05):**
-
-| Kandidatas | Stimulų šeima | Prov. ašis | Statusas |
-|---|---|---|---|
-| N0-004-C1 | Erdvinė / miško takas | AW | ADVANCE — endpoint geometry not yet isolated |
-| N0-005-C1 | Proceso / augalo stadijos | CS | CONCEPT UNDER REVIEW — inherent valence asymmetry unresolved |
-| N0-006-C1 | Tekstūros / akmuo | CR | ADVANCE TO PROTOTYPE |
-| N0-006-C2 | Tekstūros / audinys | CR | RESERVE |
-| N0-007-C1 | Krypties / objekto orientacija | AW | HOLD — not operationally clean |
-| N0-008-C1 | Šviesos / oras | CS arba CR | ADVANCE, AXIS UNRESOLVED — do not produce yet |
-| N0-009-C1 | Socialinio atstumo | UNRESOLVED | EXPERIMENTAL HOLD |
-
-**Metodologinis atskyrimas:**
-- Branduolinė metodologija (Methodology Freeze v1.0): **užšaldyta**
-- Stimulus ir cue operacionalizacija: **dar neparuošta išoriniam beta testui**
-- Pair P0 techninis srautas: **stabilus**
-
-### Sekanti gamybos seka (patvirtinta)
-
-1. Užfiksuoti N0-004 ir N0-005 prototipų radinius (`N0_CONCEPT_REFINEMENT.md`)
-2. Sprendimas dėl N0-005 konceptualios valentingumo problemos
-3. N0-006 akmens prototipas
-4. Dviejų vertintojų cue auditas visiems trims poroms
-5. Cue projektavimas
-6. N1 scheduler — tik patvirtinus 9 porų struktūrą
-
-### Kas Pair P0 nėra
-
-- Ne v0.7 stimulus bibliotekos papildymas
-- Ne Observation Engine testavimas
-- Ne Claude API refleksijų testavimas
-- Nepriklausomas nuo Methodology Freeze v1.0 (bet laikosi tų pačių episteminio atsargumo principų)
+1. **Active work = Pair P0** (`docs/experiments/pair-p0/`). Do not touch v0.7 code.
+2. Before any code change: read the plan, confirm with Oleg.
+3. Never use `localStorage.clear()`.
+4. Never modify M0 flow or stable tags.
+5. All methodological decisions belong to Oleg. If uncertain — ask, do not invent.
+6. Pair P0 works from phone. Edge mobile is the primary test browser (Chrome mobile has viewport issues with P0).
