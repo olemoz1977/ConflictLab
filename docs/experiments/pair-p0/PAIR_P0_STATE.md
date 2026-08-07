@@ -1,9 +1,11 @@
-# ConflictLab Pair P0 — Būsena (po M0 stable)
+# ConflictLab Pair P0 — Būsena
 
-**Data:** 2026-08-05
-**Stabilus tag:** `pair-p0-m0-remote-beta-stable`
-**Tag commit:** `dd3ea6bd444f5f538917fd76f3c6d93c1e44caa7`
-**Statusas:** M0 (nuotolinis beta testavimo režimas) pilnai įgyvendintas ir realiai patvirtintas telefone (6/6 QA scenarijų). Kitas žingsnis — N0 (9 porų ir cue balanso auditas).
+**Data:** 2026-08-07
+**Dabartinis milestone:** `prototype-nine-v1` — **FLOW STABLE**
+**Stable tag:** `pair-p0-prototype-nine-v1-flow-stable`
+**Tag commit:** `b3dcbf69201d55aa209b9d3a5470a6e067f9e2b2`
+
+**Ankstesnis M0 stable tag:** `pair-p0-m0-remote-beta-stable` → commit `dd3ea6bd` (funkcinis pakeitimas: `4362182`)
 
 ---
 
@@ -136,6 +138,59 @@ Tag'as `pair-p0-m0-remote-beta-stable` nurodo į commit `dd3ea6b`, tačiau šis 
 
 ---
 
+---
+
+## prototype-nine-v1 etapas — FLOW STABLE
+
+**Commit:** `b3dcbf69201d55aa209b9d3a5470a6e067f9e2b2`
+**Stable tag:** `pair-p0-prototype-nine-v1-flow-stable`
+**Build ID:** `p9-2026-08-06-provenance-v1`
+**Source base commit:** `75efb81`
+
+### Patvirtinta (manual QA + realus eksportas)
+
+- ✅ 3×3 sesijų srautas (3 sesijos × 3 poros = 9 pasirinkimai)
+- ✅ Pirmas radaras po 3 sesijų (`P9_FIRST_RADAR_AFTER = 3`)
+- ✅ Expectation layer (`first-radar-v1`) — „Pirmas bendras vaizdas — po 3 trumpų sesijų"
+- ✅ Progress ekranai: „1 iš 3 sesijų", „2 iš 3 sesijų"
+- ✅ Payoff layer po radaro
+- ✅ P9/M0 izoliacija pagal `set_id` (OQ-001 CLOSED)
+- ✅ `reviewed` vs `prototype_only` vektorių atskyrimas eksporte
+- ✅ Provenance eksporte: SESSION, choices[], reflections[] — visi laukai
+- ✅ `build_id: "p9-2026-08-06-provenance-v1"` eksporte
+- ✅ `radar_unlocked` eksporte teisingas: sesija 1→false, 2→false, 3→true
+
+### Metodologiškai nebaigta (neblokuoja flow)
+
+- N0-004–009 dalis: `prototype_only` vektoriai, nekalibruoti
+- N0-005 ašies priskyrimas — neišspręstas
+- N0-007, N0-008, N0-009 — `prototype_only_not_audited`
+- Antras radaro blokas (sesijos 4–6) — neimplementuotas
+- 18 porų biblioteka — nebaigta (yra tik 9)
+
+### OQ-002: Prototipo radaro vektorių skaičiaus rodmuo
+
+**Statusas:** CODE FIXED — rankinis testas dar nepatvirtintas.
+Radaras rodo „X įtraukti pasirinkimai (Y peržiūrėti · Z prototipo)" — reikia patikrinti, ar skaičiai keičiasi kai pasirenkama „Sunku pasakyti".
+
+### Deploy incidento dokumentacija (2026-08-06)
+
+Faktai, be priežasties priskyrimo:
+- Build job baigėsi `success`
+- Pages deploy likdavo `queued` / `in_progress`, po ~10 min — timeout
+- Tuo pačiu laikotarpiu buvo oficialus GitHub Pages/Actions incidentas (patvirtinta `githubstatus.com`)
+- Custom `.github/workflows/` vėliau pašalintas
+- Deploy atsistatė po incidento pabaigos (run `#429`, `success`, commit `b3dcbf6`)
+- Repo turinys nebuvo prarastas
+
+### Tolimesnis planas
+
+1. Implementuoti sesijas 4–6 ir antrą radaro bloką prototipo režime
+2. Tuo pat metu pradėti N0-010–N0-018 porų kūrimą (3 AW, 3 CS, 3 CR)
+3. Sutvarkyti N0-004–009 metodologinius trūkumus
+4. Integruoti 18 unikalių porų biblioteką
+5. Testuoti Block 1 vs Block 2 be pakartotinių stimulų
+
 ## Atvirų klausimų žurnalas — 2026-08-06
 
 ### OQ-001: Prototipo vektorių izoliacijos reikalingumas
@@ -158,7 +213,9 @@ Prototipo vektoriai (`vector_source: "prototype_only"`) yra arbitraliai priskirt
 **Neišspręstas klausimas:**
 Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` pora egzistuoja kartu su `analysis_eligible: true` poromis tame pačiame sesijų sraute? Jei taip — izoliacija reikalinga. Jei ne — ją galima supaprastinti.
 
-**Statusas:** OPEN — sprendimas atidėtas iki viešo produkto architektūros patvirtinimo.
+**Statusas:** CLOSED / RESOLVED — patvirtinta architektūrinė taisyklė.
+
+P9 ir M0 sesijos izoliuojamos pagal `set_id`. Tai nėra atviras klausimas — tai fiksuota sistemos taisyklė. Žr. `RADAR_BLOCK_MODEL_V1.md`.
 
 ---
 
@@ -171,11 +228,3 @@ Ar viešame produkte kada nors bus situacija, kur `analysis_eligible: false` por
 **Dar nepatikrinta rankiniu testu:** ar skaičiai dinamiškai keičiasi, kai vienoje poroje pasirenkama „Sunku pasakyti" (turėtų sumažėti prototipo skaičius).
 
 **Statusas:** CODE FIXED — rankinis testas laukia.
-
-<!-- deploy-trigger: 2026-08-06T13:26:04Z -->
-
-<!-- redeploy after image compression -->
-
-<!-- workflow-build-trigger -->
-
-<!-- trigger after public -->
