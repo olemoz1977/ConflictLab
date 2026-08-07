@@ -1128,28 +1128,23 @@ async function init(){
     if(resumableSnapshot && resumableSnapshot.session && resumableSnapshot.session.set_id === 'prototype-nine-v1'){
       // Let normal resume UI handle — show('intro') with resume buttons
     }
-    // 2. Current block just completed — show block radar
+    // 2. Current block just completed (3/3) — show block radar
     else if(blockProgress === 3){
       showP9BlockRadar(blockIndex);
       return;
     }
-    // 3. In block 2+ with sessions in progress — Radar 1 + progress banner
-    else if(hasUnlockedRadar() && blockProgress >= 1){
-      showP9RadarWithBlockProgress(blockIndex, blockProgress);
-      return;
-    }
-    // 4. Block 1 in progress (1 or 2 sessions done)
-    else if(n >= 1 && n < P9_FIRST_RADAR_AFTER){
+    // 3. Block in progress (1/3 or 2/3) — progress screen only, NO radar
+    else if(n >= 1){
       renderP9ProgressScreen(blockProgress);
       return;
     }
-    // 5. No sessions, expectation not yet seen
+    // 4. No sessions, expectation not yet seen
     else if(n === 0 && !p9ExpectationIntroSeen()){
       setP9UiState({intro_seen: true});
       renderP9ExpectationScreen();
       return;
     }
-    // 6. No sessions, expectation already seen — fall through to show('intro')
+    // 5. No sessions, expectation already seen — fall through to show('intro')
   }
 
   show('intro');
@@ -2854,7 +2849,8 @@ function p9ReturnLater(){
 
 function renderP9ProgressScreen(sessionsDone){
   const n = sessionsDone;
-  const lt = {
+  const isFirstBlock = !hasUnlockedRadar();
+  const lt = isFirstBlock ? {
     1: {
       title: '1 iš 3 sesijų',
       desc: 'Užfiksuotas pirmasis pasirinkimų sluoksnis. Vienos sesijos dar per mažai bendram pėdsakui — kitos situacijos padės patikrinti, kas kartojasi.',
@@ -2865,8 +2861,19 @@ function renderP9ProgressScreen(sessionsDone){
       desc: 'Jau turime šešias skirtingas situacijas. Liko viena sesija, kad galėtume parodyti ne vienkartinę reakciją, o platesnį pasirinkimų vaizdą.',
       btn: 'Tęsti 3 sesiją', later: 'Grįžti vėliau'
     }
+  } : {
+    1: {
+      title: '1 iš 3 sesijų iki kito palyginimo',
+      desc: 'Pirmas blokas užfiksuotas. Pradėjome naują bloką — po dar dviejų sesijų galėsime palyginti du blokus.',
+      btn: 'Tęsti', later: 'Grįžti vėliau'
+    },
+    2: {
+      title: '2 iš 3 sesijų iki kito palyginimo',
+      desc: 'Liko viena sesija šiame bloke — tada pamatysime, kaip šio bloko pasirinkimai skyrėsi nuo ankstesnio.',
+      btn: 'Tęsti', later: 'Grįžti vėliau'
+    }
   };
-  const en = {
+  const en = isFirstBlock ? {
     1: {
       title: '1 of 3 sessions',
       desc: 'The first layer of choices is recorded. One session is not enough for a full picture — more situations will help show what repeats.',
@@ -2876,6 +2883,17 @@ function renderP9ProgressScreen(sessionsDone){
       title: '2 of 3 sessions',
       desc: 'We now have six different situations. One more session will let us show a broader pattern of choices, not just a single moment.',
       btn: 'Continue to session 3', later: 'Return later'
+    }
+  } : {
+    1: {
+      title: '1 of 3 sessions to next comparison',
+      desc: 'First block recorded. We have started a new block — two more sessions and we can compare the two blocks.',
+      btn: 'Continue', later: 'Return later'
+    },
+    2: {
+      title: '2 of 3 sessions to next comparison',
+      desc: "One session left in this block — then we will see how this block's choices differed from the previous one.",
+      btn: 'Continue', later: 'Return later'
     }
   };
   const t = (currentLang === 'en' ? en : lt)[n] || lt[1];
@@ -2973,19 +2991,15 @@ function renderP9RadarResultLayer(body){
 
 // ── P9 SCREEN ROUTER: called instead of show('done') for P9 ─────────────────
 function routeP9AfterSession(){
-  const n = getP9TotalCompletedCount();
   const blockIndex = getP9CurrentBlockIndex();
   const blockProgress = getP9BlockProgress(blockIndex);
 
   if(blockProgress === 3){
-    // Blokas pilnas — rodyti radarą
+    // Blokas pilnas (3/3) — rodyti radarą
     setP9UiState({continued_after_first_radar: true});
     showP9BlockRadar(blockIndex);
-  } else if(hasUnlockedRadar()){
-    // Blokas 2+ sesijose: Radar 1 matomas + progress iki kito bloko
-    showP9RadarWithBlockProgress(blockIndex, blockProgress);
   } else {
-    // Blokas 1, sesijos 1 ar 2 — standartinis progress ekranas
+    // 1/3 arba 2/3 bloko — tik progress ekranas, JOKIO radaro
     renderP9ProgressScreen(blockProgress);
   }
 }
