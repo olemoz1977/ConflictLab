@@ -1095,34 +1095,41 @@ async function init(){
   applyIntroButtonState(resumeCheck);
 
   // ── P9: route to correct screen based on progress (after resumeCheck) ───────
-  // Priority: 1) unfinished session resume 2) radar (≥3) 3) progress (1-2) 4) expectation (0, unseen) 5) start
-  // Progress screen wins over resumableSnapshot check — completed sessions are the canonical truth source.
+  // Priority: 1) unfinished session resume 2) block complete → block radar
+  //           3) block in progress + radar unlocked → Radar 1 + progress banner
+  //           4) block 1 in progress (1-2) → progress screen
+  //           5) expectation (0, unseen) 6) start
   if(IS_P9){
-    const p9Done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
-    const p9CompletedCount = p9Done.length;
-    const p9RadarAlready = p9CompletedCount >= P9_FIRST_RADAR_AFTER;
+    const n = getP9TotalCompletedCount();
+    const blockIndex = getP9CurrentBlockIndex();
+    const blockProgress = getP9BlockProgress(blockIndex);
 
     // 1. Unfinished P9 session in progress — resume it
     if(resumableSnapshot && resumableSnapshot.session && resumableSnapshot.session.set_id === 'prototype-nine-v1'){
       // Let normal resume UI handle — show('intro') with resume buttons
     }
-    // 2. Radar already unlocked — show result screen
-    else if(p9RadarAlready){
-      showRadar();
+    // 2. Current block just completed — show block radar
+    else if(blockProgress === 3){
+      showP9BlockRadar(blockIndex);
       return;
     }
-    // 3. Progress: 1 or 2 sessions done — show progress screen regardless of other state
-    else if(p9CompletedCount >= 1 && p9CompletedCount < P9_FIRST_RADAR_AFTER){
-      renderP9ProgressScreen(p9CompletedCount);
+    // 3. In block 2+ with sessions in progress — Radar 1 + progress banner
+    else if(hasUnlockedRadar() && blockProgress >= 1){
+      showP9RadarWithBlockProgress(blockIndex, blockProgress);
       return;
     }
-    // 4. No sessions, expectation not yet seen
-    else if(p9CompletedCount === 0 && !p9ExpectationIntroSeen()){
+    // 4. Block 1 in progress (1 or 2 sessions done)
+    else if(n >= 1 && n < P9_FIRST_RADAR_AFTER){
+      renderP9ProgressScreen(blockProgress);
+      return;
+    }
+    // 5. No sessions, expectation not yet seen
+    else if(n === 0 && !p9ExpectationIntroSeen()){
       setP9UiState({intro_seen: true});
       renderP9ExpectationScreen();
       return;
     }
-    // 5. No sessions, expectation already seen — fall through to show('intro') with Pradėti
+    // 6. No sessions, expectation already seen — fall through to show('intro')
   }
 
   show('intro');
@@ -2361,11 +2368,19 @@ function completeSession(){
     if(IS_P9){
       const doneP9 = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
       if(!doneP9.find(s => s.session_id === SESSION.session_id)){
+        const newSequenceIndex = doneP9.length; // 0-based pozicija prieš push
+        const newBlockIndex = Math.floor(newSequenceIndex / 3) + 1;
+        const newBlockSessionIndex = (newSequenceIndex % 3) + 1;
         doneP9.push({
           session_id: SESSION.session_id,
           session_index: p9SessionIndex,
-          pair_ids: PAIRS.map(p => p.pair_id)
+          pair_ids: PAIRS.map(p => p.pair_id),
+          radar_block_index: newBlockIndex,
+          block_session_index: newBlockSessionIndex
         });
+        // Atnaujinti SESSION su bloko informacija
+        SESSION.radar_block_index = newBlockIndex;
+        SESSION.block_session_index = newBlockSessionIndex;
         localStorage.setItem(P9_NS + 'completed', JSON.stringify(doneP9));
         // Atrakinti radarą po P9_FIRST_RADAR_AFTER sesijų
         // p9RadarUnlocked synced from isRadarUnlocked() — single source
@@ -2428,6 +2443,92 @@ function getFirstRadarThreshold(){
 
 function isRadarUnlocked(){
   return getCompletedSessionCount() >= getFirstRadarThreshold();
+}
+
+// ── P9 BLOCK MODEL HELPERS ────────────────────────────────────────────────────
+// P9_NS+'completed' yra chronologinis append-only sąrašas (vienas rašymo taškas
+// completeSession() su !find() apsauga). Pozicija sąraše = sesijos eilės numeris.
+
+// Bendras P9 sesijų skaičius (visų blokų).
+function getP9TotalCompletedCount(){
+  try {
+    const done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+    return Array.isArray(done) ? done.length : 0;
+  } catch(e){ return 0; }
+}
+
+// Bloko numeris (1-based) pagal sesijų skaičių: 1–3→1, 4–6→2, 7–9→3.
+function getP9CurrentBlockIndex(){
+  const n = getP9TotalCompletedCount();
+  if(n === 0) return 1;
+  return Math.ceil(n / 3);
+}
+
+// Kiek sesijų užbaigta bloko viduje (1, 2 arba 3).
+function getP9BlockProgress(blockIndex){
+  const n = getP9TotalCompletedCount();
+  const blockStart = (blockIndex - 1) * 3; // 0-based pozicija
+  const inBlock = n - blockStart;
+  return Math.max(0, Math.min(3, inBlock));
+}
+
+// Ar konkretus blokas pilnas (3 sesijos).
+function isP9BlockComplete(blockIndex){
+  return getP9BlockProgress(blockIndex) >= 3;
+}
+
+// Ar bent vienas pilnas blokas egzistuoja (bent vienas radaras atrakintas).
+function hasUnlockedRadar(){
+  return isP9BlockComplete(1);
+}
+
+// Grąžina completed_sessions objektus, priklausančius konkrečiam blokui.
+// Naudoja poziciją P9_NS+'completed' sąraše (chronologinis append-only).
+function getP9SessionsForBlock(blockIndex){
+  try {
+    const done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
+    const start = (blockIndex - 1) * 3;
+    const blockEntries = done.slice(start, start + 3);
+    const ids = new Set(blockEntries.map(s => s.session_id));
+    return getCompletedSessions().filter(s => ids.has(s.session_id));
+  } catch(e){ return []; }
+}
+
+// Apskaičiuoja radaro vektorių iš konkretaus bloko sesijų.
+// Grąžina { aw, cs, cr, session_count, reviewed_count, proto_count }
+// arba null jei sesijų nėra.
+function computeP9BlockTrace(blockIndex){
+  const sessions = getP9SessionsForBlock(blockIndex);
+  if(sessions.length === 0) return null;
+  let reviewed = 0, proto = 0;
+  const sum = { aw: 0, cs: 0, cr: 0 };
+  sessions.forEach(s => {
+    (s.reflections || []).forEach(r => {
+      if(r.response_type === 'cue'){
+        if(r.vector && r.vector_source === 'reviewed'){
+          sum.aw += r.vector.aw || 0;
+          sum.cs += r.vector.cs || 0;
+          sum.cr += r.vector.cr || 0;
+          reviewed++;
+        } else if(r.prototype_vector && r.vector_source === 'prototype_only'){
+          sum.aw += r.prototype_vector.aw || 0;
+          sum.cs += r.prototype_vector.cs || 0;
+          sum.cr += r.prototype_vector.cr || 0;
+          proto++;
+        }
+      }
+    });
+  });
+  const total = reviewed + proto;
+  if(total === 0) return null;
+  return {
+    aw: +(sum.aw / total).toFixed(3),
+    cs: +(sum.cs / total).toFixed(3),
+    cr: +(sum.cr / total).toFixed(3),
+    session_count: sessions.length,
+    reviewed_count: reviewed,
+    proto_count: proto
+  };
 }
 
 // Sesija tinkama radarui tik jei atitinka VISUS kriterijus.
@@ -2758,14 +2859,189 @@ function renderP9RadarResultLayer(body){
 
 // ── P9 SCREEN ROUTER: called instead of show('done') for P9 ─────────────────
 function routeP9AfterSession(){
-  const done = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
-  const n = done.length;
-  if(n >= P9_FIRST_RADAR_AFTER){
+  const n = getP9TotalCompletedCount();
+  const blockIndex = getP9CurrentBlockIndex();
+  const blockProgress = getP9BlockProgress(blockIndex);
+
+  if(blockProgress === 3){
+    // Blokas pilnas — rodyti radarą
     setP9UiState({continued_after_first_radar: true});
-    showRadar();
+    showP9BlockRadar(blockIndex);
+  } else if(hasUnlockedRadar()){
+    // Blokas 2+ sesijose: Radar 1 matomas + progress iki kito bloko
+    showP9RadarWithBlockProgress(blockIndex, blockProgress);
   } else {
-    renderP9ProgressScreen(n);
+    // Blokas 1, sesijos 1 ar 2 — standartinis progress ekranas
+    renderP9ProgressScreen(blockProgress);
   }
+}
+
+// ── P9 BLOCK RADAR DISPLAY ───────────────────────────────────────────────────
+
+// Rodo konkretaus bloko radarą. Po 3-ios sesijos → Radar 1.
+// Po 6-ios sesijos → Radar 2 + palyginimas su Radar 1.
+function showP9BlockRadar(blockIndex){
+  const trace = computeP9BlockTrace(blockIndex);
+  if(!trace){ showRadar(); return; } // fallback į seną logiką jei trūksta duomenų
+
+  const body = document.getElementById('radar-body');
+  body.innerHTML = '';
+
+  // Label
+  const existing = document.getElementById('p9-radar-label');
+  if(!existing){
+    const lbl = document.createElement('div');
+    lbl.id = 'p9-radar-label';
+    lbl.style.cssText = 'text-align:center;font-size:.7rem;font-weight:600;letter-spacing:.06em;color:#c8900a;text-transform:uppercase;margin-bottom:8px';
+    lbl.textContent = 'PROTOTIPO RADARAS — PRELIMINARUS';
+    const radarEl = document.getElementById('radar-area') || document.querySelector('.radar-wrap');
+    if(radarEl) radarEl.prepend(lbl);
+  }
+
+  document.getElementById('txt-radar-header').textContent =
+    currentLang === 'en' ? 'Your current choice trace' : 'Tavo dabartinis pasirinkimų pėdsakas';
+
+  // SVG
+  const chartWrap = document.createElement('div');
+  chartWrap.className = 'radar-chart-wrap';
+  chartWrap.innerHTML = renderRadarSVG(trace);
+  body.appendChild(chartWrap);
+
+  // Scale note
+  const scaleNote = document.createElement('div');
+  scaleNote.className = 'radar-scale-note';
+  scaleNote.textContent = txt('radar_scale_note') ||
+    'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
+  body.appendChild(scaleNote);
+
+  // Scope line
+  const scopeLine = document.createElement('div');
+  scopeLine.className = 'radar-scope-line';
+  const total = trace.reviewed_count + trace.proto_count;
+  scopeLine.textContent = currentLang === 'en'
+    ? `Block ${blockIndex} · ${total} included choices (${trace.reviewed_count} reviewed · ${trace.proto_count} prototype)`
+    : `Blokas ${blockIndex} · ${total} įtraukti pasirinkimai (${trace.reviewed_count} peržiūrėti · ${trace.proto_count} prototipo)`;
+  body.appendChild(scopeLine);
+
+  // Axis values
+  const axisValues = document.createElement('div');
+  axisValues.className = 'radar-axis-values';
+  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
+  axisValues.innerHTML = `
+    <div class="radar-axis-item"><div class="radar-axis-label">AW</div><div class="radar-axis-value">${fmt(trace.aw)}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">CS</div><div class="radar-axis-value">${fmt(trace.cs)}</div></div>
+    <div class="radar-axis-item"><div class="radar-axis-label">CR</div><div class="radar-axis-value">${fmt(trace.cr)}</div></div>
+  `;
+  body.appendChild(axisValues);
+
+  // Bloko 2+ palyginimas
+  if(blockIndex >= 2 && isP9BlockComplete(blockIndex - 1)){
+    const prevTrace = computeP9BlockTrace(blockIndex - 1);
+    if(prevTrace) renderP9BlockComparison(body, prevTrace, trace, blockIndex);
+  }
+
+  // Result layer (boundary + reflection + actions) tik po pirmojo bloko
+  if(blockIndex === 1){
+    renderP9RadarResultLayer(body);
+  } else {
+    renderP9BlockResultActions(body);
+  }
+
+  show('radar');
+}
+
+// Po session 4 ar 5: Radar 1 + progress iki kito bloko viršuje
+function showP9RadarWithBlockProgress(blockIndex, blockProgress){
+  // Pirma atvaizduojame Radar 1 (visada block 1)
+  showP9BlockRadar(1);
+
+  // Tada viršuje (prieš radarą) pridedame progress pranešimą
+  const body = document.getElementById('radar-body');
+  const progressBanner = document.createElement('div');
+  progressBanner.style.cssText = 'background:rgba(200,144,10,0.1);border:1px solid rgba(200,144,10,0.3);border-radius:8px;padding:12px 16px;margin-bottom:20px;text-align:center;';
+  const progressText = currentLang === 'en'
+    ? `${blockProgress} of 3 sessions to next comparison`
+    : `${blockProgress} iš 3 sesijų iki kito palyginimo`;
+  progressBanner.textContent = progressText;
+  body.prepend(progressBanner);
+}
+
+// Palyginimo blokas tarp dviejų radarų
+function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
+  const delta = {
+    aw: +(currTrace.aw - prevTrace.aw).toFixed(3),
+    cs: +(currTrace.cs - prevTrace.cs).toFixed(3),
+    cr: +(currTrace.cr - prevTrace.cr).toFixed(3)
+  };
+  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
+  const fmtDelta = v => (v > 0 ? '↑ +' : v < 0 ? '↓ ' : '→ ') + Math.abs(v).toFixed(2);
+
+  const compWrap = document.createElement('div');
+  compWrap.style.cssText = 'margin-top:24px;padding:16px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);';
+
+  // Prototype repeated stimuli žyma
+  const protoNote = document.createElement('div');
+  protoNote.style.cssText = 'font-size:.7rem;font-weight:600;letter-spacing:.06em;color:#c8900a;text-transform:uppercase;margin-bottom:12px;text-align:center;';
+  protoNote.textContent = currentLang === 'en'
+    ? 'PROTOTYPE — REPEATED STIMULI — NOT A CLEAN COMPARISON'
+    : 'PROTOTIPAS — KARTOJAMI STIMULAI — NE ŠVARUS PALYGINIMAS';
+  compWrap.appendChild(protoNote);
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:12px;text-align:center;';
+  title.textContent = currentLang === 'en'
+    ? `Block ${blockIndex} vs Block ${blockIndex - 1}`
+    : `Blokas ${blockIndex} palyginti su Bloku ${blockIndex - 1}`;
+  compWrap.appendChild(title);
+
+  const table = document.createElement('div');
+  table.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;font-size:.85rem;';
+  table.innerHTML = `
+    <div style="font-weight:600;color:var(--text-secondary,#aaa)"></div>
+    <div style="font-weight:600;color:var(--text-secondary,#aaa)">${currentLang==='en'?'Block':'Blokas'} ${blockIndex-1}</div>
+    <div style="font-weight:600;color:var(--text-secondary,#aaa)">${currentLang==='en'?'Block':'Blokas'} ${blockIndex}</div>
+    <div style="font-weight:600;color:var(--text-secondary,#aaa)">${currentLang==='en'?'Change':'Pokytis'}</div>
+    <div style="font-weight:600">AW</div>
+    <div>${fmt(prevTrace.aw)}</div><div>${fmt(currTrace.aw)}</div><div>${fmtDelta(delta.aw)}</div>
+    <div style="font-weight:600">CS</div>
+    <div>${fmt(prevTrace.cs)}</div><div>${fmt(currTrace.cs)}</div><div>${fmtDelta(delta.cs)}</div>
+    <div style="font-weight:600">CR</div>
+    <div>${fmt(prevTrace.cr)}</div><div>${fmt(currTrace.cr)}</div><div>${fmtDelta(delta.cr)}</div>
+  `;
+  compWrap.appendChild(table);
+
+  // comparison_status žyma eksporto aiškumui (meta, nematoma vartotojui)
+  compWrap.dataset.comparisonStatus = 'prototype_repeated_stimuli';
+
+  body.appendChild(compWrap);
+}
+
+// Paprastesni action mygtukai po bloko 2+ radaro (be pilno result layer)
+function renderP9BlockResultActions(body){
+  const btnWrap = document.createElement('div');
+  btnWrap.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:24px;';
+
+  const boundary = document.createElement('div');
+  boundary.className = 'result-scope-note';
+  boundary.style.cssText = 'margin-top:16px;font-style:normal;font-weight:500;';
+  boundary.textContent = currentLang === 'en'
+    ? 'This is not your type and not a final description. It is a trace left by your choices in these situations.'
+    : 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo pasirinkimai šiose situacijose.';
+  body.appendChild(boundary);
+
+  const btnContinue = document.createElement('button');
+  btnContinue.className = 'btn-primary';
+  btnContinue.textContent = currentLang === 'en' ? 'Continue with another session' : 'Tęsti dar vieną sesiją';
+  btnContinue.onclick = () => startExperiment();
+
+  const btnFinish = document.createElement('button');
+  btnFinish.className = 'btn-ghost';
+  btnFinish.textContent = currentLang === 'en' ? 'Finish for now' : 'Baigti dabar';
+  btnFinish.onclick = () => show('history');
+
+  btnWrap.appendChild(btnContinue);
+  btnWrap.appendChild(btnFinish);
+  body.appendChild(btnWrap);
 }
 
 // RADAR_MIN_SESSIONS). Naudojama IŠ VISŲ beta srauto vietų (istorijos
