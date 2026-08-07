@@ -1350,7 +1350,7 @@ function discardUnfinishedSession(){
     first_radar_after_sessions: QA_SET_PARAM === 'prototype-nine-v1' ? P9_FIRST_RADAR_AFTER : null,
     pairs_per_session: 3,
     radar_unlocked: QA_SET_PARAM === 'prototype-nine-v1' ? isRadarUnlocked() : null,
-    session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (p9SessionIndex + 1)
+    session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (getP9TotalCompletedCount() + 1)
                  : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
                  :                                         null,
     build_id: BUILD_ID,
@@ -1445,7 +1445,7 @@ function startExperiment(){
     first_radar_after_sessions: QA_SET_PARAM === 'prototype-nine-v1' ? P9_FIRST_RADAR_AFTER : null,
     pairs_per_session: 3,
     radar_unlocked: QA_SET_PARAM === 'prototype-nine-v1' ? isRadarUnlocked() : null,
-    session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (p9SessionIndex + 1)
+    session_index: QA_SET_PARAM === 'prototype-nine-v1' ? (getP9TotalCompletedCount() + 1)
                  : QA_SET_PARAM === 'n0-six-v3'         ? (n0QaSessionIndex + 1)
                  :                                         null,
     build_id: BUILD_ID,
