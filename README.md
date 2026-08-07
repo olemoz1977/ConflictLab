@@ -128,7 +128,10 @@ Katalogas: `docs/experiments/pair-p0/`
 
 - **Kas tai:** izoliuotas eksperimentas su vaizdų poromis ir trijų cue rinkiniais
 - **Naudoja LLM:** ne — refleksija remiasi pasirinktu cue ir žmogaus tekstu, ne AI interpretacija
-- **Techninis srautas:** M0 remote beta stabilizuotas; stable tag: `pair-p0-m0-remote-beta-stable`
+- **Dabartinis milestone:** `prototype-nine-v1` — **FLOW STABLE**
+- **Stable tag:** `pair-p0-prototype-nine-v1-flow-stable` → commit `b3dcbf6`
+- **Live URL:** `https://olemoz1977.github.io/ConflictLab/experiments/pair-p0/?set=prototype-nine-v1`
+- **Ankstesnis M0 stable tag:** `pair-p0-m0-remote-beta-stable` → `dd3ea6bd`
 - **Realus telefono QA:** 6/6 scenarijai praėjo (Edge mobile)
 - **Dabartinis frontas:** N0 stimulus ir cue metodinis auditas
 - **Tikslas:** 9 porų biblioteka (3 sesijos × 3 poros)
