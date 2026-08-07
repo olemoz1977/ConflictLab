@@ -2356,21 +2356,8 @@ function completeSession(){
   SESSION.audio_started = audioStarted;
 
   try {
-    const completed = JSON.parse(localStorage.getItem(NS + 'completed_sessions') || '[]');
-    const i = completed.findIndex(s => s.session_id === SESSION.session_id);
-    if(i >= 0) completed[i] = SESSION; else completed.push(SESSION);
-    localStorage.setItem(NS + 'completed_sessions', JSON.stringify(completed));
-
-    // N0 QA: sekti, kurios N0 sesijos užbaigtos
-    if(IS_N0_QA){
-      const doneN0 = JSON.parse(localStorage.getItem(N0_QA_NS + 'completed') || '[]');
-      if(!doneN0.includes(SESSION.session_id)){
-        doneN0.push(SESSION.session_id);
-        localStorage.setItem(N0_QA_NS + 'completed', JSON.stringify(doneN0));
-      }
-    }
-
-    // P9: sekti užbaigtas sesijas ir porų sąrašą (būtina nematytų porų logikai)
+    // P9: atnaujinti užbaigtų sesijų sąrašą PRIEŠ išsaugant į completed_sessions,
+    // kad SESSION.radar_unlocked eksporte atspindėtų teisingą būseną po šios sesijos.
     if(IS_P9){
       const doneP9 = JSON.parse(localStorage.getItem(P9_NS + 'completed') || '[]');
       if(!doneP9.find(s => s.session_id === SESSION.session_id)){
@@ -2383,6 +2370,22 @@ function completeSession(){
         // Atrakinti radarą po P9_FIRST_RADAR_AFTER sesijų
         // p9RadarUnlocked synced from isRadarUnlocked() — single source
         p9RadarUnlocked = isRadarUnlocked();
+      }
+      // Atnaujinti SESSION prieš serializuojant — fiksuoja teisingą radar_unlocked eksporte
+      SESSION.radar_unlocked = p9RadarUnlocked;
+    }
+
+    const completed = JSON.parse(localStorage.getItem(NS + 'completed_sessions') || '[]');
+    const i = completed.findIndex(s => s.session_id === SESSION.session_id);
+    if(i >= 0) completed[i] = SESSION; else completed.push(SESSION);
+    localStorage.setItem(NS + 'completed_sessions', JSON.stringify(completed));
+
+    // N0 QA: sekti, kurios N0 sesijos užbaigtos
+    if(IS_N0_QA){
+      const doneN0 = JSON.parse(localStorage.getItem(N0_QA_NS + 'completed') || '[]');
+      if(!doneN0.includes(SESSION.session_id)){
+        doneN0.push(SESSION.session_id);
+        localStorage.setItem(N0_QA_NS + 'completed', JSON.stringify(doneN0));
       }
     }
 
