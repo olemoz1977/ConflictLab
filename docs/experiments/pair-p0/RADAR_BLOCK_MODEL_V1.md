@@ -1,8 +1,8 @@
 # Radar Block Model V1
 
 **Dokumentas:** `docs/experiments/pair-p0/RADAR_BLOCK_MODEL_V1.md`
-**Versija:** V1
-**Data:** 2026-08-07
+**Versija:** V1.1
+**Data:** 2026-08-08
 **Statusas:** PATVIRTINTA — architektūrinė taisyklė
 
 ---
@@ -21,24 +21,51 @@
 ## Fiksuota sesijų-radaro struktūra
 
 ```
-Blokas 1:  sesijos 1–3  →  pirmas radaras
-Blokas 2:  sesijos 4–6  →  antras radaras
-Blokas 3:  sesijos 7–9  →  trečias radaras
+Blokas 1:  sesijos 1–3  →  Radar 1
+Blokas 2:  sesijos 4–6  →  Radar 2
+Blokas 3:  sesijos 7–9  →  Radar 3
 ...
 ```
 
-Radaras rodomas **tik po pilno bloko** (3 sesijų). Po pavienės sesijos radaro **nerodome**.
+Radaras rodomas **tik po pilno bloko** (3 sesijų). Po pavienės ar dalinės sesijos radaro **nerodome**.
+
+---
+
+## Routing modelis
+
+| Completed sessions | blockProgress | Ekranas |
+|---|---|---|
+| 0 | — | Intro / Expectation |
+| 1 | 1/3 | Progress „1 iš 3 sesijų" |
+| 2 | 2/3 | Progress „2 iš 3 sesijų" |
+| **3** | **3/3** | **Radar 1** |
+| 4 | 1/3 | Progress „1 iš 3 iki kito palyginimo" |
+| 5 | 2/3 | Progress „2 iš 3 iki kito palyginimo" |
+| **6** | **3/3** | **Radar 2 + comparison** |
+| 7 | 1/3 | Progress |
+| 8 | 2/3 | Progress |
+| **9** | **3/3** | **Radar 3 + comparison** |
+
+### Kritinė taisyklė
+
+```
+hasUnlockedRadar() ≠ "rodyk radarą dabar"
+```
+
+`hasUnlockedRadar()` reiškia tik: **bent vienas pilnas radaras egzistuoja istorijoje**.
+
+Radaro renderinimą lemia išimtinai: `isP9BlockComplete(currentBlockIndex) === true`
 
 ---
 
 ## Konstrukcinis balansas per bloką
 
-Kiekvienas radaro blokas turi:
-- 3 sesijas
-- 3 poras sesijoje
-- **9 unikalias poras** bloke
+Kiekvienas radaro blokas:
+- 3 sesijos
+- 3 poros sesijoje
+- **9 unikalios poros** bloke
 
-Tikslinis ašių balansas per bloką:
+Tikslinis ašių balansas:
 
 ```
 3 AW (Awareness)
@@ -46,146 +73,165 @@ Tikslinis ašių balansas per bloką:
 3 CR (Control-Resistance)
 ```
 
-Kiekvienoje sesijoje:
+Kiekvienoje sesijoje: 1 AW + 1 CS + 1 CR
+
+**3×3 nėra statistinė garantija — tai konstrukcinis balansas**, skirtas mažinti vienos ašies, vieno stimulo ar pateikimo eilės dominavimą.
+
+---
+
+## Vizualizacijos architektūra
+
+### Kodėl bipolar map, ne 6-spoke radar
+
+Metodologiškai turime **3 bipolarines dimensijas**, ne 6 nepriklausomus matmenis.
+
+Senas 6-spoke radaras išskaidydavo kiekvieną signed reikšmę į du vienpusius spindulius (`aw+` ir `aw-`), kur vienas visada buvo 0 — tai kūrė dirbtinę 6-matmenų iliuziją.
+
+Naujas bipolar map:
+- 3 pilni diametrai (ne 6 spinduliai)
+- Kiekviena reikšmė → **1 signed taškas** ant atitinkamo diametro
+- 3 taškai → trikampė forma
+
+### 3 bipolarinės ašys
+
+| Ašis | Teigiama pusė | Neigiama pusė | SVG kampas |
+|---|---|---|---|
+| AW | Artėti (Approach) | Atsitraukti (Step back) | -90° |
+| CS | Aiškumas (Clarity) | Neapibrėžtumas (Ambiguity) | 210° |
+| CR | Struktūra (Structure) | Laisvumas (Flexibility) | -30° |
+
+### Taško skaičiavimas
 
 ```
-1 AW
-1 CS
-1 CR
+point = (center + cos(posAngle) * value * maxRadius,
+         center + sin(posAngle) * value * maxRadius)
 ```
 
-Randomizacija leidžiama tik **nepažeidžiant šio balanso** — porų eilė sesijoje gali būti randomizuojama, bet sesijos ašių sudėtis fiksuota.
+Kur `value = p9RawToDisplay(raw)` — **tik SVG koordinatėms**.
 
-### Svarbi pastaba apie balansą
+---
 
-**3×3 nėra įrodymas apie 100 % statistinę normalizaciją.**
+## RAW vs DISPLAY — du sluoksniai
 
-Tai **konstrukcinis balansas**, skirtas mažinti:
-- vienos ašies dominavimą viename bloke
-- vieno stimulo dominavimą
-- pateikimo eilės įtaką
-- vienos stimulų šeimos perteklių
+### RAW / Internal
 
-Balansas yra metodologinė priemonė, ne statistinis garantas.
+RAW AW/CS/CR naudojamas:
+- bloko vektoriaus skaičiavimui (`computeP9BlockTrace`)
+- eksportui
+- delta skaičiavimui
+- comparison teksto generavimui (automatiniai sakiniai)
+- audit/QA
+
+RAW **niekada nekeičiamas ir neclampinamas**.
+
+### DISPLAY / SVG koordinatės
+
+Tik SVG taškų pozicijoms:
+
+```javascript
+const P9_DISPLAY_CALIBRATION_VERSION = 'p9-display-v1';
+const P9_DISPLAY_BOUND = 0.65;
+
+function p9RawToDisplay(rawValue) {
+  const d = rawValue / P9_DISPLAY_BOUND;
+  return Math.max(-1, Math.min(1, d));  // clamp tik SVG saugai
+}
+```
+
+**Transformacija:**
+- `raw = 0` → centras
+- `raw = +0.65` → teigiamas kraštas
+- `raw = -0.65` → neigiamas kraštas
+- Tiesinė, vienoda visoms 3 ašims
+
+### Kodėl viena bendra skalė (ne per-axis)
+
+Cue vektoriai yra **multi-axis** (100% cue turi >1 ne-nulinę ašį). Per-axis scaling pakeistų AW/CS/CR tarpusavio geometriją — trikampis taptų iškraipytas, neatspindėdamas realių skaičiavimų proporcijų.
+
+**Kodėl draudžiamas block-specific autoscale:**
+- Block 1 ir Block 2 overlay turi naudoti tą pačią skalę abiem blokams
+- Skirtingos skalės sugadintų cross-block palyginamumą
+- `display1 = raw1 / 0.65` ir `display2 = raw2 / 0.65` — vienodas bound, lygiaverčiai blokai
+
+### Kodėl 0.65
+
+Grįsta `tests/pair_p0_attainable_envelope.py` auditu:
+- Realus P9 cue max absoliutus dydis = **0.65** (N=1 atveju)
+- 9/9 envelope: AW ±0.372, CS ±0.383, CR ±0.333
+- Vienas cue (N=1) gali pasiekti iki ±0.65
+
+**0.65 nėra universali ConflictLab konstanta** — ji galioja tik `prototype-nine-v1 / p9-display-v1`. Pakeitus stimulų/cue biblioteką, reikalingas naujas auditas ir nauja versija.
 
 ---
 
 ## Radarų palyginimo taisyklė
 
-### Pagrindinis palyginimas (kiekvienas radaras lygina su ankstesniu bloku)
+### Pagrindinis palyginimas
 
 ```
-Blokas 2 (sesijos 4–6)  prieš  Bloką 1 (sesijos 1–3)
-Blokas 3 (sesijos 7–9)  prieš  Bloką 2 (sesijos 4–6)
-Blokas 4 (sesijos 10–12) prieš Bloką 3 (sesijos 7–9)
+Blokas 2 (sesijos 4–6) vs Blokas 1 (sesijos 1–3)
+Blokas 3 (sesijos 7–9) vs Blokas 2 (sesijos 4–6)
 ```
 
-Papildomai ateityje galima rodyti pokytį nuo pirmojo bloko (1–3), bet tai nėra pagrindinis palyginimas.
-
-### Draudžiama naudoti
+### Draudžiama
 
 ```
-❌  Blokas 1 (1–3)  prieš  Kaupiamą (1–6)
+❌  Kumuliatyvus 1–6 radaras
+❌  Blokas 1 vs kumuliatyvus 1–6
 ```
 
-**Priežastis:** duomenų apimtis nevienoda — palyginimas tampa beprasmis.
-
-**Taisyklė:** kiekvienas radaras skaičiuojamas **tik iš savo 3 sesijų bloko**, niekada iš kaupiamo skaičiaus.
+Kiekvienas radaras skaičiuojamas **tik iš savo 3 sesijų bloko**.
 
 ---
 
-## Expectation / progress layer
+## Comparison vizualas (Block 2+)
 
-Prieš pirmą sesiją vartotojas mato:
-> „Pirmas bendras vaizdas — po 3 trumpų sesijų"
+Vienas overlay SVG su abiem blokais:
+- **Pilkas polygon:** ankstesnis blokas (Block 1 arba N-1)
+- **Žalias polygon:** dabartinis blokas (Block 2 arba N)
+- Legenda: „● 1 blokas  ● 2 blokas" (arba EN)
 
-Po kiekvienos sesijos:
-
-| Sesijų baigta | Rodoma |
-|---|---|
-| 0 | Expectation ekranas |
-| 1 | „1 iš 3 sesijų" |
-| 2 | „2 iš 3 sesijų" |
-| 3 | Pirmas radaras |
-| 4 | „1 iš 3 sesijų iki kito palyginimo" |
-| 5 | „2 iš 3 sesijų iki kito palyginimo" |
-| 6 | Antras radaras |
+Tekstinis palyginimas: automatiškai generuojami neutralūs sakiniai kiekvienai ašiai (7 atvejų logika — ženklo pasikeitimas, ta pati pusė, centras ir t.t.).
 
 ---
 
-## Dabartinė bibliotekos riba ir antras blokas
+## Dabartinė bibliotekos riba
 
-### Dabartinė būsena
+Šiuo metu: **9 prototipo poros** (P0-001–003, N0-004–009).
 
-Šiuo metu turime **9 prototipo poras** (P0-001–003, N0-004–009).
-
-Tai reiškia: sesijose 4–6 tektų **kartoti** tuos pačius stimulus.
-
-| Naudojimas | Statusas |
-|---|---|
-| Techninis antro radaro srauto testas | Leidžiama |
-| Švarus reakcijų pokyčio matavimas | **Ne** — vartotojas atpažins vaizdus |
-
-Kai kartojami stimulai, dokumentuoti:
+Sesijose 4–6 kartojami tie patys stimulai → comparison žymima:
 ```
 comparison_status: "prototype_repeated_stimuli"
 ```
 
+Tai tinka techniniam flow testui, bet nėra švarus pokyčio matavimas.
+
 ### Tikslas — 18 unikalių porų
 
-Reikia dar 9 naujų porų: **N0-010–N0-018**
-
 ```
-3 AW
-3 CS
-3 CR
+Blokas 1 = P0-001–003 + N0-004–009  (9 unikalios)
+Blokas 2 = N0-010–018               (9 unikalios, dar nekurtos)
 ```
-
-Tuomet:
-```
-Blokas 1 = P0-001–003 + N0-004–009  (9 unikalios poros)
-Blokas 2 = N0-010–018               (9 unikalios poros)
-```
-
-Tai leis švariai palyginti du lygiaverčius 3×3 blokus be pakartotinių stimulų.
 
 ---
 
 ## P9/M0 izoliacija (OQ-001 — CLOSED)
 
-**Patvirtinta architektūrinė taisyklė:**
+P9 ir M0 sesijos izoliuotos pagal `set_id`. M0 legacy `renderRadarSVG()` nepakeistas.
 
-P9 ir M0 sesijos izoliuojamos pagal `set_id` — kiekvienas radaras skaičiuojamas tik iš savo sesijų.
-
-| Srautas | `set_id` | Radaras |
+| Srautas | `set_id` | Vizualizacija |
 |---|---|---|
-| prototype-nine-v1 | `"prototype-nine-v1"` | P9 radaras |
-| M0 | `"m0-default"` arba legacy (visos poros P0-001/002/003) | M0 radaras |
-| n0-six-v3 | `"n0-six-v3"` | Nė vienas |
-
-`n0-six-v3` sesijos **negali** patekti nei į M0, nei į P9 radarą.
-
-Legacy M0 sesijos be `set_id` priimamos tik jei visos poros yra P0-001, P0-002, P0-003.
-
----
-
-## Dabartiniai patvirtinti blokai
-
-### Blokas 1 — prototype-nine-v1
-
-| Sesija | Poros | Ašys |
-|---|---|---|
-| Sesija 1 | P0-001, P0-002, P0-003 | AW, CS, CR |
-| Sesija 2 | N0-004, N0-005, N0-006 | AW, CS, CR |
-| Sesija 3 | N0-007, N0-008, N0-009 | AW, CS, CR |
-
-**Pastaba:** N0-004–009 šiuo metu yra `prototype_only` — vektoriai nekalibruoti, `analysis_eligible: false`. Prototipo režime naudojami `prototype_vector`. M0 radaras šių sesijų naudoti negali.
+| prototype-nine-v1 | `"prototype-nine-v1"` | `renderP9BipolarMapSVG()` |
+| M0 | `"m0-default"` / legacy | `renderRadarSVG()` (nepakeista) |
 
 ---
 
 ## Susijęs kodas
 
-- `P9_FIRST_RADAR_AFTER = 3` — pirmasis radaro slenkstis
-- `isRadarUnlocked()` — tikrina ar `getCompletedSessionCount() >= getFirstRadarThreshold()`
-- `isSessionRadarEligible(s, mode)` — filtruoja sesijas pagal `set_id`
-- `SESSION.radar_unlocked` — atspindi būseną **po** sesijos užbaigimo (fix: commit `b3dcbf6`)
+- `P9_FIRST_RADAR_AFTER = 3` — pirmojo radaro slenkstis
+- `isP9BlockComplete(blockIndex)` — ar blokas pilnas (3 sesijos)
+- `hasUnlockedRadar()` — ar bent vienas pilnas radaras egzistuoja (≠ "rodyk dabar")
+- `computeP9BlockTrace(blockIndex)` — bloko RAW vektorius
+- `renderP9BipolarMapSVG(trace, opts)` — P9 vizualizacija
+- `p9RawToDisplay(raw)` — RAW→DISPLAY transformacija
+- `renderP9BlockComparison(body, prev, curr, blockIndex)` — tekstinis palyginimas
