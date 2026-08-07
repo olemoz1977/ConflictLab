@@ -262,7 +262,22 @@ Izoliuotas metodinis eksperimentas su vaizdų poromis ir trijų cue rinkiniais. 
 ### Techninis srautas
 
 - **M0 remote beta:** stabilizuotas
-- **Stable tag:** `pair-p0-m0-remote-beta-stable` (commit `dd3ea6bd...`)
+- **Dabartinis milestone:** `prototype-nine-v1` — **FLOW STABLE**
+- **Stable tag:** `pair-p0-prototype-nine-v1-flow-stable` → commit `b3dcbf69201d55aa209b9d3a5470a6e067f9e2b2`
+- **Build ID:** `p9-2026-08-06-provenance-v1`
+- **Ankstesnis M0 stable tag:** `pair-p0-m0-remote-beta-stable` → commit `dd3ea6bd` (funkcinis: `4362182`)
+
+**Patvirtinta:**
+- 3×3 flow, pirmas radaras po sesijos 3
+- Expectation / progress (1/3, 2/3) / payoff layer
+- P9/M0 izoliacija pagal set_id
+- Provenance eksporte (SESSION, choices, reflections)
+- build_id, radar_unlocked eksporte teisingas
+
+**Nebaigta (neblokuoja):**
+- Antras radaro blokas (sesijos 4–6)
+- 18 porų biblioteka (yra tik 9)
+- N0-004–009 metodologiniai trūkumai
 - **Realus funkcinis M0 commit:** `4362182...`
 - **Telefono QA:** 6/6 scenarijai praėjo (Edge mobile; Chrome turi viewport/layout problemą — nenaudoti QA tikslais)
 - **N1 scheduler:** dar nepradėtas
