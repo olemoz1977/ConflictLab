@@ -2685,6 +2685,83 @@ function renderRadarSVG(vector){
   `;
 }
 
+// ── P9 BIPOLAR MAP SVG ───────────────────────────────────────────────────────
+// Pakeičia 6-spindulį radarą P9 kontekste.
+// 3 bipolarinės ašys → 3 signed taškai → vienas trikampis.
+// Jokio MIN_VISIBLE_PX, jokio pow(0.7) — gryna linijinė projekcija.
+// M0 / legacy renderRadarSVG() NELIEČIAMA.
+//
+// Pirmasis argumentas visada = Block 1 trace (arba vienintelis single bloke).
+// opts: { mode:'single' } arba { mode:'comparison', block2: trace2 }
+function renderP9BipolarMapSVG(trace1, opts){
+  const mode = (opts && opts.mode === 'comparison') ? 'comparison' : 'single';
+  const trace2 = mode === 'comparison' ? opts.block2 : null;
+
+  const size = 260, cx = 130, cy = 130, maxR = 95;
+
+  const axes = [
+    { posAngle:-90,  aw:true,  posLT:'Artėti',     negLT:'Atsitraukti',
+      posEN:'Approach',   negEN:'Step back' },
+    { posAngle:210,  cs:true,  posLT:'Aiškumas',   negLT:'Neapibrėžtumas',
+      posEN:'Clarity',    negEN:'Ambiguity' },
+    { posAngle:-30,  cr:true,  posLT:'Struktūra',  negLT:'Laisvumas',
+      posEN:'Structure',  negEN:'Flexibility' },
+  ];
+
+  function toXY(posAngleDeg, signedValue){
+    const rad = posAngleDeg * Math.PI / 180;
+    const r = signedValue * maxR;
+    return { x:+(cx + r*Math.cos(rad)).toFixed(1), y:+(cy + r*Math.sin(rad)).toFixed(1) };
+  }
+
+  function axisEnd(posAngleDeg, sign, offset){
+    const rad = posAngleDeg * Math.PI / 180;
+    const r = sign * (maxR + (offset||0));
+    return { x:+(cx + r*Math.cos(rad)).toFixed(1), y:+(cy + r*Math.sin(rad)).toFixed(1) };
+  }
+
+  function traceVal(trace, axIdx){
+    return axIdx===0 ? trace.aw : axIdx===1 ? trace.cs : trace.cr;
+  }
+
+  const axisLines = axes.map(a => {
+    const p = axisEnd(a.posAngle, 1, 0), n = axisEnd(a.posAngle, -1, 0);
+    return `<line x1="${p.x}" y1="${p.y}" x2="${n.x}" y2="${n.y}" stroke="#32323A" stroke-width="1"/>`;
+  }).join('');
+
+  const isEN = currentLang === 'en';
+  const axisLabels = axes.flatMap((a,i) => {
+    const posLabel = isEN ? a.posEN : a.posLT;
+    const negLabel = isEN ? a.negEN : a.negLT;
+    const pp = axisEnd(a.posAngle,  1, 24);
+    const np = axisEnd(a.posAngle, -1, 24);
+    return [
+      `<text x="${pp.x}" y="${pp.y}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="9">${posLabel}</text>`,
+      `<text x="${np.x}" y="${np.y}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="9">${negLabel}</text>`
+    ];
+  }).join('');
+
+  const base = `
+    <circle cx="${cx}" cy="${cy}" r="${maxR}" fill="none" stroke="#1E1E24" stroke-width="1"/>
+    <circle cx="${cx}" cy="${cy}" r="${maxR/2}" fill="none" stroke="#1E1E24" stroke-width="1"/>
+    ${axisLines}
+    <circle cx="${cx}" cy="${cy}" r="2.5" fill="#6E6A64"/>`;
+
+  function makeShape(trace, color, sw, fo, dr){
+    const pts = axes.map((a,i) => toXY(a.posAngle, traceVal(trace, i)));
+    const poly = pts.map(p => `${p.x},${p.y}`).join(' ');
+    const dots = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="${dr}" fill="${color}"/>`).join('');
+    return `<polygon points="${poly}" fill="${color}" fill-opacity="${fo}" stroke="${color}" stroke-width="${sw}" stroke-linejoin="round"/>${dots}`;
+  }
+
+  let shapes = mode === 'comparison'
+    ? makeShape(trace1, '#6E6A64', 1.5, 0.08, 3) + makeShape(trace2, '#7C9E8F', 2, 0.13, 4)
+    : makeShape(trace1, '#7C9E8F', 2, 0.13, 4);
+
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${base}${shapes}${axisLabels}</svg>`;
+}
+
+
 // fix(radar-gate-root-cause): showRadar() PATI nebežymi radar_shown. Ši
 // atsakomybė perkelta TIK į tuos iškvietimo taškus, kurie yra privalomas
 // beta interviu srautas (renderBetaProgressOnDone "View trace" mygtukas ir
@@ -2906,24 +2983,40 @@ function showP9BlockRadar(blockIndex){
   document.getElementById('txt-radar-header').textContent =
     currentLang === 'en' ? 'Your current choice trace' : 'Tavo dabartinis pasirinkimų pėdsakas';
 
-  // SVG
+  // SVG — P9 bipolarinis žemėlapis vietoj 6-spindulinio radaro
   const chartWrap = document.createElement('div');
   chartWrap.className = 'radar-chart-wrap';
-  chartWrap.innerHTML = renderRadarSVG(trace);
-  body.appendChild(chartWrap);
 
-  // Scale note — LT ir EN
-  const scaleNote = document.createElement('div');
-  scaleNote.className = 'radar-scale-note';
-  scaleNote.textContent = currentLang === 'en'
-    ? 'The farther from the center, the more clearly that direction appeared in this block of choices. Values near the center mean that no clear preference emerged.'
-    : 'Kuo toliau nuo centro, tuo ryškiau ši kryptis atsispindėjo šio bloko pasirinkimuose. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
-  body.appendChild(scaleNote);
-
-  // Bloko 2+ palyginimas
   if(blockIndex >= 2 && isP9BlockComplete(blockIndex - 1)){
     const prevTrace = computeP9BlockTrace(blockIndex - 1);
-    if(prevTrace) renderP9BlockComparison(body, prevTrace, trace, blockIndex);
+    if(prevTrace){
+      // Overlay: Block 1 (pilka) + Block 2 (žalia) vienoje vizualizacijoje
+      chartWrap.innerHTML = renderP9BipolarMapSVG(prevTrace, {mode:'comparison', block2:trace});
+      body.appendChild(chartWrap);
+      // Legenda po SVG
+      const legend = document.createElement('div');
+      legend.style.cssText = 'display:flex;gap:16px;justify-content:center;margin-top:6px;margin-bottom:4px;font-size:.75rem;color:var(--text-secondary,#aaa);';
+      legend.innerHTML = currentLang === 'en'
+        ? '<span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#6E6A64"/></svg> Block 1</span><span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#7C9E8F"/></svg> Block 2</span>'
+        : '<span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#6E6A64"/></svg> 1 blokas</span><span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#7C9E8F"/></svg> 2 blokas</span>';
+      body.appendChild(legend);
+      // Tekstinis palyginimas
+      renderP9BlockComparison(body, prevTrace, trace, blockIndex);
+    } else {
+      chartWrap.innerHTML = renderP9BipolarMapSVG(trace, {mode:'single'});
+      body.appendChild(chartWrap);
+    }
+  } else {
+    // Single block vizualas
+    chartWrap.innerHTML = renderP9BipolarMapSVG(trace, {mode:'single'});
+    body.appendChild(chartWrap);
+    // Scale note tik single režime
+    const scaleNote = document.createElement('div');
+    scaleNote.className = 'radar-scale-note';
+    scaleNote.textContent = currentLang === 'en'
+      ? 'The farther from the center, the more clearly that direction appeared in this block of choices. Values near the center mean that no clear preference emerged.'
+      : 'Kuo toliau nuo centro, tuo ryškiau ši kryptis atsispindėjo šio bloko pasirinkimuose. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
+    body.appendChild(scaleNote);
   }
 
   // Result layer (boundary + reflection + actions) tik po pirmojo bloko
