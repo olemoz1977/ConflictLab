@@ -2978,32 +2978,104 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const title = document.createElement('div');
   title.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:14px;text-align:center;';
   title.textContent = currentLang === 'en'
-    ? 'Difference between the two blocks'
-    : 'Skirtumas tarp dviejų blokų';
+    ? 'What differed between the two blocks?'
+    : 'Kas skyrėsi tarp dviejų blokų?';
   compWrap.appendChild(title);
 
-  // 3 eilutės — žmogaus kalba, be delta, be AW/CS/CR kodų
+  // ── AŠIŲ PALYGINIMO LOGIKA ──────────────────────────────────────────────────
+  // Naudojame tik round2 (vartotojui rodomą tikslumą). Jokio naujo threshold.
+  const r2 = v => Math.round(v * 100) / 100;
   const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
-  const axisRows = currentLang === 'en'
-    ? [
-        ['Approach ↔ Step back',  prevTrace.aw, currTrace.aw],
-        ['Clarity ↔ Ambiguity',   prevTrace.cs, currTrace.cs],
-        ['Structure ↔ Flexibility', prevTrace.cr, currTrace.cr]
-      ]
-    : [
-        ['Artėti ↔ Atsitraukti',       prevTrace.aw, currTrace.aw],
-        ['Aiškumas ↔ Neapibrėžtumas',  prevTrace.cs, currTrace.cs],
-        ['Struktūra ↔ Laisvumas',      prevTrace.cr, currTrace.cr]
-      ];
+
+  // Generuoja neutralų LT arba EN sakinį pagal prev/curr reikšmes ir ašies pavadinimus
+  function axisText(prev, curr, posLT, negLT, posEN, negEN){
+    const p = r2(prev), c = r2(curr);
+    const pSign = p > 0 ? 1 : p < 0 ? -1 : 0;
+    const cSign = c > 0 ? 1 : c < 0 ? -1 : 0;
+    const lt = (pos, neg) => {
+      // Case 1A: abu ties centru
+      if(pSign === 0 && cSign === 0)
+        return 'Abiejuose blokuose pasirinkimų pasiskirstymas buvo ties centru.';
+      // Case 1B: pirmas ne centre, antras ties centru
+      if(pSign !== 0 && cSign === 0)
+        return `Pirmame bloke pasirinkimai buvo arčiau ${pSign > 0 ? pos : neg} pusės, o antrame jų pasiskirstymas buvo ties centru.`;
+      // Case 2: pirmas ties centru, antras ne
+      if(pSign === 0 && cSign !== 0)
+        return `Pirmame bloke pasirinkimų pasiskirstymas buvo ties centru, antrame – arčiau ${cSign > 0 ? pos : neg} pusės.`;
+      // Case 3: skirtingi ženklai
+      if(pSign !== cSign)
+        return `Pirmame bloke pasirinkimai buvo arčiau ${pSign > 0 ? pos : neg} pusės, antrame – arčiau ${cSign > 0 ? pos : neg} pusės.`;
+      // Ta pati pusė
+      const pAbs = Math.abs(p), cAbs = Math.abs(c);
+      const side = pSign > 0 ? pos : neg;
+      // Case 6: lygūs
+      if(pAbs === cAbs)
+        return `Šioje kryptyje pasirinkimų pasiskirstymas abiejuose blokuose buvo panašus.`;
+      // Case 4: arčiau centro
+      if(cAbs < pAbs)
+        return `Abiejuose blokuose pasirinkimai buvo ${side} pusėje, tačiau antrame bloke jie buvo arčiau centro.`;
+      // Case 5: toliau nuo centro
+      return `Abiejuose blokuose pasirinkimai buvo ${side} pusėje, tačiau antrame bloke ši kryptis buvo ryškesnė.`;
+    };
+    const en = (pos, neg) => {
+      if(pSign === 0 && cSign === 0)
+        return 'Choices were centered in both blocks.';
+      if(pSign !== 0 && cSign === 0)
+        return `Choices in the first block were closer to ${pSign > 0 ? pos : neg}, while in the second they were centered.`;
+      if(pSign === 0 && cSign !== 0)
+        return `Choices were centered in the first block, while in the second they were closer to ${cSign > 0 ? pos : neg}.`;
+      if(pSign !== cSign)
+        return `Choices in the first block were closer to ${pSign > 0 ? pos : neg}, while in the second they were closer to ${cSign > 0 ? pos : neg}.`;
+      const pAbs = Math.abs(p), cAbs = Math.abs(c);
+      const side = pSign > 0 ? pos : neg;
+      if(pAbs === cAbs)
+        return 'Choices were distributed similarly along this direction in both blocks.';
+      if(cAbs < pAbs)
+        return `Choices stayed on the ${side} side in both blocks, but in the second block they were closer to the center.`;
+      return `Choices stayed on the ${side} side in both blocks, but that direction was more pronounced in the second block.`;
+    };
+    return currentLang === 'en'
+      ? en(posEN, negEN)
+      : lt(posLT, negLT);
+  }
+
+  const axes = [
+    {
+      labelLT: 'Artėti ↔ Atsitraukti',
+      labelEN: 'Approach ↔ Step back',
+      prev: prevTrace.aw, curr: currTrace.aw,
+      posLT:'Artėti', negLT:'Atsitraukti', posEN:'Approach', negEN:'Step back'
+    },
+    {
+      labelLT: 'Aiškumas ↔ Neapibrėžtumas',
+      labelEN: 'Clarity ↔ Ambiguity',
+      prev: prevTrace.cs, curr: currTrace.cs,
+      posLT:'Aiškumo', negLT:'Neapibrėžtumo', posEN:'Clarity', negEN:'Ambiguity'
+    },
+    {
+      labelLT: 'Struktūra ↔ Laisvumas',
+      labelEN: 'Structure ↔ Flexibility',
+      prev: prevTrace.cr, curr: currTrace.cr,
+      posLT:'Struktūros', negLT:'Laisvumo', posEN:'Structure', negEN:'Flexibility'
+    }
+  ];
 
   const table = document.createElement('div');
-  table.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-  table.innerHTML = axisRows.map(([label, prev, curr]) => `
-    <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:.85rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-      <span style="color:var(--text-secondary,#aaa);flex:1;">${label}</span>
-      <span style="font-weight:600;min-width:80px;text-align:right;">${fmt(prev)} → ${fmt(curr)}</span>
-    </div>
-  `).join('');
+  table.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+  axes.forEach(ax => {
+    const label = currentLang === 'en' ? ax.labelEN : ax.labelLT;
+    const sentence = axisText(ax.prev, ax.curr, ax.posLT, ax.negLT, ax.posEN, ax.negEN);
+    const numbers = `${fmt(ax.prev)} → ${fmt(ax.curr)}`;
+
+    const row = document.createElement('div');
+    row.style.cssText = 'padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);';
+    row.innerHTML = `
+      <div style="font-size:.75rem;font-weight:600;color:var(--text-secondary,#aaa);margin-bottom:4px;letter-spacing:.03em;">${label}</div>
+      <div style="font-size:.9rem;color:var(--text-primary,#eee);line-height:1.5;">${sentence}</div>
+      <div style="font-size:.72rem;color:var(--text-secondary,#777);margin-top:4px;">${numbers}</div>
+    `;
+    table.appendChild(row);
+  });
   compWrap.appendChild(table);
 
   // Refleksijos klausimai po lentelės
