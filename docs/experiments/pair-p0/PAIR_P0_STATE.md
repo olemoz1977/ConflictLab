@@ -228,3 +228,101 @@ P9 ir M0 sesijos izoliuojamos pagal `set_id`. Tai nėra atviras klausimas — ta
 **Dar nepatikrinta rankiniu testu:** ar skaičiai dinamiškai keičiasi, kai vienoje poroje pasirenkama „Sunku pasakyti" (turėtų sumažėti prototipo skaičius).
 
 **Statusas:** CODE FIXED — rankinis testas laukia.
+
+
+---
+
+## prototype-nine-v1 Radar UX etapas — STABLE
+
+**Data:** 2026-08-08
+**Commit (routing fix / HEAD):** `ec6b7c0c6da8f3b4380bb0d4ec9b074b8e686e56`
+**Stable tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
+**QA statusas:** P9 sesijų 1→6 manual QA = **PASS**
+
+### Radaro blokų modelis
+
+- 1 radaras = 3 sesijos × 3 poros = **9 pasirinkimai**
+- Radaras rodomas **tik** po pilno 3 sesijų bloko (po 3., 6., 9. sesijos ir t.t.)
+- Po 1/3 ir 2/3 bloko — tik progress ekranas, **jokio radaro**
+- Block 1 = sesijos 1–3
+- Block 2 = sesijos 4–6
+- Comparison = pilnas ankstesnis blokas vs pilnas dabartinis blokas
+- **Jokio cumulative 1–6 radaro**
+
+Svarbios taisyklės:
+- `hasUnlockedRadar()` ≠ "rodyk radarą dabar" — tai tik faktas, kad bent vienas pilnas radaras egzistuoja istorijoje
+- Radaro renderinimą lemia tik pilnai užbaigtas dabartinis blokas
+
+### Vizualizacijos architektūra
+
+P9 naudoja **3-ašių bipolarinį žemėlapį**, ne seną 6-spindulį radarą.
+
+3 bipolarinės ašys:
+- **AW:** Artėti ↔ Atsitraukti (angle -90°)
+- **CS:** Aiškumas ↔ Neapibrėžtumas (angle 210°)
+- **CR:** Struktūra ↔ Laisvumas (angle -30°)
+
+Kiekviena reikšmė → 1 signed taškas ant diametro. Trys taškai → trikampė forma.
+
+- Block 1: vienas žalias polygon
+- Block 2+: overlay — pilkas (ankstesnis blokas) + žalias (dabartinis blokas)
+- M0 legacy `renderRadarSVG()` **nepakeistas**
+
+### Display Calibration v1
+
+| Sluoksnis | Naudojimas |
+|---|---|
+| **RAW** | calculation, export, delta, comparison tekstai |
+| **DISPLAY** | tik SVG taškų koordinatės |
+
+```
+P9_DISPLAY_CALIBRATION_VERSION = 'p9-display-v1'
+P9_DISPLAY_BOUND = 0.65
+display = raw / 0.65  (linear, uniform)
+```
+
+- **Viena bendra skalė** visoms 3 ašims — apsaugo cross-axis geometrijos proporcijas
+- Jokio `pow()`, `MIN_VISIBLE_PX`, per-axis scaling, auto-zoom
+- Clamp tik SVG koordinatėms (`Math.max(-1, Math.min(1, d))`)
+- 0.65 galioja tik `prototype-nine-v1 / p9-display-v1` — **ne universali ConflictLab konstanta**
+
+Pagrindas: `tests/pair_p0_attainable_envelope.py` auditas (commit `c39d690`)
+
+### Attainable Envelope (9/9 valid responses)
+
+| Ašis | Min | Max |
+|---|---|---|
+| AW | -0.372 | +0.372 |
+| CS | -0.294 | +0.383 |
+| CR | -0.250 | +0.333 |
+
+N=1 cue ekstremumai: AW [-0.600, +0.650], CS [-0.600, +0.650], CR [-0.600, +0.550]
+
+Patvirtinta: mažesnis valid response count leidžia ekstremalesnį block score (averaging efektas).
+
+**Dar nepatvirtinta / neįvesta:**
+- Jokios 7/9, 4–6/9, 1–3/9 metodologinės valid-response taisyklės
+- Valid-response display thresholds nėra
+
+### Manual QA — PASS (2026-08-08)
+
+| Sesija | Tikėtas ekranas | Rezultatas |
+|---|---|---|
+| 1 | Progress „1 iš 3" | ✅ |
+| 2 | Progress „2 iš 3" | ✅ |
+| 3 | Radar 1 | ✅ |
+| 4 | Progress „1 iš 3 iki kito palyginimo" | ✅ |
+| 5 | Progress „2 iš 3 iki kito palyginimo" | ✅ |
+| 6 | Radar 2 + Block 1 vs Block 2 overlay | ✅ |
+
+Comparison QA: gray polygon ✅, green polygon ✅, legenda ✅, warning ✅, badge ✅, AW/CS/CR sakiniai ✅, refleksijos klausimai ✅, boundary ✅, jokių techninių kodų UI ✅
+
+### Svarbūs commit'ai šiame etape
+
+| Commit | Aprašymas |
+|---|---|
+| `48bfcd25aa` | Bipolar map įdiegtas (renderP9BipolarMapSVG) |
+| `d78fe6bbff` | Display calibration v1 (BOUND=0.65) |
+| `c39d6908b0` | Attainable envelope audit script |
+| `ec6b7c0c6d` | Routing fix — radaras tik po pilno bloko |
+| `5a9fa707c4` | History link routing fix |
