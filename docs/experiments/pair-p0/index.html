@@ -3540,8 +3540,11 @@ function showHistory(){
   radarLink.style.marginBottom = '16px';
   radarLink.textContent = txt('view_trace') || 'View your current trace';
   radarLink.onclick = () => {
-    if(betaMode){
-      openRadarAsBeta(); // žymi radar_shown TIK jei realiai eligible ir parodoma
+    if(IS_P9){
+      const blockIndex = getP9CurrentBlockIndex();
+      showP9BlockRadar(blockIndex);
+    } else if(betaMode){
+      openRadarAsBeta();
     } else {
       showRadar();
     }
