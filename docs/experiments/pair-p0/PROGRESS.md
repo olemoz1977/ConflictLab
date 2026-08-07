@@ -62,3 +62,30 @@ docs/experiments/pair-p0/
 2. Kiekvieną naują CSS klasę HTML'e — iš karto patikrinti, ar ji apibrėžta CSS (automatinis auditas prieš push)
 3. Visi `fetch()` — su cache-bust nuo pat pradžių
 4. Testuoti debug JSON eksportu po kiekvieno žingsnio, ne tik vizualiai
+
+
+---
+
+## 2026-08-07 — prototype-nine-v1 FLOW STABLE
+
+**Commit:** `b3dcbf69201d55aa209b9d3a5470a6e067f9e2b2`
+**Tag:** `pair-p0-prototype-nine-v1-flow-stable`
+
+### Patvirtinta realiu eksportu
+
+- 3×3 srautas: 3 sesijos × 3 poros = 9 unikalūs pasirinkimai
+- SESSION provenance: `set_id`, `qa_mode`, `radar_mode`, `build_id`, `radar_unlocked`
+- choices[] ir reflections[] provenance veikia
+- `reviewed` (3) ir `prototype_only` (6) vektoriai atskiriami
+- `radar_unlocked`: sesija 1→false, sesija 2→false, sesija 3→true ✅
+
+### Fix šiame etape
+
+`fix(pair-p0): persist radar unlocked state after third session`
+— P9 blokas perkeltas prieš `completed_sessions` išsaugojimą `completeSession()` viduje.
+
+### Laukia
+
+- Manual QA: OQ-002 (prototipo vektorių skaičius radare su "Sunku pasakyti")
+- Antras radaro blokas (sesijos 4–6)
+- N0-010–018 porų kūrimas
