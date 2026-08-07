@@ -2615,12 +2615,12 @@ function renderRadarSVG(vector){
   // Jokios (value+1)/2 transformacijos — tai būtų klaidinga, nes paverstų
   // kryptį į "kiekį" ir sunaikintų dvipolę prasmę.
   const directions = [
-    { key:'aw+', angle:-90,  value: Math.max(vector.aw, 0) },
-    { key:'cr+', angle:-30,  value: Math.max(vector.cr, 0) },
-    { key:'cs-', angle:30,   value: Math.max(-vector.cs, 0) },
-    { key:'aw-', angle:90,   value: Math.max(-vector.aw, 0) },
-    { key:'cr-', angle:150,  value: Math.max(-vector.cr, 0) },
-    { key:'cs+', angle:210,  value: Math.max(vector.cs, 0) },
+    { key:'Artėti',          angle:-90,  value: Math.max(vector.aw, 0) },
+    { key:'Struktūra',       angle:-30,  value: Math.max(vector.cr, 0) },
+    { key:'Neapibrėžtumas',  angle:30,   value: Math.max(-vector.cs, 0) },
+    { key:'Atsitraukti',     angle:90,   value: Math.max(-vector.aw, 0) },
+    { key:'Laisvumas',       angle:150,  value: Math.max(-vector.cr, 0) },
+    { key:'Aiškumas',        angle:210,  value: Math.max(vector.cs, 0) },
   ];
 
   // Vizualinio matomumo dėlei naudojama švelni netiesinė skalė (galia 0.7) su
@@ -2657,8 +2657,8 @@ function renderRadarSVG(vector){
 
   const labelRadius = maxRadius + 22;
   const axisLabels = directions.map(d => {
-    const pos = toXY(d.angle, 1 + (22/maxRadius));
-    return `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="12">${d.key}</text>`;
+    const pos = toXY(d.angle, 1 + (26/maxRadius));
+    return `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6E6A64" font-size="10">${d.key}</text>`;
   }).join('');
 
   const nodeCircles = points.map(p =>
