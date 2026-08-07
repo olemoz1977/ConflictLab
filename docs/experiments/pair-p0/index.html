@@ -2772,24 +2772,23 @@ function renderP9ProgressScreen(sessionsDone){
 
 // ── P9 RADAR RESULT ENRICHMENT ───────────────────────────────────────────────
 function renderP9RadarResultLayer(body){
-  // Prepend header context to radar body
   const lt = {
     header: 'Tavo dabartinis pasirinkimų pėdsakas',
-    context: 'Šis vaizdas sudarytas iš 9 pasirinkimų per 3 skirtingas sesijas.',
-    boundary: 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo pasirinkimai šiose situacijose.',
+    context: 'Šis vaizdas rodo, kaip tavo pasirinkimai pasiskirstė per 3 sesijas.',
+    boundary: 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo reakcijos ir pasirinkimai šiose vaizdų porose.',
     reflTitle: 'Ką verta pastebėti',
-    reflText: 'Per tris sesijas susidarė pirmas palyginamas tavo pasirinkimų vaizdas. Kryptys pasiskirstė nevienodai — kai kurios reakcijos kartojosi, kitos keitėsi priklausomai nuo situacijos.',
-    question: 'Kuri šio pėdsako kryptis tau atrodo labiausiai pažįstama — ir kur ją pastebi savo kasdieniuose sprendimuose?',
+    question1: 'Kurį vaizdą pasirinkai beveik negalvodamas? Kas tave patraukė?',
+    question2: 'Ką tuo metu pastebėjai — emociją, mintį ar vidinį impulsą rinktis?',
     btnContinue: 'Tęsti dar vieną sesiją',
     btnFinish: 'Baigti dabar'
   };
   const en = {
     header: 'Your current choice trace',
-    context: 'This picture is built from 9 choices across 3 different sessions.',
-    boundary: 'This is not your type and not a final description. It is a trace left by your choices in these situations.',
+    context: 'This picture shows how your choices were distributed across 3 sessions.',
+    boundary: 'This is not your type and not a final description. It is a trace left by your reactions and choices in these image pairs.',
     reflTitle: 'Worth noticing',
-    reflText: 'Over three sessions a first comparable picture of your choices has formed. Directions were not evenly distributed — some reactions repeated, others shifted depending on the situation.',
-    question: 'Which direction in this trace feels most familiar — and where do you notice it in your everyday decisions?',
+    question1: 'Which image did you choose almost without thinking? What drew you to it?',
+    question2: 'What did you notice at that moment — an emotion, a thought, or an inner impulse to choose?',
     btnContinue: 'Continue with another session',
     btnFinish: 'Finish for now'
   };
@@ -2806,7 +2805,7 @@ function renderP9RadarResultLayer(body){
   ctx.textContent = t.context;
   body.prepend(ctx);
 
-  // Boundary statement — append after radar SVG
+  // Boundary statement
   const boundary = document.createElement('div');
   boundary.className = 'result-scope-note';
   boundary.style.cssText = 'margin-top:16px;font-style:normal;font-weight:500;';
@@ -2818,17 +2817,16 @@ function renderP9RadarResultLayer(body){
   reflWrap.style.cssText = 'margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);';
 
   const reflTitle = document.createElement('div');
-  reflTitle.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:10px;';
+  reflTitle.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:14px;';
   reflTitle.textContent = t.reflTitle;
 
-  const reflText = document.createElement('div');
-  reflText.className = 'intro-sub';
-  reflText.style.cssText = 'text-align:left;margin-bottom:16px;';
-  reflText.textContent = t.reflText;
+  const q1 = document.createElement('div');
+  q1.style.cssText = 'font-size:.95rem;font-style:italic;color:var(--text-primary,#eee);line-height:1.6;padding:14px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:10px;';
+  q1.textContent = t.question1;
 
-  const question = document.createElement('div');
-  question.style.cssText = 'font-size:.95rem;font-style:italic;color:var(--text-primary,#eee);line-height:1.6;padding:14px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:24px;';
-  question.textContent = t.question;
+  const q2 = document.createElement('div');
+  q2.style.cssText = 'font-size:.9rem;color:var(--text-secondary,#aaa);line-height:1.6;padding:12px 14px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:24px;';
+  q2.textContent = t.question2;
 
   // Action buttons
   const btnWrap = document.createElement('div');
@@ -2848,8 +2846,8 @@ function renderP9RadarResultLayer(body){
   btnWrap.appendChild(btnFinish);
 
   reflWrap.appendChild(reflTitle);
-  reflWrap.appendChild(reflText);
-  reflWrap.appendChild(question);
+  reflWrap.appendChild(q1);
+  reflWrap.appendChild(q2);
   reflWrap.appendChild(btnWrap);
   body.appendChild(reflWrap);
 
@@ -2907,31 +2905,38 @@ function showP9BlockRadar(blockIndex){
   chartWrap.innerHTML = renderRadarSVG(trace);
   body.appendChild(chartWrap);
 
-  // Scale note
+  // Scale note — LT ir EN
   const scaleNote = document.createElement('div');
   scaleNote.className = 'radar-scale-note';
-  scaleNote.textContent = txt('radar_scale_note') ||
-    'Small values are visually amplified so the directions remain visible. Exact magnitudes are shown in the numbers below.';
+  scaleNote.textContent = currentLang === 'en'
+    ? 'The further from center, the more often choices leaned in that direction. Near center means no clear tendency appeared.'
+    : 'Kuo toliau nuo centro, tuo dažniau pasirinkimai krypo į tą pusę. Reikšmės arti centro reiškia, kad aiški persvara nepasirodė.';
   body.appendChild(scaleNote);
 
-  // Scope line
+  // Scope line — tik bloko numeris, be reviewed/proto QA skaičių
   const scopeLine = document.createElement('div');
   scopeLine.className = 'radar-scope-line';
-  const total = trace.reviewed_count + trace.proto_count;
   scopeLine.textContent = currentLang === 'en'
-    ? `Block ${blockIndex} · ${total} included choices (${trace.reviewed_count} reviewed · ${trace.proto_count} prototype)`
-    : `Blokas ${blockIndex} · ${total} įtraukti pasirinkimai (${trace.reviewed_count} peržiūrėti · ${trace.proto_count} prototipo)`;
+    ? `Block ${blockIndex} · based on ${trace.session_count} sessions`
+    : `Blokas ${blockIndex} · pagrįsta ${trace.session_count} sesijomis`;
   body.appendChild(scopeLine);
 
-  // Axis values
+  // Axis values su žmogaus kalbos pavadinimais
+  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
   const axisValues = document.createElement('div');
   axisValues.className = 'radar-axis-values';
-  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2);
-  axisValues.innerHTML = `
-    <div class="radar-axis-item"><div class="radar-axis-label">AW</div><div class="radar-axis-value">${fmt(trace.aw)}</div></div>
-    <div class="radar-axis-item"><div class="radar-axis-label">CS</div><div class="radar-axis-value">${fmt(trace.cs)}</div></div>
-    <div class="radar-axis-item"><div class="radar-axis-label">CR</div><div class="radar-axis-value">${fmt(trace.cr)}</div></div>
-  `;
+  axisValues.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0;text-align:center;';
+  const axisLabels = currentLang === 'en'
+    ? [['AW','Approach ↔ Withdrawal'],['CS','Clarity ↔ Openness'],['CR','Structure ↔ Release']]
+    : [['AW','Artėti ↔ Atsitraukti'],['CS','Aiškumas ↔ Neapibrėžtumas'],['CR','Struktūra ↔ Laisvumas']];
+  const axisVals = [trace.aw, trace.cs, trace.cr];
+  axisValues.innerHTML = axisLabels.map((pair, i) => `
+    <div class="radar-axis-item">
+      <div class="radar-axis-label">${pair[0]}</div>
+      <div class="radar-axis-value">${fmt(axisVals[i])}</div>
+      <div style="font-size:.7rem;color:var(--text-secondary,#aaa);margin-top:4px;line-height:1.3;">${pair[1]}</div>
+    </div>
+  `).join('');
   body.appendChild(axisValues);
 
   // Bloko 2+ palyginimas
@@ -2979,13 +2984,29 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   const compWrap = document.createElement('div');
   compWrap.style.cssText = 'margin-top:24px;padding:16px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);';
 
-  // Prototype repeated stimuli žyma
+  // Prototype warning — PRIEŠ palyginimą
   const protoNote = document.createElement('div');
-  protoNote.style.cssText = 'font-size:.7rem;font-weight:600;letter-spacing:.06em;color:#c8900a;text-transform:uppercase;margin-bottom:12px;text-align:center;';
+  protoNote.style.cssText = 'font-size:.8rem;color:#c8900a;margin-bottom:14px;line-height:1.5;';
   protoNote.textContent = currentLang === 'en'
-    ? 'PROTOTYPE — REPEATED STIMULI — NOT A CLEAN COMPARISON'
-    : 'PROTOTIPAS — KARTOJAMI STIMULAI — NE ŠVARUS PALYGINIMAS';
+    ? 'In this prototype the same images repeated in the second block, so differences cannot be treated as a clean measurement of change.'
+    : 'Šiame prototipe antrame bloke kartojosi tie patys vaizdai, todėl skirtumų negalima laikyti švariu pokyčio matavimu.';
   compWrap.appendChild(protoNote);
+
+  // Prototype badge (techninis, kompaktiškas)
+  const protoBadge = document.createElement('div');
+  protoBadge.style.cssText = 'font-size:.65rem;font-weight:600;letter-spacing:.06em;color:#c8900a;text-transform:uppercase;margin-bottom:14px;';
+  protoBadge.textContent = currentLang === 'en'
+    ? 'PROTOTYPE — REPEATED STIMULI'
+    : 'PROTOTIPAS — KARTOJAMI STIMULAI';
+  compWrap.appendChild(protoBadge);
+
+  // Intro sakinys prieš lentelę
+  const intro = document.createElement('div');
+  intro.style.cssText = 'font-size:.85rem;color:var(--text-secondary,#aaa);margin-bottom:12px;';
+  intro.textContent = currentLang === 'en'
+    ? `Compared to Block ${blockIndex - 1}:`
+    : `Palyginti su Bloku ${blockIndex - 1}:`;
+  compWrap.appendChild(intro);
 
   const title = document.createElement('div');
   title.style.cssText = 'font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent,#7ecfa0);margin-bottom:12px;text-align:center;';
@@ -3010,7 +3031,27 @@ function renderP9BlockComparison(body, prevTrace, currTrace, blockIndex){
   `;
   compWrap.appendChild(table);
 
-  // comparison_status žyma eksporto aiškumui (meta, nematoma vartotojui)
+  // Refleksijos klausimai po lentelės
+  const reflWrap = document.createElement('div');
+  reflWrap.style.cssText = 'margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);';
+
+  const q1 = document.createElement('div');
+  q1.style.cssText = 'font-size:.9rem;font-style:italic;color:var(--text-primary,#eee);line-height:1.6;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:8px;margin-bottom:8px;';
+  q1.textContent = currentLang === 'en'
+    ? 'Did you notice yourself reacting differently to the images this time?'
+    : 'Ar pats pastebėjai, kad šį kartą į vaizdus reagavai kitaip?';
+
+  const q2 = document.createElement('div');
+  q2.style.cssText = 'font-size:.85rem;color:var(--text-secondary,#aaa);line-height:1.6;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;';
+  q2.textContent = currentLang === 'en'
+    ? 'What was different — the choice itself, the emotion, or how quickly you decided?'
+    : 'Kas buvo kitaip — pats pasirinkimas, emocija ar tai, kaip greitai apsisprendei?';
+
+  reflWrap.appendChild(q1);
+  reflWrap.appendChild(q2);
+  compWrap.appendChild(reflWrap);
+
+  // comparison_status žyma (meta, nematoma vartotojui)
   compWrap.dataset.comparisonStatus = 'prototype_repeated_stimuli';
 
   body.appendChild(compWrap);
@@ -3025,8 +3066,8 @@ function renderP9BlockResultActions(body){
   boundary.className = 'result-scope-note';
   boundary.style.cssText = 'margin-top:16px;font-style:normal;font-weight:500;';
   boundary.textContent = currentLang === 'en'
-    ? 'This is not your type and not a final description. It is a trace left by your choices in these situations.'
-    : 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo pasirinkimai šiose situacijose.';
+    ? 'This is not your type and not a final description. It is a trace left by your reactions and choices in these image pairs.'
+    : 'Tai ne tavo tipas ir ne galutinis apibūdinimas. Tai pėdsakas, kurį paliko tavo reakcijos ir pasirinkimai šiose vaizdų porose.';
   body.appendChild(boundary);
 
   const btnContinue = document.createElement('button');
