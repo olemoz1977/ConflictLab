@@ -89,3 +89,36 @@ docs/experiments/pair-p0/
 - Manual QA: OQ-002 (prototipo vektorių skaičius radare su "Sunku pasakyti")
 - Antras radaro blokas (sesijos 4–6)
 - N0-010–018 porų kūrimas
+
+
+---
+
+## 2026-08-08 — prototype-nine-v1 Radar UX STABLE
+
+**Tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
+**Head commit:** `ec6b7c0c6da8f3b4380bb0d4ec9b074b8e686e56`
+
+### Šiame etape atlikta
+
+- **Bipolar map** (commit `48bfcd25aa`): 6-spindulinis radaras P9 kelyje pakeistas į 3-ašių bipolarinį žemėlapį. Kiekviena iš 3 reikšmių → 1 signed taškas ant diametro → trikampė forma. Senas `renderRadarSVG()` (M0) nepakeistas.
+- **Display calibration v1** (commit `d78fe6bbff`): įdiegtas `P9_DISPLAY_BOUND = 0.65`, `p9RawToDisplay()`. RAW reikšmės nepakeičiamos — transformacija tik SVG koordinatėms. Jokio pow(), MIN_VISIBLE_PX, per-axis scaling.
+- **Attainable envelope audit** (commit `c39d6908b0`): `tests/pair_p0_attainable_envelope.py` — 9/9 envelope: AW ±0.372, CS [-0.294, +0.383], CR [-0.250, +0.333]. Visi assertions PASS.
+- **Routing fix** (commit `ec6b7c0c6d`): radaras rodomas TIK po pilno 3-session bloko. Pašalinta `showP9RadarWithBlockProgress()` iš aktyvaus routing kelio. `hasUnlockedRadar()` nebebetriggerina radaro rodymo.
+- **History routing fix** (commit `5a9fa707c4`): istorijos „View your current trace" mygtukas P9 kelyje perduodamas į `showP9BlockRadar()`.
+- **UX copy** (keletas commit'ų): žmogaus kalba ašių pavadinimuose, automatiniai palyginimo sakiniai (7 atvejų logika), refleksijos klausimai.
+
+### QA rezultatai
+
+P9 sesijų 1→6 manual phone QA = **PASS**
+
+- Session 1–2: progress ekranai, jokio radaro ✅
+- Session 3: Radar 1 (bipolar map, Block 1) ✅
+- Session 4–5: progress „X iš 3 iki kito palyginimo", jokio radaro ✅
+- Session 6: Radar 2 + overlay (Block 1 pilkas + Block 2 žalias) + comparison ✅
+- Comparison: warning, badge, 3 automatiniai sakiniai, refleksija, boundary ✅
+
+### Laukia
+
+- N0-010–018 naujų porų kūrimas (18 unikalių porų tikslas)
+- N0-004–009 metodologiniai trūkumai
+- prototype-nine-v2 planavimas
