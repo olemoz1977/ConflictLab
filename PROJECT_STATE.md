@@ -5,6 +5,27 @@
 
 ---
 
+---
+
+## CURRENT STATE SYNC — 2026-08-10
+
+**HEAD commit:** `07fce0cbb0ff893fca0cf0e179acc35b37ac0096`
+**Canonical methodology spec:** `STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
+**Active stable tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
+
+**Methodology status:**
+- V1.3 introduces Stimulus–Signal Separation architecture
+- AW/CS/CR signals may only be assigned after Gate D (participant response)
+- Design-stage language: `target_signal_hypothesis: AW`, `hypothesized_direction: unconfirmed`
+- V1.1 remains in repo as historical reference; V1.3 is canonical
+
+**SLOT-01 status:**
+- Concept design in progress (not committed)
+- Best candidates: A01-CAND-01 (chair, SPMC-AW-01) ↔ B01-CAND-03 (low bench, SPMC-AW-01)
+- Gate 0A verdict: both CANDIDATE; Gate 0B (asset design) not yet started
+- Next step: Gate 0A blind concept review before asset generation
+
+
 ## Strategic Direction (decided 2026-08-08)
 
 > **ConflictLab v0.7 — Frozen Product Baseline.**
