@@ -18,12 +18,14 @@
 - AW/CS/CR signals may only be assigned after Gate D (participant response)
 - Design-stage language: `target_signal_hypothesis: AW`, `hypothesized_direction: unconfirmed`
 - V1.1 remains in repo as historical reference; V1.3 is canonical
+- `METHODOLOGY_DELTA_2026-08-10.md` records post-V1.3 decisions (pair-level control, result UX, intensity, cue role)
 
 **SLOT-01 status:**
-- Concept design in progress (not committed)
-- Best candidates: A01-CAND-01 (chair, SPMC-AW-01) ↔ B01-CAND-03 (low bench, SPMC-AW-01)
-- Gate 0A verdict: both CANDIDATE; Gate 0B (asset design) not yet started
-- Next step: Gate 0A blind concept review before asset generation
+- Concept exploration in progress (no committed candidates)
+- No accepted candidates as of 2026-08-10
+- Chair/bench concepts from earlier session were uncommitted exploratory text — not accepted
+- Current methodology per STIMULUS_OPERATIONALIZATION_SPEC_V1.3 + ADR-011 applies
+- Next step: Gate 0A blind concept review when ready
 
 
 ## Strategic Direction (decided 2026-08-08)
