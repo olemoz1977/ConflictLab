@@ -1,157 +1,86 @@
 # ConflictLab v0.8 — AW Redefinition Note v0.1
 
-**Status:** Active working note  
+**Status:** SUPERSEDED WORKING NOTE  
 **Date:** 2026-08-10  
-**Scope:** Pair P0 / v0.8 methodology  
-**Depends on:** ADR-011, `STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`, `METHODOLOGY_DELTA_2026-08-10.md`
+**Superseded by:** `AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`  
+**Scope:** Historical record of the intermediate AW response-orientation hypothesis
+
+> This document is intentionally retained as reasoning history. Do not use it as current methodology. The active decision suspends AW as a peer static-stimulus axis and treats domain-specific response trajectory as an unvalidated hypothesis.
 
 ---
 
-## Why this note exists
+## Why this note existed
 
-The current AW label (`Approach / Step Back`) risks being interpreted as one latent psychological mechanism. That is too strong.
+The AW label (`Approach / Step Back`) risked being interpreted as one latent psychological mechanism. That was too strong.
 
-Recent red-team work showed that reactions that look directionally similar may arise from very different processes, including:
+Red-team work showed that reactions that look directionally similar may arise from very different processes, including:
 
 - epistemic / exploratory interest
 - affective overload regulation
 - instrumental effort allocation
 - relational trust / social positioning
 
-These are not assumed to be one causal construct.
-
-This note therefore narrows what AW is allowed to mean in v0.8.
+These are not one causal construct.
 
 ---
 
-## Working definition
+## Intermediate working definition
+
+The intermediate hypothesis was:
 
 > **AW is a response-orientation layer, not a latent cause, personality trait, or single motivational system.**
 
-AW describes the direction of a participant's response in a specific situation when the response context supports movement toward greater engagement/contact/investment or toward reduced engagement/contact/investment.
+AW was intended to describe the direction of a participant's response in a specific situation when the response context supported movement toward greater engagement/contact/investment or toward reduced engagement/contact/investment.
 
-AW does **not** explain why that direction occurred.
+This hypothesis improved on stimulus-level AW polarity, but subsequent Gemini, Grok, and Claude red-team reviews converged on an additional problem: at the single-response level this orientation remains too generic and too easily confounded with CS, CR, product engagement, novelty, salience, task persistence, or unrelated motives.
 
 ---
 
-## Constitutional separation
+## What remains useful from this note
 
-Per ADR-011:
-
-```text
-SCENE PROPERTY
-!= PARTICIPANT RESPONSE
-!= DERIVED SIGNAL
-```
-
-Therefore:
+The following distinctions remain useful and are carried forward:
 
 - no image is inherently `AW+` or `AW-`
 - raw A/B choice has no inherent AW polarity
-- the stimulus may only carry `target_signal_hypothesis: AW`
-- any derived AW direction requires participant response context at Gate D
-- the same visual choice may yield AW-relevant, cross-loaded, unresolved, or `NONE` outcomes
+- AW must not be reduced to curiosity, liking, fear, trust, utility, physical distance, or personality
+- similar directional behavior can arise from different causes
+- cue/reaction context is necessary evidence, but is not itself an automatic vector generator
+- `NONE` and unresolved outcomes must remain legal
 
 ---
 
-## What AW is NOT
+## Exploratory reaction-context families retained as history
 
-AW must not be reduced to any single one of the following:
+The following were explored as context families only:
 
-- curiosity
-- liking
-- fear / threat response
-- social trust
-- effort / utility calculation
-- physical distance
-- willingness to act
-- openness to experience
+- epistemic
+- affective
+- instrumental
+- relational
+- other / unresolved
 
-Any of these may provide reaction context in a specific case, but none is synonymous with AW.
+They are not active axes or validated subscales.
 
 ---
 
-## Reaction-context families
+## Why this note is superseded
 
-The following families are exploratory context labels only. They are **not new axes**, not validated subscales, and not stable person categories.
+The next stage of analysis found that:
 
-### 1. Epistemic
+1. AW-specific static-image concepts repeatedly collapsed into CS/CR or generic visual-preference confounds.
+2. A single response can be informative evidence but cannot constitute a trajectory.
+3. Product/session continuation cannot safely be treated as domain-specific engagement.
+4. Any surviving orientation concept must remain anchored to a response domain and be evaluated only across repeated interpretable events.
 
-Examples of reaction context:
+Therefore the current active decision is defined in:
 
-- `noriu suprasti kaip tai veikia`
-- `noriu išsiaiškinti kodėl sugedo`
-- `noriu rasti dėsningumą`
-- `įdomu, kas čia vyksta`
+`AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
 
-Possible directional form: more vs less willingness to invest attention in understanding.
-
-### 2. Affective
-
-Examples:
-
-- `per daug emocijų, nenoriu veltis`
-- `noriu sumažinti kontaktą su tuo, kas mane perkrauna`
-
-Possible directional form: more vs less willingness to remain engaged under affective load.
-
-### 3. Instrumental
-
-Examples:
-
-- `neįdomu, bet padarysiu dėl rezultato`
-- `nebematau naudos investuoti daugiau laiko`
-
-Possible directional form: continue vs reduce investment for goal/value reasons.
-
-### 4. Relational
-
-Examples:
-
-- `jei nėra pasitikėjimo, neįsitrauksiu`
-- `noriu atsitraukti ten, kur manęs nereikia`
-
-Possible directional form: approach/maintain vs reduce relational engagement.
-
-### 5. Other / unresolved
-
-Used when the reaction does not fit cleanly or evidence is insufficient.
-
----
-
-## Important consequence for stimulus design
-
-A single AW-targeting stimulus family does not need to represent all possible AW contexts.
-
-Instead, candidate stimulus families may deliberately target one narrow context family while keeping the derived signal open until Gate D.
-
-For the next design step, ConflictLab will explore **epistemic AW** first because it is the clearest currently observed reaction-context family and is comparatively feasible for static visual stimuli.
-
-This is a working choice, not a claim that epistemic AW is the "true" or primary form of AW for all people.
-
----
-
-## Why Gemini's proposed full split is not adopted yet
-
-The red-team critique that AW mixes distinct psychological mechanisms is accepted.
-
-The stronger recommendation to replace AW with a new construct such as `Spatial & Epistemic Orientation` is **not** adopted at this stage because it risks collapsing AW into CS/CR territory through visual complexity, ambiguity, and boundary structure.
-
-Current decision:
+Current summary:
 
 ```text
-KEEP the AW top-level directional layer
-REDEFINE it as response orientation
-DO NOT treat it as one causal psychological construct
-EXPLORE narrow reaction-context families underneath it
+AW peer static-stimulus axis: SUSPENDED
+AW-specific asset generation: STOP
+CS and CR stimulus domains: ACTIVE
+Domain-specific response trajectory: ACTIVE HYPOTHESIS / NOT VALIDATED
 ```
-
----
-
-## Falsification mindset
-
-The next stimulus work should be able to fail.
-
-If epistemic-AW candidate scenes repeatedly produce reactions better explained by CS, CR, aesthetics, or generic curiosity without a defensible engagement-direction component, then the working AW definition must be reviewed again.
-
-No stimulus should be rescued by cue wording or post-hoc interpretation.
