@@ -6,90 +6,112 @@
 
 ## What ConflictLab is
 
-An Epistemic Reflection Framework. It helps people observe their own
-spontaneous reaction patterns — not diagnose them.
+An Epistemic Reflection Framework. It helps people observe recurring tendencies in their own reactions without converting those observations into personality labels.
 
-NOT: personality test, psychological diagnosis, scoring system.
-IS: stimulus-pair-based reaction capture with neutral signal orientation.
+NOT: personality test, psychological diagnosis, human scoring, behavioral prediction.
 
 ---
 
-## Current product split
+## Product split
 
 | | v0.7 | Pair P0 |
 |---|---|---|
-| Status | Frozen baseline | Active v0.8 candidate |
-| Live | Yes (limited — browser API issue) | Yes, fully |
-| AI dependency at runtime | Yes (Claude API) | None |
-| URL | `olemoz1977.github.io/ConflictLab/` | `…/experiments/pair-p0/?set=prototype-nine-v1` |
+| Status | Frozen baseline | Active v0.8 candidate methodology + frozen P9 technical reference |
+| Runtime AI | Yes in legacy flow | None in Pair P0 |
+| Stable reference | — | `pair-p0-prototype-nine-v1-radar-ux-stable` |
+
+`prototype-nine-v1` remains a technical/UX stable reference. Its 3-axis AW/CS/CR radar and cue-vector logic are historical prototype behavior, not current v0.8 methodological truth.
 
 ---
 
-## Active stable reference
+## Constitutional rule
 
-`pair-p0-prototype-nine-v1-radar-ux-stable` → commit `463b09755fe6`
+ADR-011:
 
-Verified: 3-session block model, bipolar map, block comparison,
-sessions 1–6 phone QA PASS, provenance export, LT+EN.
-
----
-
-## Canonical methodology spec
-
-`docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
-
-Core rule (ADR-011):
-
-```
-SCENE PROPERTY  ≠  PARTICIPANT RESPONSE  ≠  DERIVED SIGNAL
+```text
+SCENE PROPERTY != PARTICIPANT RESPONSE != DERIVED SIGNAL
 ```
 
-- AW/CS/CR signal assignment: only after Gate D
-- Design stage allows only: `target_signal_hypothesis: AW`, `hypothesized_direction: unconfirmed`
-- Raw A/B choice has no inherent psychological polarity
-- prototype-nine-v1 choice→cue→vector = historical prototype logic, not v0.8 truth
+- Raw A/B choice has no inherent psychological polarity.
+- Cue = reaction context, not automatic vector generation.
+- `reaction_intensity` = ordinal 1–5; never vector × intensity.
+- `no_clear_choice` and `hard_to_identify` are distinct states.
+- Results describe tendencies in reactions, not properties of the person.
+- Radar/bipolar map is secondary visual explanation, not the primary result.
 
 ---
 
-## Current methodology principles (2026-08-10 delta)
+## CURRENT AW decision
 
-1. Methodological cleanliness necessary but not sufficient.
-   Stimulus must also have: visual interest, real choice tension,
-   equal legitimacy, reaction richness, willingness to continue.
+Read: `AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
 
-2. Cue = reaction context. Not automatic vector generation.
+Current status:
 
-3. `reaction_intensity` = ordinal 1–5, midpoint 3.
-   Not confidence, not latency, not valence, not vector magnitude.
-   Never: vector × intensity.
+```text
+AW as peer static-stimulus axis: SUSPENDED
+AW-specific asset generation: STOP
+CS stimulus domain: ACTIVE
+CR stimulus domain: ACTIVE
+Domain-specific response trajectory: ACTIVE HYPOTHESIS / NOT VALIDATED
+```
 
-4. `no_clear_choice` ≠ `hard_to_identify` — different data points.
+Reason: AW-targeting static-image concepts repeatedly collapsed into CS/CR, novelty, salience, puzzle-solving, social narrative, or generic preference. Independent red-team reviews converged on the view that single-trial AW is too weak/confounded to justify a peer axis.
 
-5. Result UX: describe tendencies in reactions, not properties of person.
-   GOOD: "A tendency toward greater clarity appeared more often."
-   BAD: "You avoid ambiguity."
-   Radar/bipolar map = secondary visual, not primary result.
+A single response can still be informative evidence, but trajectory claims require repeated interpretable events anchored to a domain.
 
-6. Priority: engaging stimuli → reaction capture → minimal Gate D
-   contract → small human-response cycle → aggregation refinement.
+Do not confuse:
+
+- product engagement / return to ConflictLab;
+- session completion;
+- domain-specific response trajectory.
+
+Product continuation must not automatically create a domain-level signal.
 
 ---
 
-## What is not yet done
+## Current stimulus-development model
 
-- 18 unique pairs needed (currently 9; sessions 4–6 repeat stimuli)
-- N0-010–018 pairs not yet created
-- N0-004–009 vectors are `prototype_only`, not validated
-- SLOT-01 design in progress — no committed stimulus assets yet
-- Gate D contract not yet formally defined
+Use `STIMULUS_EXPERIENCE_CARD_V1.md`.
+
+Working quality triad:
+
+> **CONTROL + EXPERIENCE + INTERPRETABILITY**
+
+Methodological cleanliness alone is insufficient. Neutral does not mean meaningless.
+
+Current active asset/concept work prioritizes CS and CR stimulus pools.
+
+Historical AW notes/candidates are retained as reasoning evidence but are not active production instructions.
+
+---
+
+## Block / pair-count status
+
+The old `3 AW + 3 CS + 3 CR` block composition is a historical/prototype construction assumption under review.
+
+`18 unique pairs` is not a validated scientific minimum. It may remain a technical planning target for two non-repeating 9-pair prototype blocks if that architecture is retained.
+
+Do not force a final 3+3+3 or 18-pair library merely to preserve prototype symmetry.
+
+---
+
+## Current near-term priority
+
+1. Build engaging, controlled CS/CR candidate stimuli.
+2. Design plausible reaction spaces, including `NONE`, cross-load and unresolved paths.
+3. Minimal Gate D contract for defensible domain interpretation.
+4. Examine whether repeated response-context evidence supports domain-specific trajectories without using product continuation as the signal.
+5. Only then refine aggregation / result visualization.
 
 ---
 
 ## Do not do
 
-- Do not assign AW+/AW- to stimulus variants at design stage
-- Do not treat prototype-nine-v1 cue vectors as validated mappings
-- Do not actively develop v0.7 code
-- Do not use `localStorage.clear()` — namespace-scoped clearing only
-- Do not modify M0 flow or stable tags without Oleg approval
-
+- Do not generate new AW-specific static-image assets.
+- Do not assign AW+/AW-/CS+/CS-/CR+/CR- at stimulus-design stage.
+- Do not treat `prototype-nine-v1` vectors as validated mappings.
+- Do not treat product continuation as automatic trajectory evidence.
+- Do not rewrite frozen prototype files merely to make history look current.
+- Do not actively develop v0.7 code.
+- Do not use `localStorage.clear()`.
+- Do not modify stable tags without explicit approval.
