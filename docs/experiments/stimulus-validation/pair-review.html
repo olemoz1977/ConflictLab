@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConflictLab — Pair Candidate Review v0.8</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0c0c0f;color:#e5e1d8;font-family:Inter,system-ui,-apple-system,sans-serif}.shell{max-width:920px;margin:auto;padding:24px 16px 64px}.logo{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#83a998;margin-bottom:8px}h1{font-size:28px;font-weight:500;margin:0 0 8px}.sub{color:#8e8a84;line-height:1.55;margin-bottom:24px}.card{background:#131316;border:1px solid #24242a;border-radius:14px;padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label,.mini{font-size:12px;color:#8e8a84}.field input,.field select,.field textarea{width:100%;background:#0c0c0f;color:#e5e1d8;border:1px solid #2a2a31;border-radius:9px;padding:11px 12px;font:inherit}.field textarea{min-height:88px;resize:vertical}.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.upload{aspect-ratio:1/1;border:1px dashed #34343d;border-radius:14px;background:#101013;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative}.upload:hover{border-color:#83a998}.upload img{width:100%;height:100%;object-fit:contain;display:none}.upload .hint{text-align:center;color:#77736e;font-size:14px;padding:12px}.badge{position:absolute;top:8px;left:8px;background:rgba(12,12,15,.78);border:1px solid #303038;border-radius:8px;padding:5px 8px;font-size:12px;color:#c9c5bd}.btn{width:100%;border:0;border-radius:11px;padding:14px 16px;font-weight:600;font-size:15px;cursor:pointer}.btn.primary{background:#83a998;color:#0c0c0f}.btn.secondary{background:#17171b;color:#d7d3ca;border:1px solid #303038}.btn:disabled{opacity:.35;cursor:not-allowed}.status{font-size:12px;margin-top:7px;color:#77736e}.status.ok{color:#83a998}.loading{display:none;text-align:center;color:#8e8a84;padding:20px}.error{display:none;color:#d58b8b;background:#241516;border:1px solid #5e2e31;border-radius:10px;padding:12px;margin-bottom:14px}.result{display:none}.section-title{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#83a998;margin-bottom:10px}.metric{border-top:1px solid #24242a;padding:12px 0}.metric:first-child{border-top:0;padding-top:0}.metric strong{display:block;margin-bottom:5px}.muted{color:#8e8a84;line-height:1.55}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.chip{border:1px solid #303038;border-radius:999px;padding:6px 9px;font-size:12px;color:#b8b3aa}.decision{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.decision button{background:#17171b;color:#a7a29a;border:1px solid #303038;border-radius:10px;padding:12px 8px;cursor:pointer}.decision button.on{border-color:#83a998;color:#e5e1d8;background:#18211e}.yaml{white-space:pre-wrap;background:#09090b;border:1px solid #24242a;border-radius:10px;padding:14px;color:#9fb2aa;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:360px;overflow:auto}.note{border-left:2px solid #37564a;padding:10px 12px;color:#8e8a84;line-height:1.55;margin-bottom:18px}.footer{margin-top:30px;color:#55525a;font-size:12px}@media(max-width:640px){h1{font-size:23px}.grid{grid-template-columns:1fr}.pair{gap:8px}.decision{grid-template-columns:1fr}.shell{padding-left:12px;padding-right:12px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="logo">ConflictLab · internal</div>
+  <h1>Pair Candidate Review v0.8</h1>
+  <div class="sub">Vidinis poros curation gate prieš Stimulus Validation Wave 1. AI tik audituoja vaizdo porą; galutinį sprendimą priima žmogus, o signalą gali paremti tik realių dalyvių reakcijos.</div>
+  <div class="note">SCENE PROPERTY ≠ PARTICIPANT RESPONSE ≠ DERIVED SIGNAL. Šis įrankis nevaliduoja CS/CR ir nepriskiria žmogui savybių.</div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="field"><label>Candidate ID</label><input id="candidate-id" placeholder="pvz. CS-PR-01"></div>
+      <div class="field"><label>Family</label><input id="family" placeholder="pvz. partial_reveal"></div>
+      <div class="field"><label>Target domain hypothesis</label><select id="domain"><option value="UNRESOLVED">UNRESOLVED</option><option value="CS">CS</option><option value="CR">CR</option></select></div>
+      <div class="field"><label>Candidate version</label><input id="version" value="v0.1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">X / Y assetai</div>
+    <div class="pair">
+      <div class="upload" onclick="document.getElementById('file-x').click()"><span class="badge">X</span><span class="hint" id="hint-x">Pasirink X · 1:1</span><img id="img-x"></div>
+      <div class="upload" onclick="document.getElementById('file-y').click()"><span class="badge">Y</span><span class="hint" id="hint-y">Pasirink Y · 1:1</span><img id="img-y"></div>
+    </div>
+    <input id="file-x" type="file" accept="image/*" hidden>
+    <input id="file-y" type="file" accept="image/*" hidden>
+    <div class="status" id="asset-status">Reikia abiejų failų.</div>
+  </div>
+
+  <div class="card">
+    <div class="field"><label>Google AI Studio API key</label><input id="api-key" type="password" placeholder="AIza..." autocomplete="off"><div class="status" id="api-status">Raktas naudojamas tik šiai užklausai ir nėra saugomas.</div></div>
+  </div>
+
+  <button class="btn primary" id="analyse" disabled>Audituoti porą</button>
+  <div class="loading" id="loading">Vertinama CONTROL + EXPERIENCE + INTERPRETABILITY…</div>
+  <div class="error" id="error"></div>
+
+  <div class="result" id="result">
+    <div class="card">
+      <div class="section-title">AI pair audit</div>
+      <div id="audit-body"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Žmogaus sprendimas</div>
+      <div class="decision">
+        <button data-v="KEEP">KEEP for Wave 1</button>
+        <button data-v="REVISE">REVISE</button>
+        <button data-v="ARCHIVE">ARCHIVE</button>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Pastabos</label><textarea id="human-notes" placeholder="Kodėl priėmei šį sprendimą?"></textarea></div>
+    </div>
+
+    <div class="card" id="export-card" style="display:none">
+      <div class="section-title">YAML eksportas</div>
+      <div class="yaml" id="yaml"></div>
+      <button class="btn secondary" id="copy" style="margin-top:10px">Kopijuoti YAML</button>
+    </div>
+  </div>
+
+  <div class="footer">ConflictLab · Pair Candidate Review v0.8 · Internal curation only</div>
+</div>
+<script>
+const S={x:null,y:null,analysis:null,decision:null};
+const $=id=>document.getElementById(id);
+function fileToB64(file,slot){const r=new FileReader();r.onload=e=>{S[slot]={b64:e.target.result.split(',')[1],mime:file.type||'image/jpeg',name:file.name};$("img-"+slot).src=e.target.result;$("img-"+slot).style.display='block';$("hint-"+slot).style.display='none';checkReady()};r.readAsDataURL(file)}
+$('file-x').addEventListener('change',e=>e.target.files[0]&&fileToB64(e.target.files[0],'x'));
+$('file-y').addEventListener('change',e=>e.target.files[0]&&fileToB64(e.target.files[0],'y'));
+$('api-key').addEventListener('input',checkReady);$('candidate-id').addEventListener('input',checkReady);$('family').addEventListener('input',checkReady);
+function checkReady(){const key=$('api-key').value.trim();const meta=$('candidate-id').value.trim()&&$('family').value.trim();$('analyse').disabled=!(S.x&&S.y&&key.length>10&&meta);$('asset-status').textContent=S.x&&S.y?`✓ X: ${S.x.name} · Y: ${S.y.name}`:'Reikia abiejų failų.';$('asset-status').className='status'+(S.x&&S.y?' ok':'');$('api-status').textContent=key.length>10?'✓ Raktas gautas. Nesaugomas.':'Raktas naudojamas tik šiai užklausai ir nėra saugomas.';$('api-status').className='status'+(key.length>10?' ok':'')}
+function arr(v){return Array.isArray(v)?v:[]}
+function esc(s){return String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function metric(title,obj){const pass=obj?.pass===true?'PASS':obj?.pass===false?'FAIL':'UNCLEAR';const items=arr(obj?.notes||obj?.risks||obj?.items);return `<div class="metric"><strong>${esc(title)} · ${pass}</strong><div class="muted">${esc(obj?.summary||'')}</div>${items.length?`<div class="chips">${items.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}</div>`}
+async function analyse(){const key=$('api-key').value.trim();$('loading').style.display='block';$('error').style.display='none';$('result').style.display='none';$('analyse').disabled=true;const cid=$('candidate-id').value.trim(),fam=$('family').value.trim(),dom=$('domain').value,ver=$('version').value.trim();const prompt=`You are the internal Pair Candidate Review assistant for ConflictLab v0.8.\n\nCandidate: ${cid}\nFamily: ${fam}\nTarget-domain hypothesis: ${dom}\nVersion: ${ver}\n\nYou receive IMAGE X first and IMAGE Y second. Audit the PAIR, not either image in isolation.\n\nCONSTITUTIONAL RULE:\nSCENE PROPERTY != PARTICIPANT RESPONSE != DERIVED SIGNAL\n\nDO NOT:\n- assign AW/CS/CR scores or directions to either variant\n- infer personality, motives, traits, or likely participant types\n- claim the pair is validated\n- treat aesthetic preference as target-domain evidence\n- invent exact percentage calibration from visual inspection\n\nEvaluate only whether the pair is suitable to proceed to human blind validation. Use the working triad CONTROL + EXPERIENCE + INTERPRETABILITY.\n\nCONTROL: identify intended-looking delta and any unintended differences in camera, crop, lighting, object geometry, salience, composition, text/logos/watermarks, or rendering artifacts.\nEXPERIENCE: judge whether both alternatives remain legitimate choices rather than good/bad, complete/broken, clean/messy, obviously superior/inferior.\nINTERPRETABILITY: identify plausible post-hoc readings and confounds, including aesthetics, composition, utility, familiarity, social desirability, salience/novelty, completion, privacy, threat, puzzle-solving, and cross-load with another domain.\n\nReturn ONLY valid JSON:\n{\n  "pair_summary":"2-4 factual sentences in Lithuanian",\n  "control":{"pass":true,"summary":"...","notes":["..."]},\n  "experience":{"pass":true,"summary":"...","notes":["..."]},\n  "interpretability":{"pass":true,"summary":"...","notes":["..."]},\n  "unintended_differences":["..."],\n  "confounds":["..."],\n  "failure_conditions_triggered":["..."],\n  "human_test_focus":["3 short questions/issues to inspect in blind human responses"],\n  "ai_recommendation":"KEEP|REVISE|ARCHIVE",\n  "recommendation_reason":"...",\n  "caution":"AI review is curation only; human responses determine whether the family survives."\n}`;
+try{const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:S.x.mime,data:S.x.b64}},{inline_data:{mime_type:S.y.mime,data:S.y.b64}},{text:prompt}]}],generationConfig:{temperature:.15,maxOutputTokens:1600,responseMimeType:'application/json'}})});const data=await resp.json();if(!resp.ok)throw new Error(data?.error?.message||`HTTP ${resp.status}`);let txt=data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'';txt=txt.replace(/^```json\s*/,'').replace(/```\s*$/,'').trim();S.analysis=JSON.parse(txt);render();}catch(e){$('error').textContent='Analizės klaida: '+e.message;$('error').style.display='block'}finally{$('loading').style.display='none';$('analyse').disabled=false}}
+function render(){const a=S.analysis;let h=metric('CONTROL',a.control)+metric('EXPERIENCE',a.experience)+metric('INTERPRETABILITY',a.interpretability);h+=`<div class="metric"><strong>Poros santrauka</strong><div class="muted">${esc(a.pair_summary)}</div></div>`;h+=`<div class="metric"><strong>Confounds</strong><div class="chips">${arr(a.confounds).map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="muted">Nenurodyta</span>'}</div></div>`;h+=`<div class="metric"><strong>Triggered failure conditions</strong><div class="muted">${arr(a.failure_conditions_triggered).map(x=>'• '+esc(x)).join('<br>')||'Nėra aiškiai pažymėtų.'}</div></div>`;h+=`<div class="metric"><strong>Human test focus</strong><div class="muted">${arr(a.human_test_focus).map(x=>'• '+esc(x)).join('<br>')}</div></div>`;h+=`<div class="metric"><strong>AI rekomendacija · ${esc(a.ai_recommendation)}</strong><div class="muted">${esc(a.recommendation_reason)}</div></div>`;$('audit-body').innerHTML=h;$('result').style.display='block';window.scrollTo({top:$('result').offsetTop-12,behavior:'smooth'})}
+document.querySelectorAll('.decision button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.decision button').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.decision=b.dataset.v;buildYaml();$('export-card').style.display='block'}));
+function q(s){return '"'+String(s??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,' ')+'"'}
+function listYaml(xs,indent='  '){return arr(xs).length?arr(xs).map(x=>`${indent}- ${q(x)}`).join('\n'):`${indent}[]`}
+function buildYaml(){const a=S.analysis||{};const notes=$('human-notes').value.trim();const y=`candidate_id: ${q($('candidate-id').value.trim())}\ncandidate_version: ${q($('version').value.trim())}\nfamily: ${q($('family').value.trim())}\ntarget_domain_hypothesis: ${q($('domain').value)}\nsignal_mapping_status: NONE\nasset_x: ${q(S.x?.name)}\nasset_y: ${q(S.y?.name)}\nai_curation:\n  control: ${q(a.control?.pass===true?'PASS':a.control?.pass===false?'FAIL':'UNCLEAR')}\n  experience: ${q(a.experience?.pass===true?'PASS':a.experience?.pass===false?'FAIL':'UNCLEAR')}\n  interpretability: ${q(a.interpretability?.pass===true?'PASS':a.interpretability?.pass===false?'FAIL':'UNCLEAR')}\n  recommendation: ${q(a.ai_recommendation)}\n  recommendation_reason: ${q(a.recommendation_reason)}\n  confounds:\n${listYaml(a.confounds,'    ')}\n  failure_conditions_triggered:\n${listYaml(a.failure_conditions_triggered,'    ')}\n  human_test_focus:\n${listYaml(a.human_test_focus,'    ')}\nhuman_curation:\n  verdict: ${q(S.decision)}\n  notes: ${q(notes)}\nvalidation_status: NOT_VALIDATED\n`;$('yaml').textContent=y}
+$('human-notes').addEventListener('input',()=>S.decision&&buildYaml());$('analyse').addEventListener('click',analyse);$('copy').addEventListener('click',async()=>{await navigator.clipboard.writeText($('yaml').textContent);$('copy').textContent='Nukopijuota';setTimeout(()=>$('copy').textContent='Kopijuoti YAML',1200)});
+</script>
+</body>
+</html>
