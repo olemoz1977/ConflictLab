@@ -41,6 +41,34 @@ The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair ar
 - only the intended manipulated property should change
 - left/right position must be randomized by the validation UI
 
+## Internal curation gate
+
+Use:
+
+`docs/experiments/stimulus-validation/pair-review.html`
+
+This is an **internal Pair Candidate Review tool**, not the human validation UI.
+
+It accepts local X/Y image files in the browser and sends both images to Gemini for a constrained multimodal audit of:
+
+- CONTROL
+- EXPERIENCE
+- INTERPRETABILITY
+- unintended visual differences
+- plausible confounds
+- triggered failure conditions
+- what should be inspected later in blind human responses
+
+The AI recommendation is curation support only. It does not validate CS/CR, assign signal direction, or replace human-response evidence.
+
+The final internal curation verdict remains human:
+
+```text
+KEEP for Wave 1
+REVISE
+ARCHIVE
+```
+
 ## Current first candidate
 
 ### `CS-PR-01` — Partial Reveal
@@ -121,6 +149,8 @@ A family is promising only if reactions in its intended domain appear naturally 
 
 ```text
 6 family exemplars
+↓
+internal pair curation gate
 ↓
 human response data
 ↓
