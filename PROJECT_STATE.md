@@ -1,26 +1,31 @@
 # ConflictLab — Project State
 
-**Last updated:** 2026-08-10
+**Last updated:** 2026-08-11
 **Purpose:** AI context document. Read this first in every new conversation.
 
 ---
 
-## CURRENT STATE SYNC — 2026-08-10
+## CURRENT STATE SYNC — 2026-08-11
 
-**Current methodology decision commit:** `6219eef3e98aa67d72f10135b2cf4fac4c9b2bc3`
-**Canonical stimulus operationalization spec:** `STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
-**Current AW status decision:** `AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
+**Current repo HEAD at this sync:** `ef00e12c91c437a5100c323bbfa35acb7505a349`
+**Canonical stimulus operationalization spec:** `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
+**Current AW status decision:** `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
+**Active Wave 1 plan:** `docs/experiments/stimulus-validation/WAVE1_PLAN.md`
+**Internal curation tool:** `docs/experiments/stimulus-validation/pair-review.html`
 **Active stable tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
 
-**Methodology status:**
-- V1.3 introduces Stimulus–Signal Separation architecture
+### Methodology status
+
 - Scene property ≠ participant response ≠ derived signal (ADR-011)
 - Cue = reaction context, not automatic vector generation
 - Result UX describes tendencies in reactions, not properties of the person
 - Radar/bipolar map is secondary visual explanation, not the primary result
 - Working stimulus quality rule: **CONTROL + EXPERIENCE + INTERPRETABILITY**
+- Signal interpretation states remain: `supported`, `cross-load`, `insufficient`, `NONE`
+- Raw A/B choice has no inherent psychological polarity
 
-**AW status — CURRENT:**
+### AW status — CURRENT
+
 - AW as a third active static-stimulus axis is **SUSPENDED** for v0.8 development
 - Do not create new AW-specific static-image assets
 - Previous AW epistemic candidates E1/E2/E3 remain historical exploratory evidence, not production candidates
@@ -28,11 +33,99 @@
 - Current hypothesis: response-orientation evidence may become meaningful only as a **domain-specific response trajectory** anchored to CS or CR
 - Domain-specific trajectory is **NOT VALIDATED** and must remain separate from product/session engagement
 
-**Active stimulus work:**
-- CS candidate pool — ACTIVE
-- CR candidate pool — ACTIVE
-- AW-specific stimulus pool — STOP / SUSPENDED
-- No accepted new v0.8 stimulus assets as of 2026-08-10
+### Stimulus Validation Wave 1 — ACTIVE
+
+Wave 1 tests **six manipulation-family exemplars** before expanding the library.
+
+#### CS
+1. `CS-PR-01` — Partial Reveal
+2. `CS-RE-01` — Relation Evidence
+3. `CS-CA-01` — Context / Reference Availability
+
+#### CR
+4. `CR-PZ-01` — Predefined Zones
+5. `CR-FS-01` — Fixed Slots vs Continuous Capacity
+6. `CR-PO-01` — Partitioned vs Open Functional Space
+
+This is **not** a return to a predetermined 3+3+3 or 18-pair architecture. The purpose is to test manipulation families first.
+
+**Human testing rule:** do **not** send one pair at a time to participants. Wave 1 should be delivered as one blind multi-pair session using the six exemplars, with left/right randomization and no CS/CR/family labels exposed.
+
+### CS-PR-01 — CURRENT ASSET STATUS
+
+Status:
+
+```text
+family: partial_reveal
+target_domain: CS
+asset_status: exploratory_pilot
+calibration_status: approximate
+signal_mapping_status: NONE
+```
+
+Use neutral variant names only:
+
+- `more-reveal`
+- `less-reveal`
+
+Do **not** claim exact 75% / 50% calibration in repository metadata unless later measured and confirmed.
+
+Current committed assets:
+
+- `docs/experiments/stimulus-validation/assets/CS-PR-01/more-reveal.webp`
+- `docs/experiments/stimulus-validation/assets/CS-PR-01/less-reveal.jpg`
+
+These two assets are now the frozen exploratory CS-PR-01 pair for internal review. Do not spend further image-generation iterations on this pair unless human/curation evidence gives a reason to revise it.
+
+### Internal Pair Candidate Review v0.8
+
+`docs/experiments/stimulus-validation/pair-review.html`
+
+Purpose: internal curation gate before human Wave 1.
+
+It accepts X/Y local files and sends both to Gemini for constrained multimodal audit of:
+
+- CONTROL
+- EXPERIENCE
+- INTERPRETABILITY
+- unintended visual differences
+- plausible confounds
+- triggered failure conditions
+- what should later be inspected in blind human responses
+
+AI output is curation support only. It does not validate CS/CR, assign signal direction, or replace human-response evidence.
+
+Final internal verdict remains human:
+
+```text
+KEEP for Wave 1
+REVISE
+ARCHIVE
+```
+
+**QA status:** `IMPLEMENTED / FUNCTIONAL QA PENDING`.
+
+A real run with CS-PR-01 + Gemini still needs to verify:
+
+- page loads from GitHub Pages
+- both files upload correctly
+- Gemini response parses correctly
+- review fields render
+- YAML export/copy works
+
+### Next stimulus
+
+`CS-RE-01 — Relation Evidence`
+
+Brief:
+
+`docs/experiments/stimulus-validation/CS_RE_01_ASSET_BRIEF.md`
+
+Current next action: **generate MASTER only. Do not generate X/Y yet.**
+
+### Asset upload workflow
+
+For future stimulus image commits, prefer **Claude with direct GitHub token/key access** when available because binary asset upload is materially faster there. ChatGPT remains responsible for methodology, briefs, review logic and state consistency unless explicitly reassigned.
 
 ---
 
@@ -99,7 +192,10 @@ The following remain useful as prototype evidence but are not current v0.8 truth
 
 ### What is not yet done
 
-- Active v0.8 CS/CR stimulus pool is not yet complete
+- Five additional Wave 1 family exemplars are not yet complete
+- Pair Candidate Review v0.8 functional QA is still pending
+- Human Wave 1 validation UI/session is not yet implemented
+- No human Wave 1 response dataset exists yet
 - No formal domain-specific response trajectory contract exists
 - Gate D remains to be minimally formalized under the newer reaction-context architecture
 - Current result architecture (pattern description first, radar secondary) is not yet implemented in Pair P0
@@ -148,6 +244,8 @@ Product continuation, session completion, and domain-specific response trajector
 | Document | Purpose |
 |---|---|
 | `PROJECT_STATE.md` | **This file.** Short current state. Read first. |
+| `docs/experiments/stimulus-validation/WAVE1_PLAN.md` | Active six-family stimulus validation plan |
+| `docs/experiments/stimulus-validation/CS_RE_01_ASSET_BRIEF.md` | Next candidate asset brief |
 | `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` | Current AW suspension / trajectory decision |
 | `docs/adr/ADR-011-stimulus-signal-separation.md` | Scene property ≠ response ≠ signal boundary |
 | `docs/experiments/pair-p0/METHODOLOGY_DELTA_2026-08-10.md` | Post-V1.3 methodology decisions |
@@ -171,14 +269,16 @@ Product continuation, session completion, and domain-specific response trajector
 - ❌ Raw axis numbers shown directly to users
 - ❌ Personality labels in reflections (S1)
 - ❌ `localStorage.clear()` (use namespace-scoped clearing only)
+- ❌ Single-pair human testing as the primary Wave 1 protocol
 - ⏸ AW-specific static-image stimulus development — suspended pending trajectory hypothesis evaluation
 - ⏸ Epistemic-AW E1/E2/E3 asset generation — suspended after red-team convergence toward CS/novelty/puzzle contamination
+- ⏸ Further image-generation iterations on CS-PR-01 — frozen at current exploratory assets pending evidence
 
 ---
 
 ## Repository Structure
 
-```
+```text
 ConflictLab/
 ├── PROJECT_STATE.md          ← current state / read first
 ├── REPOSITORY_INVENTORY.md
@@ -187,24 +287,33 @@ ConflictLab/
 ├── docs/
 │   ├── index.html            ← v0.7 FROZEN baseline
 │   ├── generator.html
+│   ├── review.html           ← older single-image curation tool / historical precursor
 │   ├── media/
 │   ├── methodology/          ← frozen methodology docs
 │   ├── adr/
 │   │   └── ADR-011-stimulus-signal-separation.md
 │   └── experiments/
-│       └── pair-p0/          ← ACTIVE DEVELOPMENT
-│           ├── index.html    ← frozen P9 technical/UX behavior remains live
-│           ├── STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md
-│           ├── METHODOLOGY_DELTA_2026-08-10.md
-│           ├── STIMULUS_EXPERIENCE_CARD_V1.md
-│           ├── AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md
-│           ├── AW_REDEFINITION_NOTE_v0.1.md          ← superseded working note
-│           ├── AW_EPISTEMIC_CANDIDATES_v0.1.md      ← suspended exploratory pool
-│           ├── pair-set-prototype-nine-v1.json
-│           ├── pair-cue-prototype-nine-v1.json
-│           ├── PAIR_P0_STATE.md
-│           ├── RADAR_BLOCK_MODEL_V1.md
-│           └── PROGRESS.md
+│       ├── pair-p0/          ← ACTIVE v0.8 methodology + frozen P9 reference
+│       │   ├── index.html
+│       │   ├── STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md
+│       │   ├── METHODOLOGY_DELTA_2026-08-10.md
+│       │   ├── STIMULUS_EXPERIENCE_CARD_V1.md
+│       │   ├── AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md
+│       │   ├── AW_REDEFINITION_NOTE_v0.1.md
+│       │   ├── AW_EPISTEMIC_CANDIDATES_v0.1.md
+│       │   ├── pair-set-prototype-nine-v1.json
+│       │   ├── pair-cue-prototype-nine-v1.json
+│       │   ├── PAIR_P0_STATE.md
+│       │   ├── RADAR_BLOCK_MODEL_V1.md
+│       │   └── PROGRESS.md
+│       └── stimulus-validation/      ← ACTIVE Wave 1 work
+│           ├── WAVE1_PLAN.md
+│           ├── pair-review.html      ← internal Pair Candidate Review v0.8
+│           ├── CS_RE_01_ASSET_BRIEF.md
+│           └── assets/
+│               └── CS-PR-01/
+│                   ├── more-reveal.webp
+│                   └── less-reveal.jpg
 ├── src/engine/               ← v0.7 Python engine (frozen, not live)
 ├── stimuli/ST-001–010        ← v0.7 provisional/frozen
 ├── tests/
@@ -226,12 +335,14 @@ ConflictLab/
 
 ## For AI Assistants
 
-1. **Active work = Pair P0 v0.8 methodology/stimulus development.** Do not treat the live P9 radar geometry as current methodology truth.
-2. Read `PROJECT_STATE.md`, ADR-011, `METHODOLOGY_DELTA_2026-08-10.md`, and `AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` before methodology work.
+1. **Active work = Pair P0 v0.8 methodology/stimulus validation.** Do not treat the live P9 radar geometry as current methodology truth.
+2. Read `PROJECT_STATE.md`, ADR-011, `WAVE1_PLAN.md`, `METHODOLOGY_DELTA_2026-08-10.md`, and `AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` before methodology work.
 3. Do not create AW-specific static-image assets unless the AW suspension is explicitly reversed.
-4. Current stimulus work prioritizes CS and CR candidate pools using **CONTROL + EXPERIENCE + INTERPRETABILITY**.
-5. Product engagement must not be used as automatic evidence of domain-specific response trajectory.
-6. Before any code change: read the plan and confirm with Oleg.
-7. Never use `localStorage.clear()`.
-8. Never modify M0 flow or stable tags without explicit approval.
-9. All methodological decisions belong to Oleg. If uncertain — ask, do not invent.
+4. Current stimulus work prioritizes CS and CR candidate families using **CONTROL + EXPERIENCE + INTERPRETABILITY**.
+5. Human Wave 1 is a blind **multi-pair session with six family exemplars**, not one-pair-at-a-time testing.
+6. Product engagement must not be used as automatic evidence of domain-specific response trajectory.
+7. Pair Candidate Review AI output is curation support only; human response evidence remains required.
+8. Before any code change: read the plan and confirm with Oleg.
+9. Never use `localStorage.clear()`.
+10. Never modify M0 flow or stable tags without explicit approval.
+11. All methodological decisions belong to Oleg. If uncertain — ask, do not invent.
