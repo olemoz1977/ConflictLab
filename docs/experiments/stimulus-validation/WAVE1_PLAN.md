@@ -32,6 +32,26 @@ Six family exemplars:
 
 The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair architecture.
 
+## Current checkpoint — 2026-08-12
+
+CS candidate development is complete at the internal-curation stage:
+
+```text
+CS-PR-01  KEEP for Wave 1
+CS-RE-01  KEEP for Wave 1
+CS-CA-01  KEEP for Wave 1 (v2 spatial-reference concept)
+```
+
+All three remain unvalidated hypotheses with `signal_mapping_status: NONE`.
+
+Detailed checkpoint:
+
+`docs/experiments/stimulus-validation/SESSION_CHECKPOINT_2026-08-12.md`
+
+Next candidate: `CR-PZ-01 — Predefined Zones`.
+
+Final CS-RE-01 and CS-CA-01 image assets are intentionally not committed in this checkpoint; binary asset upload is deferred to the agreed Claude/direct GitHub workflow.
+
 ## Asset rules
 
 - every stimulus asset: **1:1**
@@ -68,6 +88,8 @@ KEEP for Wave 1
 REVISE
 ARCHIVE
 ```
+
+AI review may be overly positive; treat it as a technical/confound aid rather than a verdict.
 
 ## Current first candidate
 
