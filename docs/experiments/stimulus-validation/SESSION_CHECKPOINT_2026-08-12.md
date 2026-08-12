@@ -72,3 +72,50 @@ Begin CR Wave 1 with:
 `CR-PZ-01 — Predefined Zones`
 
 Do not build the human Wave 1 session until all six family exemplars have passed internal curation.
+
+---
+
+## Update — 2026-08-12 (asset batch upload)
+
+All 10 final Wave 1 assets committed to repo in one batch:
+
+### CR families — 3/3 assets committed
+
+#### CR-PZ-01 — Predefined Zones
+- X: `predefined-zones.png`
+- Y: `no-predefined-zones.png`
+- status: `KEEP for Wave 1`
+- signal_mapping_status: NONE
+
+#### CR-FS-01 — Fixed Slots vs Continuous Capacity
+- X: `fixed-slots.png`
+- Y: `continuous-capacity.png`
+- status: `KEEP for Wave 1`
+- signal_mapping_status: NONE
+
+#### CR-PO-01 — Partitioned vs Open Functional Space
+- X: `partitioned-space.png`
+- Y: `open-space.png`
+- status: `KEEP for Wave 1`
+- signal_mapping_status: NONE
+
+### CS assets now complete
+- CS-RE-01: `more-evidence.png` / `less-evidence.png` — committed
+- CS-CA-01: `more-reference.png` / `less-reference.png` — committed
+
+## Wave 1 internal curation — COMPLETE
+
+```text
+6/6 families KEEP for Wave 1
+12 assets committed (including CS-PR-01 from prior commit)
+signal_mapping_status: NONE for all pairs
+AW static-stimulus axis: SUSPENDED
+```
+
+## Constraints for next phase
+
+- do not generate additional stimulus before Wave 1 human evidence
+- human Wave 1 = blind multi-pair session, all 6 exemplars together
+- left/right position must be randomized by UI
+- do not expose CS/CR/family labels to participants
+- free text reason required per choice

@@ -32,23 +32,27 @@ Six family exemplars:
 
 The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair architecture.
 
-## Current checkpoint — 2026-08-12
+## Current checkpoint — 2026-08-12 (updated)
 
-CS candidate development is complete at the internal-curation stage:
+All 6 Wave 1 families = **KEEP for Wave 1**. Internal curation complete.
 
 ```text
-CS-PR-01  KEEP for Wave 1
-CS-RE-01  KEEP for Wave 1
-CS-CA-01  KEEP for Wave 1 (v2 spatial-reference concept)
+CS-PR-01  KEEP for Wave 1  assets: committed
+CS-RE-01  KEEP for Wave 1  assets: committed
+CS-CA-01  KEEP for Wave 1  assets: committed
+CR-PZ-01  KEEP for Wave 1  assets: committed
+CR-FS-01  KEEP for Wave 1  assets: committed
+CR-PO-01  KEEP for Wave 1  assets: committed
 ```
 
-All three remain unvalidated hypotheses with `signal_mapping_status: NONE`.
+All six remain unvalidated hypotheses with `signal_mapping_status: NONE`.
+X/Y choice has no inherent CS/CR polarity until Gate D.
 
 Detailed checkpoint:
 
 `docs/experiments/stimulus-validation/SESSION_CHECKPOINT_2026-08-12.md`
 
-Next candidate: `CR-PZ-01 — Predefined Zones`.
+**Next action: human Wave 1 blind multi-pair session** — do not build new stimulus before Wave 1 human evidence exists.
 
 Final CS-RE-01 and CS-CA-01 image assets are intentionally not committed in this checkpoint; binary asset upload is deferred to the agreed Claude/direct GitHub workflow.
 

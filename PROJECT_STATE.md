@@ -49,7 +49,11 @@ Wave 1 tests **six manipulation-family exemplars** before expanding the library.
 
 This is **not** a return to a predetermined 3+3+3 or 18-pair architecture. The purpose is to test manipulation families first.
 
+**Internal curation: COMPLETE — 6/6 families KEEP for Wave 1. All 12 assets committed.**
+
 **Human testing rule:** do **not** send one pair at a time to participants. Wave 1 should be delivered as one blind multi-pair session using the six exemplars, with left/right randomization and no CS/CR/family labels exposed.
+
+**Do not generate additional stimulus before Wave 1 human evidence exists.**
 
 ### CS-PR-01 — CURRENT ASSET STATUS
 
@@ -70,12 +74,16 @@ Use neutral variant names only:
 
 Do **not** claim exact 75% / 50% calibration in repository metadata unless later measured and confirmed.
 
-Current committed assets:
+Current committed assets (all Wave 1):
 
-- `docs/experiments/stimulus-validation/assets/CS-PR-01/more-reveal.webp`
-- `docs/experiments/stimulus-validation/assets/CS-PR-01/less-reveal.jpg`
+- `CS-PR-01/more-reveal.webp` + `less-reveal.jpg`
+- `CS-RE-01/more-evidence.png` + `less-evidence.png`
+- `CS-CA-01/more-reference.png` + `less-reference.png`
+- `CR-PZ-01/predefined-zones.png` + `no-predefined-zones.png`
+- `CR-FS-01/fixed-slots.png` + `continuous-capacity.png`
+- `CR-PO-01/partitioned-space.png` + `open-space.png`
 
-These two assets are now the frozen exploratory CS-PR-01 pair for internal review. Do not spend further image-generation iterations on this pair unless human/curation evidence gives a reason to revise it.
+signal_mapping_status: NONE for all pairs. Do not regenerate assets without human evidence reason.
 
 ### Internal Pair Candidate Review v0.8
 
