@@ -115,21 +115,11 @@ ARCHIVE
 
 **Status:** Used with real candidate pairs for internal curation. Curation complete.
 
-A real run with CS-PR-01 + Gemini still needs to verify:
-
-- page loads from GitHub Pages
-- both files upload correctly
-- Gemini response parses correctly
-- review fields render
-- YAML export/copy works
 
 ### Next action
 
 Human Wave 1 blind multi-pair session — all 6 exemplars together.
 
-Brief:
-
-`docs/experiments/stimulus-validation/CS_RE_01_ASSET_BRIEF.md`
 
 Assets committed. Do not regenerate without human evidence reason.
 
@@ -202,8 +192,6 @@ The following remain useful as prototype evidence but are not current v0.8 truth
 
 ### What is not yet done
 
-- Five additional Wave 1 family exemplars are not yet complete
-- Pair Candidate Review v0.8 has been used with real candidate pairs for internal curation
 - Human Wave 1 validation UI/session is not yet implemented
 - No human Wave 1 response dataset exists yet
 - No formal domain-specific response trajectory contract exists
