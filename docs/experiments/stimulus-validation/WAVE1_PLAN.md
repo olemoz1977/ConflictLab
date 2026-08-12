@@ -1,8 +1,8 @@
 # ConflictLab v0.8 — Stimulus Validation Wave 1
 
-**Status:** ACTIVE PLAN  
-**Date:** 2026-08-11  
-**Scope:** pre-product blind stimulus validation  
+**Status:** ACTIVE — internal curation complete, awaiting human session
+**Date:** 2026-08-12
+**Scope:** pre-product blind stimulus validation
 
 ## Purpose
 
@@ -16,45 +16,33 @@ Core rule:
 SCENE PROPERTY != PARTICIPANT RESPONSE != DERIVED SIGNAL
 ```
 
-## Wave 1 composition
+## Wave 1 composition — 6/6 KEEP, all assets committed
 
-Six family exemplars:
+Six family exemplars. Internal curation complete.
 
 ### CS
-1. `CS-PR-01` — Partial Reveal
-2. `CS-RE-01` — Relation Evidence
-3. `CS-CA-01` — Context / Reference Availability
+
+1. `CS-PR-01` — Partial Reveal — `KEEP` — assets: `more-reveal.webp` / `less-reveal.jpg`
+2. `CS-RE-01` — Relation Evidence — `KEEP` — assets: `more-evidence.png` / `less-evidence.png`
+3. `CS-CA-01` — Context / Reference Availability — `KEEP` — assets: `more-reference.png` / `less-reference.png`
 
 ### CR
-4. `CR-PZ-01` — Predefined Zones
-5. `CR-FS-01` — Fixed Slots vs Continuous Capacity
-6. `CR-PO-01` — Partitioned vs Open Functional Space
 
-The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair architecture.
-
-## Current checkpoint — 2026-08-12 (updated)
-
-All 6 Wave 1 families = **KEEP for Wave 1**. Internal curation complete.
-
-```text
-CS-PR-01  KEEP for Wave 1  assets: committed
-CS-RE-01  KEEP for Wave 1  assets: committed
-CS-CA-01  KEEP for Wave 1  assets: committed
-CR-PZ-01  KEEP for Wave 1  assets: committed
-CR-FS-01  KEEP for Wave 1  assets: committed
-CR-PO-01  KEEP for Wave 1  assets: committed
-```
+4. `CR-PZ-01` — Predefined Zones — `KEEP` — assets: `no-predefined-zones.png` / `predefined-zones.png`
+5. `CR-FS-01` — Fixed Slots vs Continuous Capacity — `KEEP` — assets: `continuous-capacity.png` / `fixed-slots.png`
+6. `CR-PO-01` — Partitioned vs Open Functional Space — `KEEP` — assets: `open-space.png` / `partitioned-space.png`
 
 All six remain unvalidated hypotheses with `signal_mapping_status: NONE`.
 X/Y choice has no inherent CS/CR polarity until Gate D.
+AW static-stimulus axis: **SUSPENDED**.
 
-Detailed checkpoint:
+The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair architecture.
 
-`docs/experiments/stimulus-validation/SESSION_CHECKPOINT_2026-08-12.md`
+## Next action
 
-**Next action: human Wave 1 blind multi-pair session** — do not build new stimulus before Wave 1 human evidence exists.
+**Human Wave 1 blind multi-pair session.**
 
-Final CS-RE-01 and CS-CA-01 image assets are intentionally not committed in this checkpoint; binary asset upload is deferred to the agreed Claude/direct GitHub workflow.
+Do not generate additional stimulus before Wave 1 human evidence exists.
 
 ## Asset rules
 
@@ -65,60 +53,12 @@ Final CS-RE-01 and CS-CA-01 image assets are intentionally not committed in this
 - only the intended manipulated property should change
 - left/right position must be randomized by the validation UI
 
-## Internal curation gate
+## Internal curation gate (completed)
 
-Use:
-
-`docs/experiments/stimulus-validation/pair-review.html`
-
-This is an **internal Pair Candidate Review tool**, not the human validation UI.
-
-It accepts local X/Y image files in the browser and sends both images to Gemini for a constrained multimodal audit of:
-
-- CONTROL
-- EXPERIENCE
-- INTERPRETABILITY
-- unintended visual differences
-- plausible confounds
-- triggered failure conditions
-- what should be inspected later in blind human responses
-
-The AI recommendation is curation support only. It does not validate CS/CR, assign signal direction, or replace human-response evidence.
-
-The final internal curation verdict remains human:
-
-```text
-KEEP for Wave 1
-REVISE
-ARCHIVE
-```
-
-AI review may be overly positive; treat it as a technical/confound aid rather than a verdict.
-
-## Current first candidate
-
-### `CS-PR-01` — Partial Reveal
-
-Working status:
-
-```text
-family: partial_reveal
-target_domain: CS
-asset_status: exploratory_pilot
-calibration_status: approximate
-signal_mapping_status: NONE
-```
-
-Current variants should be described neutrally as:
-
-- `more_reveal`
-- `less_reveal`
-
-Do **not** claim exact 75% / 50% calibration in repository metadata unless later measured and confirmed.
-
-Pilot question:
-
-> Does changing visual access to the same object spontaneously produce reaction language about wanting to see/know more, completeness, or uncertainty — or is the choice mainly aesthetic/compositional?
+`docs/experiments/stimulus-validation/pair-review.html` was used for internal curation.
+It sends X/Y images to Gemini for constrained multimodal audit of CONTROL / EXPERIENCE / INTERPRETABILITY.
+AI recommendation is curation support only — it does not validate CS/CR, assign signal direction, or replace human-response evidence.
+Final curation verdict was human.
 
 ## Blind participant flow
 
@@ -160,25 +100,16 @@ insufficient
 NONE
 ```
 
-Also record dominant confounds such as:
-
-- aesthetics
-- composition
-- utility
-- familiarity
-- social desirability
-- salience / novelty
+Also record dominant confounds: aesthetics, composition, utility, familiarity, social desirability, salience / novelty.
 
 A family is promising only if reactions in its intended domain appear naturally without cue-leading and both variants remain legitimate choices.
 
 ## Decision path
 
 ```text
-6 family exemplars
+6 family exemplars — internal curation COMPLETE
 ↓
-internal pair curation gate
-↓
-human response data
+human Wave 1 blind session
 ↓
 KEEP / REVISE / REJECT by family
 ↓
@@ -186,5 +117,3 @@ second exemplars only for surviving families
 ↓
 candidate stimulus pool
 ```
-
-Do not scale the library before Wave 1 evidence exists.

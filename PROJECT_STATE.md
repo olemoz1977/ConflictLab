@@ -1,13 +1,13 @@
 # ConflictLab — Project State
 
-**Last updated:** 2026-08-11
+**Last updated:** 2026-08-12
 **Purpose:** AI context document. Read this first in every new conversation.
 
 ---
 
-## CURRENT STATE SYNC — 2026-08-11
+## CURRENT STATE SYNC — 2026-08-12
 
-**Current repo HEAD at this sync:** `ef00e12c91c437a5100c323bbfa35acb7505a349`
+**Current repo HEAD at this sync:** `469e1560ab99117269ca78094e26eccf499182db`
 **Canonical stimulus operationalization spec:** `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
 **Current AW status decision:** `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
 **Active Wave 1 plan:** `docs/experiments/stimulus-validation/WAVE1_PLAN.md`
@@ -35,25 +35,25 @@
 
 ### Stimulus Validation Wave 1 — ACTIVE
 
-Wave 1 tests **six manipulation-family exemplars** before expanding the library.
+Internal curation: **COMPLETE — 6/6 families KEEP for Wave 1. All 12 assets committed.**
+
+Next action: **human Wave 1 blind multi-pair session.**
 
 #### CS
-1. `CS-PR-01` — Partial Reveal
-2. `CS-RE-01` — Relation Evidence
-3. `CS-CA-01` — Context / Reference Availability
+1. `CS-PR-01` — Partial Reveal — assets committed
+2. `CS-RE-01` — Relation Evidence — assets committed
+3. `CS-CA-01` — Context / Reference Availability — assets committed
 
 #### CR
-4. `CR-PZ-01` — Predefined Zones
-5. `CR-FS-01` — Fixed Slots vs Continuous Capacity
-6. `CR-PO-01` — Partitioned vs Open Functional Space
+4. `CR-PZ-01` — Predefined Zones — assets committed
+5. `CR-FS-01` — Fixed Slots vs Continuous Capacity — assets committed
+6. `CR-PO-01` — Partitioned vs Open Functional Space — assets committed
 
-This is **not** a return to a predetermined 3+3+3 or 18-pair architecture. The purpose is to test manipulation families first.
-
-**Internal curation: COMPLETE — 6/6 families KEEP for Wave 1. All 12 assets committed.**
-
-**Human testing rule:** do **not** send one pair at a time to participants. Wave 1 should be delivered as one blind multi-pair session using the six exemplars, with left/right randomization and no CS/CR/family labels exposed.
+`signal_mapping_status: NONE` for all pairs. X/Y choice has no inherent CS/CR polarity.
+AW static-stimulus axis: **SUSPENDED**.
 
 **Do not generate additional stimulus before Wave 1 human evidence exists.**
+Human session = blind multi-pair, all 6 exemplars together, left/right randomized, no CS/CR labels exposed.
 
 ### CS-PR-01 — CURRENT ASSET STATUS
 
@@ -74,16 +74,18 @@ Use neutral variant names only:
 
 Do **not** claim exact 75% / 50% calibration in repository metadata unless later measured and confirmed.
 
-Current committed assets (all Wave 1):
+Committed assets — all Wave 1:
 
-- `CS-PR-01/more-reveal.webp` + `less-reveal.jpg`
-- `CS-RE-01/more-evidence.png` + `less-evidence.png`
-- `CS-CA-01/more-reference.png` + `less-reference.png`
-- `CR-PZ-01/predefined-zones.png` + `no-predefined-zones.png`
-- `CR-FS-01/fixed-slots.png` + `continuous-capacity.png`
-- `CR-PO-01/partitioned-space.png` + `open-space.png`
+```
+CS-PR-01/more-reveal.webp + less-reveal.jpg
+CS-RE-01/more-evidence.png + less-evidence.png
+CS-CA-01/more-reference.png + less-reference.png
+CR-PZ-01/no-predefined-zones.png + predefined-zones.png
+CR-FS-01/continuous-capacity.png + fixed-slots.png
+CR-PO-01/open-space.png + partitioned-space.png
+```
 
-signal_mapping_status: NONE for all pairs. Do not regenerate assets without human evidence reason.
+`signal_mapping_status: NONE` for all pairs. Do not regenerate assets without human evidence reason.
 
 ### Internal Pair Candidate Review v0.8
 
@@ -129,7 +131,7 @@ Brief:
 
 `docs/experiments/stimulus-validation/CS_RE_01_ASSET_BRIEF.md`
 
-Current next action: **generate MASTER only. Do not generate X/Y yet.**
+Assets committed. Do not regenerate without human evidence reason.
 
 ### Asset upload workflow
 
