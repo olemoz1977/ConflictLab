@@ -51,15 +51,15 @@ AW static-stimulus axis: **SUSPENDED**.
 ### CR-FS-01 — Fixed Slots vs Continuous Capacity
 
 - status: `KEEP for Wave 1`
-- X: `continuous-capacity.png`
-- Y: `fixed-slots.png`
+- X: `fixed-slots.png`
+- Y: `continuous-capacity.png`
 - signal_mapping_status: NONE
 
 ### CR-PO-01 — Partitioned vs Open Functional Space
 
 - status: `KEEP for Wave 1`
-- X: `open-space.png`
-- Y: `partitioned-space.png`
+- X: `partitioned-space.png`
+- Y: `open-space.png`
 - signal_mapping_status: NONE
 
 ## Internal curation notes

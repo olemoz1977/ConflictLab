@@ -7,7 +7,7 @@
 
 ## CURRENT STATE SYNC — 2026-08-12
 
-**Current repo HEAD at this sync:** `469e1560ab99117269ca78094e26eccf499182db`
+**Repo state at this sync:** see latest commit on `main` branch — this line is intentionally not pinned to a single SHA to avoid immediate staleness
 **Canonical stimulus operationalization spec:** `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
 **Current AW status decision:** `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
 **Active Wave 1 plan:** `docs/experiments/stimulus-validation/WAVE1_PLAN.md`
@@ -113,7 +113,7 @@ REVISE
 ARCHIVE
 ```
 
-**QA status:** `IMPLEMENTED / FUNCTIONAL QA PENDING`.
+**Status:** Used with real candidate pairs for internal curation. Curation complete.
 
 A real run with CS-PR-01 + Gemini still needs to verify:
 
@@ -123,9 +123,9 @@ A real run with CS-PR-01 + Gemini still needs to verify:
 - review fields render
 - YAML export/copy works
 
-### Next stimulus
+### Next action
 
-`CS-RE-01 — Relation Evidence`
+Human Wave 1 blind multi-pair session — all 6 exemplars together.
 
 Brief:
 
@@ -203,7 +203,7 @@ The following remain useful as prototype evidence but are not current v0.8 truth
 ### What is not yet done
 
 - Five additional Wave 1 family exemplars are not yet complete
-- Pair Candidate Review v0.8 functional QA is still pending
+- Pair Candidate Review v0.8 has been used with real candidate pairs for internal curation
 - Human Wave 1 validation UI/session is not yet implemented
 - No human Wave 1 response dataset exists yet
 - No formal domain-specific response trajectory contract exists
