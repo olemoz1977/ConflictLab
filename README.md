@@ -8,7 +8,7 @@
 
 ## Dabartinis etapas — v0.8 Human Wave 1
 
-**Statusas:** `PILOT READY / wave1-v0.2 FROZEN`
+**Statusas:** `PILOT READY / wave1-v0.3 FROZEN`
 
 Aktyvus tyrimo etapas — šešių stimulus-manipuliacijų šeimų aklas žmogaus reakcijų patikrinimas.
 
@@ -18,12 +18,13 @@ Aktyvus tyrimo etapas — šešių stimulus-manipuliacijų šeimų aklas žmogau
 - X/Y pasirinkimas neturi iš anksto priskirtos psichologinės krypties
 - AW kaip atskira statinių stimulų ašis yra **SUSPENDED**
 - naujų stimulų iki Human Wave 1 duomenų **negeneruojame**
-- Hostinger Human Wave 1 v0.2 hardening baigtas
+- Hostinger Human Wave 1 hardening baigtas
+- neutralus v0.3 participant flow + vertikalus 1:1 pateikimas gyvai patikrinti
 - live mobile + MySQL smoke test: **PASS**
 
 **Human Wave 1 live:** `https://omesg360.eu/wave1/`
 
-Ne-slaptas v0.2 deployment source dabar saugomas `deploy/wave1-hostinger/`. Tikras `config.php`, DB slaptažodžiai ir dalyvių duomenys į repo nekeliami.
+Ne-slaptas v0.3 deployment source saugomas `deploy/wave1-hostinger/`. Tikras `config.php`, DB slaptažodžiai ir dalyvių duomenys į repo nekeliami.
 
 ---
 
@@ -64,15 +65,17 @@ Aktyvus planas: `docs/experiments/stimulus-validation/WAVE1_PLAN.md`
 
 ---
 
-## Human Wave 1 v0.2
+## Human Wave 1 v0.3
 
 Vienoje blind sesijoje:
 
 - 6 poros, jų tvarka randomizuojama
-- left/right pozicija randomizuojama kiekvienai porai
-- pasirinkimas: `left`, `right` arba `no_clear_choice`
+- kiekviena pora rodoma vertikaliai, 1:1, stengiantis išlaikyti visą vaizdą be crop-to-fill
+- X/Y atsitiktinai paskiriami į pirmą/antrą vertikalią poziciją
+- neutralus klausimas: `Kurį renkiesi?`
+- pasirinkimas: pirmas vaizdas, antras vaizdas arba `no_clear_choice` (`Neturiu aiškaus pasirinkimo`)
 - priežasties free text — neprivalomas
-- reakcijos stiprumas 1–5 — neprivalomas
+- reakcijos stiprumas 1–5 — neprivalomas po vaizdo pasirinkimo
 - `hard_to_identify` fiksuojamas atskirai nuo `no_clear_choice`
 - `presentation_index` = 1–6
 - `latency_ms` pradedamas skaičiuoti tik sėkmingai užsikrovus abiem vaizdams
@@ -92,7 +95,7 @@ no_clear_choice != hard_to_identify != empty free text
 
 | Sluoksnis | Statusas | Paskirtis |
 |---|---|---|
-| **Human Wave 1** | **PILOT READY / v0.2 FROZEN** | realių dalyvių blind multi-pair sesija |
+| **Human Wave 1** | **PILOT READY / v0.3 FROZEN** | realių dalyvių blind multi-pair sesija |
 | **Stimulus Validation Wave 1** | INTERNAL CURATION COMPLETE | 6 šeimos, 12 assetų |
 | **prototype-nine-v1 / Pair P0** | FROZEN TECHNICAL/UX REFERENCE | ankstesnio srauto ir radaro techninis etalonas, ne dabartinė metodologinė tiesa |
 | **v0.7** | FROZEN BASELINE | metodologinių ir architektūrinių komponentų šaltinis |
@@ -110,7 +113,7 @@ Naujas žmogus ar AI turėtų skaityti tokia tvarka:
 3. `docs/adr/ADR-011-stimulus-signal-separation.md` — stimulus ≠ response ≠ signal riba
 4. `docs/experiments/pair-p0/METHODOLOGY_DELTA_2026-08-10.md` — V1.3 naujesni sprendimai
 5. `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` — AW suspension
-6. `deploy/wave1-hostinger/README.md` — v0.2 deployment freeze
+6. `deploy/wave1-hostinger/README.md` — v0.3 deployment freeze
 7. `REPOSITORY_INVENTORY.md` — failų statusai ir istorinis sluoksnis
 
 ---
@@ -124,7 +127,7 @@ ConflictLab/
 ├── REPOSITORY_INVENTORY.md
 ├── WHY_CONFLICTLAB.md              ← istorinis / teorinis rationale; ne vienintelis v0.8 truth source
 ├── deploy/
-│   └── wave1-hostinger/            ← v0.2 non-secret deployment mirror
+│   └── wave1-hostinger/            ← v0.3 non-secret deployment mirror
 │       ├── index.html
 │       ├── api.php
 │       ├── config.example.php
