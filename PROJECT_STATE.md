@@ -7,12 +7,12 @@
 
 ## 1. CURRENT MILESTONE
 
-**v0.8 Human Wave 1 — PILOT READY.**
+**v0.8 Human Wave 1 — PILOT READY / `wave1-v0.3` FROZEN.**
 
-Stimulus curation is complete. The Human Wave 1 platform is live on Hostinger, pre-pilot hardening is complete, non-secret deployment source is mirrored in this repository, and a real-device live data-capture smoke test has passed.
+Stimulus curation is complete. The Human Wave 1 platform is live on Hostinger, pre-pilot hardening is complete, the participant presentation has been neutralized and aligned to the 1:1 vertical standard, non-secret deployment source is mirrored in this repository, and a real-device v0.3 smoke test has passed.
 
 **Live Human Wave 1:** `https://omesg360.eu/wave1/`  
-**Frozen pilot protocol:** `wave1-v0.2`
+**Frozen real-pilot protocol:** `wave1-v0.3`
 
 Deployment source:
 
@@ -24,7 +24,7 @@ deploy/wave1-hostinger/migrate_wave1.sql
 deploy/wave1-hostinger/README.md
 ```
 
-The committed v0.2 artifacts were supplied for deployment and then verified through the live mobile flow and MySQL rows. They were not independently downloaded back from Hostinger for a byte-for-byte server comparison.
+The committed v0.3 artifacts were supplied for deployment and then verified through the live mobile flow and MySQL rows. They were not independently downloaded back from Hostinger for a byte-for-byte server comparison.
 
 ---
 
@@ -112,24 +112,26 @@ UI: HTML + vanilla JS
 API: PHP
 Storage: MySQL
 Assets: local /wave1/assets/
-Protocol: wave1-v0.2
+Protocol: wave1-v0.3
 ```
 
 Current participant flow:
 
 1. intro → Start
 2. six pairs in randomized order
-3. left/right randomized per pair
-4. participant selects left, right, or `no_clear_choice`
-5. after left/right choice:
+3. two 1:1 assets shown vertically; crop-to-fill is avoided with `object-fit: contain`
+4. X/Y randomized into first/second vertical position per pair
+5. neutral prompt: `Kurį renkiesi?`
+6. participant selects first image, second image, or `no_clear_choice` (`Neturiu aiškaus pasirinkimo`)
+7. after an image choice:
    - optional free-text reason
    - optional reaction intensity 1–5
    - independent `hard_to_identify` option
-6. after `no_clear_choice`:
+8. after `no_clear_choice`:
    - optional free-text reason
    - independent `hard_to_identify` option
-7. response must save successfully before next pair
-8. thank-you screen after six stored responses
+9. response must save successfully before next pair
+10. thank-you screen after six stored responses
 
 Important raw-state distinction:
 
@@ -138,6 +140,8 @@ no_clear_choice != hard_to_identify != empty free text
 ```
 
 `reaction_intensity` remains an optional ordinal 1–5 self-report. It is not confidence, latency, valence, or vector magnitude, and must not be multiplied into a signal vector.
+
+The database retains `left_asset` / `right_asset` and `left` / `right` choice names for continuity. In the mobile UI they correspond to **first/second vertical presentation**, not literal screen-left/screen-right positions.
 
 Current response capture:
 
@@ -170,32 +174,37 @@ No live credentials or participant dataset belong in GitHub.
 
 ---
 
-## 6. LIVE SMOKE TEST — PASS
+## 6. LIVE v0.3 SMOKE TEST — PASS
 
 Real-device verification on 2026-08-13 confirmed:
 
 - all six pairs complete
-- one session writes exactly six rows under one `participant_id`
-- `presentation_index` persists as 1–6
-- new rows persist `protocol_version = wave1-v0.2`
-- randomized `left_asset` / `right_asset` persist
-- left/right and `no_clear_choice` paths persist
-- optional free text persists when entered
-- optional intensity persists
-- `hard_to_identify` persists independently, including with a left/right choice and intensity
+- one session writes six responses under one `participant_id`
+- presentation order persists through the six-pair sequence
+- new rows persist `protocol_version = wave1-v0.3`
+- randomized first/second asset assignment persists in the existing `left_asset` / `right_asset` fields
+- image-choice and `no_clear_choice` paths persist
+- optional free text / intensity / `hard_to_identify` remain compatible with the hardened capture flow
 - `latency_ms` is populated
+- final `Ačiū` screen is reached after successful response progression
 
-**Live data-capture smoke test: PASS.**
+**Live v0.3 data-capture smoke test: PASS.**
 
-Rows created before the pilot freeze should be treated as pre-pilot technical data unless separately documented otherwise. Do not mix them into Human Wave 1 analysis solely because they remain in the same table.
+Known v0.3 technical smoke-test session — exclude from Human Wave 1 research analysis:
+
+```text
+participant_id = 82d751a8-cbca-4854-9198-75719ea3e437
+```
+
+Rows from v0.1/v0.2 and the known v0.3 smoke-test participant are technical/pre-pilot data unless separately documented otherwise.
 
 ---
 
 ## 7. NEXT ACTIONS — ORDERED
 
-1. **Begin the first real Human Wave 1 participant cycle using only `wave1-v0.2`.**
-2. Preserve the v0.2 participant flow and capture semantics during the pilot.
-3. Exclude pre-pilot technical rows from research analysis using protocol/inclusion rules; do not delete historical test rows blindly.
+1. **Invite the first real Human Wave 1 volunteers and collect only `wave1-v0.3` sessions.**
+2. Preserve the v0.3 participant flow, wording, presentation and capture semantics during the pilot.
+3. Exclude pre-pilot technical rows and the known v0.3 smoke-test session from research analysis.
 4. After the planned Human Wave 1 sample, analyze each manipulation family for:
    - supported
    - cross-load
@@ -207,7 +216,7 @@ Rows created before the pilot freeze should be treated as pre-pilot technical da
 
 Do not expand the stimulus library before evidence from this cycle.
 
-Any participant-facing or capture-semantics change after pilot start requires a new protocol version (for example `wave1-v0.3`) and an explicit delta before additional research data are collected.
+Any participant-facing, presentation, capture-semantics or stimulus change after real pilot collection starts requires a new protocol version and an explicit delta before additional research data are collected.
 
 ---
 
@@ -215,7 +224,7 @@ Any participant-facing or capture-semantics change after pilot start requires a 
 
 | Layer | Status | Meaning |
 |---|---|---|
-| Human Wave 1 | **PILOT READY / v0.2 FROZEN** | live Hostinger blind validation platform |
+| Human Wave 1 | **PILOT READY / v0.3 FROZEN** | live Hostinger blind validation platform |
 | Stimulus Validation Wave 1 | CURATION COMPLETE | 6 families / 12 assets |
 | `prototype-nine-v1` | FROZEN TECHNICAL/UX REFERENCE | historical prototype behavior, not current v0.8 method truth |
 | Pair P0 documentation | MIXED | current methodological decisions + historical prototype records |
@@ -236,7 +245,7 @@ Read in this order:
 5. `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` — AW suspension
 6. `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md` — candidate design spec, subject to newer delta/ADR decisions
 7. `docs/experiments/stimulus-validation/SESSION_CHECKPOINT_2026-08-12.md` — frozen curation checkpoint
-8. `deploy/wave1-hostinger/README.md` — current v0.2 deployment record
+8. `deploy/wave1-hostinger/README.md` — current v0.3 deployment record
 9. `REPOSITORY_INVENTORY.md` — file status map
 
 `WHY_CONFLICTLAB.md`, v0.7 methodology files, Pair P0 prototype docs, N0 docs and beta-test packs are useful history/reference but must not override the hierarchy above.
@@ -281,13 +290,14 @@ Earlier consolidation:
 - archived confirmed obsolete root `validation/` content to `archive/v0.4-validation/`
 - archived obsolete single-image `docs/review.html` and old `docs/generator.html` to `archive/legacy-tools/`
 
-Current pilot-freeze update:
+Pilot freeze:
 
-- mirrors non-secret Human Wave 1 v0.2 deployment source under `deploy/wave1-hostinger/`
+- mirrors non-secret Human Wave 1 deployment source under `deploy/wave1-hostinger/`
 - records the applied DB migration and safe config template
 - records removal of public `check.php`
-- records live smoke-test PASS
-- freezes `wave1-v0.2` as the pilot baseline
+- aligns `WAVE1_PLAN.md` with vertical 1:1 presentation and current raw schema
+- records v0.3 live smoke-test PASS
+- freezes `wave1-v0.3` as the real-participant pilot baseline
 
 No stimulus assets, stable tags, Pair P0 code, v0.7 code, or signal-mapping decisions are changed by this deployment freeze.
 
@@ -300,6 +310,7 @@ No stimulus assets, stable tags, Pair P0 code, v0.7 code, or signal-mapping deci
 3. Do not generate additional Wave 1 stimuli before human evidence.
 4. Do not treat product continuation as domain trajectory evidence.
 5. Do not modify frozen Pair P0/v0.7 flows without explicit instruction.
-6. Treat `wave1-v0.2` as frozen once real pilot collection begins; participant-facing/capture changes require a new protocol version.
-7. Never commit Hostinger DB passwords, API keys, live `config.php`, or participant data.
-8. When state conflicts exist, prefer the source-of-truth hierarchy above.
+6. Treat `wave1-v0.3` as frozen for real participant collection; participant-facing/presentation/capture changes require a new protocol version.
+7. Exclude known technical/pre-pilot sessions from research analysis.
+8. Never commit Hostinger DB passwords, API keys, live `config.php`, or participant data.
+9. When state conflicts exist, prefer the source-of-truth hierarchy above.
