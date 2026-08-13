@@ -137,12 +137,13 @@ It provides:
 - password-protected read-only access
 - `wave1-v0.3` filtering
 - participant count and complete 6/6 session count
+- primary pair-level statistics by **candidate pair + concrete asset variant**, with `no_clear_choice` separate
+- Top/Bottom choice counts only as an informational position-bias diagnostic
 - one card per participant
 - Top/Bottom normalization of the legacy DB position names
-- X/Y/NCC normalization for analysis convenience
+- actual selected asset filename
 - free text, intensity, `hard_to_identify`, latency
-- pair-level X/Y/NCC counts
-- CSV export
+- CSV export using normalized `top_asset`, `bottom_asset`, `choice_position`, and `chosen_asset`
 - known technical smoke-test session hidden by default
 
 Deployment details are in `ADMIN_README.md`.
