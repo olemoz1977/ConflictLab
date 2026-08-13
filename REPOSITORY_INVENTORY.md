@@ -1,7 +1,7 @@
 # ConflictLab — Repository Inventory
 
 **Date:** 2026-08-13  
-**Scope:** current `main` state + Human Wave 1 v0.2 deployment freeze  
+**Scope:** current `main` state + Human Wave 1 v0.3 deployment freeze  
 **Purpose:** prevent current, frozen and historical artifacts from being mixed into one methodology.
 
 ## Classification
@@ -42,7 +42,7 @@ Directory: `docs/experiments/stimulus-validation/`
 
 | Path | Class | Status |
 |---|---|---|
-| `WAVE1_PLAN.md` | **CURRENT** | six-family blind human validation protocol |
+| `WAVE1_PLAN.md` | **CURRENT** | frozen `wave1-v0.3` six-family blind human validation protocol |
 | `SESSION_CHECKPOINT_2026-08-12.md` | CURRENT / CHECKPOINT | 6/6 KEEP, 12 assets, X/Y conventions |
 | `assets/` | **CURRENT** | frozen Wave 1 binary assets; do not regenerate before evidence |
 | `pair-review.html` | SUPPORTING | internal Pair Candidate Review tool; curation complete |
@@ -76,19 +76,19 @@ All: `signal_mapping_status: NONE`.
 
 ---
 
-## 4. HUMAN WAVE 1 DEPLOYMENT — v0.2 FROZEN
+## 4. HUMAN WAVE 1 DEPLOYMENT — v0.3 FROZEN
 
 | Location | Class | Note |
 |---|---|---|
-| `https://omesg360.eu/wave1/` | **EXTERNAL-LIVE** | Hostinger Human Wave 1 platform; live smoke test PASS |
-| `deploy/wave1-hostinger/README.md` | **CURRENT** | v0.2 deployment record, verification and freeze rules |
-| `deploy/wave1-hostinger/index.html` | **DEPLOYMENT-MIRROR** | participant UI, protocol `wave1-v0.2` |
-| `deploy/wave1-hostinger/api.php` | **DEPLOYMENT-MIRROR** | hardened response API, explicitly writes `wave1-v0.2` |
+| `https://omesg360.eu/wave1/` | **EXTERNAL-LIVE** | Hostinger Human Wave 1 platform; v0.3 live smoke test PASS |
+| `deploy/wave1-hostinger/README.md` | **CURRENT** | v0.3 deployment record, verification and freeze rules |
+| `deploy/wave1-hostinger/index.html` | **DEPLOYMENT-MIRROR** | participant UI, protocol `wave1-v0.3`; neutral prompt; vertical 1:1 presentation |
+| `deploy/wave1-hostinger/api.php` | **DEPLOYMENT-MIRROR** | hardened response API, explicitly writes `wave1-v0.3` |
 | `deploy/wave1-hostinger/migrate_wave1.sql` | **DEPLOYMENT-MIRROR / SUPPORTING** | applied pre-freeze DB migration |
 | `deploy/wave1-hostinger/config.example.php` | **DEPLOYMENT-MIRROR** | non-secret config template only |
 | live Hostinger `config.php` | **EXTERNAL-LIVE / SECRET** | never commit |
 
-The committed v0.2 artifacts were supplied for deployment and then verified through the live mobile flow and MySQL row inspection. No independent byte-for-byte download-back comparison from Hostinger has been performed.
+The committed v0.3 artifacts were supplied for deployment and then verified through the live mobile flow and MySQL row inspection. No independent byte-for-byte download-back comparison from Hostinger has been performed.
 
 Current raw capture includes:
 
@@ -117,9 +117,17 @@ Current DB duplicate protection: `UNIQUE (participant_id, candidate_id)`.
 
 `setup.php` and public `check.php` are not part of the live pilot baseline.
 
-Live mobile smoke test verified one session as six rows under one participant, `presentation_index` 1–6, `protocol_version = wave1-v0.2`, persisted left/right presentation, choice paths, optional reason, optional intensity, independent `hard_to_identify`, and populated latency.
+The UI presents the pair vertically. Existing database names `left_asset` / `right_asset` and choice values `left` / `right` are retained for continuity and correspond to first/second vertical position in the participant UI.
 
-Status: **PILOT READY / v0.2 FROZEN**.
+Live v0.3 mobile smoke test verified the six-pair flow, `protocol_version = wave1-v0.3`, persisted randomized presentation, response paths and latency, and successful completion.
+
+Known v0.3 technical smoke-test session to exclude from research analysis:
+
+```text
+82d751a8-cbca-4854-9198-75719ea3e437
+```
+
+Status: **PILOT READY / v0.3 FROZEN**.
 
 ---
 
@@ -238,10 +246,11 @@ Historical Git tags/commits preserve their original locations.
 2. Freeze technically useful historical paths when moving them could break milestone traceability.
 3. Archive only confirmed obsolete artifacts with no active dependency.
 4. Never commit Hostinger passwords, API keys, live DB credentials, live `config.php`, or participant data.
-5. `deploy/wave1-hostinger/` is the non-secret v0.2 deployment mirror; asset binaries remain canonical under `docs/experiments/stimulus-validation/assets/`.
+5. `deploy/wave1-hostinger/` is the non-secret v0.3 deployment mirror; asset binaries remain canonical under `docs/experiments/stimulus-validation/assets/`.
 6. Human Wave 1 data itself must not be committed into this public repository.
-7. Treat `wave1-v0.2` as frozen once real pilot collection begins. Participant-facing or capture-semantics changes require a new protocol version and documented delta.
-8. Before a methodology change, update `PROJECT_STATE.md` and the relevant canonical spec/checkpoint rather than accumulating contradictory notes.
+7. Treat `wave1-v0.3` as frozen for real participant collection. Participant-facing wording, presentation, capture semantics or stimulus changes require a new protocol version and documented delta.
+8. Exclude known technical/pre-pilot sessions from Human Wave 1 research analysis.
+9. Before a methodology change, update `PROJECT_STATE.md` and the relevant canonical spec/checkpoint rather than accumulating contradictory notes.
 
 ---
 
