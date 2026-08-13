@@ -1,6 +1,6 @@
 # ConflictLab v0.8 — Stimulus Validation Wave 1
 
-**Status:** ACTIVE — internal curation complete; first real Human Wave 1 participant cycle not yet started  
+**Status:** PILOT READY — `wave1-v0.3` FROZEN; first real participant cycle not yet started  
 **Date:** 2026-08-13  
 **Scope:** pre-product blind stimulus validation
 
@@ -40,7 +40,7 @@ The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair ar
 
 ## Next action
 
-**Human Wave 1 blind multi-pair participant cycle.**
+**Begin the first real Human Wave 1 blind multi-pair participant cycle using only `wave1-v0.3`.**
 
 Do not generate additional stimulus before Wave 1 human evidence exists.
 
@@ -63,7 +63,7 @@ It sends X/Y images to Gemini for constrained multimodal audit of CONTROL / EXPE
 AI recommendation is curation support only — it does not validate CS/CR, assign signal direction, or replace human-response evidence.
 Final curation verdict was human.
 
-## Blind participant flow
+## Blind participant flow — v0.3 frozen
 
 For every candidate pair:
 
@@ -87,13 +87,13 @@ Do not show CS/CR, family names, hypotheses, signal directions, radar, or reflec
 
 ## Minimum raw event schema
 
-Implementation field names should preserve the following raw information:
+Implementation field names preserve the following raw information:
 
 ```json
 {
   "participant_id": "anonymous-session-id",
   "candidate_id": "CS-PR-01",
-  "protocol_version": "wave1-v0.x",
+  "protocol_version": "wave1-v0.3",
   "presentation_index": 1,
   "left_asset": "...",
   "right_asset": "...",
@@ -137,3 +137,9 @@ second exemplars only for surviving families
 ↓
 candidate stimulus pool
 ```
+
+## Freeze rule
+
+`wave1-v0.3` is the real-pilot baseline. Once real participant collection starts, do not change participant-facing wording, presentation, capture semantics, or stimulus assets under this protocol version.
+
+Any such change requires a new protocol version and an explicit documented delta before further research data are collected.
