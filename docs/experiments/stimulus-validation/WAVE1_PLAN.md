@@ -1,7 +1,7 @@
 # ConflictLab v0.8 — Stimulus Validation Wave 1
 
-**Status:** ACTIVE — internal curation complete, awaiting human session
-**Date:** 2026-08-12
+**Status:** ACTIVE — internal curation complete; first real Human Wave 1 participant cycle not yet started  
+**Date:** 2026-08-13  
 **Scope:** pre-product blind stimulus validation
 
 ## Purpose
@@ -40,18 +40,21 @@ The purpose is to test families, not to fill a predetermined 3+3+3 or 18-pair ar
 
 ## Next action
 
-**Human Wave 1 blind multi-pair session.**
+**Human Wave 1 blind multi-pair participant cycle.**
 
 Do not generate additional stimulus before Wave 1 human evidence exists.
 
-## Asset rules
+## Asset and presentation rules
 
 - every stimulus asset: **1:1**
 - X and Y are separate files
 - no labels, percentages, axis names, cues, or explanatory text inside assets
 - the two variants should be as visually identical as practical
 - only the intended manipulated property should change
-- left/right position must be randomized by the validation UI
+- pair assets are presented **vertically** in the participant UI
+- preserve the full 1:1 image as far as practical; avoid cropping (`object-fit: contain` rather than crop-to-fill)
+- the assignment of X/Y to first/second vertical position must be randomized by the validation UI
+- X/Y position has no psychological meaning
 
 ## Internal curation gate (completed)
 
@@ -64,30 +67,47 @@ Final curation verdict was human.
 
 For every candidate pair:
 
-1. show X/Y assets with randomized left/right order
-2. ask: **Which do you choose?**
-3. allow `no_clear_choice`
-4. ask free text first: **What most influenced your choice?**
-5. optionally capture reaction intensity 1–5
-6. continue to next pair
+1. show the two 1:1 assets vertically, with randomized first/second position
+2. ask neutrally: **Kurį renkiesi?** / **Which do you choose?**
+3. allow `no_clear_choice` (`Neturiu aiškaus pasirinkimo`)
+4. allow optional free-text reason
+5. allow optional reaction intensity 1–5 for a left/right choice
+6. allow independent `hard_to_identify` when the participant cannot clearly name the reason
+7. save the response successfully before moving to the next pair
+
+Important distinction:
+
+```text
+no_clear_choice != hard_to_identify != empty free text
+```
 
 Do not show CS/CR, family names, hypotheses, signal directions, radar, or reflection output.
 
+`reaction_intensity` is an optional ordinal 1–5 self-report. It is not confidence, latency, valence, or signal-vector magnitude.
+
 ## Minimum raw event schema
+
+Implementation field names should preserve the following raw information:
 
 ```json
 {
   "participant_id": "anonymous-session-id",
   "candidate_id": "CS-PR-01",
-  "candidate_version": "v0.1",
+  "protocol_version": "wave1-v0.x",
+  "presentation_index": 1,
   "left_asset": "...",
   "right_asset": "...",
   "choice": "left | right | no_clear_choice",
-  "free_text_reason": "...",
-  "reaction_intensity": 1,
-  "choice_latency_ms": 0
+  "free_text": "... | null",
+  "intensity": "1..5 | null",
+  "hard_to_identify": "0 | 1",
+  "latency_ms": 0
 }
 ```
+
+`left_asset` / `right_asset` are retained implementation field names for continuity with the existing database. In the current mobile UI they correspond to randomized **first/second vertical presentation**, not literal screen-left/screen-right positions.
+
+Latency starts only after both pair images have loaded successfully and the pair is available for choice.
 
 ## Analysis target
 
