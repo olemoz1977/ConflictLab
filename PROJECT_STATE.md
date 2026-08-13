@@ -7,13 +7,24 @@
 
 ## 1. CURRENT MILESTONE
 
-**v0.8 Human Wave 1 — PRE-PILOT HARDENING.**
+**v0.8 Human Wave 1 — PILOT READY.**
 
-Stimulus curation is complete. A Human Wave 1 platform has been deployed on Hostinger and is reported working end-to-end. Before inviting a wider participant group, the capture flow and deployment need a final hardening pass.
+Stimulus curation is complete. The Human Wave 1 platform is live on Hostinger, pre-pilot hardening is complete, non-secret deployment source is mirrored in this repository, and a real-device live data-capture smoke test has passed.
 
-**Live Human Wave 1:** `https://omesg360.eu/wave1/`
+**Live Human Wave 1:** `https://omesg360.eu/wave1/`  
+**Frozen pilot protocol:** `wave1-v0.2`
 
-**Important provenance note:** Hostinger deployment details below come from the 2026-08-13 technical handoff. The exact live PHP/HTML source has **not yet been mirrored into this repository**. Do not reconstruct or overwrite live code from documentation alone.
+Deployment source:
+
+```text
+deploy/wave1-hostinger/index.html
+deploy/wave1-hostinger/api.php
+deploy/wave1-hostinger/config.example.php
+deploy/wave1-hostinger/migrate_wave1.sql
+deploy/wave1-hostinger/README.md
+```
+
+The committed v0.2 artifacts were supplied for deployment and then verified through the live mobile flow and MySQL rows. They were not independently downloaded back from Hostinger for a byte-for-byte server comparison.
 
 ---
 
@@ -45,7 +56,7 @@ AW as a peer **static-stimulus axis is SUSPENDED** for active v0.8 development.
 - do not create new AW-specific static-image assets
 - previous AW candidates remain historical exploratory evidence
 - `prototype-nine-v1` AW behavior remains frozen technical/UX prototype behavior
-- domain-specific response trajectory is an **active hypothesis / not validated**
+- domain-specific response trajectory is an active hypothesis, not validated
 - product engagement and session completion must not be used as automatic trajectory evidence
 
 Current decision: `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`.
@@ -54,7 +65,7 @@ Current decision: `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.
 
 ## 4. STIMULUS VALIDATION WAVE 1 — INTERNAL CURATION COMPLETE
 
-All 6 families = **KEEP for Wave 1**. All 12 assets are committed.
+All 6 families = **KEEP for Human Wave 1**. All 12 assets are committed.
 
 ### CS
 1. `CS-PR-01` — Partial Reveal
@@ -90,9 +101,9 @@ Active plan: `docs/experiments/stimulus-validation/WAVE1_PLAN.md`.
 
 ---
 
-## 5. HUMAN WAVE 1 — HOSTINGER DEPLOYMENT
+## 5. HUMAN WAVE 1 — FROZEN PILOT IMPLEMENTATION
 
-Technical handoff dated 2026-08-13 reports:
+Live stack:
 
 ```text
 Hostinger site: omesg360.eu
@@ -101,79 +112,110 @@ UI: HTML + vanilla JS
 API: PHP
 Storage: MySQL
 Assets: local /wave1/assets/
+Protocol: wave1-v0.2
 ```
 
-Current reported flow:
+Current participant flow:
 
 1. intro → Start
 2. six pairs in randomized order
 3. left/right randomized per pair
 4. participant selects left, right, or `no_clear_choice`
-5. left/right choice → free text + intensity screen
-6. `no_clear_choice` currently skips reason capture
-7. response POST → PHP API → MySQL
-8. thank-you screen
+5. after left/right choice:
+   - optional free-text reason
+   - optional reaction intensity 1–5
+   - independent `hard_to_identify` option
+6. after `no_clear_choice`:
+   - optional free-text reason
+   - independent `hard_to_identify` option
+7. response must save successfully before next pair
+8. thank-you screen after six stored responses
 
-Current DB handoff schema stores:
+Important raw-state distinction:
+
+```text
+no_clear_choice != hard_to_identify != empty free text
+```
+
+`reaction_intensity` remains an optional ordinal 1–5 self-report. It is not confidence, latency, valence, or vector magnitude, and must not be multiplied into a signal vector.
+
+Current response capture:
 
 ```text
 participant_id
 candidate_id
+protocol_version
+presentation_index
 left_asset
 right_asset
 choice
 free_text
 intensity
+hard_to_identify
 latency_ms
 created_at
 ```
 
-Reported working at handoff:
+DB duplicate protection:
 
-- mobile UI loads
-- six pairs render
-- randomized pair order and left/right flip work
-- API writes to DB
-- 28 records were present at handoff
+```text
+UNIQUE (participant_id, candidate_id)
+```
 
-**Those 28 records have not been classified in repo as test vs real participant data. Do not delete them blindly.**
+API controls include candidate and asset whitelists, UUID validation, choice/index/intensity/latency validation, duplicate protection and failure-aware progression.
 
-### Known pre-pilot hardening gaps
+The public `check.php` inspection helper has been removed. `setup.php` is not part of the live deployment.
 
-1. Public `check.php` should be removed or access-protected before wider rollout.
-2. `no_clear_choice` should still allow/ask for spontaneous reason capture; current flow skips it.
-3. `hard_to_identify` is not yet stored as a distinct state from `no_clear_choice` or simple text skipping.
-4. DB/event schema does not yet store `protocol_version` or `presentation_index`.
-5. Duplicate/retry idempotency should be verified beyond the current rate limit.
-6. Verify that `latency_ms` starts only after both images are actually loaded/displayed.
-7. There is no admin CSV/JSON export yet; phpMyAdmin/direct SQL is the current access route.
-8. UI is Lithuanian only; this is not a blocker for the first LT pilot.
-9. Exact live Hostinger source is not yet version-controlled in this repo.
-
-Deployment handoff mirror: `deploy/wave1-hostinger/README.md`.
+No live credentials or participant dataset belong in GitHub.
 
 ---
 
-## 6. NEXT ACTIONS — ORDERED
+## 6. LIVE SMOKE TEST — PASS
 
-Before wider participant rollout:
+Real-device verification on 2026-08-13 confirmed:
 
-1. **Pre-pilot hardening on Hostinger** — address the capture/security gaps above without altering stimulus assets or methodology.
-2. **Verify hardening with real-device smoke test** — all 6 pairs, all response paths, DB persistence, retry behavior.
-3. **Classify existing DB records** — determine which are technical test records before any cleanup.
-4. **Mirror deployment source to GitHub without secrets** — exact `index.html`, `api.php`, schema/migration, and `config.example.php`; never commit live DB credentials.
-5. **Freeze a Human Wave 1 protocol/deployment version** before inviting the research sample.
-6. Only then begin the first real Human Wave 1 participant cycle.
+- all six pairs complete
+- one session writes exactly six rows under one `participant_id`
+- `presentation_index` persists as 1–6
+- new rows persist `protocol_version = wave1-v0.2`
+- randomized `left_asset` / `right_asset` persist
+- left/right and `no_clear_choice` paths persist
+- optional free text persists when entered
+- optional intensity persists
+- `hard_to_identify` persists independently, including with a left/right choice and intensity
+- `latency_ms` is populated
+
+**Live data-capture smoke test: PASS.**
+
+Rows created before the pilot freeze should be treated as pre-pilot technical data unless separately documented otherwise. Do not mix them into Human Wave 1 analysis solely because they remain in the same table.
+
+---
+
+## 7. NEXT ACTIONS — ORDERED
+
+1. **Begin the first real Human Wave 1 participant cycle using only `wave1-v0.2`.**
+2. Preserve the v0.2 participant flow and capture semantics during the pilot.
+3. Exclude pre-pilot technical rows from research analysis using protocol/inclusion rules; do not delete historical test rows blindly.
+4. After the planned Human Wave 1 sample, analyze each manipulation family for:
+   - supported
+   - cross-load
+   - insufficient
+   - NONE
+   plus dominant confounds.
+5. Decide KEEP / REVISE / REJECT by family from human evidence.
+6. Only surviving families may receive second exemplars.
 
 Do not expand the stimulus library before evidence from this cycle.
 
+Any participant-facing or capture-semantics change after pilot start requires a new protocol version (for example `wave1-v0.3`) and an explicit delta before additional research data are collected.
+
 ---
 
-## 7. PROJECT LAYERS
+## 8. PROJECT LAYERS
 
 | Layer | Status | Meaning |
 |---|---|---|
-| Human Wave 1 | ACTIVE / PRE-PILOT | live Hostinger validation platform |
+| Human Wave 1 | **PILOT READY / v0.2 FROZEN** | live Hostinger blind validation platform |
 | Stimulus Validation Wave 1 | CURATION COMPLETE | 6 families / 12 assets |
 | `prototype-nine-v1` | FROZEN TECHNICAL/UX REFERENCE | historical prototype behavior, not current v0.8 method truth |
 | Pair P0 documentation | MIXED | current methodological decisions + historical prototype records |
@@ -183,7 +225,7 @@ The old `3 AW + 3 CS + 3 CR` and `18 unique pairs` model is historical/prototype
 
 ---
 
-## 8. SOURCE OF TRUTH HIERARCHY
+## 9. SOURCE OF TRUTH HIERARCHY
 
 Read in this order:
 
@@ -194,14 +236,14 @@ Read in this order:
 5. `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` — AW suspension
 6. `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md` — candidate design spec, subject to newer delta/ADR decisions
 7. `docs/experiments/stimulus-validation/SESSION_CHECKPOINT_2026-08-12.md` — frozen curation checkpoint
-8. `deploy/wave1-hostinger/README.md` — external live deployment handoff
+8. `deploy/wave1-hostinger/README.md` — current v0.2 deployment record
 9. `REPOSITORY_INVENTORY.md` — file status map
 
 `WHY_CONFLICTLAB.md`, v0.7 methodology files, Pair P0 prototype docs, N0 docs and beta-test packs are useful history/reference but must not override the hierarchy above.
 
 ---
 
-## 9. FROZEN / HISTORICAL REFERENCES
+## 10. FROZEN / HISTORICAL REFERENCES
 
 ### prototype-nine-v1 / Pair P0
 
@@ -230,28 +272,34 @@ Do not rewrite the frozen prototype solely to mirror current v0.8 methodology.
 
 ---
 
-## 10. REPOSITORY HOUSEKEEPING STATUS — 2026-08-13
+## 11. REPOSITORY HOUSEKEEPING STATUS — 2026-08-13
 
-This consolidation pass:
+Earlier consolidation:
 
-- refreshes README / PROJECT_STATE / REPOSITORY_INVENTORY
-- preserves live/frozen Pair P0 and v0.7 paths
-- archives confirmed obsolete root `validation/` content to `archive/v0.4-validation/`
-- archives the obsolete single-image `docs/review.html` and old `docs/generator.html` to `archive/legacy-tools/`
-- leaves `docs/beta-test/`, N0 documents and old release/tester docs in place as historical references where moving them could break milestone documentation
-- adds a non-secret Hostinger deployment handoff folder
+- refreshed README / PROJECT_STATE / REPOSITORY_INVENTORY
+- preserved live/frozen Pair P0 and v0.7 paths
+- archived confirmed obsolete root `validation/` content to `archive/v0.4-validation/`
+- archived obsolete single-image `docs/review.html` and old `docs/generator.html` to `archive/legacy-tools/`
 
-No stimulus assets, stable tags, Pair P0 code, v0.7 code, or methodology decisions are changed by this housekeeping pass.
+Current pilot-freeze update:
+
+- mirrors non-secret Human Wave 1 v0.2 deployment source under `deploy/wave1-hostinger/`
+- records the applied DB migration and safe config template
+- records removal of public `check.php`
+- records live smoke-test PASS
+- freezes `wave1-v0.2` as the pilot baseline
+
+No stimulus assets, stable tags, Pair P0 code, v0.7 code, or signal-mapping decisions are changed by this deployment freeze.
 
 ---
 
-## 11. FOR AI ASSISTANTS
+## 12. FOR AI ASSISTANTS
 
 1. Do not infer signal polarity from stimulus X/Y.
 2. Do not create AW-specific static-image assets.
 3. Do not generate additional Wave 1 stimuli before human evidence.
 4. Do not treat product continuation as domain trajectory evidence.
 5. Do not modify frozen Pair P0/v0.7 flows without explicit instruction.
-6. Do not reconstruct live Hostinger source from this document; obtain the actual files first.
-7. Never commit Hostinger DB passwords, API keys or live `config.php` secrets.
+6. Treat `wave1-v0.2` as frozen once real pilot collection begins; participant-facing/capture changes require a new protocol version.
+7. Never commit Hostinger DB passwords, API keys, live `config.php`, or participant data.
 8. When state conflicts exist, prefer the source-of-truth hierarchy above.
