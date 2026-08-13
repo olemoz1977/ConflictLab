@@ -1,41 +1,18 @@
 # Human Wave 1 — Hostinger deployment
 
-**Repository candidate:** `wave1-v0.4`  
-**Last explicitly verified live baseline:** `wave1-v0.3`  
-**Date:** 2026-08-13
+**Verified baseline in this directory:** `wave1-v0.3`  
+**v0.4 status:** candidate prepared; live verification not yet recorded in repo
 
-v0.4 adds LT / EN participant language support and participant-facing privacy information. The six Wave 1 stimulus pairs and core response semantics are unchanged.
+The files `index.html`, `api.php` and `admin.php` in this directory remain the verified v0.3 mirror.
 
-## v0.4 delta
+A separate v0.4 candidate source is being staged under:
 
-- LT / EN interface
-- `?lang=lt` and `?lang=en`
-- browser-language fallback
-- raw `language` field (`lt` / `en`)
-- privacy notice before Start and privacy link after completion
-- v0.4 API protocol marker
-- v0.4 database migration in `migrate_v04_language.sql`
+```text
+deploy/wave1-hostinger-v04-candidate/
+```
 
-## Unchanged
+The v0.4 change is participant-facing and therefore uses a new protocol version. It adds LT / EN interface support, a raw `language` field and participant-facing privacy information. The six stimulus pairs, pair order randomization, Top / Bottom randomization, choice semantics, optional free text, intensity, `hard_to_identify` and latency timing rule remain unchanged.
 
-- same six pairs and assets
-- randomized pair order
-- randomized Top / Bottom assignment
-- neutral choice prompt
-- `no_clear_choice`
-- optional free text
-- optional intensity 1–5
-- independent `hard_to_identify`
-- latency timing rule
-- save-before-progress behavior
-- `signal_mapping_status: NONE`
+The DB delta is recorded in `migrate_v04_language.sql`. The methodological/protocol delta is documented in `docs/experiments/stimulus-validation/WAVE1_V04_DELTA_2026-08-13.md`.
 
-Legacy DB `left/right` names still map to Top / Bottom presentation positions. Top / Bottom remains only a position-bias diagnostic.
-
-## Verification gate
-
-Repository presence does not by itself mean v0.4 is live-verified. Before replacing v0.3 as the frozen baseline, record one complete LT smoke session and one complete EN smoke session, verify 6/6 stored rows with correct `wave1-v0.4` and language values, and record both technical smoke-test UUIDs for exclusion.
-
-See `docs/experiments/stimulus-validation/WAVE1_V04_DELTA_2026-08-13.md`.
-
-Do not silently merge v0.3 and v0.4 sessions in analysis; keep `protocol_version` and `language` available until pooling is explicitly justified.
+Do not replace the verified v0.3 baseline in `PROJECT_STATE.md` until one complete LT and one complete EN v0.4 smoke session have been checked and their technical participant UUIDs recorded for exclusion.
