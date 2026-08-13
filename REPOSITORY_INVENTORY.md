@@ -1,7 +1,7 @@
 # ConflictLab — Repository Inventory
 
 **Date:** 2026-08-13  
-**Scope:** current `main` state + Human Wave 1 external deployment handoff  
+**Scope:** current `main` state + Human Wave 1 v0.2 deployment freeze  
 **Purpose:** prevent current, frozen and historical artifacts from being mixed into one methodology.
 
 ## Classification
@@ -13,7 +13,7 @@
 - **SUPPORTING** — useful evidence, audit or tooling
 - **ARCHIVE** — intentionally removed from active paths
 - **EXTERNAL-LIVE** — deployed outside GitHub
-- **PENDING-SOURCE-MIRROR** — live implementation exists but exact source is not yet in repo
+- **DEPLOYMENT-MIRROR** — non-secret source artifact corresponding to the current deployed baseline
 
 ---
 
@@ -22,9 +22,9 @@
 | Path | Class | Purpose / note |
 |---|---|---|
 | `PROJECT_STATE.md` | **CURRENT** | read first; current milestone, methodology boundary, deployment status |
-| `README.md` | **CURRENT** | public project overview aligned to v0.8 Wave 1 |
+| `README.md` | **CURRENT** | public project overview aligned to v0.8 Human Wave 1 |
 | `REPOSITORY_INVENTORY.md` | **CURRENT** | this status map |
-| `WHY_CONFLICTLAB.md` | HISTORICAL-PROTOTYPE / SUPPORTING | valuable rationale, but several v0.7-era claims (3×4, hard latency interpretation, three peer axes) are not current v0.8 truth |
+| `WHY_CONFLICTLAB.md` | HISTORICAL-PROTOTYPE / SUPPORTING | valuable rationale, but several v0.7-era claims are not current v0.8 truth |
 | `.gitignore` | CURRENT | local/tooling ignores; deployment secrets must remain untracked |
 | `archive/` | ARCHIVE | historical project material |
 | `docs/` | MIXED | frozen baseline + active experiments + methodology |
@@ -32,7 +32,7 @@
 | `stimuli/` | FROZEN-REFERENCE | v0.7 provisional stimulus library |
 | `tests/` | SUPPORTING | engine/prototype tests |
 
-Top-level `validation/` was v0.4-era stale material and has been moved to `archive/v0.4-validation/` in the 2026-08-13 housekeeping pass.
+Top-level `validation/` was v0.4-era stale material and was moved to `archive/v0.4-validation/` in the 2026-08-13 housekeeping pass.
 
 ---
 
@@ -76,15 +76,50 @@ All: `signal_mapping_status: NONE`.
 
 ---
 
-## 4. HUMAN WAVE 1 DEPLOYMENT
+## 4. HUMAN WAVE 1 DEPLOYMENT — v0.2 FROZEN
 
 | Location | Class | Note |
 |---|---|---|
-| `https://omesg360.eu/wave1/` | **EXTERNAL-LIVE** | Hostinger Human Wave 1 platform; pre-pilot hardening pending |
-| `deploy/wave1-hostinger/README.md` | **CURRENT / PENDING-SOURCE-MIRROR** | non-secret handoff and source-control boundary |
-| live Hostinger `index.html`, `api.php`, `config.php` | **PENDING-SOURCE-MIRROR** | exact live source not yet committed; never commit live credentials |
+| `https://omesg360.eu/wave1/` | **EXTERNAL-LIVE** | Hostinger Human Wave 1 platform; live smoke test PASS |
+| `deploy/wave1-hostinger/README.md` | **CURRENT** | v0.2 deployment record, verification and freeze rules |
+| `deploy/wave1-hostinger/index.html` | **DEPLOYMENT-MIRROR** | participant UI, protocol `wave1-v0.2` |
+| `deploy/wave1-hostinger/api.php` | **DEPLOYMENT-MIRROR** | hardened response API, explicitly writes `wave1-v0.2` |
+| `deploy/wave1-hostinger/migrate_wave1.sql` | **DEPLOYMENT-MIRROR / SUPPORTING** | applied pre-freeze DB migration |
+| `deploy/wave1-hostinger/config.example.php` | **DEPLOYMENT-MIRROR** | non-secret config template only |
+| live Hostinger `config.php` | **EXTERNAL-LIVE / SECRET** | never commit |
 
-Repo currently documents the deployment but does **not** claim byte-for-byte parity with the Hostinger live source.
+The committed v0.2 artifacts were supplied for deployment and then verified through the live mobile flow and MySQL row inspection. No independent byte-for-byte download-back comparison from Hostinger has been performed.
+
+Current raw capture includes:
+
+```text
+participant_id
+candidate_id
+protocol_version
+presentation_index
+left_asset
+right_asset
+choice
+free_text
+intensity
+hard_to_identify
+latency_ms
+created_at
+```
+
+Important distinctions:
+
+```text
+no_clear_choice != hard_to_identify != empty free text
+```
+
+Current DB duplicate protection: `UNIQUE (participant_id, candidate_id)`.
+
+`setup.php` and public `check.php` are not part of the live pilot baseline.
+
+Live mobile smoke test verified one session as six rows under one participant, `presentation_index` 1–6, `protocol_version = wave1-v0.2`, persisted left/right presentation, choice paths, optional reason, optional intensity, independent `hard_to_identify`, and populated latency.
+
+Status: **PILOT READY / v0.2 FROZEN**.
 
 ---
 
@@ -145,7 +180,7 @@ Keep as reference; do not actively develop unless explicitly reopened.
 
 ## 7. HISTORICAL TEST PACKS LEFT IN PLACE
 
-These files are intentionally **not physically moved** in this pass because they are referenced by milestone history/tags and moving them would reduce traceability without practical benefit.
+These files are intentionally **not physically moved** because they are referenced by milestone history/tags and moving them would reduce traceability without practical benefit.
 
 | Path | Class |
 |---|---|
@@ -178,10 +213,10 @@ docs/generator.html
 Rationale:
 
 - top-level `validation/` was explicitly v0.4-era stale material
-- `docs/review.html` is an obsolete single-image review precursor, superseded for current work by `docs/experiments/stimulus-validation/pair-review.html`
-- `docs/generator.html` is a legacy generator with the previously documented CORS problem and is not part of current Wave 1 production
+- `docs/review.html` is an obsolete single-image review precursor, superseded by `docs/experiments/stimulus-validation/pair-review.html`
+- `docs/generator.html` is a legacy generator with the documented CORS problem and is not part of current Wave 1 production
 
-Search/audit found no active current-code dependency requiring these old paths. Historical Git tags/commits preserve their original locations.
+Historical Git tags/commits preserve their original locations.
 
 ---
 
@@ -197,15 +232,16 @@ Search/audit found no active current-code dependency requiring these old paths. 
 
 ---
 
-## 10. CURRENT CLEANUP / SOURCE-CONTROL RULES
+## 10. CURRENT SOURCE-CONTROL RULES
 
 1. Current truth must be explicit; old files are not made current merely because they remain in `main`.
 2. Freeze technically useful historical paths when moving them could break milestone traceability.
 3. Archive only confirmed obsolete artifacts with no active dependency.
-4. Do not commit Hostinger passwords, API keys or live DB credentials.
-5. When the exact Hostinger source is obtained, mirror it under `deploy/wave1-hostinger/` with a safe `config.example.php`, not live `config.php`.
+4. Never commit Hostinger passwords, API keys, live DB credentials, live `config.php`, or participant data.
+5. `deploy/wave1-hostinger/` is the non-secret v0.2 deployment mirror; asset binaries remain canonical under `docs/experiments/stimulus-validation/assets/`.
 6. Human Wave 1 data itself must not be committed into this public repository.
-7. Before a new methodology change, update `PROJECT_STATE.md` and the relevant canonical spec/checkpoint rather than accumulating contradictory append-only notes.
+7. Treat `wave1-v0.2` as frozen once real pilot collection begins. Participant-facing or capture-semantics changes require a new protocol version and documented delta.
+8. Before a methodology change, update `PROJECT_STATE.md` and the relevant canonical spec/checkpoint rather than accumulating contradictory notes.
 
 ---
 
