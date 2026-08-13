@@ -17,6 +17,7 @@ if (!$body) {
     exit;
 }
 
+// Required fields
 foreach (['participant_id','candidate_id','left_asset','right_asset','choice'] as $f) {
     if (empty($body[$f])) {
         http_response_code(400);
@@ -25,6 +26,7 @@ foreach (['participant_id','candidate_id','left_asset','right_asset','choice'] a
     }
 }
 
+// Whitelists
 $valid_choices    = ['left','right','no_clear_choice'];
 $valid_candidates = ['CS-PR-01','CS-RE-01','CS-CA-01','CR-PZ-01','CR-FS-01','CR-PO-01'];
 
@@ -39,6 +41,7 @@ if (!in_array($body['candidate_id'], $valid_candidates, true)) {
     exit;
 }
 
+// Validate participant/session fields.
 $participantId = (string)$body['participant_id'];
 if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $participantId)) {
     http_response_code(400);
@@ -75,6 +78,8 @@ if (array_key_exists('latency_ms', $body) && $body['latency_ms'] !== null) {
     }
 }
 
+// Exact asset whitelist per candidate prevents malformed/public API submissions
+// from polluting the research table.
 $assetPairs = [
     'CS-PR-01' => ['more-reveal.webp','less-reveal.jpg'],
     'CS-RE-01' => ['more-evidence.png','less-evidence.png'],
@@ -118,6 +123,7 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 
+    // Rate limit
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM responses WHERE participant_id=?");
     $stmt->execute([$body['participant_id']]);
     if ($stmt->fetchColumn() > 100) {
@@ -126,6 +132,7 @@ try {
         exit;
     }
 
+    // INSERT IGNORE prevents duplicate participant+candidate (requires UNIQUE INDEX)
     $stmt = $pdo->prepare("INSERT IGNORE INTO responses
         (participant_id, candidate_id, protocol_version, presentation_index,
          left_asset, right_asset, choice, free_text, intensity, hard_to_identify, latency_ms)
@@ -134,7 +141,7 @@ try {
     $stmt->execute([
         $participantId,
         $body['candidate_id'],
-        'wave1-v0.2',
+        'wave1-v0.3',
         $presentationIndex,
         $leftAsset,
         $rightAsset,
