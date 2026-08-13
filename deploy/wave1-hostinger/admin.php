@@ -84,13 +84,13 @@ $excludedParticipants = [
     '82d751a8-cbca-4854-9198-75719ea3e437',
 ];
 
-$pairMeta = [
-    'CS-PR-01' => ['x'=>'more-reveal.webp',        'y'=>'less-reveal.jpg'],
-    'CS-RE-01' => ['x'=>'more-evidence.png',       'y'=>'less-evidence.png'],
-    'CS-CA-01' => ['x'=>'more-reference.png',      'y'=>'less-reference.png'],
-    'CR-PZ-01' => ['x'=>'no-predefined-zones.png', 'y'=>'predefined-zones.png'],
-    'CR-FS-01' => ['x'=>'fixed-slots.png',         'y'=>'continuous-capacity.png'],
-    'CR-PO-01' => ['x'=>'partitioned-space.png',   'y'=>'open-space.png'],
+$pairAssets = [
+    'CS-PR-01' => ['more-reveal.webp',        'less-reveal.jpg'],
+    'CS-RE-01' => ['more-evidence.png',       'less-evidence.png'],
+    'CS-CA-01' => ['more-reference.png',      'less-reference.png'],
+    'CR-PZ-01' => ['no-predefined-zones.png', 'predefined-zones.png'],
+    'CR-FS-01' => ['fixed-slots.png',          'continuous-capacity.png'],
+    'CR-PO-01' => ['partitioned-space.png',    'open-space.png'],
 ];
 
 function isExcluded(string $participantId, array $excluded): bool {
@@ -110,14 +110,9 @@ function selectedAsset(array $row): ?string {
     return null;
 }
 
-function xyLabel(array $row, array $pairMeta): string {
-    if ($row['choice'] === 'no_clear_choice') return 'NCC';
+function chosenAssetLabel(array $row): string {
     $asset = selectedAsset($row);
-    $meta = $pairMeta[$row['candidate_id']] ?? null;
-    if (!$meta || !$asset) return '—';
-    if ($asset === $meta['x']) return 'X';
-    if ($asset === $meta['y']) return 'Y';
-    return '?';
+    return $asset ?? '—';
 }
 
 function msToSec($ms): string {
@@ -165,18 +160,51 @@ $totalParticipants = count($participants);
 $completeSessions = count(array_filter($participants, fn($p)=>count($p['rows'])===6));
 
 $summary = [];
-foreach (array_keys($pairMeta) as $cid) {
-    $summary[$cid] = ['X'=>0,'Y'=>0,'NCC'=>0,'n'=>0];
+foreach ($pairAssets as $cid => $assets) {
+    $summary[$cid] = [
+        'assets' => [
+            $assets[0] => 0,
+            $assets[1] => 0,
+        ],
+        'ncc' => 0,
+        'n' => 0,
+    ];
 }
+
+$positionDiagnostic = ['top'=>0, 'bottom'=>0, 'image_choices'=>0];
+
 foreach ($participants as $p) {
     if ($p['excluded']) continue;
+
     foreach ($p['rows'] as $r) {
         $cid = $r['candidate_id'];
         if (!isset($summary[$cid])) continue;
-        $lab = xyLabel($r, $pairMeta);
-        if (isset($summary[$cid][$lab])) $summary[$cid][$lab]++;
+
         $summary[$cid]['n']++;
+
+        if ($r['choice'] === 'no_clear_choice') {
+            $summary[$cid]['ncc']++;
+            continue;
+        }
+
+        $asset = selectedAsset($r);
+        if ($asset !== null && isset($summary[$cid]['assets'][$asset])) {
+            $summary[$cid]['assets'][$asset]++;
+        }
+
+        if ($r['choice'] === 'left') {
+            $positionDiagnostic['top']++;
+            $positionDiagnostic['image_choices']++;
+        } elseif ($r['choice'] === 'right') {
+            $positionDiagnostic['bottom']++;
+            $positionDiagnostic['image_choices']++;
+        }
     }
+}
+
+function pct(int $n, int $den): string {
+    if ($den <= 0) return '—';
+    return number_format(($n / $den) * 100, 0).'%';
 }
 
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
@@ -186,7 +214,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fwrite($out, "\xEF\xBB\xBF");
     fputcsv($out, [
         'participant_id','candidate_id','protocol_version','presentation_index',
-        'top_asset','bottom_asset','choice_position','choice_xy',
+        'top_asset','bottom_asset','choice_position','chosen_asset',
         'free_text','intensity','hard_to_identify','latency_ms','created_at','excluded'
     ]);
     foreach ($participants as $p) {
@@ -199,7 +227,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 $r['left_asset'],
                 $r['right_asset'],
                 positionLabel($r['choice']),
-                xyLabel($r, $pairMeta),
+                chosenAssetLabel($r),
                 $r['free_text'],
                 $r['intensity'],
                 $r['hard_to_identify'],
@@ -240,7 +268,7 @@ th{color:#999;font-weight:600}
 .tag{display:inline-block;padding:3px 7px;border-radius:999px;background:#292932;color:#bbb;font-size:.75rem}
 .tag.good{background:#173426;color:#93e4b2}.tag.warn{background:#443416;color:#ffd28a}
 .reason{max-width:300px;white-space:pre-wrap}
-.xy{font-weight:800}.ncc{color:#e4b974}.hard{color:#ffcf86}
+.chosen{font-weight:700}.ncc{color:#e4b974}.hard{color:#ffcf86}
 .summary{overflow-x:auto;background:#18181f;border:1px solid #30303a;border-radius:12px;margin:14px 0}
 @media(max-width:650px){
  .wrap{padding:10px} table{font-size:.78rem} th,td{padding:7px}
@@ -270,13 +298,44 @@ th{color:#999;font-weight:600}
 
 <div class="summary">
 <table>
-<thead><tr><th>Pora</th><th>X</th><th>Y</th><th>No clear choice</th><th>N</th></tr></thead>
+<thead><tr><th>Pora</th><th>Vaizdas / atsakymas</th><th>Pasirinko</th><th>%</th><th>Poros N</th></tr></thead>
 <tbody>
 <?php foreach ($summary as $cid=>$s): ?>
-<tr><td><b><?=htmlspecialchars($cid)?></b></td><td><?=$s['X']?></td><td><?=$s['Y']?></td><td><?=$s['NCC']?></td><td><?=$s['n']?></td></tr>
+<?php $rowspan = count($s['assets']) + 1; $first = true; ?>
+<?php foreach ($s['assets'] as $assetName=>$count): ?>
+<?php $isFirst = $first; ?>
+<tr>
+<?php if ($isFirst): ?><td rowspan="<?=$rowspan?>"><b><?=htmlspecialchars($cid)?></b></td><?php endif; ?>
+<td><?=htmlspecialchars($assetName)?></td>
+<td><?=$count?></td>
+<td><?=htmlspecialchars(pct($count, $s['n']))?></td>
+<?php if ($isFirst): ?><td rowspan="<?=$rowspan?>" style="vertical-align:middle"><b><?=$s['n']?></b></td><?php endif; ?>
+</tr>
+<?php $first = false; ?>
+<?php endforeach; ?>
+<tr>
+<td><span class="ncc">Neturiu aiškaus pasirinkimo</span></td>
+<td><?=$s['ncc']?></td>
+<td><?=htmlspecialchars(pct($s['ncc'], $s['n']))?></td>
+</tr>
 <?php endforeach; ?>
 </tbody>
 </table>
+</div>
+
+<div class="card">
+<div class="card-head">
+<div><b>Top / Bottom diagnostika</b><div class="muted tiny">Tik informacinė pozicijos šališkumo kontrolė; ne pagrindinis rezultatas.</div></div>
+</div>
+<div class="card-body">
+<table>
+<thead><tr><th>Pozicija</th><th>Pasirinkta</th><th>% tarp aiškių vaizdo pasirinkimų</th></tr></thead>
+<tbody>
+<tr><td>Top</td><td><?=$positionDiagnostic['top']?></td><td><?=htmlspecialchars(pct($positionDiagnostic['top'], $positionDiagnostic['image_choices']))?></td></tr>
+<tr><td>Bottom</td><td><?=$positionDiagnostic['bottom']?></td><td><?=htmlspecialchars(pct($positionDiagnostic['bottom'], $positionDiagnostic['image_choices']))?></td></tr>
+</tbody>
+</table>
+</div>
 </div>
 
 <?php if (!$participants): ?>
@@ -296,7 +355,7 @@ th{color:#999;font-weight:600}
 <table>
 <thead>
 <tr>
-<th>#</th><th>Pora</th><th>Top</th><th>Bottom</th><th>Pasirinkimas</th><th>X/Y</th><th>Free text</th><th>Intensity</th><th>Sunku įvardyti</th><th>Latency</th>
+<th>#</th><th>Pora</th><th>Top</th><th>Bottom</th><th>Pozicija</th><th>Pasirinktas vaizdas</th><th>Free text</th><th>Intensity</th><th>Sunku įvardyti</th><th>Latency</th>
 </tr>
 </thead>
 <tbody>
@@ -307,7 +366,7 @@ th{color:#999;font-weight:600}
 <td><?=htmlspecialchars($r['left_asset'])?></td>
 <td><?=htmlspecialchars($r['right_asset'])?></td>
 <td><?=htmlspecialchars(positionLabel($r['choice']))?></td>
-<td class="xy <?= $r['choice']==='no_clear_choice' ? 'ncc' : '' ?>"><?=htmlspecialchars(xyLabel($r,$pairMeta))?></td>
+<td class="chosen <?= $r['choice']==='no_clear_choice' ? 'ncc' : '' ?>"><?=htmlspecialchars(chosenAssetLabel($r))?></td>
 <td class="reason"><?= $r['free_text']!==null ? htmlspecialchars($r['free_text']) : '<span class="muted">—</span>' ?></td>
 <td><?= $r['intensity']!==null ? htmlspecialchars((string)$r['intensity']) : '<span class="muted">—</span>' ?></td>
 <td><?= ((int)$r['hard_to_identify']===1) ? '<span class="hard">Taip</span>' : 'Ne' ?></td>
@@ -322,7 +381,7 @@ th{color:#999;font-weight:600}
 
 <p class="muted tiny">
 Pastaba: DB techniniai pavadinimai <code>left/right</code> nekeisti dėl v0.3 duomenų tęstinumo.
-Šiame lange jie visur interpretuojami kaip <b>Top/Bottom</b>. Raw atsakymai čia neredaguojami.
+Šiame lange jie visur interpretuojami kaip <b>Top/Bottom</b>. Pagrindinė statistika skaičiuojama pagal <b>porą ir konkretų vaizdo variantą</b>; Top/Bottom rodoma tik kaip techninė diagnostika. Raw atsakymai čia neredaguojami.
 </p>
 </div>
 </body>
