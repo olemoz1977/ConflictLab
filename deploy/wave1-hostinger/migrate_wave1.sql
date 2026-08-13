@@ -1,6 +1,6 @@
 -- ConflictLab Wave 1 DB Migration
--- Run via phpMyAdmin SQL tab on u986950573_wave1
--- Safe to run on existing data — only adds columns and constraint
+-- Run via phpMyAdmin SQL tab on the Wave 1 database.
+-- Safe to run on existing data — only adds columns and constraint.
 -- Applied 2026-08-13 before protocol v0.2 freeze.
 -- The DEFAULT 'wave1-v0.1' is intentionally preserved as migration history;
 -- the live v0.2 API writes protocol_version explicitly.
