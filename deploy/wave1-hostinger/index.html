@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConflictLab — Wave 1</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f13; color: #e8e4df;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  }
+  .screen { display: none; width: 100%; max-width: 480px; padding: 16px; }
+  .screen.active { display: flex; flex-direction: column; gap: 16px; }
+  h1 { font-size: 1.4rem; font-weight: 600; text-align: center; }
+  p  { font-size: 0.95rem; color: #aaa; line-height: 1.6; text-align: center; }
+  .pair-grid { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .pair-option {
+    cursor: pointer; border: 2px solid transparent;
+    border-radius: 10px; overflow: hidden; transition: border-color 0.15s;
+    position: relative;
+  }
+  .pair-option:hover { border-color: #555; }
+  .pair-option.selected { border-color: #7ecfa0; }
+  .pair-option img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; border-radius: 8px; }
+  .pair-option .loading-overlay {
+    position: absolute; inset: 0; background: #1a1a22;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; color: #555; border-radius: 8px;
+  }
+  .btn {
+    padding: 14px; border: none; border-radius: 8px;
+    font-size: 1rem; cursor: pointer; font-weight: 600; width: 100%;
+  }
+  .btn-primary { background: #7ecfa0; color: #0f0f13; }
+  .btn-ghost   { background: transparent; border: 1px solid #444; color: #aaa; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  textarea {
+    width: 100%; background: #1a1a22; border: 1px solid #333;
+    border-radius: 8px; color: #e8e4df; padding: 12px;
+    font-size: 0.9rem; resize: vertical; min-height: 80px;
+  }
+  textarea::placeholder { color: #555; }
+  .intensity-row { display: flex; gap: 8px; justify-content: center; }
+  .intensity-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid #444; background: #1a1a22;
+    color: #aaa; font-size: 0.9rem; cursor: pointer; font-weight: 600;
+  }
+  .intensity-btn.selected { background: #7ecfa0; color: #0f0f13; border-color: #7ecfa0; }
+  .progress { text-align: center; font-size: 0.8rem; color: #555; }
+  .label-small { font-size: 0.8rem; color: #777; text-align: center; margin-bottom: 8px; }
+  .done-icon { font-size: 3rem; text-align: center; }
+  .reason-label { font-size: 0.85rem; color: #aaa; line-height: 1.5; text-align: center; }
+  .reason-toggle {
+    padding: 12px; border-radius: 8px; border: 1px solid #444;
+    background: transparent; color: #aaa; font-size: 0.9rem;
+    cursor: pointer; width: 100%;
+  }
+  .reason-toggle.selected {
+    border-color: #7ecfa0; color: #7ecfa0; background: rgba(126,207,160,0.08);
+  }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div class="screen active" id="screen-intro">
+  <h1>Vaizdų pasirinkimas</h1>
+  <p>Pamatysi kelias vaizdų poras. Kiekvienoje poroje pasirink vieną — tą, kurį pirmiausia pastebėjai arba kuris labiau patraukė dėmesį.</p>
+  <p>Nėra teisingų ar neteisingų atsakymų.</p>
+  <button class="btn btn-primary" onclick="startSession()">Pradėti</button>
+</div>
+
+<!-- PAIR -->
+<div class="screen" id="screen-pair">
+  <div class="progress" id="progress-text"></div>
+  <div class="pair-grid">
+    <div class="pair-option" id="opt-left" onclick="selectOption('left')">
+      <div class="loading-overlay" id="load-left">Kraunama...</div>
+      <img id="img-left" src="" alt="" style="display:none">
+    </div>
+    <div class="pair-option" id="opt-right" onclick="selectOption('right')">
+      <div class="loading-overlay" id="load-right">Kraunama...</div>
+      <img id="img-right" src="" alt="" style="display:none">
+    </div>
+  </div>
+  <button class="btn btn-ghost" onclick="selectOption('no_clear_choice')">Nė vienas aiškiai nepatraukė</button>
+  <button class="btn btn-primary" id="btn-next" onclick="goNext()" disabled>Toliau</button>
+</div>
+
+<!-- REASON (left/right choice) -->
+<div class="screen" id="screen-reason">
+  <p class="reason-label">Kas labiausiai nulėmė tavo pasirinkimą? <span style="color:#666">(neprivaloma)</span></p>
+  <textarea id="free-text" placeholder="Jei nori — keli žodžiai..."></textarea>
+  <button class="reason-toggle" id="hard-reason" onclick="toggleHardToIdentify('reason')">Sunku įvardyti priežastį</button>
+  <div>
+    <div class="label-small">Reakcijos stiprumas <span style="color:#555">(neprivaloma)</span></div>
+    <div class="intensity-row" id="intensity-row">
+      <button class="intensity-btn" onclick="setIntensity(1)">1</button>
+      <button class="intensity-btn" onclick="setIntensity(2)">2</button>
+      <button class="intensity-btn" onclick="setIntensity(3)">3</button>
+      <button class="intensity-btn" onclick="setIntensity(4)">4</button>
+      <button class="intensity-btn" onclick="setIntensity(5)">5</button>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="btn-save-reason" onclick="submitReason()">Išsaugoti ir tęsti</button>
+</div>
+
+<!-- REASON-NCC (no_clear_choice) -->
+<div class="screen" id="screen-reason-ncc">
+  <p class="reason-label">Kas labiausiai nulėmė, kad neturėjai aiškaus pasirinkimo? <span style="color:#666">(neprivaloma)</span></p>
+  <textarea id="free-text-ncc" placeholder="Jei nori — keli žodžiai..."></textarea>
+  <button class="reason-toggle" id="hard-ncc" onclick="toggleHardToIdentify('ncc')">Sunku įvardyti priežastį</button>
+  <button class="btn btn-primary" id="btn-save-ncc" onclick="submitNCC()">Išsaugoti ir tęsti</button>
+</div>
+
+<!-- DONE -->
+<div class="screen" id="screen-done">
+  <div class="done-icon">✓</div>
+  <h1>Ačiū</h1>
+  <p>Tavo atsakymai išsaugoti.</p>
+</div>
+
+<script>
+const API          = 'api.php';
+const ASSET_BASE   = 'assets/';
+const PROTOCOL_VER = 'wave1-v0.2';
+
+const PAIRS = [
+  { id:'CS-PR-01', a:'more-reveal.webp',        b:'less-reveal.jpg'         },
+  { id:'CS-RE-01', a:'more-evidence.png',        b:'less-evidence.png'       },
+  { id:'CS-CA-01', a:'more-reference.png',       b:'less-reference.png'      },
+  { id:'CR-PZ-01', a:'no-predefined-zones.png',  b:'predefined-zones.png'    },
+  { id:'CR-FS-01', a:'fixed-slots.png',          b:'continuous-capacity.png' },
+  { id:'CR-PO-01', a:'partitioned-space.png',    b:'open-space.png'          },
+];
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4).toString(16));
+}
+
+let participantId, queue, current;
+let choiceMade = null, leftAsset, rightAsset;
+let intensity = null, pairStart = null, imagesLoaded = 0;
+let pairReady = false;
+let presentationIndex = 0;
+let submitting = false; // double-click guard
+let hardReason = false;
+let hardNcc = false;
+
+function startSession() {
+  participantId = uuidv4();
+  queue = shuffle([...PAIRS]);
+  presentationIndex = 0;
+  showScreen('screen-pair');
+  loadPair();
+}
+
+function loadPair() {
+  if (queue.length === 0) { showScreen('screen-done'); return; }
+  current = queue.shift();
+  presentationIndex++;
+
+  const flip = Math.random() < 0.5;
+  leftAsset  = flip ? current.b : current.a;
+  rightAsset = flip ? current.a : current.b;
+
+  choiceMade = null;
+  intensity  = null;
+  pairStart  = null;
+  imagesLoaded = 0;
+  pairReady = false;
+
+  document.getElementById('opt-left').classList.remove('selected');
+  document.getElementById('opt-right').classList.remove('selected');
+  document.getElementById('btn-next').disabled = true;
+
+  const done = PAIRS.length - queue.length - 1;
+  document.getElementById('progress-text').textContent = `${done+1} / ${PAIRS.length}`;
+
+  ['left','right'].forEach(s => {
+    document.getElementById(`load-${s}`).style.display = 'flex';
+    document.getElementById(`img-${s}`).style.display  = 'none';
+  });
+
+  function onLoad(side) {
+    document.getElementById(`load-${side}`).style.display = 'none';
+    document.getElementById(`img-${side}`).style.display  = 'block';
+    imagesLoaded++;
+    if (imagesLoaded === 2) {
+      pairReady = true;
+      pairStart = Date.now();
+    }
+  }
+
+  function onImageError(side) {
+    pairReady = false;
+    pairStart = null;
+    const overlay = document.getElementById(`load-${side}`);
+    overlay.textContent = 'Nepavyko įkelti vaizdo. Perkrauk puslapį.';
+    overlay.style.display = 'flex';
+    document.getElementById(`img-${side}`).style.display = 'none';
+  }
+
+  ['left','right'].forEach(side => {
+    const img  = document.getElementById(`img-${side}`);
+    const asset = side === 'left' ? leftAsset : rightAsset;
+    img.onload  = () => onLoad(side);
+    img.onerror = () => onImageError(side);
+    img.src = `${ASSET_BASE}${current.id}/${asset}`;
+  });
+}
+
+function selectOption(side) {
+  if (!pairReady) return;
+  choiceMade = side;
+  document.getElementById('opt-left').classList.toggle('selected',  side === 'left');
+  document.getElementById('opt-right').classList.toggle('selected', side === 'right');
+  document.getElementById('btn-next').disabled = false;
+}
+
+function goNext() {
+  if (!choiceMade || submitting) return;
+
+  const latency = pairStart ? Date.now() - pairStart : null;
+
+  window._pending = {
+    participant_id:     participantId,
+    candidate_id:       current.id,
+    protocol_version:   PROTOCOL_VER,
+    presentation_index: presentationIndex,
+    left_asset:         leftAsset,
+    right_asset:        rightAsset,
+    choice:             choiceMade,
+    latency_ms:         latency,
+  };
+
+  if (choiceMade === 'no_clear_choice') {
+    document.getElementById('free-text-ncc').value = '';
+    hardNcc = false;
+    document.getElementById('hard-ncc').classList.remove('selected');
+    document.getElementById('free-text-ncc').disabled = false;
+    showScreen('screen-reason-ncc');
+  } else {
+    document.getElementById('free-text').value = '';
+    hardReason = false;
+    document.getElementById('hard-reason').classList.remove('selected');
+    document.getElementById('free-text').disabled = false;
+    intensity = null;
+    document.querySelectorAll('.intensity-btn').forEach(b => b.classList.remove('selected'));
+    showScreen('screen-reason');
+  }
+}
+
+function setIntensity(val) {
+  intensity = val;
+  document.querySelectorAll('.intensity-btn').forEach((b,i) => {
+    b.classList.toggle('selected', i+1 === val);
+  });
+}
+
+function toggleHardToIdentify(which) {
+  if (which === 'reason') {
+    hardReason = !hardReason;
+    const btn = document.getElementById('hard-reason');
+    const ta  = document.getElementById('free-text');
+    btn.classList.toggle('selected', hardReason);
+    ta.disabled = hardReason;
+    if (hardReason) ta.value = '';
+  } else {
+    hardNcc = !hardNcc;
+    const btn = document.getElementById('hard-ncc');
+    const ta  = document.getElementById('free-text-ncc');
+    btn.classList.toggle('selected', hardNcc);
+    ta.disabled = hardNcc;
+    if (hardNcc) ta.value = '';
+  }
+}
+
+function submitReason() {
+  if (submitting) return;
+  submitting = true;
+
+  const payload = {
+    ...window._pending,
+    free_text:        hardReason ? null : (document.getElementById('free-text').value.trim() || null),
+    intensity:        intensity,
+    hard_to_identify: hardReason ? 1 : 0,
+  };
+
+  sendResponse(payload, () => {
+    submitting = false;
+    showScreen('screen-pair');
+    loadPair();
+  }, () => {
+    submitting = false;
+  });
+}
+
+function submitNCC() {
+  if (submitting) return;
+  submitting = true;
+
+  const payload = {
+    ...window._pending,
+    free_text:        hardNcc ? null : (document.getElementById('free-text-ncc').value.trim() || null),
+    intensity:        null,
+    hard_to_identify: hardNcc ? 1 : 0,
+  };
+
+  sendResponse(payload, () => {
+    submitting = false;
+    showScreen('screen-pair');
+    loadPair();
+  }, () => {
+    submitting = false;
+  });
+}
+
+function sendResponse(payload, onDone, onError) {
+  fetch(API, {
+    method:  'POST',
+    headers: {'Content-Type': 'application/json'},
+    body:    JSON.stringify(payload),
+  })
+  .then(async response => {
+    let data = null;
+    try { data = await response.json(); } catch (_) {}
+
+    if (!response.ok || !data || data.status !== 'ok') {
+      throw new Error((data && data.message) ? data.message : `HTTP ${response.status}`);
+    }
+
+    if (onDone) onDone(data);
+  })
+  .catch(err => {
+    console.error('Save error:', err);
+    alert('Nepavyko išsaugoti atsakymo. Patikrink ryšį ir bandyk dar kartą.');
+    if (onError) onError(err);
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
