@@ -23,7 +23,7 @@
   }
   .pair-option:hover { border-color: #555; }
   .pair-option.selected { border-color: #7ecfa0; }
-  .pair-option img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; border-radius: 8px; }
+  .pair-option img { width: 100%; aspect-ratio: 1/1; object-fit: contain; display: block; border-radius: 8px; }
   .pair-option .loading-overlay {
     position: absolute; inset: 0; background: #1a1a22;
     display: flex; align-items: center; justify-content: center;
@@ -68,7 +68,7 @@
 <!-- INTRO -->
 <div class="screen active" id="screen-intro">
   <h1>Vaizdų pasirinkimas</h1>
-  <p>Pamatysi kelias vaizdų poras. Kiekvienoje poroje pasirink vieną — tą, kurį pirmiausia pastebėjai arba kuris labiau patraukė dėmesį.</p>
+  <p>Pamatysi kelias vaizdų poras. Kiekvienoje poroje pasirink vieną vaizdą.</p>
   <p>Nėra teisingų ar neteisingų atsakymų.</p>
   <button class="btn btn-primary" onclick="startSession()">Pradėti</button>
 </div>
@@ -76,6 +76,7 @@
 <!-- PAIR -->
 <div class="screen" id="screen-pair">
   <div class="progress" id="progress-text"></div>
+  <p class="reason-label">Kurį renkiesi?</p>
   <div class="pair-grid">
     <div class="pair-option" id="opt-left" onclick="selectOption('left')">
       <div class="loading-overlay" id="load-left">Kraunama...</div>
@@ -86,7 +87,7 @@
       <img id="img-right" src="" alt="" style="display:none">
     </div>
   </div>
-  <button class="btn btn-ghost" onclick="selectOption('no_clear_choice')">Nė vienas aiškiai nepatraukė</button>
+  <button class="btn btn-ghost" onclick="selectOption('no_clear_choice')">Neturiu aiškaus pasirinkimo</button>
   <button class="btn btn-primary" id="btn-next" onclick="goNext()" disabled>Toliau</button>
 </div>
 
@@ -126,7 +127,7 @@
 <script>
 const API          = 'api.php';
 const ASSET_BASE   = 'assets/';
-const PROTOCOL_VER = 'wave1-v0.2';
+const PROTOCOL_VER = 'wave1-v0.3';
 
 const PAIRS = [
   { id:'CS-PR-01', a:'more-reveal.webp',        b:'less-reveal.jpg'         },
@@ -189,11 +190,13 @@ function loadPair() {
   const done = PAIRS.length - queue.length - 1;
   document.getElementById('progress-text').textContent = `${done+1} / ${PAIRS.length}`;
 
+  // Show loading overlays, hide images
   ['left','right'].forEach(s => {
     document.getElementById(`load-${s}`).style.display = 'flex';
     document.getElementById(`img-${s}`).style.display  = 'none';
   });
 
+  // Load images — latency starts only when BOTH images loaded successfully.
   function onLoad(side) {
     document.getElementById(`load-${side}`).style.display = 'none';
     document.getElementById(`img-${side}`).style.display  = 'block';
@@ -247,12 +250,14 @@ function goNext() {
   };
 
   if (choiceMade === 'no_clear_choice') {
+    // Show NCC reason screen
     document.getElementById('free-text-ncc').value = '';
     hardNcc = false;
     document.getElementById('hard-ncc').classList.remove('selected');
     document.getElementById('free-text-ncc').disabled = false;
     showScreen('screen-reason-ncc');
   } else {
+    // Show standard reason screen
     document.getElementById('free-text').value = '';
     hardReason = false;
     document.getElementById('hard-reason').classList.remove('selected');
