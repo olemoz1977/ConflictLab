@@ -2,13 +2,21 @@
 
 **Date:** 2026-08-13
 **Review by:** Claude (critical audit) + Oleg (resolution verdicts)
-**Status:** Resolution package for v0.2 — not yet implemented
+**Status:** REVIEW COMPLETE — resolutions carried into v0.2
 
 ---
 
 ## Review summary
 
-Claude's audit identified 5 BLOCKER-level issues and 4 IMPORTANT issues in v0.1. The resolution package below constitutes the v0.2 decision baseline.
+Claude's audit identified 5 BLOCKER-level issues and 4 IMPORTANT issues in v0.1. The resolution package below constitutes the first v0.2 decision baseline.
+
+The subsequent adversarial Grok audit is recorded separately in:
+
+`docs/architecture/RESULT_CALCULATION_ARCH_v0.2_REDTEAM.md`
+
+Integrated architecture:
+
+`docs/architecture/RESULT_CALCULATION_ARCH_v0.2.md`
 
 ---
 
@@ -89,7 +97,8 @@ Structured reason variants must have pre-defined `reason_id` and `interpretabili
 {
   "reason_id": "GEN_AESTHETIC",
   "text_lt": "Šis vaizdas tiesiog gražiau atrodė",
-  "interpretability_class": "OTHER"
+  "interpretability_class": "OTHER",
+  "coding_version": "reason-map-v1"
 }
 ```
 
@@ -107,23 +116,28 @@ posthoc_classification
 
 This never overwrites the original reason.
 
+**Post-Grok refinement:** v0.2 uses less causal terminology:
+
+```text
+DOMAIN_CONSISTENT_REASON
+CROSS_DOMAIN_REASON
+OTHER_REASON
+UNRESOLVED
+```
+
+These labels describe the selected reason option, not the hidden true cause of the visual choice.
+
 ---
 
 ## C5 — Self-report and visual channels use same [-1,+1] range implying commensurability
 
 **Verdict:** Lengvai išsprendžiama. **RESOLVED.**
 
-Alignment in v0.2 is direction-level only:
+Alignment in the initial v0.2 decision was direction-level only:
 
 ```text
 Visual direction:      POSITIVE / NEGATIVE / MIXED / INSUFFICIENT
 Self-report direction: POSITIVE / NEGATIVE / MIXED / INSUFFICIENT
-
-Alignment:
-  same direction
-  opposite direction
-  mixed
-  insufficient
 ```
 
 Forbidden:
@@ -133,6 +147,15 @@ difference = visual 0.7 - self-report 0.3 = 0.4
 ```
 
 Magnitude subtraction is not permitted because scale equivalence has not been established.
+
+**Post-Grok refinement:** avoid `CONVERGENT / DIVERGENT` terminology until channel comparability is supported. Use:
+
+```text
+SAME_DIRECTION_ACROSS_CHANNELS
+OPPOSITE_DIRECTION_ACROSS_CHANNELS
+MIXED
+INSUFFICIENT
+```
 
 ---
 
@@ -169,7 +192,7 @@ Raw event stores: `protocol_version`, `stimulus_set_version`, `pair_id`, `asset`
 
 Derived result stores: `mapping_version` + `scoring_version`.
 
-`mapping_version` lives in the derived-results table, not in raw responses rows.
+`mapping_version` lives in the derived-results layer, not in raw response rows.
 
 ---
 
@@ -193,11 +216,18 @@ evidence_status:
   REPLICATED
 ```
 
-Criteria for transitions between these states are deferred to Gate D / later validation. No numeric threshold (e.g. coverage > 0.8) is invented as a methodological constant.
+Criteria for transitions between these states are deferred to validation gates. No numeric threshold such as coverage > 0.8 is invented as a methodological constant.
+
+Logical constraint added after adversarial review:
+
+```text
+0 eligible primary directional observations → INSUFFICIENT / NOT_ESTIMABLE
+1 eligible primary directional observation → single observation only; not repeated-pattern language
+```
 
 ---
 
-## New issue identified — reflection_anchor_choice (not in Claude's original audit)
+## New issue identified — reflection_anchor_choice
 
 If a 3-pair block times out and is retried, and the participant had already chosen P1 and P2 in the first attempt, those P1/P2 pairs are shown again on retry.
 
@@ -226,6 +256,71 @@ reflection_anchor_source:
 
 This ensures reflection remains tied to a clearly known selection event.
 
+Post-Grok rule: these two anchor sources are different observation conditions and must not be silently pooled for trajectory or cross-participant claims.
+
+---
+
+## Major addition after Grok red-team — Gate E
+
+Gate D alone is insufficient.
+
+A set of individually defensible pair mappings can still create a false domain pattern if different exemplars are driven by shared confounds or different response processes.
+
+Therefore v0.2 separates:
+
+```text
+Gate D — PAIR MAPPING VALIDITY
+Can this specific exemplar contrast defensibly receive a directional mapping?
+
+Gate E — DOMAIN AGGREGATION VALIDITY
+Can multiple Gate-D-valid exemplars defensibly be aggregated into one broader CS/CR domain?
+```
+
+Before Gate E, results remain pair/exemplar-specific. Gate D never automatically authorizes a domain-level CS/CR balance.
+
+---
+
+## Major addition after Grok red-team — missingness diagnostics
+
+Timeout-based primary missingness must not be assumed to be random.
+
+Research analysis must preserve diagnostics such as:
+
+```text
+timeout_by_pair
+timeout_by_family
+timeout_by_block_position
+timeout_by_asset_variant
+timeout_by_device
+timeout_by_remaining_budget
+```
+
+Coverage tells how much evidence is observed; it does not correct systematic selection bias among observed responses.
+
+---
+
+## Major addition after Grok red-team — base-rate context
+
+A Gate-D mapped event remains `+1` or `-1`. Population rarity does not create an automatic weight.
+
+Pair-level population choice rates are stored/calculated separately as interpretive context.
+
+No inverse-frequency weighting or rarity bonus is introduced in v0.2.
+
+---
+
+## Major addition after Grok red-team — historical result provenance
+
+Mapping changes require three distinct histories:
+
+```text
+RAW EVENTS — immutable
+DERIVED RESEARCH VIEW — recalculable under explicit mapping/scoring versions
+PUBLISHED RESULT SNAPSHOT — immutable record of what participant saw at that time
+```
+
+A later mapping reversal must never silently rewrite historical participant-facing results.
+
 ---
 
 ## v0.2 rule summary
@@ -233,20 +328,30 @@ This ensures reflection remains tied to a clearly known selection event.
 | Rule | Decision |
 |---|---|
 | Rapid block choices | A / B / timeout only — no `no_clear_choice` |
-| Directional evidence source | `primary_choice` (first attempt) ONLY |
+| Directional evidence source | `primary_choice` first attempt ONLY |
 | Retry evidence | Secondary — never fills primary CS/CR gap |
 | Direction formula edge case | `n=0` → `NOT_ESTIMABLE`, not 0 |
+| One observation | Single observation only; never repeated-pattern language |
 | Coverage | Separate dimension, never merged into formula |
-| Reflection classification | Pre-defined `reason_id` + `interpretability_class`; free text raw |
-| Reflection anchor | `primary_choice` if exists; else `FIRST_COMPLETED_RETRY` |
+| Missingness | First-class diagnostic; not assumed random |
+| Gate D | Pair-level mapping validity only |
+| Gate E | Required before cross-exemplar domain aggregation |
+| Reflection classification | Versioned reason IDs; causal-neutral class labels in v0.2 |
+| Reflection anchor | `PRIMARY` if exists; else `FIRST_COMPLETED_RETRY` |
 | Intensity / latency | Independent channels — unchanged |
-| Self-report vs visual alignment | Direction-level only (POSITIVE/NEGATIVE/MIXED/INSUFFICIENT) |
+| Self-report vs visual | Direction-level relation only; no magnitude comparison |
+| Base rates | Context only; no automatic weight |
 | Raw DB | Append-only — never overwrite |
-| Derived data | Versioned `mapping_version` + `scoring_version` in derived table |
+| Derived data | Versioned mapping / aggregation / scoring |
+| Published results | Immutable snapshot under then-valid versions |
 | Evidence status | `INSUFFICIENT / DESCRIPTIVE_ONLY / DOMAIN_INTERPRETABLE / REPLICATED` |
 
 ---
 
-## Next step
+## Review cycle status
 
-Adversarial Grok audit — not opinion-based review, but concrete counterexample datasets that would produce misleading outputs under v0.2 architecture.
+Claude blocker review: **COMPLETE**  
+Owner resolution: **COMPLETE**  
+Grok adversarial counterexample audit: **COMPLETE**  
+Integrated architecture: `RESULT_CALCULATION_ARCH_v0.2.md`  
+Detailed red-team record: `RESULT_CALCULATION_ARCH_v0.2_REDTEAM.md`
