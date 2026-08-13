@@ -1,7 +1,5 @@
 <?php
-// ConflictLab Wave 1 — API v0.4
-// v0.4 delta: LT/EN participant UI + language capture.
-// Stimulus set and response semantics remain unchanged from v0.3.
+// ConflictLab Wave 1 — API endpoint v2 (hardened)
 
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
@@ -19,8 +17,8 @@ if (!$body) {
     exit;
 }
 
-// Required fields.
-foreach (['participant_id','candidate_id','language','left_asset','right_asset','choice'] as $f) {
+// Required fields
+foreach (['participant_id','candidate_id','left_asset','right_asset','choice'] as $f) {
     if (empty($body[$f])) {
         http_response_code(400);
         echo json_encode(['status'=>'error','message'=>"Missing: $f"]);
@@ -28,18 +26,13 @@ foreach (['participant_id','candidate_id','language','left_asset','right_asset',
     }
 }
 
+// Whitelists
 $valid_choices    = ['left','right','no_clear_choice'];
-$valid_languages  = ['lt','en'];
 $valid_candidates = ['CS-PR-01','CS-RE-01','CS-CA-01','CR-PZ-01','CR-FS-01','CR-PO-01'];
 
 if (!in_array($body['choice'], $valid_choices, true)) {
     http_response_code(400);
     echo json_encode(['status'=>'error','message'=>'Invalid choice']);
-    exit;
-}
-if (!in_array($body['language'], $valid_languages, true)) {
-    http_response_code(400);
-    echo json_encode(['status'=>'error','message'=>'Invalid language']);
     exit;
 }
 if (!in_array($body['candidate_id'], $valid_candidates, true)) {
@@ -48,14 +41,13 @@ if (!in_array($body['candidate_id'], $valid_candidates, true)) {
     exit;
 }
 
+// Validate participant/session fields.
 $participantId = (string)$body['participant_id'];
 if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $participantId)) {
     http_response_code(400);
     echo json_encode(['status'=>'error','message'=>'Invalid participant_id']);
     exit;
 }
-
-$language = (string)$body['language'];
 
 $presentationIndex = isset($body['presentation_index']) ? (int)$body['presentation_index'] : 0;
 if ($presentationIndex < 1 || $presentationIndex > 6) {
@@ -86,6 +78,8 @@ if (array_key_exists('latency_ms', $body) && $body['latency_ms'] !== null) {
     }
 }
 
+// Exact asset whitelist per candidate prevents malformed/public API submissions
+// from polluting the research table.
 $assetPairs = [
     'CS-PR-01' => ['more-reveal.webp','less-reveal.jpg'],
     'CS-RE-01' => ['more-evidence.png','less-evidence.png'],
@@ -114,12 +108,14 @@ if (array_key_exists('free_text', $body) && $body['free_text'] !== null) {
     if ($freeText !== null) $freeText = mb_substr($freeText, 0, 2000);
 }
 
+// Reason capture is optional.
+// hard_to_identify is an explicit state, distinct from simply leaving free text empty.
+// Intensity remains independent and may still be stored when the reason is hard to identify.
 if ($hardToIdentify === 1) {
     $freeText = null;
 }
 
 require_once 'config.php';
-
 try {
     $pdo = new PDO(
         "mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8mb4",
@@ -127,24 +123,25 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 
+    // Rate limit
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM responses WHERE participant_id=?");
-    $stmt->execute([$participantId]);
+    $stmt->execute([$body['participant_id']]);
     if ($stmt->fetchColumn() > 100) {
         http_response_code(429);
         echo json_encode(['status'=>'error','message'=>'Rate limit']);
         exit;
     }
 
+    // INSERT IGNORE prevents duplicate participant+candidate (requires UNIQUE INDEX)
     $stmt = $pdo->prepare("INSERT IGNORE INTO responses
-        (participant_id, candidate_id, protocol_version, language, presentation_index,
+        (participant_id, candidate_id, protocol_version, presentation_index,
          left_asset, right_asset, choice, free_text, intensity, hard_to_identify, latency_ms)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)");
 
     $stmt->execute([
         $participantId,
         $body['candidate_id'],
-        'wave1-v0.4',
-        $language,
+        'wave1-v0.3',
         $presentationIndex,
         $leftAsset,
         $rightAsset,
@@ -161,5 +158,5 @@ try {
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['status'=>'error','message'=>'DB error']);
-    error_log('Wave1 v0.4 api error: '.$e->getMessage());
+    error_log('Wave1 api error: '.$e->getMessage());
 }
