@@ -1,6 +1,6 @@
 # Human Wave 1 — v0.4 candidate
 
-**Status:** candidate source only; do not call frozen/live-verified until smoke testing is recorded.
+**Status:** live recruitment candidate; privacy page owner-verified; do not call fully frozen/live-verified until LT and EN smoke testing is recorded.
 
 ## Delta from v0.3
 
@@ -21,6 +21,12 @@
 - same latency timing rule
 - same save-before-progress rule
 
-The DB migration is currently stored at `deploy/wave1-hostinger/migrate_v04_language.sql`.
+## Verification status
+
+Confirmed by the owner on 2026-08-13: the live privacy policy opens successfully from the Wave 1 flow. Privacy is no longer a recruitment blocker.
+
+Still pending before full v0.4 freeze: one complete LT smoke session and one complete EN smoke session, including DB verification of `protocol_version`, `language`, 6/6 rows and exclusion of technical smoke-test UUIDs.
+
+The DB migration is stored at `deploy/wave1-hostinger/migrate_v04_language.sql`.
 
 See `docs/experiments/stimulus-validation/WAVE1_V04_DELTA_2026-08-13.md` for the verification gate and analysis boundary.
