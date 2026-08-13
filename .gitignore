@@ -37,10 +37,15 @@ htmlcov/
 # Logs
 *.log
 
-# Local environment
+# Local environment / secrets
 .env
 .env.local
+.env.*
+!.env.example
 
-# ConflictLab specific
-validation/feedback/*.md
-!validation/feedback/.gitkeep
+# Hostinger Wave 1 deployment secrets — never commit live credentials
+deploy/wave1-hostinger/config.php
+deploy/wave1-hostinger/config.local.php
+deploy/wave1-hostinger/.env
+deploy/wave1-hostinger/.env.*
+!deploy/wave1-hostinger/.env.example

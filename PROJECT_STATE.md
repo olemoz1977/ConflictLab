@@ -1,346 +1,257 @@
 # ConflictLab — Project State
 
-**Last updated:** 2026-08-12
-**Purpose:** AI context document. Read this first in every new conversation.
+**Last updated:** 2026-08-13  
+**Purpose:** current-state source for humans and AI. Read this first.
 
 ---
 
-## CURRENT STATE SYNC — 2026-08-12
+## 1. CURRENT MILESTONE
 
-**Repo state at this sync:** see latest commit on `main` branch — this line is intentionally not pinned to a single SHA to avoid immediate staleness
-**Canonical stimulus operationalization spec:** `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md`
-**Current AW status decision:** `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`
-**Active Wave 1 plan:** `docs/experiments/stimulus-validation/WAVE1_PLAN.md`
-**Internal curation tool:** `docs/experiments/stimulus-validation/pair-review.html`
-**Active stable tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
+**v0.8 Human Wave 1 — PRE-PILOT HARDENING.**
 
-### Methodology status
+Stimulus curation is complete. A Human Wave 1 platform has been deployed on Hostinger and is reported working end-to-end. Before inviting a wider participant group, the capture flow and deployment need a final hardening pass.
 
-- Scene property ≠ participant response ≠ derived signal (ADR-011)
-- Cue = reaction context, not automatic vector generation
-- Result UX describes tendencies in reactions, not properties of the person
-- Radar/bipolar map is secondary visual explanation, not the primary result
-- Working stimulus quality rule: **CONTROL + EXPERIENCE + INTERPRETABILITY**
-- Signal interpretation states remain: `supported`, `cross-load`, `insufficient`, `NONE`
-- Raw A/B choice has no inherent psychological polarity
+**Live Human Wave 1:** `https://omesg360.eu/wave1/`
 
-### AW status — CURRENT
-
-- AW as a third active static-stimulus axis is **SUSPENDED** for v0.8 development
-- Do not create new AW-specific static-image assets
-- Previous AW epistemic candidates E1/E2/E3 remain historical exploratory evidence, not production candidates
-- `prototype-nine-v1` AW behavior remains frozen as technical/UX reference only
-- Current hypothesis: response-orientation evidence may become meaningful only as a **domain-specific response trajectory** anchored to CS or CR
-- Domain-specific trajectory is **NOT VALIDATED** and must remain separate from product/session engagement
-
-### Stimulus Validation Wave 1 — ACTIVE
-
-Internal curation: **COMPLETE — 6/6 families KEEP for Wave 1. All 12 assets committed.**
-
-Next action: **human Wave 1 blind multi-pair session.**
-
-#### CS
-1. `CS-PR-01` — Partial Reveal — assets committed
-2. `CS-RE-01` — Relation Evidence — assets committed
-3. `CS-CA-01` — Context / Reference Availability — assets committed
-
-#### CR
-4. `CR-PZ-01` — Predefined Zones — assets committed
-5. `CR-FS-01` — Fixed Slots vs Continuous Capacity — assets committed
-6. `CR-PO-01` — Partitioned vs Open Functional Space — assets committed
-
-`signal_mapping_status: NONE` for all pairs. X/Y choice has no inherent CS/CR polarity.
-AW static-stimulus axis: **SUSPENDED**.
-
-**Do not generate additional stimulus before Wave 1 human evidence exists.**
-Human session = blind multi-pair, all 6 exemplars together, left/right randomized, no CS/CR labels exposed.
-
-### CS-PR-01 — CURRENT ASSET STATUS
-
-Status:
-
-```text
-family: partial_reveal
-target_domain: CS
-asset_status: exploratory_pilot
-calibration_status: approximate
-signal_mapping_status: NONE
-```
-
-Use neutral variant names only:
-
-- `more-reveal`
-- `less-reveal`
-
-Do **not** claim exact 75% / 50% calibration in repository metadata unless later measured and confirmed.
-
-Committed assets — all Wave 1:
-
-```
-CS-PR-01/more-reveal.webp + less-reveal.jpg
-CS-RE-01/more-evidence.png + less-evidence.png
-CS-CA-01/more-reference.png + less-reference.png
-CR-PZ-01/no-predefined-zones.png + predefined-zones.png
-CR-FS-01/continuous-capacity.png + fixed-slots.png
-CR-PO-01/open-space.png + partitioned-space.png
-```
-
-`signal_mapping_status: NONE` for all pairs. Do not regenerate assets without human evidence reason.
-
-### Internal Pair Candidate Review v0.8
-
-`docs/experiments/stimulus-validation/pair-review.html`
-
-Purpose: internal curation gate before human Wave 1.
-
-It accepts X/Y local files and sends both to Gemini for constrained multimodal audit of:
-
-- CONTROL
-- EXPERIENCE
-- INTERPRETABILITY
-- unintended visual differences
-- plausible confounds
-- triggered failure conditions
-- what should later be inspected in blind human responses
-
-AI output is curation support only. It does not validate CS/CR, assign signal direction, or replace human-response evidence.
-
-Final internal verdict remains human:
-
-```text
-KEEP for Wave 1
-REVISE
-ARCHIVE
-```
-
-**Status:** Used with real candidate pairs for internal curation. Curation complete.
-
-
-### Next action
-
-Human Wave 1 blind multi-pair session — all 6 exemplars together.
-
-
-Assets committed. Do not regenerate without human evidence reason.
-
-### Asset upload workflow
-
-For future stimulus image commits, prefer **Claude with direct GitHub token/key access** when available because binary asset upload is materially faster there. ChatGPT remains responsible for methodology, briefs, review logic and state consistency unless explicitly reassigned.
+**Important provenance note:** Hostinger deployment details below come from the 2026-08-13 technical handoff. The exact live PHP/HTML source has **not yet been mirrored into this repository**. Do not reconstruct or overwrite live code from documentation alone.
 
 ---
 
-## Strategic Direction
+## 2. CONSTITUTIONAL METHODOLOGY BOUNDARY
 
-> **ConflictLab v0.7 — Frozen Product Baseline.**
-> **Pair P0 — Active Candidate Architecture for v0.8.**
-> **prototype-nine-v1 — technical/UX stable reference, not a methodologically final stimulus set.**
+```text
+SCENE PROPERTY / VISUAL MANIPULATION
+        ↓
+PARTICIPANT RESPONSE
+        ↓
+DERIVED SIGNAL
+```
 
-The previous `3 AW + 3 CS + 3 CR` and 18-pair planning model is no longer treated as current methodological truth.
+These levels must not be collapsed.
 
-- `3+3+3` = historical/prototype block-construction assumption under review
-- `18 unique pairs` = possible technical planning target for two non-repeating 9-pair prototype blocks, **not a validated scientific minimum**
-- Current v0.8 methodology work prioritizes high-quality CS/CR stimulus candidates and tests whether domain-specific response trajectories add value
+- raw A/B choice has no inherent psychological polarity
+- a stimulus variant is not AW+, AW-, CS+, CS-, CR+ or CR-
+- `signal_mapping_status: NONE` remains in force for all Wave 1 pairs
+- Gate D / empirical evidence is required before defensible signal mapping
 
-| Product | Status | Live |
+Current authoritative boundary: `docs/adr/ADR-011-stimulus-signal-separation.md`.
+
+---
+
+## 3. AW STATUS
+
+AW as a peer **static-stimulus axis is SUSPENDED** for active v0.8 development.
+
+- do not create new AW-specific static-image assets
+- previous AW candidates remain historical exploratory evidence
+- `prototype-nine-v1` AW behavior remains frozen technical/UX prototype behavior
+- domain-specific response trajectory is an **active hypothesis / not validated**
+- product engagement and session completion must not be used as automatic trajectory evidence
+
+Current decision: `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md`.
+
+---
+
+## 4. STIMULUS VALIDATION WAVE 1 — INTERNAL CURATION COMPLETE
+
+All 6 families = **KEEP for Wave 1**. All 12 assets are committed.
+
+### CS
+1. `CS-PR-01` — Partial Reveal
+   - X `more-reveal.webp`
+   - Y `less-reveal.jpg`
+2. `CS-RE-01` — Relation Evidence
+   - X `more-evidence.png`
+   - Y `less-evidence.png`
+3. `CS-CA-01` — Context / Reference Availability
+   - X `more-reference.png`
+   - Y `less-reference.png`
+
+### CR
+4. `CR-PZ-01` — Predefined Zones
+   - X `no-predefined-zones.png`
+   - Y `predefined-zones.png`
+5. `CR-FS-01` — Fixed Slots vs Continuous Capacity
+   - X `fixed-slots.png`
+   - Y `continuous-capacity.png`
+6. `CR-PO-01` — Partitioned vs Open Functional Space
+   - X `partitioned-space.png`
+   - Y `open-space.png`
+
+Rules:
+
+- `signal_mapping_status: NONE` for all pairs
+- X/Y has no inherent CS/CR polarity
+- no new stimulus generation before Human Wave 1 evidence
+- Human Wave 1 is one blind multi-pair session using all six exemplars
+- no CS/CR/family labels shown to participants
+
+Active plan: `docs/experiments/stimulus-validation/WAVE1_PLAN.md`.
+
+---
+
+## 5. HUMAN WAVE 1 — HOSTINGER DEPLOYMENT
+
+Technical handoff dated 2026-08-13 reports:
+
+```text
+Hostinger site: omesg360.eu
+Path: /wave1/
+UI: HTML + vanilla JS
+API: PHP
+Storage: MySQL
+Assets: local /wave1/assets/
+```
+
+Current reported flow:
+
+1. intro → Start
+2. six pairs in randomized order
+3. left/right randomized per pair
+4. participant selects left, right, or `no_clear_choice`
+5. left/right choice → free text + intensity screen
+6. `no_clear_choice` currently skips reason capture
+7. response POST → PHP API → MySQL
+8. thank-you screen
+
+Current DB handoff schema stores:
+
+```text
+participant_id
+candidate_id
+left_asset
+right_asset
+choice
+free_text
+intensity
+latency_ms
+created_at
+```
+
+Reported working at handoff:
+
+- mobile UI loads
+- six pairs render
+- randomized pair order and left/right flip work
+- API writes to DB
+- 28 records were present at handoff
+
+**Those 28 records have not been classified in repo as test vs real participant data. Do not delete them blindly.**
+
+### Known pre-pilot hardening gaps
+
+1. Public `check.php` should be removed or access-protected before wider rollout.
+2. `no_clear_choice` should still allow/ask for spontaneous reason capture; current flow skips it.
+3. `hard_to_identify` is not yet stored as a distinct state from `no_clear_choice` or simple text skipping.
+4. DB/event schema does not yet store `protocol_version` or `presentation_index`.
+5. Duplicate/retry idempotency should be verified beyond the current rate limit.
+6. Verify that `latency_ms` starts only after both images are actually loaded/displayed.
+7. There is no admin CSV/JSON export yet; phpMyAdmin/direct SQL is the current access route.
+8. UI is Lithuanian only; this is not a blocker for the first LT pilot.
+9. Exact live Hostinger source is not yet version-controlled in this repo.
+
+Deployment handoff mirror: `deploy/wave1-hostinger/README.md`.
+
+---
+
+## 6. NEXT ACTIONS — ORDERED
+
+Before wider participant rollout:
+
+1. **Pre-pilot hardening on Hostinger** — address the capture/security gaps above without altering stimulus assets or methodology.
+2. **Verify hardening with real-device smoke test** — all 6 pairs, all response paths, DB persistence, retry behavior.
+3. **Classify existing DB records** — determine which are technical test records before any cleanup.
+4. **Mirror deployment source to GitHub without secrets** — exact `index.html`, `api.php`, schema/migration, and `config.example.php`; never commit live DB credentials.
+5. **Freeze a Human Wave 1 protocol/deployment version** before inviting the research sample.
+6. Only then begin the first real Human Wave 1 participant cycle.
+
+Do not expand the stimulus library before evidence from this cycle.
+
+---
+
+## 7. PROJECT LAYERS
+
+| Layer | Status | Meaning |
 |---|---|---|
-| **v0.7** (`docs/index.html`) | Frozen baseline. Deployment architecture uses direct Claude API calls from browser — not resolved for public use. Source of reusable methodological components. | `olemoz1977.github.io/ConflictLab/` |
-| **Pair P0** (`docs/experiments/pair-p0/index.html`) | **Active development.** Current live P9 behavior is a frozen technical/UX reference while v0.8 methodology changes are evaluated separately. | `olemoz1977.github.io/ConflictLab/experiments/pair-p0/?set=prototype-nine-v1` |
+| Human Wave 1 | ACTIVE / PRE-PILOT | live Hostinger validation platform |
+| Stimulus Validation Wave 1 | CURATION COMPLETE | 6 families / 12 assets |
+| `prototype-nine-v1` | FROZEN TECHNICAL/UX REFERENCE | historical prototype behavior, not current v0.8 method truth |
+| Pair P0 documentation | MIXED | current methodological decisions + historical prototype records |
+| v0.7 | FROZEN BASELINE | reusable methodological/architecture source, not active product development |
+
+The old `3 AW + 3 CS + 3 CR` and `18 unique pairs` model is historical/prototype planning, **not a current scientific minimum**.
 
 ---
 
-## Core Philosophy
+## 8. SOURCE OF TRUTH HIERARCHY
 
-An **Epistemic Reflection Framework** — a transparent signal interpretation system for self-reflection.
+Read in this order:
 
-> *"We don't help people understand themselves faster. We help them learn to better observe themselves."*
+1. `PROJECT_STATE.md` — current operational state
+2. `docs/experiments/stimulus-validation/WAVE1_PLAN.md` — current Wave 1 human protocol
+3. `docs/adr/ADR-011-stimulus-signal-separation.md` — scene property ≠ response ≠ signal
+4. `docs/experiments/pair-p0/METHODOLOGY_DELTA_2026-08-10.md` — newer decisions that supersede conflicting V1.3 text
+5. `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` — AW suspension
+6. `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md` — candidate design spec, subject to newer delta/ADR decisions
+7. `docs/experiments/stimulus-validation/SESSION_CHECKPOINT_2026-08-12.md` — frozen curation checkpoint
+8. `deploy/wave1-hostinger/README.md` — external live deployment handoff
+9. `REPOSITORY_INVENTORY.md` — file status map
 
-**NOT:** personality assessment, psychological diagnosis, human scoring, behavioral prediction.
-
-**Observation principle:** Never infer causes, never explain personality traits, never predict behavior, never create facts beyond provided data.
-
-**Result-language principle:** Describe the tendency in the reactions, not a property of the person.
+`WHY_CONFLICTLAB.md`, v0.7 methodology files, Pair P0 prototype docs, N0 docs and beta-test packs are useful history/reference but must not override the hierarchy above.
 
 ---
 
-## Pair P0 — Current Active State
+## 9. FROZEN / HISTORICAL REFERENCES
 
-**Stable tag:** `pair-p0-prototype-nine-v1-radar-ux-stable`
-**URL:** `?set=prototype-nine-v1`
-**Phone QA:** sessions 1–6 = PASS (2026-08-08)
+### prototype-nine-v1 / Pair P0
 
-### What is verified technically
+Stable tag: `pair-p0-prototype-nine-v1-radar-ux-stable`
 
-- 3-session blocks × 3 pairs = 9 choices per radar in the frozen P9 prototype
-- Radar shown only after a complete 3-session block (sessions 3, 6, 9...)
-- Progress-only screens between blocks (no partial radar)
-- Block 1 vs Block 2 overlay comparison (bipolar map)
-- P9/M0 isolation by `set_id`
-- Full provenance export (SESSION, choices, reflections)
-- Display calibration `p9-display-v1`, `BOUND=0.65`
-- LT + EN parity
+Technically verified historical reference includes:
 
-### What is historical/prototype methodology
+- 3-session × 3-pair blocks
+- radar after complete block
+- block comparison overlay
+- provenance export
+- LT/EN parity
 
-The following remain useful as prototype evidence but are not current v0.8 truth:
+Historical only for v0.8 methodology:
 
-- AW / CS / CR as three equivalent stimulus axes
-- `3 AW + 3 CS + 3 CR` block balance
-- `axis: aw` in prototype pair metadata
+- AW/CS/CR as three equivalent stimulus axes
+- `3+3+3` balance
 - choice → cue → predefined vector logic
-- repeated sessions 4–6 stimulus architecture
-- 18 unique pairs as if it were a scientific minimum
+- 18 unique pairs as scientific requirement
 
-### What is not yet done
+Do not rewrite the frozen prototype solely to mirror current v0.8 methodology.
 
-- Human Wave 1 validation UI/session is not yet implemented
-- No human Wave 1 response dataset exists yet
-- No formal domain-specific response trajectory contract exists
-- Gate D remains to be minimally formalized under the newer reaction-context architecture
-- Current result architecture (pattern description first, radar secondary) is not yet implemented in Pair P0
-- Existing P9 vectors remain prototype-only/reviewed historical mappings, not validated v0.8 mappings
+### v0.7
+
+`docs/index.html`, `docs/methodology/`, `src/engine/`, `stimuli/ST-001–010` are frozen/reference material. Do not actively develop them unless explicitly reopened.
 
 ---
 
-## v0.7 — Frozen Baseline
+## 10. REPOSITORY HOUSEKEEPING STATUS — 2026-08-13
 
-**Do not actively develop.** Use as reference for:
-- Methodology documents (`docs/methodology/`)
-- Language standards (R1–R8, S1–S5, F1–F7)
-- Architecture concepts (Observation Engine ADR-010, DSM, Reflection Engine)
-- Python engine (`src/`) — validated, not live-integrated
+This consolidation pass:
 
-**Known issue:** `docs/index.html` calls Anthropic API directly from browser. CORS/authentication not resolved for public deployment. Treat as architecture problem, not confirmed broken product.
+- refreshes README / PROJECT_STATE / REPOSITORY_INVENTORY
+- preserves live/frozen Pair P0 and v0.7 paths
+- archives confirmed obsolete root `validation/` content to `archive/v0.4-validation/`
+- archives the obsolete single-image `docs/review.html` and old `docs/generator.html` to `archive/legacy-tools/`
+- leaves `docs/beta-test/`, N0 documents and old release/tester docs in place as historical references where moving them could break milestone documentation
+- adds a non-secret Hostinger deployment handoff folder
 
----
-
-## Current Methodological Model
-
-### Active stimulus-response domains
-
-| Code | Working domain | Status |
-|---|---|---|
-| CS | Aiškumas / neapibrėžtumas — Clarity / Ambiguity | ACTIVE candidate domain |
-| CR | Struktūra / lankstumas — Structure / Flexibility | ACTIVE candidate domain |
-
-### AW
-
-| Item | Status |
-|---|---|
-| AW as peer static-stimulus axis | **SUSPENDED** |
-| AW-specific asset generation | **STOP** |
-| AW in `prototype-nine-v1` | HISTORICAL/TECHNICAL PROTOTYPE |
-| Domain-specific response trajectory | ACTIVE HYPOTHESIS / NOT VALIDATED |
-
-A single response may be informative evidence, but a trajectory requires repeated, interpretable events within a domain.
-
-Product continuation, session completion, and domain-specific response trajectory must not be collapsed.
+No stimulus assets, stable tags, Pair P0 code, v0.7 code, or methodology decisions are changed by this housekeeping pass.
 
 ---
 
-## Source of Truth Hierarchy
+## 11. FOR AI ASSISTANTS
 
-| Document | Purpose |
-|---|---|
-| `PROJECT_STATE.md` | **This file.** Short current state. Read first. |
-| `docs/experiments/stimulus-validation/WAVE1_PLAN.md` | Active six-family stimulus validation plan |
-| `docs/experiments/stimulus-validation/CS_RE_01_ASSET_BRIEF.md` | Next candidate asset brief |
-| `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` | Current AW suspension / trajectory decision |
-| `docs/adr/ADR-011-stimulus-signal-separation.md` | Scene property ≠ response ≠ signal boundary |
-| `docs/experiments/pair-p0/METHODOLOGY_DELTA_2026-08-10.md` | Post-V1.3 methodology decisions |
-| `docs/experiments/pair-p0/STIMULUS_EXPERIENCE_CARD_V1.md` | Active stimulus design working unit |
-| `REPOSITORY_INVENTORY.md` | Full file/module categorization |
-| `docs/experiments/pair-p0/PAIR_P0_STATE.md` | Pair P0 milestone history and OQ log |
-| `docs/experiments/pair-p0/RADAR_BLOCK_MODEL_V1.md` | Historical/current prototype architecture reference; AW peer-axis assumptions now under review |
-| `docs/experiments/pair-p0/PROGRESS.md` | Chronological log |
-| `docs/methodology/METHODOLOGY_FREEZE_v1.md` | v0.7 methodology (frozen) |
-| `README.md` | Public-facing description |
-
----
-
-## What Has Been Tried and Rejected / Suspended (Do NOT repeat blindly)
-
-- ❌ Cumulative 1–6 radar (mixed block sizes)
-- ❌ Partial block radar display (radar after 1/3 or 2/3 of block)
-- ❌ `hasUnlockedRadar()` triggering radar display (it means "exists", not "show now")
-- ❌ Per-axis display scaling (distorts cross-axis geometry)
-- ❌ `MIN_VISIBLE_PX` / `pow(0.7)` amplification in P9 (removed, linear only)
-- ❌ Raw axis numbers shown directly to users
-- ❌ Personality labels in reflections (S1)
-- ❌ `localStorage.clear()` (use namespace-scoped clearing only)
-- ❌ Single-pair human testing as the primary Wave 1 protocol
-- ⏸ AW-specific static-image stimulus development — suspended pending trajectory hypothesis evaluation
-- ⏸ Epistemic-AW E1/E2/E3 asset generation — suspended after red-team convergence toward CS/novelty/puzzle contamination
-- ⏸ Further image-generation iterations on CS-PR-01 — frozen at current exploratory assets pending evidence
-
----
-
-## Repository Structure
-
-```text
-ConflictLab/
-├── PROJECT_STATE.md          ← current state / read first
-├── REPOSITORY_INVENTORY.md
-├── README.md
-├── WHY_CONFLICTLAB.md
-├── docs/
-│   ├── index.html            ← v0.7 FROZEN baseline
-│   ├── generator.html
-│   ├── review.html           ← older single-image curation tool / historical precursor
-│   ├── media/
-│   ├── methodology/          ← frozen methodology docs
-│   ├── adr/
-│   │   └── ADR-011-stimulus-signal-separation.md
-│   └── experiments/
-│       ├── pair-p0/          ← ACTIVE v0.8 methodology + frozen P9 reference
-│       │   ├── index.html
-│       │   ├── STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md
-│       │   ├── METHODOLOGY_DELTA_2026-08-10.md
-│       │   ├── STIMULUS_EXPERIENCE_CARD_V1.md
-│       │   ├── AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md
-│       │   ├── AW_REDEFINITION_NOTE_v0.1.md
-│       │   ├── AW_EPISTEMIC_CANDIDATES_v0.1.md
-│       │   ├── pair-set-prototype-nine-v1.json
-│       │   ├── pair-cue-prototype-nine-v1.json
-│       │   ├── PAIR_P0_STATE.md
-│       │   ├── RADAR_BLOCK_MODEL_V1.md
-│       │   └── PROGRESS.md
-│       └── stimulus-validation/      ← ACTIVE Wave 1 work
-│           ├── WAVE1_PLAN.md
-│           ├── pair-review.html      ← internal Pair Candidate Review v0.8
-│           ├── CS_RE_01_ASSET_BRIEF.md
-│           └── assets/
-│               └── CS-PR-01/
-│                   ├── more-reveal.webp
-│                   └── less-reveal.jpg
-├── src/engine/               ← v0.7 Python engine (frozen, not live)
-├── stimuli/ST-001–010        ← v0.7 provisional/frozen
-├── tests/
-├── validation/               ← LEGACY v0.4 era
-└── archive/
-```
-
----
-
-## Git Tags (Pair P0 milestones)
-
-| Tag | Meaning |
-|---|---|
-| `pair-p0-m0-remote-beta-stable` | M0 remote beta |
-| `pair-p0-prototype-nine-v1-flow-stable` | 3×3 flow, provenance, radar unlocked |
-| `pair-p0-prototype-nine-v1-radar-ux-stable` | Bipolar map, calibration v1, routing fix, QA pass |
-
----
-
-## For AI Assistants
-
-1. **Active work = Pair P0 v0.8 methodology/stimulus validation.** Do not treat the live P9 radar geometry as current methodology truth.
-2. Read `PROJECT_STATE.md`, ADR-011, `WAVE1_PLAN.md`, `METHODOLOGY_DELTA_2026-08-10.md`, and `AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` before methodology work.
-3. Do not create AW-specific static-image assets unless the AW suspension is explicitly reversed.
-4. Current stimulus work prioritizes CS and CR candidate families using **CONTROL + EXPERIENCE + INTERPRETABILITY**.
-5. Human Wave 1 is a blind **multi-pair session with six family exemplars**, not one-pair-at-a-time testing.
-6. Product engagement must not be used as automatic evidence of domain-specific response trajectory.
-7. Pair Candidate Review AI output is curation support only; human response evidence remains required.
-8. Before any code change: read the plan and confirm with Oleg.
-9. Never use `localStorage.clear()`.
-10. Never modify M0 flow or stable tags without explicit approval.
-11. All methodological decisions belong to Oleg. If uncertain — ask, do not invent.
+1. Do not infer signal polarity from stimulus X/Y.
+2. Do not create AW-specific static-image assets.
+3. Do not generate additional Wave 1 stimuli before human evidence.
+4. Do not treat product continuation as domain trajectory evidence.
+5. Do not modify frozen Pair P0/v0.7 flows without explicit instruction.
+6. Do not reconstruct live Hostinger source from this document; obtain the actual files first.
+7. Never commit Hostinger DB passwords, API keys or live `config.php` secrets.
+8. When state conflicts exist, prefer the source-of-truth hierarchy above.

@@ -1,101 +1,122 @@
 # ConflictLab
 
-**Epistemic Reflection Framework** — savirefleksijos platforma, padedanti žmonėms geriau stebėti savo spontaniškas reakcijų dėsningumus.
+**Epistemic Reflection Framework** — eksperimentinė savirefleksijos sistema, skirta stebėti spontaniškas reakcijas į kontroliuojamus vizualinius skirtumus, o ne klasifikuoti žmogų.
 
-> *Mes nepadedame žmogui greičiau suprasti save. Mes padedame jam išmokti geriau stebėti save.*
-
----
-
-## Kas tai yra
-
-ConflictLab **nėra**:
-- psichologinis testas
-- asmenybės diagnostika
-- elgesio prognozavimo sistema
-
-ConflictLab **yra**:
-- episteminis refleksijos įrankis
-- stimulais grįstas dėmesio krypties stebėjimas
-- reakcijų ir pasirinkimų pėdsako fiksavimas
+> Mes nepadedame žmogui greičiau suprasti save. Mes padedame jam išmokti geriau stebėti save.
 
 ---
 
-## Dabartinė projekto kryptis
+## Dabartinis etapas — v0.8 Human Wave 1
 
-| | |
-|---|---|
-| **v0.7** | Frozen product baseline. Nekeičiama. Šaltinis metodologiniams komponentams. |
-| **Pair P0** | Aktyvus v0.8 architektūros kandidatas. Čia vyksta pagrindinis darbas. |
-| **prototype-nine-v1** | Techninis/UX stable reference. Ne metodologiškai galutinis stimulus rinkinys. |
+**Aktyvus tyrimo etapas:** šešių stimulus-manipuliacijų šeimų aklas žmogaus reakcijų patikrinimas.
 
-**Dabartinis darbas:** naujo stimulus/cue rinkinio kūrimas. Oficialiam švariam kelių blokų palyginimui reikės **18 unikalių metodologiškai priimtinų porų** (9 pirmam blokui, 9 antram).
+- 6/6 Wave 1 šeimos praėjo vidinę kuraciją (`KEEP for Wave 1`)
+- 12/12 galutinių assetų yra repo
+- visoms poroms `signal_mapping_status: NONE`
+- X/Y pasirinkimas neturi iš anksto priskirtos psichologinės krypties
+- AW kaip atskira statinių stimulų ašis yra **SUSPENDED**
+- naujų stimulų iki Human Wave 1 duomenų **negeneruojame**
 
----
+**Human Wave 1 live:** `https://omesg360.eu/wave1/`
 
-## Pair P0 — aktyvus eksperimentas
-
-**Live:** `https://olemoz1977.github.io/ConflictLab/experiments/pair-p0/?set=prototype-nine-v1`
-
-Katalogas: `docs/experiments/pair-p0/`
-
-**Kas tai:** izoliuotas eksperimentas su vaizdų poromis. Dalyvis mato du vaizdus, pasirenka vieną ir nurodo savo reakciją — tai ir yra visas signalas. Nėra AI generuojamų refleksijų.
-
-**Patvirtinta (2026-08-08):**
-- 3 sesijų blokai × 3 poros = 9 pasirinkimų radaras
-- Radaras tik po pilno 3 sesijų bloko (sesijos 3, 6, 9...)
-- Block 1 vs Block 2 overlay palyginimas
-- Pilnas provenance eksportas
-- LT + EN palaikymas
-- Stable tag: `pair-p0-prototype-nine-v1-radar-ux-stable`
-
-**Laukia:**
-- 18 unikalių metodologiškai priimtinų porų (šiuo metu yra 9, kartojamos antrame bloke)
-- N0-010–018 naujų porų kūrimas
+Hostinger diegimas šiuo metu yra pre-pilot stadijoje. Techninis handoff aprašytas `deploy/wave1-hostinger/README.md`. Tikslus live source mirror į repo dar nebaigtas, todėl repo neturi būti laikomas Hostinger PHP kodo byte-for-byte kopija.
 
 ---
 
-## v0.7 — Frozen Baseline
+## Metodologinė riba
 
-**Live:** `https://olemoz1977.github.io/ConflictLab/`
+```text
+SCENE PROPERTY / VISUAL MANIPULATION
+        ↓
+PARTICIPANT RESPONSE
+        ↓
+DERIVED SIGNAL — tik po empirinio Gate D
+```
 
-Katalogas: `docs/index.html`
+**Negalima** iš vaizdo savybės ar A/B pasirinkimo automatiškai išvesti AW/CS/CR signalo.
 
-Observation Engine + Dialogue State Machine + Claude API refleksijų sluoksnis. Nekeičiama. Naudojama kaip metodologinių principų šaltinis.
+Dabartiniai aktyvūs stimulus-response kandidatų domenai:
+
+- **CS** — Clarity / Ambiguity
+- **CR** — Structure / Flexibility
+
+AW statinių vaizdų programa sustabdyta. Galimas domain-specific response trajectory sluoksnis yra tik hipotezė ir nėra validuotas.
 
 ---
 
-## 3 signalų ašys (abi versijose)
+## Wave 1 šeimos
 
-| Ašis | Teigiama pusė | Neigiama pusė |
+### CS
+1. `CS-PR-01` — Partial Reveal
+2. `CS-RE-01` — Relation Evidence
+3. `CS-CA-01` — Context / Reference Availability
+
+### CR
+4. `CR-PZ-01` — Predefined Zones
+5. `CR-FS-01` — Fixed Slots vs Continuous Capacity
+6. `CR-PO-01` — Partitioned vs Open Functional Space
+
+Aktyvus planas: `docs/experiments/stimulus-validation/WAVE1_PLAN.md`
+
+---
+
+## Projekto sluoksniai
+
+| Sluoksnis | Statusas | Paskirtis |
 |---|---|---|
-| AW | Artėti (Approach) | Atsitraukti (Step back) |
-| CS | Aiškumas (Clarity) | Neapibrėžtumas (Ambiguity) |
-| CR | Struktūra (Structure) | Laisvumas (Flexibility) |
+| **Human Wave 1** | ACTIVE / PRE-PILOT | realių dalyvių blind multi-pair sesija |
+| **Stimulus Validation Wave 1** | INTERNAL CURATION COMPLETE | 6 šeimos, 12 assetų |
+| **prototype-nine-v1 / Pair P0** | FROZEN TECHNICAL/UX REFERENCE | ankstesnio srauto ir radaro techninis etalonas, ne dabartinė metodologinė tiesa |
+| **v0.7** | FROZEN BASELINE | metodologinių ir architektūrinių komponentų šaltinis |
 
-Skalė: [-1.0, +1.0]. Kryptiniai, ne vertinamieji.
+Ankstesnis `3 AW + 3 CS + 3 CR` ir „18 porų minimumo“ modelis **nėra dabartinis v0.8 metodologinis reikalavimas**.
 
 ---
 
-## Repozitorijos struktūra
+## Kur pradėti
 
-```
+Naujas žmogus ar AI turėtų skaityti tokia tvarka:
+
+1. `PROJECT_STATE.md` — dabartinė projekto būsena
+2. `docs/experiments/stimulus-validation/WAVE1_PLAN.md` — aktyvus Human Wave 1 protokolas
+3. `docs/adr/ADR-011-stimulus-signal-separation.md` — stimulus ≠ response ≠ signal riba
+4. `docs/experiments/pair-p0/METHODOLOGY_DELTA_2026-08-10.md` — V1.3 naujesni sprendimai
+5. `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` — AW suspension
+6. `REPOSITORY_INVENTORY.md` — failų statusai ir istorinis sluoksnis
+
+---
+
+## Repo struktūra
+
+```text
 ConflictLab/
-├── PROJECT_STATE.md              ← dabartinės būsenos dokumentas (pradėk čia)
-├── REPOSITORY_INVENTORY.md      ← pilna failų inventorizacija
+├── PROJECT_STATE.md
+├── README.md
+├── REPOSITORY_INVENTORY.md
+├── WHY_CONFLICTLAB.md              ← istorinis / teorinis rationale; ne vienintelis v0.8 truth source
+├── deploy/
+│   └── wave1-hostinger/            ← deployment handoff; source mirror pending
 ├── docs/
-│   ├── index.html               ← v0.7 (frozen)
-│   ├── methodology/             ← užšaldyta v0.7 metodika
+│   ├── index.html                  ← v0.7 frozen baseline
+│   ├── methodology/                ← v0.7 frozen methodology
+│   ├── adr/
 │   └── experiments/
-│       └── pair-p0/             ← AKTYVUS DARBAS
-│           ├── index.html       ← pagrindinis P0 produktas
-│           ├── PAIR_P0_STATE.md ← P0 tiesos šaltinis
-│           └── RADAR_BLOCK_MODEL_V1.md
-├── stimuli/                     ← v0.7 stimulų biblioteka (frozen)
-├── src/engine/                  ← v0.7 Python engine (frozen)
-├── tests/                       ← testai
-└── archive/                     ← istorinis turinys
+│       ├── pair-p0/                ← current decisions + frozen prototype references
+│       └── stimulus-validation/     ← ACTIVE Wave 1 research files + assets
+├── src/                            ← v0.7 frozen engine
+├── stimuli/                        ← v0.7 frozen stimulus library
+├── tests/
+└── archive/                        ← istorinis / nebenaudojamas turinys
 ```
 
 ---
 
-*ConflictLab — stebėjimas, ne vertinimas.*
+## Ko ConflictLab nėra
+
+- psichologinis testas
+- diagnostika
+- asmenybės tipologija
+- elgesio prognozavimo sistema
+- automatinis žmogaus „scoringas“ pagal vieną pasirinkimą
+
+**ConflictLab — stebėjimas, ne nuosprendis.**

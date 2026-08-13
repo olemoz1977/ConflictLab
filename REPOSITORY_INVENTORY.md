@@ -1,148 +1,220 @@
 # ConflictLab — Repository Inventory
 
-**Data:** 2026-08-08
-**Pagrindas:** pilnas repo auditas 2026-08-08
-**Versija:** v0.7 (frozen) + Pair P0 (active)
+**Date:** 2026-08-13  
+**Scope:** current `main` state + Human Wave 1 external deployment handoff  
+**Purpose:** prevent current, frozen and historical artifacts from being mixed into one methodology.
 
-Kategorijos: **ACTIVE** / **FROZEN** / **EXPERIMENTAL** / **SUPPORTING** / **LEGACY** / **ARCHIVE** / **STALE**
+## Classification
 
----
-
-## ACTIVE — Pair P0 aktyvus darbas
-
-| Failas | Paskirtis |
-|---|---|
-| `docs/experiments/pair-p0/index.html` | Pagrindinis Pair P0 produktas (4500+ eilučių) |
-| `docs/experiments/pair-p0/pair-set-prototype-nine-v1.json` | Aktyvus 9 porų rinkinys |
-| `docs/experiments/pair-p0/pair-cue-prototype-nine-v1.json` | Aktyvus 9 porų cue rinkinys |
-| `docs/experiments/pair-p0/lang.json` | LT/EN vertimų failas |
-| `docs/experiments/pair-p0/images/` | P0/N0 vaizdai (p0-001–003, n0-004–009) |
-| `docs/experiments/pair-p0/audio/open-window.mp3` | UI garsas |
-| `docs/experiments/pair-p0/PAIR_P0_STATE.md` | P0 tiesos šaltinis ir OQ žurnalas |
-| `docs/experiments/pair-p0/RADAR_BLOCK_MODEL_V1.md` | Architektūros specifikacija |
-| `docs/experiments/pair-p0/PROGRESS.md` | Chronologinis žurnalas |
-| `tests/pair_p0_attainable_envelope.py` | Attainable envelope audito skriptas |
-| `PROJECT_STATE.md` | Dabartinės būsenos dokumentas |
-| `REPOSITORY_INVENTORY.md` | Šis failas |
+- **CURRENT** — current operational/methodological truth
+- **ACTIVE-EXPERIMENT** — being tested now; not validated truth
+- **FROZEN-REFERENCE** — technically useful, must not be silently rewritten
+- **HISTORICAL-PROTOTYPE** — records earlier design/logic; not current v0.8 truth
+- **SUPPORTING** — useful evidence, audit or tooling
+- **ARCHIVE** — intentionally removed from active paths
+- **EXTERNAL-LIVE** — deployed outside GitHub
+- **PENDING-SOURCE-MIRROR** — live implementation exists but exact source is not yet in repo
 
 ---
 
-## FROZEN BASELINE — v0.7 (nekeisti, naudoti kaip šaltinį)
+## 1. ROOT
 
-| Failas/Katalogas | Paskirtis |
-|---|---|
-| `docs/index.html` | v0.7 pagrindinis UI (1335 eilučių, tiesioginiai Claude API kvietimai) |
-| `docs/methodology/METHODOLOGY_FREEZE_v1.md` | Metodikos užšaldymo dokumentas |
-| `docs/methodology/conflictlab_voice_v1.md` | Kaip sistema kalba |
-| `docs/methodology/behavior_translation_architecture_v1.md` | Reflection Engine architektūra |
-| `docs/methodology/stimulus_validation_protocol.md` | Stimulus vertinimo protokolas |
-| `docs/methodology/stimulus_matrix_v1.md` | Bibliotekos planavimas |
-| `docs/methodology/stimulus_cue_rules_v1.md` | F1–F7 cue kūrimo taisyklės |
-| `docs/methodology/stimulus_lifecycle_v1.md` | Gamybos procesas |
-| `docs/methodology/micro_dialogue_dsm_v1.md` | DSM specifikacija |
-| `docs/methodology/reflection_language_standard_v1.md` | R1–R8 refleksijos standartai |
-| `docs/methodology/reflection_safety_principles_v1.md` | S1–S5 saugos principai |
-| `docs/adr/ADR-010-observation-engine.md` | Observation Engine sprendimas |
-| `docs/architecture/adr/ADR-009-behavior-translation-engine.md` | Behavior Translation Engine |
-| `docs/beta_research_protocol_v1.md` | H1–H4 tyrimo hipotezės |
-| `docs/media/` | v0.7 stimulų vaizdai ir vaizdo įrašai |
-| `src/engine/behavior_translation/` | Python engine (P1–P9, AHA, Reflection) |
-| `stimuli/ST-001–010/` | v0.7 stimulų biblioteka (PROVISIONAL vektoriai) |
-| `WHY_CONFLICTLAB.md` | Filosofija |
-| `README.md` | Viešas pristatymas |
-
----
-
-## EXPERIMENTAL — eksperimentiniai rinkiniai
-
-| Failas | Paskirtis | Pastaba |
+| Path | Class | Purpose / note |
 |---|---|---|
-| `docs/experiments/pair-p0/pair-set-n0-six-v3.json` | 6 porų n0-six-v3 rinkinys | Neaktyvus šiuo metu |
-| `docs/experiments/pair-p0/pair-cue-n0-six-v3.json` | n0-six-v3 cue rinkinys | Neaktyvus |
+| `PROJECT_STATE.md` | **CURRENT** | read first; current milestone, methodology boundary, deployment status |
+| `README.md` | **CURRENT** | public project overview aligned to v0.8 Wave 1 |
+| `REPOSITORY_INVENTORY.md` | **CURRENT** | this status map |
+| `WHY_CONFLICTLAB.md` | HISTORICAL-PROTOTYPE / SUPPORTING | valuable rationale, but several v0.7-era claims (3×4, hard latency interpretation, three peer axes) are not current v0.8 truth |
+| `.gitignore` | CURRENT | local/tooling ignores; deployment secrets must remain untracked |
+| `archive/` | ARCHIVE | historical project material |
+| `docs/` | MIXED | frozen baseline + active experiments + methodology |
+| `src/` | FROZEN-REFERENCE | v0.7 Python engine |
+| `stimuli/` | FROZEN-REFERENCE | v0.7 provisional stimulus library |
+| `tests/` | SUPPORTING | engine/prototype tests |
+
+Top-level `validation/` was v0.4-era stale material and has been moved to `archive/v0.4-validation/` in the 2026-08-13 housekeeping pass.
 
 ---
 
-## SUPPORTING — infrastruktūra ir protokolai
+## 2. CURRENT HUMAN WAVE 1 / STIMULUS VALIDATION
 
-| Failas | Paskirtis |
-|---|---|
-| `tests/test_behavior_translation.py` | v0.7 Python engine testai (13/13) |
-| `docs/beta-test/` | Beta testavimo protokolai |
-| `docs/external-review/` | Išorinio peržiūros paketas |
-| `docs/tester_instructions.md` | Testerių instrukcijos |
-| `docs/product_experience_audit_v1.md` | Produkto patirties auditas |
-| `stimuli/_templates/` | Šablonai naujiems stimulams |
+Directory: `docs/experiments/stimulus-validation/`
 
----
-
-## LEGACY — senos versijos, dar saugomos
-
-| Failas | Paskirtis | Pastaba |
+| Path | Class | Status |
 |---|---|---|
-| `docs/experiments/pair-p0/pair-set.json` | M0 numatytasis rinkinys (3 poros) | Naudojamas M0 legacy kelyje |
-| `docs/experiments/pair-p0/pair-cue-v0.1.json` | M0 senasis cue rinkinys | Naudojamas M0 legacy kelyje |
-| `docs/experiments/pair-p0/archive/index_v1_before_rewrite.html` | Sena P0 versija prieš perašymą | Istorinė nuoroda |
-| `docs/generator.html` | Stimulus generatorius | CORS problema, rankinis naudojimas |
-| `docs/RELEASE_NOTES_v0.6.0-beta.md` | v0.6 release notes | |
-| `docs/methodology/stimulus_cue_redesign_v1.md` | Supresidenta `stimulus_cue_rules_v1.md` | |
-| `docs/methodology/aha_engine.md` | Tuščias, supresidenta `src/` | |
-| `docs/methodology/behavior_translation_engine.md` | Tuščias, supresidenta ADR | |
-| `docs/methodology/reflection_engine_validation_v1.md` | Istorinis validacijos protokolas | |
-| `docs/methodology/future_considerations.md` | Senesni planavimai | |
+| `WAVE1_PLAN.md` | **CURRENT** | six-family blind human validation protocol |
+| `SESSION_CHECKPOINT_2026-08-12.md` | CURRENT / CHECKPOINT | 6/6 KEEP, 12 assets, X/Y conventions |
+| `assets/` | **CURRENT** | frozen Wave 1 binary assets; do not regenerate before evidence |
+| `pair-review.html` | SUPPORTING | internal Pair Candidate Review tool; curation complete |
+| `CS_RE_01_ASSET_BRIEF.md` | HISTORICAL-PROTOTYPE / SUPPORTING | production brief for a completed pair; not a next action |
+| `LEGACY_PAIR_SALVAGE_AUDIT_2026-08-12.md` | SUPPORTING | audit evidence, not current stimulus plan |
+
+### Frozen Wave 1 asset set
+
+```text
+CS-PR-01/more-reveal.webp + less-reveal.jpg
+CS-RE-01/more-evidence.png + less-evidence.png
+CS-CA-01/more-reference.png + less-reference.png
+CR-PZ-01/no-predefined-zones.png + predefined-zones.png
+CR-FS-01/fixed-slots.png + continuous-capacity.png
+CR-PO-01/partitioned-space.png + open-space.png
+```
+
+All: `signal_mapping_status: NONE`.
 
 ---
 
-## ARCHIVE — istorinis turinys
+## 3. CURRENT METHODOLOGICAL DECISIONS
 
-| Katalogas | Turinys |
-|---|---|
-| `archive/v0.7-freeze/` | Užšaldytas v0.7 archyvas: senas engine, teorijos, hipotezės, pavyzdžiai |
-| `archive/v0.7-freeze/theories/` | 16 teorinių pagrindų dokumentų |
-| `archive/v0.7-freeze/misc/src-core/` | v0.4 Python moduliai (SignalOrientation, EvidenceGraph, EventLog ir kt.) |
-| `archive/v0.7-freeze/old-engine/` | Senas analizės pipeline |
-| `archive/v1/` | Labai sena v1 architektūra |
-
----
-
-## STALE / MISLEADING — pasenę, gali klaidinti
-
-| Failas | Problema |
-|---|---|
-| `validation/README.md` | „ConflictLab v0.4 — Validation Phase" — visiškai nebeaktuali era |
-| `validation/disagreement_log.md` | v0.4 era, tuščias |
-| `docs/review.html` | Nežinoma paskirtis, nėra konteksto |
-
----
-
-## Pair P0 dokumentų grupė
-
-| Failas | Paskirtis | Statusas |
+| Path | Class | Note |
 |---|---|---|
-| `PAIR_P0_STATE.md` | Pagrindinis būsenos dokumentas | ✅ Atnaujintas |
-| `RADAR_BLOCK_MODEL_V1.md` | Architektūros specifikacija | ✅ Atnaujintas |
-| `PROGRESS.md` | Chronologinis žurnalas | ✅ Atnaujintas |
-| `FIRST_RADAR_EXPECTATION_PAYOFF_V1.md` | Expectation/payoff UX spec | Istorinis, galioja |
-| `N0_STIMULUS_CUE_BALANCE_AUDIT.md` | 3 esamų porų auditas | Galioja |
-| `N0_DECISIONS.md` | Metodiniai sprendimai | Galioja |
-| `N0_PAIR_DESIGN_SPEC.md` | 6 naujų porų projektavimo reikalavimai | Galioja |
-| `N0_MANUAL_CUE_AUDIT_PROTOCOL.md` | Rankinio audito protokolas | Galioja |
-| `N0_PAIR_CONCEPT_CANDIDATES.md` | 14 kandidatų su vertinimu | Galioja |
-| `N0_INDEPENDENT_CONCEPT_REVIEW.md` | Triviečiai sprendimai | Galioja |
-| `N0_CONCEPT_REFINEMENT.md` | Gamybos specifikacijos | Galioja |
-| `N0_PRODUCTION_PROMPTS.md` | Gamybos promptai | Galioja |
-| `N0_SIX_PAIR_CUE_DRAFT.md` | Senas draftas | LEGACY (superseded by _v3) |
-| `N0_SIX_PAIR_CUE_DRAFT_v2.md` | Senas draftas | LEGACY (superseded by _v3) |
-| `N0_SIX_PAIR_CUE_DRAFT_v3.md` | Galutinė versija | Galioja |
+| `docs/adr/ADR-011-stimulus-signal-separation.md` | **CURRENT** | absolute boundary: scene property ≠ response ≠ signal |
+| `docs/experiments/pair-p0/METHODOLOGY_DELTA_2026-08-10.md` | **CURRENT** | newer than V1.3 where they conflict |
+| `docs/experiments/pair-p0/AW_TRAJECTORY_HYPOTHESIS_2026-08-10.md` | **CURRENT** | AW static-stimulus program suspended |
+| `docs/experiments/pair-p0/STIMULUS_OPERATIONALIZATION_SPEC_V1.3.md` | CURRENT CANDIDATE SPEC | use subject to ADR-011 + methodology delta |
+| `docs/experiments/pair-p0/STIMULUS_EXPERIENCE_CARD_V1.md` | CURRENT / SUPPORTING | CONTROL + EXPERIENCE + INTERPRETABILITY working unit |
 
 ---
 
-## Git Tags
+## 4. HUMAN WAVE 1 DEPLOYMENT
 
-| Tag | Reikšmė |
+| Location | Class | Note |
+|---|---|---|
+| `https://omesg360.eu/wave1/` | **EXTERNAL-LIVE** | Hostinger Human Wave 1 platform; pre-pilot hardening pending |
+| `deploy/wave1-hostinger/README.md` | **CURRENT / PENDING-SOURCE-MIRROR** | non-secret handoff and source-control boundary |
+| live Hostinger `index.html`, `api.php`, `config.php` | **PENDING-SOURCE-MIRROR** | exact live source not yet committed; never commit live credentials |
+
+Repo currently documents the deployment but does **not** claim byte-for-byte parity with the Hostinger live source.
+
+---
+
+## 5. PAIR P0 / prototype-nine-v1
+
+### Keep at existing paths — FROZEN technical/UX reference
+
+| Path | Class |
 |---|---|
-| `pair-p0-m0-remote-beta-stable` | M0 remote beta |
-| `pair-p0-prototype-nine-v1-flow-stable` | 3×3 flow, provenance, radar unlocked |
-| `pair-p0-prototype-nine-v1-radar-ux-stable` | Bipolar map, calibration v1, routing fix |
-| `external-review-pack-v1` | Išorinio review paketas |
-| `pair-p0-beta-test-pack-v1` | Beta test paketas |
-| `pair-p0-flow-stable`, `pair-p0-h/i/j0-stable` | Ankstesni M0 etapai |
+| `docs/experiments/pair-p0/index.html` | FROZEN-REFERENCE |
+| `pair-set-prototype-nine-v1.json` | FROZEN-REFERENCE |
+| `pair-cue-prototype-nine-v1.json` | HISTORICAL-PROTOTYPE / FROZEN-REFERENCE |
+| `lang.json` | FROZEN-REFERENCE |
+| `images/` | FROZEN-REFERENCE |
+| `audio/` | FROZEN-REFERENCE |
+| `RADAR_BLOCK_MODEL_V1.md` | FROZEN-REFERENCE |
+| `PAIR_P0_STATE.md` | HISTORICAL-PROTOTYPE / milestone history |
+| `PROGRESS.md` | HISTORICAL-PROTOTYPE / chronology |
+| `FIRST_RADAR_EXPECTATION_PAYOFF_V1.md` | FROZEN-REFERENCE / UX history |
+
+Stable tag: `pair-p0-prototype-nine-v1-radar-ux-stable`.
+
+Do not move or rewrite these solely to make them look like current v0.8 methodology. Their value is historical/technical traceability.
+
+### Superseded / historical Pair P0 research records — leave in place for traceability
+
+- `AW_REDEFINITION_NOTE_v0.1.md`
+- `AW_EPISTEMIC_CANDIDATES_v0.1.md`
+- `EXTERNAL_AI_HANDOFF_2026-08-10.md`
+- `N0_*` design/cue/review documents
+- `pair-set-n0-six-v3.json`
+- `pair-cue-n0-six-v3.json`
+- legacy M0 pair/cue files
+
+Class: **HISTORICAL-PROTOTYPE** unless a newer current document explicitly says otherwise.
+
+---
+
+## 6. v0.7 FROZEN BASELINE
+
+Keep as reference; do not actively develop unless explicitly reopened.
+
+| Path | Class |
+|---|---|
+| `docs/index.html` | FROZEN-REFERENCE |
+| `docs/methodology/` | FROZEN-REFERENCE |
+| `docs/media/` | FROZEN-REFERENCE |
+| `docs/architecture/` | FROZEN-REFERENCE / historical ADRs |
+| `src/engine/behavior_translation/` | FROZEN-REFERENCE |
+| `stimuli/ST-001–010/` | FROZEN-REFERENCE |
+| `tests/test_behavior_translation.py` | SUPPORTING |
+| `docs/beta_research_protocol_v1.md` | HISTORICAL-PROTOTYPE / v0.7 research protocol |
+| `docs/product_experience_audit_v1.md` | SUPPORTING / historical UX audit |
+
+`docs/index.html` still contains the old direct-browser Claude API architecture; this is not the Human Wave 1 deployment.
+
+---
+
+## 7. HISTORICAL TEST PACKS LEFT IN PLACE
+
+These files are intentionally **not physically moved** in this pass because they are referenced by milestone history/tags and moving them would reduce traceability without practical benefit.
+
+| Path | Class |
+|---|---|
+| `docs/beta-test/` | HISTORICAL-PROTOTYPE — Pair P0 5-person / 3-session usability pack |
+| `docs/tester_instructions.md` | HISTORICAL-PROTOTYPE — v0.6 tester instructions |
+| `docs/RELEASE_NOTES_v0.6.0-beta.md` | HISTORICAL-PROTOTYPE |
+
+Do not use these as Human Wave 1 participant instructions.
+
+---
+
+## 8. ARCHIVED IN 2026-08-13 HOUSEKEEPING
+
+Moved without changing content:
+
+```text
+validation/README.md
+validation/disagreement_log.md
+validation/feedback_template.md
+validation/feedback/.gitkeep
+    → archive/v0.4-validation/
+
+docs/review.html
+    → archive/legacy-tools/review-single-image.html
+
+docs/generator.html
+    → archive/legacy-tools/generator.html
+```
+
+Rationale:
+
+- top-level `validation/` was explicitly v0.4-era stale material
+- `docs/review.html` is an obsolete single-image review precursor, superseded for current work by `docs/experiments/stimulus-validation/pair-review.html`
+- `docs/generator.html` is a legacy generator with the previously documented CORS problem and is not part of current Wave 1 production
+
+Search/audit found no active current-code dependency requiring these old paths. Historical Git tags/commits preserve their original locations.
+
+---
+
+## 9. ARCHIVE
+
+| Path | Contents |
+|---|---|
+| `archive/v1/` | earliest text-analysis architecture |
+| `archive/v0.7-freeze/` | old engines, theory material, v0.4/v0.7-era files |
+| `archive/v0.4-validation/` | former stale root validation package |
+| `archive/legacy-tools/` | obsolete browser tools removed from active `docs/` paths |
+| `archive/README.md` | archive interpretation rules |
+
+---
+
+## 10. CURRENT CLEANUP / SOURCE-CONTROL RULES
+
+1. Current truth must be explicit; old files are not made current merely because they remain in `main`.
+2. Freeze technically useful historical paths when moving them could break milestone traceability.
+3. Archive only confirmed obsolete artifacts with no active dependency.
+4. Do not commit Hostinger passwords, API keys or live DB credentials.
+5. When the exact Hostinger source is obtained, mirror it under `deploy/wave1-hostinger/` with a safe `config.example.php`, not live `config.php`.
+6. Human Wave 1 data itself must not be committed into this public repository.
+7. Before a new methodology change, update `PROJECT_STATE.md` and the relevant canonical spec/checkpoint rather than accumulating contradictory append-only notes.
+
+---
+
+## 11. GIT TAGS — IMPORTANT REFERENCES
+
+| Tag | Meaning |
+|---|---|
+| `pair-p0-m0-remote-beta-stable` | M0 remote beta reference |
+| `pair-p0-prototype-nine-v1-flow-stable` | Pair P0 3×3 flow reference |
+| `pair-p0-prototype-nine-v1-radar-ux-stable` | frozen P9 radar/UX reference |
+| `external-review-pack-v1` | historical external review pack |
+| `pair-p0-beta-test-pack-v1` | historical Pair P0 beta-test documentation pack |

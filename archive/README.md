@@ -1,18 +1,40 @@
-# Archyvas — V1 (istorinė versija)
+# ConflictLab archive
 
-Šiame kataloge saugomi originalūs ConflictLab dokumentai (V1), sukurti prieš pereinant prie V2 architektūros (adaptyvus multimodalinis elgsenos modeliavimas).
+This directory contains material that is intentionally **not current project truth**.
 
-**Kodėl saugoma, o ne ištrinta:**
-- Gali praversti kaip idėjų šaltinis ateityje (pvz., tekstinės analizės pipeline dalys galėtų grįžti kaip papildomas, ne pagrindinis, duomenų šaltinis).
-- Rodo projekto minties evoliuciją — naudinga dokumentuojant sprendimų istoriją.
+For the current state always start with:
 
-**Statusas:** ❌ Nebeaktualu kaip pagrindinė kryptis. Aktyvi versija — repo šaknyje esantys failai (`README.md`, `docs/manifesto.md`, `docs/principles.md`, `engine/analysis_pipeline.md`).
+1. `../PROJECT_STATE.md`
+2. `../docs/experiments/stimulus-validation/WAVE1_PLAN.md`
+3. `../REPOSITORY_INVENTORY.md`
 
-## Turinys
+Do not infer the active methodology from an archived file merely because it is detailed or older.
 
-| Failas | Pakeistas | Aprašo |
-|---|---|---|
-| `v1/README.md` | šaknies `README.md` | Pradinė projekto apžvalga (savirefleksijos platforma per tekstinį aprašymą) |
-| `v1/docs/manifesto.md` | `docs/manifesto.md` | Pradinis manifestas |
-| `v1/docs/principles.md` | `docs/principles.md` | Pradiniai 11 principų (kūrybinės filosofijos lygmuo) |
-| `v1/engine/analysis_pipeline.md` | `engine/analysis_pipeline.md` | Linijinis 4 etapų pipeline, veikiantis su tekstiniu konflikto aprašymu |
+---
+
+## Archive groups
+
+### `v1/`
+Earliest ConflictLab text-based architecture and manifesto material. Historical idea source only.
+
+### `v0.7-freeze/`
+Older engines, theory notes, hypotheses, examples and v0.4/v0.7-era implementation material retained for traceability and idea recovery.
+
+### `v0.4-validation/`
+Former root `validation/` package. It described the old v0.4 validation phase and is no longer an active validation protocol.
+
+### `legacy-tools/`
+Browser tools removed from active `docs/` paths because they are no longer part of current Wave 1 work:
+
+- `review-single-image.html` — old single-image stimulus review precursor
+- `generator.html` — legacy stimulus generator with previously documented CORS limitations
+
+---
+
+## Why archive instead of delete?
+
+- Git history is useful, but an explicit archive also makes the current working tree easier to understand.
+- Some old decisions remain valuable as design evidence even when their conclusions are superseded.
+- Historical material may explain why current constraints exist.
+
+**Rule:** archived content may inform research history; it must not override current source-of-truth documents.
