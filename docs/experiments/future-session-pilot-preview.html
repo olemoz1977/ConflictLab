@@ -33,7 +33,7 @@ details{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}summar
 <body>
 <main>
   <div class="brand">ConflictLab · internal pilot</div>
-  <div class="draft">DRAFT preview. Training is local-only. 6000 ms is an unvalidated timing hypothesis. Gate D / Gate E are NONE. Nothing on this page is sent to a server.</div>
+  <div class="draft">DRAFT preview. Training is local-only. 6000 ms is an unvalidated timing hypothesis. Gate D / Gate E are NONE. Response and telemetry data are not uploaded; static configs and images are loaded read-only.</div>
   <div id="app" class="card center">
     <p id="boot-status" class="status">Ruošiami vaizdai…</p>
   </div>
@@ -49,12 +49,14 @@ import { mountReflectionUI } from '../../src/future_session/reflection_ui.mjs';
 
 const app = document.getElementById('app');
 const rootPrefix = '../../';
-const language = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'lt';
+const params = new URLSearchParams(location.search);
+const language = params.get('lang') === 'en' ? 'en' : 'lt';
+const requestedForm = ['F2-A', 'F2-B'].includes(params.get('form')) ? params.get('form') : null;
 
 const copy = language === 'en' ? {
   trainingTitle:'Short practice',
   trainingIntro:'You will see 3 image pairs one after another. Choose the image you would pick first. One shared 6-second budget covers all three choices and starts when the first pair becomes interactive.',
-  trainingBoundary:'Practice choices are marked as training and are excluded from analysis, timing calibration, Gate D/E and server upload.',
+  trainingBoundary:'Practice choices are marked as training and are excluded from analysis, timing calibration, Gate D/E and response-data upload.',
   trainingStart:'Start practice',
   trainingAttempt:'Practice',
   trainingTimeoutTitle:'Practice time expired',
@@ -69,7 +71,7 @@ const copy = language === 'en' ? {
   retryText:'Repeat the same three-pair block. Pair order and image positions stay unchanged.',
   retry:'Try again',
   done:'Session complete',
-  doneText:'This internal preview keeps telemetry and reflection text local and sends nothing to a server.',
+  doneText:'This internal preview keeps response and telemetry data local. Static configs and images are loaded read-only.',
   export:'Download UX telemetry JSON',
   debug:'Internal preview data',
   noAnchor:'No completed A/B choice was available for reflection.',
@@ -77,7 +79,7 @@ const copy = language === 'en' ? {
 } : {
   trainingTitle:'Trumpa treniruotė',
   trainingIntro:'Pamatysi 3 vaizdų poras viena po kitos. Kiekvieną kartą pasirink vaizdą, kurį rinktumeisi pirmiau. Visoms trims poroms skirtas vienas bendras 6 sekundžių laikas, kuris prasideda, kai pirmoji pora tampa aktyvi.',
-  trainingBoundary:'Treniruotės pasirinkimai žymimi kaip training ir nepatenka į analizę, 6000 ms kalibravimą, Gate D/E ar serverį.',
+  trainingBoundary:'Treniruotės pasirinkimai žymimi kaip training ir nepatenka į analizę, 6000 ms kalibravimą, Gate D/E ar atsakymų duomenų įkėlimą.',
   trainingStart:'Pradėti treniruotę',
   trainingAttempt:'Treniruotė',
   trainingTimeoutTitle:'Treniruotės laikas baigėsi',
@@ -92,7 +94,7 @@ const copy = language === 'en' ? {
   retryText:'Pakartok tą patį trijų porų bloką. Porų tvarka ir vaizdų pozicijos nesikeičia.',
   retry:'Bandyti dar kartą',
   done:'Sesija baigta',
-  doneText:'Šiame vidiniame preview telemetrija ir refleksijos tekstas lieka lokaliai ir niekas nesiunčiama į serverį.',
+  doneText:'Šiame vidiniame preview atsakymai ir telemetrija lieka lokaliai. Statiniai configai ir vaizdai užkraunami tik skaitymui.',
   export:'Atsisiųsti UX telemetrijos JSON',
   debug:'Vidiniai preview duomenys',
   noAnchor:'Refleksijai neliko nė vieno užbaigto A/B pasirinkimo.',
@@ -417,8 +419,10 @@ function buildOwnerExport(selections) {
     schema: 'conflictlab.owner-ux-export.v2',
     exportedAtUtc: new Date().toISOString(),
     calibrationAssessment: 'NOT_EVALUATED_IN_UI',
+    ownerFormOverride: requestedForm,
     boundary: {
       serverUpload: false,
+      staticReadOnlyFetches: true,
       GateD: 'NONE',
       GateE: 'NONE',
       participantResult: 'NONE',
@@ -520,7 +524,11 @@ try {
     protocol: rapidProtocol,
     stimulusSet,
   });
-  sessionPlan = cycle.sessions[0];
+  sessionPlan = requestedForm
+    ? cycle.sessions.find(session => session.formId === requestedForm)
+    : cycle.sessions[0];
+  if (!sessionPlan) throw new Error(`requested owner form is unavailable: ${requestedForm}`);
+
   trainingPlan = createTrainingPlan({ trainingSet });
 
   const preloadPaths = [
