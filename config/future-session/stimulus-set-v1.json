@@ -8,7 +8,8 @@
   "required_pair_fields": [
     "pair_id",
     "asset_a_id",
-    "asset_b_id"
+    "asset_b_id",
+    "is_training"
   ],
   "pairs": []
 }
