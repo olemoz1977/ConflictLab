@@ -7,6 +7,24 @@ function normalizeStatus(result) {
   throw new Error('transport result must expose an integer status');
 }
 
+function sortJsonValue(value) {
+  if (Array.isArray(value)) return value.map(sortJsonValue);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map(key => [key, sortJsonValue(value[key])])
+    );
+  }
+  return value;
+}
+
+export function canonicalJson(value) {
+  const serialized = JSON.stringify(value);
+  if (serialized === undefined) throw new Error('value is not JSON serializable');
+  return JSON.stringify(sortJsonValue(JSON.parse(serialized)));
+}
+
 export function classifyTransportResult(result) {
   const status = normalizeStatus(result);
 
@@ -46,6 +64,7 @@ function assertEnvelope(envelope) {
   if (!envelope.payload || typeof envelope.payload !== 'object') {
     throw new Error('envelope.payload is required');
   }
+  canonicalJson({ type: envelope.type, payload: envelope.payload });
 }
 
 export class MemoryOutboxStore {
@@ -172,9 +191,9 @@ export class EventOutbox {
     const existing = await this.store.get(envelope.messageId);
 
     if (existing) {
-      // Immutable idempotency rule: same ID may be re-enqueued only with identical content.
-      const previous = JSON.stringify({ type: existing.type, payload: existing.payload });
-      const incoming = JSON.stringify({ type: envelope.type, payload: envelope.payload });
+      // Immutable idempotency rule: same ID may be re-enqueued only with identical JSON content.
+      const previous = canonicalJson({ type: existing.type, payload: existing.payload });
+      const incoming = canonicalJson({ type: envelope.type, payload: envelope.payload });
       if (previous !== incoming) {
         throw new Error(`messageId collision with different payload: ${envelope.messageId}`);
       }
