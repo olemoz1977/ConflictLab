@@ -4,7 +4,7 @@
 **Status:** EDITORIAL REVIEW COMPLETE / EXACT-ASSET HUMAN REVIEW PENDING  
 **Source:** `config/future-session/reason-map-v1.json`  
 **Stimulus set:** `stimulus-set-v1`  
-**Supersedes:** `FUTURE_SESSION_REASON_MAP_DRAFT_REVIEW_v0.1.md`
+**Supersedes:** `archive/future-session-development-history/reason-map-reviews/FUTURE_SESSION_REASON_MAP_DRAFT_REVIEW_v0.1.md`
 
 ## Current state
 

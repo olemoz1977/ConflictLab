@@ -7,6 +7,7 @@ This directory contains versioned methodological artifacts for the post-Wave-1 a
 The JSON files in this directory are canonical public configuration for:
 
 - stimulus-set pair and stable A/B asset identities;
+- rapid-presentation protocol mechanics and timing hypothesis;
 - Gate D pair-level directional mappings;
 - Gate E domain aggregation validity;
 - structured reflection reason definitions.
@@ -75,10 +76,35 @@ These files are public methodological configuration. They contain no participant
 
 The server may serve/cache them, but a mutable database table is not the source of truth.
 
-## Current baseline
+## Current future-session baseline
 
-Exact current Wave 1 source binaries are available in the repository, so external asset recovery is not a blocker.
+The future-session implementation remains isolated from production and all methodological artifacts remain pre-release.
 
-`stimulus-set-v1.json` remains intentionally DRAFT and not yet populated because the future rapid-protocol composition still requires an explicit freeze decision: all six current Wave 1 pairs versus a reviewed subset.
+Current state:
 
-No Gate D pair mapping and no Gate E domain aggregation has been validated, and the reason map has no participant-facing content yet.
+```text
+stimulus-set-v1.json         DRAFT; 6 pairs / 12 exact assets materialized
+rapid-presentation-v1.json   DRAFT; rapid mechanics complete for pilot
+6000 ms shared budget        hypothesis only; real calibration data pending
+reason-map-v1.json           DRAFT; 48 pair+anchor-specific items
+exact-asset reason review    COMPLETE
+Reflection model/UI          IMPLEMENTED AS DRAFT in isolated preview
+owner UX approval            PENDING
+Gate D                       NONE
+Gate E                       NONE
+production deploy            NOT AUTHORIZED
+```
+
+The exact stimulus bytes are repository-bound and SHA-256 verified. This factual identity does not authorize directional interpretation.
+
+The current branch status source is:
+
+```text
+docs/architecture/FUTURE_SESSION_IMPLEMENTATION_BASELINE_STATUS_v0.9.md
+```
+
+Superseded intermediate future-session status/audit/review documents are retained under:
+
+```text
+archive/future-session-development-history/
+```

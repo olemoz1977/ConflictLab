@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-14  
 **Status:** CORRECTED F1 AUDIT — DRAFT MATERIALIZED, NOT RELEASED  
-**Supersedes:** `FUTURE_SESSION_STIMULUS_FREEZE_CANDIDATE_AUDIT_v0.2.md`  
+**Supersedes:** `archive/future-session-development-history/stimulus-audits/FUTURE_SESSION_STIMULUS_FREEZE_CANDIDATE_AUDIT_v0.2.md`  
 **Branch:** `arch/result-v0.2-implementation-baseline`
 
 ## 1. Correction
