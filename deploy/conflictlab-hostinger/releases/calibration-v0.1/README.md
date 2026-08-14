@@ -71,7 +71,7 @@ Existing Wave1 storage is not reused.
 
 ### Research-collection gate before fresh participants
 
-The product-shaped UX now captures reason/intensity channels locally, but the timing-only server boundary does **not** make those local channels available for aggregate research analysis.
+The product-shaped UX captures reason/intensity channels locally, but the timing-only server boundary does **not** make those local channels available for aggregate research analysis.
 
 Before switching to real `CALIBRATION` collection, explicitly decide whether the planned hypotheses require a separate consented research channel rather than silently broadening the timing dataset. Candidate channels to evaluate later include A/B response identity and reason metadata. Intensity requires an explicitly justified research purpose/consent decision. Free text remains local-first by default.
 
@@ -103,13 +103,15 @@ Research image bytes are not resampled or rewritten.
 
 ## Updating the existing LAB deployment
 
-A CI artifact may be extracted over the existing versioned LAB directory with overwrite enabled.
+Extract the exact-head CI artifact over the existing versioned LAB directory with overwrite enabled.
 
 Important:
 
+- extract **inside** `public_html/conflictlab/releases/calibration-v0.1/`;
+- do not create an extra nested release directory;
 - do not delete the existing local `server/config.php`;
 - the repository/artifact does not contain the secret `server/config.php`;
-- no DB migration is required for the product-shaped participant-flow update;
+- no DB migration is required for this product-shaped participant-flow update;
 - keep `collection_mode = TECHNICAL` during owner smoke testing;
 - do not touch `/wave1/` or the OMESG360 root.
 
