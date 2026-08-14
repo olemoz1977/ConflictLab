@@ -1,0 +1,23 @@
+{
+  "schema": "conflictlab.reason-map.v1",
+  "reason_map_version": "reason-map-v1",
+  "lifecycle": "DRAFT",
+  "content_status": "PENDING_STIMULUS_FREEZE",
+  "released_at": null,
+  "description": "Pair- and anchor-specific structured reflection reasons. Participant-facing content remains empty until the future stimulus set is frozen.",
+  "allowed_interpretability_classes": [
+    "DOMAIN_CONSISTENT_REASON",
+    "CROSS_DOMAIN_REASON",
+    "OTHER_REASON",
+    "UNRESOLVED"
+  ],
+  "required_item_fields": [
+    "pair_id",
+    "anchor_choice",
+    "reason_id",
+    "text_lt",
+    "text_en",
+    "interpretability_class"
+  ],
+  "items": []
+}
