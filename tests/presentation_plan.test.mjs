@@ -65,7 +65,8 @@ test('pair order is a permutation and retry reuses exact order and positions', (
   const retry = pairsForRetry(primary);
   assert.deepEqual(retry, primary.pairs);
   assert.notEqual(retry, primary.pairs);
-  retry[0].assetAPosition = 'bottom';
+  const original = primary.pairs[0].assetAPosition;
+  retry[0].assetAPosition = original === 'top' ? 'bottom' : 'top';
   assert.notEqual(retry[0].assetAPosition, primary.pairs[0].assetAPosition);
 });
 
