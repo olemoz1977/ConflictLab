@@ -1,9 +1,22 @@
 # ConflictLab — Owner UX Run 001
 
 **Date:** 2026-08-14  
-**Context:** standalone F2-B mobile owner snapshot  
-**Purpose:** participant-facing UX/timing observation only  
-**Calibration eligibility:** **NO — insufficient timing telemetry in snapshot v1**
+**Context:** standalone F2-B mobile owner snapshot v1  
+**Purpose:** participant-facing UX observation only  
+**Calibration eligibility:** **NO — first measured-looking block was actually familiarization; snapshot also lacked full timing telemetry**
+
+## Owner clarification
+
+The owner expected a training/familiarization stage before the rapid block. The v1 snapshot started the 6000 ms block immediately. The owner understood that the timed test had already started only after the first presentation was underway.
+
+Therefore:
+
+```text
+attempt 1 = IGNORE COMPLETELY for timing/UX conclusions
+attempt 2 = retry/re-exposure only; not a clean primary timing observation
+```
+
+No KEEP / ADJUST / REJECT inference about 6000 ms may use this run.
 
 ## Protocol context
 
@@ -12,6 +25,7 @@ form = F2-B
 candidate shared budget = 6000 ms
 rapid pairs = 3
 max attempts = 3
+training stage in snapshot v1 = MISSING
 server = NONE
 Gate D = NONE
 Gate E = NONE
@@ -35,9 +49,9 @@ participant result = NONE
 }
 ```
 
-`positions` above records which stable A/B asset identity was shown on top in the standalone snapshot. It has no psychological direction.
+`positions` records which stable A/B asset identity was shown on top. It has no psychological direction.
 
-## Rapid events
+## Raw snapshot events retained only for provenance
 
 ```json
 [
@@ -50,25 +64,15 @@ participant result = NONE
 ]
 ```
 
-### Descriptive mechanical observation
+These values are preserved only to document what the v1 snapshot emitted. They are not interpreted as evidence about timing quality.
 
-Primary attempt:
+### Attempt 1
 
-```text
-completed directional taps = 1 / 3
-P2 = timeout
-P3 = timeout
-block required retry
-```
+Although the raw event list shows one completed tap and two timeouts, this attempt is explicitly excluded because the participant was still learning that the timed experimental block had already begun. It is not a valid usability or timing observation.
 
-Retry attempt:
+### Attempt 2
 
-```text
-completed taps = 3 / 3
-same pair order and positions
-```
-
-This is one owner run only. It is **not evidence to KEEP, ADJUST or REJECT 6000 ms**. It does, however, demonstrate the exact failure mode the timing-calibration gate is intended to detect: shared-budget serial missingness after an early completed choice.
+The second attempt completed 3/3 taps, but it reused the same stimuli after immediate exposure. Under the architecture it is retry/process evidence only and cannot substitute for a clean primary block.
 
 ## Reflection responses
 
@@ -95,11 +99,14 @@ This is one owner run only. It is **not evidence to KEEP, ADJUST or REJECT 6000 
 ]
 ```
 
-No interpretability class, Gate D direction or participant characteristic is inferred from these reflection selections.
+These reflection selections remain an owner UX wording observation only. No interpretability class, Gate D direction, motive or participant characteristic is inferred.
 
 ## Why this run does not enter timing-calibration N
 
-The v1 standalone snapshot did not export the full calibration-quality telemetry required to reconstruct the mechanical timing condition, including at minimum:
+Two independent exclusion reasons apply:
+
+1. **No prior training/familiarization stage.** The first timed-looking attempt was contaminated by learning the interaction and test state.
+2. **Insufficient telemetry in snapshot v1.** It did not export the full calibration-quality fields required to reconstruct the mechanical timing condition, including at minimum:
 
 ```text
 pair_ready_elapsed_ms
@@ -112,8 +119,23 @@ viewport / device context
 terminal block-attempt summary
 ```
 
-Therefore this run is retained as an owner UX observation, not counted toward `timing-calibration-v1.data_floor.min_clean_primary_blocks`.
+Therefore this run contributes **0** to `timing-calibration-v1.data_floor.min_clean_primary_blocks`.
 
-## Next action
+## Required correction for the next owner run
 
-Use an instrumented owner snapshot / isolated future-session preview that exports the full local telemetry required by `timing-calibration-v1`. No server upload is required for the owner calibration rehearsal; exported JSON can be reviewed manually.
+Before any measured rapid block:
+
+```text
+Stage 0 — explicit training/familiarization
+- uses non-scored dummy stimuli
+- clearly says this is practice
+- teaches that one shared timer covers 3 sequential choices
+- training telemetry is marked is_training=true
+- training never enters calibration/scoring
+
+Stage 1 — fresh measured rapid block
+- uses research stimulus pairs not shown in training
+- full local timing telemetry exported
+```
+
+The next owner timing rehearsal should be treated as the first potentially interpretable UX/timing run only after this correction.
