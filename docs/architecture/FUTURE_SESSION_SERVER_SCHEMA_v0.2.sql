@@ -45,6 +45,8 @@ CREATE TABLE rapid_block_attempts (
 --
 -- `pair_presented` distinguishes a shown pair that timed out from a later pair that was
 -- never exposed because the shared block budget had already expired (ADR-011).
+-- `page_hidden_before_event` is an immutable event-time snapshot. The attempt-level
+-- `page_hidden_during_block` records whether backgrounding occurred at any point in the block.
 CREATE TABLE rapid_pair_events (
     event_id                              CHAR(36) NOT NULL,
     session_id                            CHAR(36) NOT NULL,
@@ -63,7 +65,7 @@ CREATE TABLE rapid_pair_events (
     visual_choice_latency_ms              INT UNSIGNED NULL,
     block_elapsed_ms_at_event             INT UNSIGNED NOT NULL,
     remaining_budget_at_pair_start_ms     INT UNSIGNED NULL,
-    page_hidden_during_block              TINYINT(1) NOT NULL DEFAULT 0,
+    page_hidden_before_event              TINYINT(1) NOT NULL DEFAULT 0,
     is_training                           TINYINT(1) NOT NULL DEFAULT 0,
     device_category                       ENUM('mobile','tablet','desktop') NULL,
     viewport_category                     ENUM('lt480','480_1024','gt1024') NULL,
