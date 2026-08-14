@@ -77,6 +77,8 @@ jobs:
         run: node tests/pilot_preview_contract.test.mjs
       - name: Calibration release contract
         run: node tests/calibration_release_contract.test.mjs
+      - name: Calibration admin v2 contract
+        run: node tests/calibration_admin_v2_contract.test.mjs
       - name: Rapid block core
         run: node tests/rapid_block_core.test.mjs
       - name: Calculation engine
