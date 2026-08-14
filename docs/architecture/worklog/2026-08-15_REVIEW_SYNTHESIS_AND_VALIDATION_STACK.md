@@ -114,6 +114,112 @@ This is intended to prevent both:
 - theory poverty;
 - theory shopping / post-hoc rescue.
 
+## Validation protocol completed
+
+Created:
+
+`docs/architecture/VALIDATION_PROTOCOL_v0.1.md`
+
+It separates four research programs:
+
+```text
+TIMING CALIBRATION
+GATE D VALIDATION
+GATE E VALIDATION
+REFLECTION UTILITY
+```
+
+It also introduces an explicit evidence ladder:
+
+```text
+technical integrity
+-> scene manipulation integrity
+-> confound challenge
+-> blind semantic evidence
+-> response/nuisance challenge
+-> Gate D
+-> Gate E
+-> reflection utility / claim boundary
+```
+
+The protocol explicitly preserves terminal negative outcomes:
+
+```text
+FAILED
+SUSPENDED
+REDESIGN_REQUIRED
+INSUFFICIENT_DATA
+```
+
+No stage may be rescued by changing decision rules after target data have been inspected; such a change creates a new protocol/version and a new confirmatory cycle.
+
+## Gate D contract completed
+
+Created:
+
+`docs/architecture/GATE_D_VALIDATION_CONTRACT_v0.1.md`
+
+Key decision:
+
+Gate D is exact-pair / exact-asset / exact-version validation only. It requires independent/blinded evidence, confound challenge and a frozen study registration before participant data may produce a `VALIDATED` mapping.
+
+Current structured `reason-map-v1` is not sufficient Gate D evidence by itself.
+
+Failed pairs remain preserved in provenance and runtime mapping remains `NONE`; they are not silently deleted or returned to indefinite `PENDING`.
+
+## Gate E contract completed
+
+Created:
+
+`docs/architecture/GATE_E_VALIDATION_CONTRACT_v0.1.md`
+
+Key decision:
+
+Gate E may only be asked after multiple independent Gate-D-surviving exemplars exist.
+
+Aggregation must survive:
+
+- shared-confound challenge;
+- exemplar/form/version effects;
+- participant × exemplar nuisance variance;
+- discriminant challenge against a simpler common factor;
+- independent confirmation/replication appropriate to the intended claim.
+
+Gate E may legitimately remain `NONE` permanently. If aggregation fails but exemplar-specific reflection remains useful, the product may continue without a domain score.
+
+## Research data / consent scope completed
+
+Created:
+
+`docs/architecture/RESEARCH_DATA_AND_CONSENT_SCOPE_v0.1.md`
+
+Research purposes are separated as:
+
+```text
+TECHNICAL
+TIMING_CALIBRATION
+GATE_D_VALIDATION
+GATE_E_VALIDATION
+REFLECTION_RESEARCH
+```
+
+Core boundary:
+
+consent to mechanical timing research is not automatic consent to construct validation or reflection-text research.
+
+Current local-first safeguards remain:
+
+```text
+training server upload = false
+free text = local-first by default
+reason_id server collection = explicit research consent only
+intensity = outside directional balance and current timing payload
+reason/intensity response latency = local-only in current pilot
+derived participant result = not research upload
+```
+
+No database payload expansion is authorized until the relevant research purpose and participant consent/disclosure are frozen.
+
 ## Current safety state
 
 Unchanged:
@@ -128,11 +234,21 @@ public /wave1                UNCHANGED
 
 No public switch or construct claim was authorized by this methodological work.
 
-## Next methodology sequence
+## Methodology sequence status
+
+Completed:
 
 1. `VALIDATION_PROTOCOL_v0.1`
 2. `GATE_D_VALIDATION_CONTRACT_v0.1`
 3. `GATE_E_VALIDATION_CONTRACT_v0.1`
-4. research data / consent scope decision
+4. `RESEARCH_DATA_AND_CONSENT_SCOPE_v0.1`
 
-The next protocol must define a real route to `FAIL` / `SUSPEND`, not only `PENDING` / `VALIDATED`.
+Next:
+
+1. neutral alias / blind-validation dataset specification;
+2. first study-specific preregistration;
+3. participant information / consent wording for the chosen study;
+4. authenticated admin CSV export implementation/documentation;
+5. only then decide whether the next fresh-participant cycle is timing-only or timing + separately consented validation research.
+
+The next fresh-participant study must be able to produce a real negative methodological result that remains negative for that exact protocol/version.
