@@ -156,7 +156,8 @@ def verify_config(config: dict[str, Any], repo_root: Path) -> dict[str, Any]:
     for index, pair in enumerate(pairs):
         _require(isinstance(pair, dict), f"pairs[{index}] must be an object")
         missing = [field for field in required_fields if field not in pair]
-        _require(not missing, f"pairs[{index}] missing required field: {missing[0]}")
+        if missing:
+            raise VerificationError(f"pairs[{index}] missing required field: {missing[0]}")
 
         pair_id = pair.get("pair_id")
         _require(isinstance(pair_id, str) and ID_RE.fullmatch(pair_id) is not None,
