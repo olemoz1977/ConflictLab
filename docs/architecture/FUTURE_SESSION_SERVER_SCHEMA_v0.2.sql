@@ -54,7 +54,7 @@ CREATE TABLE rapid_pair_events (
     pair_id                               VARCHAR(40) NOT NULL,
     stimulus_set_version                  VARCHAR(40) NOT NULL,
     position_in_block                     TINYINT UNSIGNED NOT NULL,
-    pair_exposure_number                  TINYINT UNSIGNED NOT NULL,
+    pair_exposure_number                  TINYINT UNSIGNED NULL,
     asset_a_position                      ENUM('top','bottom','left','right') NOT NULL,
     asset_b_position                      ENUM('top','bottom','left','right') NOT NULL,
     pair_presented                        TINYINT(1) NOT NULL,
@@ -83,13 +83,23 @@ CREATE TABLE rapid_pair_events (
     CONSTRAINT chk_position_in_block
         CHECK (position_in_block BETWEEN 1 AND 3),
     CONSTRAINT chk_pair_exposure_number
-        CHECK (pair_exposure_number >= 1),
+        CHECK (pair_exposure_number IS NULL OR pair_exposure_number >= 1),
     CONSTRAINT chk_choice_requires_presentation
         CHECK (choice = 'timeout' OR pair_presented = 1),
+    CONSTRAINT chk_presented_has_exposure
+        CHECK (pair_presented = 0 OR pair_exposure_number IS NOT NULL),
+    CONSTRAINT chk_unpresented_has_no_exposure
+        CHECK (pair_presented = 1 OR pair_exposure_number IS NULL),
+    CONSTRAINT chk_presented_has_ready_time
+        CHECK (pair_presented = 0 OR pair_ready_elapsed_ms IS NOT NULL),
     CONSTRAINT chk_unpresented_has_no_ready_time
         CHECK (pair_presented = 1 OR pair_ready_elapsed_ms IS NULL),
     CONSTRAINT chk_unpresented_has_no_latency
-        CHECK (pair_presented = 1 OR visual_choice_latency_ms IS NULL)
+        CHECK (pair_presented = 1 OR visual_choice_latency_ms IS NULL),
+    CONSTRAINT chk_presented_has_remaining_budget
+        CHECK (pair_presented = 0 OR remaining_budget_at_pair_start_ms IS NOT NULL),
+    CONSTRAINT chk_unpresented_has_no_remaining_budget
+        CHECK (pair_presented = 1 OR remaining_budget_at_pair_start_ms IS NULL)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
