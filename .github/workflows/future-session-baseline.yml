@@ -54,6 +54,8 @@ jobs:
           node-version: '22'
       - name: Rapid presentation planner
         run: node tests/presentation_plan.test.mjs
+      - name: Asset preloader
+        run: node tests/asset_preloader.test.mjs
       - name: Rapid block core
         run: node tests/rapid_block_core.test.mjs
       - name: Calculation engine
