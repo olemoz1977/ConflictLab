@@ -59,6 +59,15 @@ def test_retry_schema_supports_multiple_attempts_per_logical_block():
     assert "CHECK (block_attempt_number BETWEEN 1 AND 3)" in sql
 
 
+def test_timeout_and_non_exposure_are_distinguishable():
+    sql = SCHEMA.read_text(encoding="utf-8")
+    assert "pair_presented" in sql
+    assert "pair_ready_elapsed_ms" in sql
+    assert "CHECK (choice = 'timeout' OR pair_presented = 1)" in sql
+    assert "CHECK (pair_presented = 1 OR pair_ready_elapsed_ms IS NULL)" in sql
+    assert "CHECK (pair_presented = 1 OR visual_choice_latency_ms IS NULL)" in sql
+
+
 def test_reason_server_table_is_structured_opt_in_only():
     sql = SCHEMA.read_text(encoding="utf-8")
     assert "CREATE TABLE reflection_reason_events" in sql
