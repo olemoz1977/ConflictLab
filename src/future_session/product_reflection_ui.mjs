@@ -76,8 +76,11 @@ export function mountProductReflectionUI({
     render();
   }
 
-  function markReadyAfterImage(image) {
-    const ready = () => requestFrame(() => controller.markStageReady(now()));
+  function markReadyAfterImage(image, onReady = () => {}) {
+    const ready = () => requestFrame(() => {
+      controller.markStageReady(now());
+      onReady();
+    });
     if (typeof image.decode === 'function') {
       Promise.resolve(image.decode()).catch(() => {}).then(ready);
     } else {
@@ -110,6 +113,7 @@ export function mountProductReflectionUI({
     let freeText = '';
     let freeTextWrap = null;
     let freeTextArea = null;
+    const reasonInputs = [];
 
     function updateFreeTextVisibility() {
       const selected = item.options.find(option => option.reasonId === selectedReasonId);
@@ -124,10 +128,14 @@ export function mountProductReflectionUI({
       input.type = 'radio';
       input.name = `reason-${item.pairId}`;
       input.value = option.reasonId;
+      input.disabled = true;
+      reasonInputs.push(input);
       const text = el(documentRef, 'span', 'cl-reflection__option-text', option.text);
+
       input.addEventListener('change', () => {
         selectedReasonId = option.reasonId;
         selectedAt = now();
+        next.disabled = false;
         updateFreeTextVisibility();
       });
       label.append(input, text);
@@ -140,6 +148,7 @@ export function mountProductReflectionUI({
     freeTextArea.maxLength = 500;
     freeTextArea.rows = 3;
     freeTextArea.placeholder = copy.placeholder;
+    freeTextArea.disabled = true;
     freeTextArea.addEventListener('input', () => { freeText = freeTextArea.value; });
     freeTextWrap.append(note, freeTextArea);
     updateFreeTextVisibility();
@@ -147,12 +156,14 @@ export function mountProductReflectionUI({
     const actions = el(documentRef, 'div', 'cl-reflection__actions');
     const skip = el(documentRef, 'button', 'cl-reflection__back', copy.skip);
     skip.type = 'button';
+    skip.disabled = true;
     skip.addEventListener('click', () => {
       controller.skipReason(now());
       finishOrRender();
     });
     const next = el(documentRef, 'button', 'cl-reflection__next', copy.next);
     next.type = 'submit';
+    next.disabled = true;
     actions.append(skip, next);
     form.append(group, freeTextWrap, actions);
     form.addEventListener('submit', event => {
@@ -165,20 +176,29 @@ export function mountProductReflectionUI({
 
     shell.append(form);
     root.replaceChildren(shell);
-    markReadyAfterImage(image);
+    markReadyAfterImage(image, () => {
+      for (const input of reasonInputs) input.disabled = false;
+      freeTextArea.disabled = false;
+      skip.disabled = false;
+    });
   }
 
   function renderIntensity(item) {
     const { shell, image } = baseShell(item, copy.intensityTitle, copy.intensityPrompt);
     const scale = el(documentRef, 'div', 'cl-reflection__intensity');
+    const intensityButtons = [];
     for (let value = 1; value <= 5; value += 1) {
       const button = el(documentRef, 'button', 'cl-reflection__intensity-button', String(value));
       button.type = 'button';
+      button.disabled = true;
       button.setAttribute('aria-label', `${copy.intensityTitle}: ${value}`);
       button.addEventListener('click', () => {
+        for (const candidate of intensityButtons) candidate.disabled = true;
+        skip.disabled = true;
         controller.selectIntensity(value, now());
         finishOrRender();
       });
+      intensityButtons.push(button);
       scale.appendChild(button);
     }
     const labels = el(documentRef, 'div', 'cl-reflection__intensity-labels');
@@ -186,14 +206,20 @@ export function mountProductReflectionUI({
     const actions = el(documentRef, 'div', 'cl-reflection__actions');
     const skip = el(documentRef, 'button', 'cl-reflection__back', copy.skip);
     skip.type = 'button';
+    skip.disabled = true;
     skip.addEventListener('click', () => {
+      for (const candidate of intensityButtons) candidate.disabled = true;
+      skip.disabled = true;
       controller.skipIntensity(now());
       finishOrRender();
     });
     actions.append(skip);
     shell.append(scale, labels, actions);
     root.replaceChildren(shell);
-    markReadyAfterImage(image);
+    markReadyAfterImage(image, () => {
+      for (const button of intensityButtons) button.disabled = false;
+      skip.disabled = false;
+    });
   }
 
   function render() {
