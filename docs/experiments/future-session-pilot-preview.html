@@ -7,15 +7,22 @@
 <style>
 :root{color-scheme:dark;--bg:#0c0c0f;--card:#141417;--line:#29292f;--text:#e8e4dc;--muted:#918d86;--accent:#83a998}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}
-main{width:min(100%,640px);margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(48px + env(safe-area-inset-bottom))}
+main{width:min(100%,640px);margin:auto;min-height:100dvh;padding:calc(18px + env(safe-area-inset-top)) 14px calc(48px + env(safe-area-inset-bottom))}
 .brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}.draft{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.center{text-align:center}.status{color:var(--muted);line-height:1.5}
+body.rapid-mode{overflow:hidden}
+body.rapid-mode main{padding:calc(8px + env(safe-area-inset-top)) 10px calc(8px + env(safe-area-inset-bottom));min-height:100dvh}
+body.rapid-mode .brand,body.rapid-mode .draft{display:none}
 button{font:inherit}.primary{border:0;border-radius:11px;background:var(--accent);color:#07100c;padding:13px 18px;font-weight:700;cursor:pointer}.primary:disabled{opacity:.35;cursor:not-allowed}
 .secondary{border:1px solid #34343c;border-radius:11px;background:#19191d;color:var(--text);padding:12px 16px;cursor:pointer}
 .intro h2,.retry h2,.done h2{font-size:23px;font-weight:560;margin:0 0 8px}.intro p,.retry p,.done p{color:#bcb7ae;line-height:1.5}.intro .boundary{font-size:12px;color:var(--muted)}
-.rapid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:12px}.rapid-stage{display:grid;gap:10px}
+.rapid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px;color:var(--muted);font-size:12px}.rapid-head span:last-child{text-align:right}.rapid-stage{display:grid;gap:10px}
 .visual-choice{display:block;width:100%;padding:0;background:#111114;border:1px solid #2b2b31;border-radius:16px;overflow:hidden;cursor:pointer;touch-action:manipulation}
 .visual-choice:active{transform:scale(.995)}.visual-choice:disabled{cursor:default;opacity:.9}.visual-choice img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
+.rapid-shell{height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);display:flex;flex-direction:column;padding:12px;border-radius:16px}
+.rapid-shell .rapid-stage{flex:1;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:10px}
+.rapid-shell .visual-choice{height:100%}
+.rapid-shell .visual-choice img{height:100%;width:100%;aspect-ratio:auto;object-fit:contain}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.actions.centered{justify-content:center}
 details{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}summary{cursor:pointer;color:var(--muted);font-size:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;color:#aaa59c}
 .error{color:#e0a1a1;background:#241617;border:1px solid #583133;border-radius:12px;padding:12px}
@@ -119,6 +126,10 @@ function uuid() {
   return crypto.randomUUID();
 }
 
+function setRapidMode(enabled) {
+  document.body.classList.toggle('rapid-mode', Boolean(enabled));
+}
+
 function captureDeviceContext() {
   return {
     viewportWidth: window.innerWidth,
@@ -178,7 +189,8 @@ function renderPair() {
   const pair = activeRunner.currentPair();
   if (!pair) return;
 
-  app.className = '';
+  setRapidMode(true);
+  app.className = 'card rapid-shell';
   app.replaceChildren();
 
   const head = document.createElement('div');
@@ -264,6 +276,7 @@ function createTrainingRunner() {
 }
 
 function showTrainingIntro() {
+  setRapidMode(false);
   const card = document.createElement('section');
   card.className = 'card intro';
   const title = document.createElement('h2');
@@ -292,6 +305,7 @@ function showTrainingIntro() {
 }
 
 function showMeasuredIntro() {
+  setRapidMode(false);
   trainingCompleted = true;
   trainingRuns.push(trainingRunner.telemetry());
 
@@ -327,6 +341,7 @@ function showMeasuredIntro() {
 }
 
 function showRetry({ training, restart = false } = {}) {
+  setRapidMode(false);
   const card = document.createElement('section');
   card.className = 'card retry center';
   const title = document.createElement('h2');
@@ -383,6 +398,7 @@ function handleTerminal(result) {
 }
 
 function beginReflection() {
+  setRapidMode(false);
   const anchors = runner.reflectionAnchors();
 
   if (anchors.length === 0) {
@@ -466,6 +482,7 @@ function downloadJson(payload) {
 }
 
 function finish(selections, extra = '') {
+  setRapidMode(false);
   clearDeadline();
   const exportPayload = buildOwnerExport(selections);
 
@@ -498,6 +515,7 @@ function finish(selections, extra = '') {
 }
 
 function showError(error) {
+  setRapidMode(false);
   clearDeadline();
   const box = document.createElement('div');
   box.className = 'error';
