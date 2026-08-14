@@ -12,6 +12,8 @@
   "timing": {
     "block_budget_ms": 6000,
     "budget_status": "PILOT_HYPOTHESIS_NOT_VALIDATED",
+    "timing_calibration_version": "timing-calibration-v1",
+    "calibration_decision_required": true,
     "clock": "client_monotonic_performance_now",
     "clock_starts": "when_first_pair_is_interactive_after_successful_preload",
     "page_hidden_policy": "clock_continues"
