@@ -37,6 +37,21 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install pytest
+      - name: Wave 1 candidate SHA-256 inventory
+        run: |
+          sha256sum \
+            docs/experiments/stimulus-validation/assets/CS-PR-01/more-reveal.webp \
+            docs/experiments/stimulus-validation/assets/CS-PR-01/less-reveal.jpg \
+            docs/experiments/stimulus-validation/assets/CS-RE-01/more-evidence.png \
+            docs/experiments/stimulus-validation/assets/CS-RE-01/less-evidence.png \
+            docs/experiments/stimulus-validation/assets/CS-CA-01/more-reference.png \
+            docs/experiments/stimulus-validation/assets/CS-CA-01/less-reference.png \
+            docs/experiments/stimulus-validation/assets/CR-PZ-01/no-predefined-zones.png \
+            docs/experiments/stimulus-validation/assets/CR-PZ-01/predefined-zones.png \
+            docs/experiments/stimulus-validation/assets/CR-FS-01/fixed-slots.png \
+            docs/experiments/stimulus-validation/assets/CR-FS-01/continuous-capacity.png \
+            docs/experiments/stimulus-validation/assets/CR-PO-01/partitioned-space.png \
+            docs/experiments/stimulus-validation/assets/CR-PO-01/open-space.png
       - name: Future-session architecture invariants
         run: python -m pytest -q tests/test_future_session_baseline.py
 
