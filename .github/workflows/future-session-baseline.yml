@@ -59,6 +59,8 @@ jobs:
         run: node tests/http_transport.test.mjs
       - name: LLM generation contract
         run: node tests/llm_contract.test.mjs
+      - name: Local result pipeline
+        run: node tests/result_pipeline.test.mjs
 
   future-php:
     runs-on: ubuntu-latest
