@@ -211,6 +211,11 @@ export class RapidBlockAttempt {
       throw new Error('block clock has not started');
     }
 
+    const elapsed = atMs - this.blockStartMs;
+    if (elapsed < this.blockBudgetMs) {
+      throw new Error('cannot expire block before monotonic deadline');
+    }
+
     const timeoutEvents = [];
 
     for (let index = this.currentIndex; index < this.pairs.length; index += 1) {
