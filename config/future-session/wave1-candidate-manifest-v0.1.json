@@ -1,0 +1,68 @@
+{
+  "schema": "conflictlab.future-stimulus-candidate-manifest.v1",
+  "manifest_version": "wave1-candidates-v0.1",
+  "status": "F0_CANDIDATE_INVENTORY",
+  "source_protocol": "wave1-v0.3",
+  "description": "Factual migration input for the six controlled Wave 1 pair identities. Design-family labels are provenance only and authorize no participant signal mapping.",
+  "pairs": [
+    {
+      "pair_id": "CS-PR-01",
+      "source_family": "CS-PR",
+      "source_asset_a_filename": "more-reveal.webp",
+      "source_asset_b_filename": "less-reveal.webp",
+      "asset_a_id": "CS-PR-01-A",
+      "asset_b_id": "CS-PR-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CS-CO-01",
+      "source_family": "CS-CO",
+      "source_asset_a_filename": "sharp-photo.webp",
+      "source_asset_b_filename": "compressed-photo.webp",
+      "asset_a_id": "CS-CO-01-A",
+      "asset_b_id": "CS-CO-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CS-OC-01",
+      "source_family": "CS-OC",
+      "source_asset_a_filename": "object-clear.webp",
+      "source_asset_b_filename": "object-occluded.webp",
+      "asset_a_id": "CS-OC-01-A",
+      "asset_b_id": "CS-OC-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CR-PZ-01",
+      "source_family": "CR-PZ",
+      "source_asset_a_filename": "puzzle-complete.webp",
+      "source_asset_b_filename": "puzzle-piece-missing.webp",
+      "asset_a_id": "CR-PZ-01-A",
+      "asset_b_id": "CR-PZ-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CR-SY-01",
+      "source_family": "CR-SY",
+      "source_asset_a_filename": "symmetry-perfect.webp",
+      "source_asset_b_filename": "symmetry-disturbed.webp",
+      "asset_a_id": "CR-SY-01-A",
+      "asset_b_id": "CR-SY-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CR-OR-01",
+      "source_family": "CR-OR",
+      "source_asset_a_filename": "objects-aligned.webp",
+      "source_asset_b_filename": "objects-one-shifted.webp",
+      "asset_a_id": "CR-OR-01-A",
+      "asset_b_id": "CR-OR-01-B",
+      "is_training": false
+    }
+  ],
+  "interpretation_boundary": {
+    "gate_d_mapping": "NONE_BY_THIS_MANIFEST",
+    "gate_e_aggregation": "NOT_ADDRESSED",
+    "note": "This manifest identifies source files and neutral stable IDs only. It must never be used to derive +1/-1 direction."
+  }
+}
