@@ -17,4 +17,6 @@ return [
     'block_budget_ms' => 6000,
     // CALIBRATION uploads must present this exact affirmative-consent version.
     'consent_version' => 'timing-research-consent-v0.1',
+    // Raw/pseudonymous timing-study event retention. Cleanup must be run by a verified server cron.
+    'retention_days' => 90,
 ];
