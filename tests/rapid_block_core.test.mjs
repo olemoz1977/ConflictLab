@@ -105,6 +105,24 @@ function makeAttempt(attemptNumber = 1, priorExposureCounts = {}) {
   assert.equal(a.getSummary().blockElapsedMsFinal, 6000);
 }
 
+// Pair events store only whether backgrounding had happened before that event;
+// attempt summary stores whether it happened at any point during the whole block.
+{
+  const a = makeAttempt();
+  a.markPairReady(0);
+  const first = a.recordChoice('A', 500).event;
+  assert.equal(first.pageHiddenBeforeEvent, false);
+
+  a.markPairReady(700);
+  a.markPageHidden();
+  const second = a.recordChoice('B', 900).event;
+  assert.equal(second.pageHiddenBeforeEvent, true);
+
+  a.markPairReady(1000);
+  a.recordChoice('A', 1200);
+  assert.equal(a.getSummary().pageHiddenDuringBlock, true);
+}
+
 // Retry limit: attempts 1–2 can retry, attempt 3 moves to reflection.
 {
   for (const n of [1, 2]) {
