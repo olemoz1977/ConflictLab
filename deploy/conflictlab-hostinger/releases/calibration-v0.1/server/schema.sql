@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS cl_calibration_runs (
   message_id CHAR(36) NOT NULL,
   session_id CHAR(36) NOT NULL,
   release_id VARCHAR(64) NOT NULL,
+  run_type VARCHAR(16) NOT NULL DEFAULT 'TECHNICAL',
   form_id VARCHAR(16) NOT NULL,
   protocol_version VARCHAR(64) NOT NULL,
   stimulus_set_version VARCHAR(64) NOT NULL,
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS cl_calibration_runs (
   UNIQUE KEY uq_cl_calibration_runs_message (message_id),
   UNIQUE KEY uq_cl_calibration_runs_session (session_id),
   KEY ix_cl_calibration_runs_clean (clean_primary, received_at),
+  KEY ix_cl_calibration_runs_type_clean (run_type, clean_primary, received_at),
   KEY ix_cl_calibration_runs_form (form_id, received_at),
   KEY ix_cl_calibration_runs_device (device_category, received_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
