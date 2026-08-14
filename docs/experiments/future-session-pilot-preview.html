@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ConflictLab — Future Session Pilot Preview</title>
+<style>
+:root{color-scheme:dark;--bg:#0c0c0f;--card:#141417;--line:#29292f;--text:#e8e4dc;--muted:#918d86;--accent:#83a998}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}
+main{width:min(100%,640px);margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(48px + env(safe-area-inset-bottom))}
+.brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}.draft{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.center{text-align:center}.status{color:var(--muted);line-height:1.5}
+button{font:inherit}.primary{border:0;border-radius:11px;background:var(--accent);color:#07100c;padding:13px 18px;font-weight:700;cursor:pointer}.primary:disabled{opacity:.35;cursor:not-allowed}
+.secondary{border:1px solid #34343c;border-radius:11px;background:#19191d;color:var(--text);padding:12px 16px;cursor:pointer}
+.rapid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:12px}.rapid-stage{display:grid;gap:10px}
+.visual-choice{display:block;width:100%;padding:0;background:#111114;border:1px solid #2b2b31;border-radius:16px;overflow:hidden;cursor:pointer;touch-action:manipulation}
+.visual-choice:active{transform:scale(.995)}.visual-choice:disabled{cursor:default;opacity:.9}.visual-choice img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
+.retry h2,.done h2{font-size:23px;font-weight:560;margin:0 0 8px}.retry p,.done p{color:#bcb7ae;line-height:1.5}
+details{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}summary{cursor:pointer;color:var(--muted);font-size:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;color:#aaa59c}
+.error{color:#e0a1a1;background:#241617;border:1px solid #583133;border-radius:12px;padding:12px}
+.cl-reflection{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.cl-reflection__progress{font-size:12px;color:var(--accent)}
+.cl-reflection__title{font-size:24px;font-weight:550;margin:8px 0}.cl-reflection__prompt{color:#c7c2b9;line-height:1.45}
+.cl-reflection__image{display:block;width:min(100%,430px);aspect-ratio:1/1;object-fit:contain;margin:16px auto;border-radius:14px;background:#0b0b0d}
+.cl-reflection__options{border:0;padding:0;margin:0;display:grid;gap:10px}.cl-reflection__option{display:flex;gap:10px;align-items:flex-start;border:1px solid #303038;border-radius:12px;padding:12px;cursor:pointer}
+.cl-reflection__radio{margin-top:3px}.cl-reflection__other{margin-top:12px}.cl-reflection__local-note{font-size:12px;color:var(--muted)}
+.cl-reflection__textarea{width:100%;background:#0d0d10;color:var(--text);border:1px solid #303038;border-radius:10px;padding:10px;font:inherit}
+.cl-reflection__actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}.cl-reflection__actions button{border-radius:10px;padding:11px 16px;font:inherit}
+.cl-reflection__back{background:#19191d;color:#ddd8ce;border:1px solid #303038}.cl-reflection__next{background:var(--accent);color:#0b0b0d;border:0;font-weight:650}
+.cl-reflection__sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">ConflictLab · internal pilot</div>
+  <div class="draft">DRAFT preview. 6000 ms is an unvalidated timing hypothesis. Gate D / Gate E are NONE. Nothing on this page is sent to a server.</div>
+  <div id="app" class="card center">
+    <p id="boot-status" class="status">Ruošiami vaizdai…</p>
+    <button id="start" class="primary" disabled>Pradėti</button>
+  </div>
+</main>
+
+<script type="module">
+import { createTwoSessionCycle, preloadPathsForSession } from '../../src/future_session/presentation_plan.mjs';
+import { preloadAssetBundle } from '../../src/future_session/asset_preloader.mjs';
+import { FutureSessionOrchestrator } from '../../src/future_session/session_orchestrator.mjs';
+import { buildReflectionItems } from '../../src/future_session/reflection_model.mjs';
+import { mountReflectionUI } from '../../src/future_session/reflection_ui.mjs';
+
+const app = document.getElementById('app');
+const startButton = document.getElementById('start');
+const bootStatus = document.getElementById('boot-status');
+const rootPrefix = '../../';
+const language = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'lt';
+
+const copy = language === 'en' ? {
+  ready:'Images ready. The timer begins only after the first pair is interactive.',
+  start:'Start',
+  attempt:'Attempt',
+  timeoutTitle:'Time expired',
+  retryText:'Repeat the same three-pair block. Pair order and image positions stay unchanged.',
+  retry:'Try again',
+  done:'Session complete',
+  doneText:'This internal preview keeps all reflection text local and sends nothing to a server.',
+  debug:'Internal preview data',
+  noAnchor:'No completed A/B choice was available for reflection.',
+  error:'Technical preview error',
+} : {
+  ready:'Vaizdai paruošti. Laikas prasidės tik tada, kai pirmoji pora bus aktyvi.',
+  start:'Pradėti',
+  attempt:'Bandymas',
+  timeoutTitle:'Laikas baigėsi',
+  retryText:'Pakartok tą patį trijų porų bloką. Porų tvarka ir vaizdų pozicijos nesikeičia.',
+  retry:'Bandyti dar kartą',
+  done:'Sesija baigta',
+  doneText:'Šiame vidiniame preview refleksijos tekstas lieka lokaliai ir niekas nesiunčiama į serverį.',
+  debug:'Vidiniai preview duomenys',
+  noAnchor:'Refleksijai neliko nė vieno užbaigto A/B pasirinkimo.',
+  error:'Techninė preview klaida',
+};
+
+let bundle = null;
+let runner = null;
+let sessionPlan = null;
+let deadlineTimer = null;
+let attemptClockStart = null;
+let reflectionSelections = [];
+
+function uuid() {
+  return crypto.randomUUID();
+}
+
+function clearDeadline() {
+  if (deadlineTimer !== null) clearTimeout(deadlineTimer);
+  deadlineTimer = null;
+  attemptClockStart = null;
+}
+
+function scheduleDeadline(startAt, budgetMs) {
+  attemptClockStart = startAt;
+
+  function check() {
+    if (!runner || runner.phase !== 'RAPID') return;
+    const remaining = budgetMs - (performance.now() - attemptClockStart);
+    if (remaining > 0) {
+      deadlineTimer = setTimeout(check, Math.max(4, remaining + 1));
+      return;
+    }
+    try {
+      const result = runner.expire(performance.now());
+      handleTerminal(result);
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  deadlineTimer = setTimeout(check, budgetMs + 1);
+}
+
+function assetUrl(path) {
+  return bundle.get(path).objectUrl;
+}
+
+function pairProgress(index) {
+  return language === 'en' ? `${index} of 3` : `${index} iš 3`;
+}
+
+function renderPair() {
+  const pair = runner.currentPair();
+  if (!pair) return;
+
+  app.className = '';
+  app.replaceChildren();
+
+  const head = document.createElement('div');
+  head.className = 'rapid-head';
+
+  const progress = document.createElement('span');
+  progress.textContent = pairProgress(runner.activeAttempt.currentIndex + 1);
+
+  const attempt = document.createElement('span');
+  attempt.textContent = `${copy.attempt} ${runner.activeAttempt.attemptNumber}/3`;
+
+  head.append(progress, attempt);
+
+  const stage = document.createElement('div');
+  stage.className = 'rapid-stage';
+
+  const choices = [
+    { id:'A', path:pair.assetAPath, position:pair.assetAPosition },
+    { id:'B', path:pair.assetBPath, position:pair.assetBPosition },
+  ].sort((a,b) => (a.position === 'top' ? -1 : 1));
+
+  for (const choice of choices) {
+    const button = document.createElement('button');
+    button.className = 'visual-choice';
+    button.type = 'button';
+    button.setAttribute('aria-label', choice.position === 'top'
+      ? (language === 'en' ? 'First image' : 'Pirmas vaizdas')
+      : (language === 'en' ? 'Second image' : 'Antras vaizdas'));
+
+    const image = document.createElement('img');
+    image.src = assetUrl(choice.path);
+    image.alt = '';
+    button.appendChild(image);
+
+    button.addEventListener('click', () => {
+      for (const candidate of stage.querySelectorAll('button')) candidate.disabled = true;
+      try {
+        const result = runner.recordChoice(choice.id, performance.now());
+        if (result.status === 'CHOICE_RECORDED') {
+          renderPair();
+        } else if (result.status === 'COMPLETE' || result.status === 'TIMEOUT') {
+          handleTerminal(result);
+        }
+      } catch (error) {
+        showError(error);
+      }
+    });
+
+    stage.appendChild(button);
+  }
+
+  app.append(head, stage);
+
+  const readyAt = performance.now();
+  const ready = runner.markPairReady(readyAt);
+  if (ready.status === 'TIMEOUT') {
+    handleTerminal(ready);
+    return;
+  }
+  if (ready.positionInBlock === 1) {
+    scheduleDeadline(readyAt, rapidProtocol.timing.block_budget_ms);
+  }
+}
+
+function startAttempt() {
+  clearDeadline();
+  runner.startAttempt();
+  renderPair();
+}
+
+function handleTerminal(result) {
+  clearDeadline();
+
+  if (runner.phase === 'RETRY_READY') {
+    const card = document.createElement('section');
+    card.className = 'card retry center';
+    const title = document.createElement('h2');
+    title.textContent = copy.timeoutTitle;
+    const p = document.createElement('p');
+    p.textContent = copy.retryText;
+    const button = document.createElement('button');
+    button.className = 'primary';
+    button.type = 'button';
+    button.textContent = copy.retry;
+    button.addEventListener('click', startAttempt);
+    card.append(title,p,button);
+    app.className = '';
+    app.replaceChildren(card);
+    return;
+  }
+
+  if (runner.phase === 'REFLECTION_READY') {
+    beginReflection();
+  }
+}
+
+function beginReflection() {
+  const anchors = runner.reflectionAnchors();
+
+  if (anchors.length === 0) {
+    finish([], copy.noAnchor);
+    return;
+  }
+
+  const items = buildReflectionItems({
+    anchors,
+    stimulusSet,
+    reasonMap,
+    locale: language,
+    allowDraft: true,
+  });
+
+  app.className = '';
+  app.replaceChildren();
+
+  mountReflectionUI({
+    root: app,
+    items,
+    locale: language,
+    assetUrlResolver: path => assetUrl(path),
+    onComplete(selections) {
+      reflectionSelections = selections;
+      runner.markReflectionComplete();
+      finish(selections);
+    },
+  });
+}
+
+function finish(selections, extra = '') {
+  clearDeadline();
+
+  const card = document.createElement('section');
+  card.className = 'card done';
+  const title = document.createElement('h2');
+  title.textContent = copy.done;
+  const p = document.createElement('p');
+  p.textContent = extra || copy.doneText;
+
+  const details = document.createElement('details');
+  const summary = document.createElement('summary');
+  summary.textContent = copy.debug;
+  const pre = document.createElement('pre');
+  pre.textContent = JSON.stringify({
+    sessionPlan: {
+      formId: sessionPlan.formId,
+      pairs: sessionPlan.pairs.map(pair => ({
+        pairId: pair.pairId,
+        assetAPosition: pair.assetAPosition,
+        assetBPosition: pair.assetBPosition,
+      })),
+    },
+    telemetry: runner.telemetry(),
+    reflectionSelections: selections,
+  }, null, 2);
+
+  details.append(summary, pre);
+  card.append(title, p, details);
+  app.className = '';
+  app.replaceChildren(card);
+}
+
+function showError(error) {
+  clearDeadline();
+  const box = document.createElement('div');
+  box.className = 'error';
+  box.textContent = `${copy.error}: ${error?.message || error}`;
+  app.className = '';
+  app.replaceChildren(box);
+}
+
+let stimulusSet;
+let rapidProtocol;
+let reasonMap;
+
+try {
+  [stimulusSet, rapidProtocol, reasonMap] = await Promise.all([
+    fetch('../../config/future-session/stimulus-set-v1.json').then(r => r.json()),
+    fetch('../../config/future-session/rapid-presentation-v1.json').then(r => r.json()),
+    fetch('../../config/future-session/reason-map-v1.json').then(r => r.json()),
+  ]);
+
+  const cycle = createTwoSessionCycle({
+    protocol: rapidProtocol,
+    stimulusSet,
+  });
+  sessionPlan = cycle.sessions[0];
+
+  bundle = await preloadAssetBundle(preloadPathsForSession(sessionPlan), {
+    fetchFn(path, options) {
+      return fetch(rootPrefix + path, options);
+    },
+  });
+
+  runner = new FutureSessionOrchestrator({
+    sessionId: uuid(),
+    blockId: uuid(),
+    sessionPlan,
+    blockBudgetMs: rapidProtocol.timing.block_budget_ms,
+    protocolVersion: rapidProtocol.protocol_version,
+    stimulusSetVersion: stimulusSet.stimulus_set_version,
+  });
+
+  bootStatus.textContent = copy.ready;
+  startButton.textContent = copy.start;
+  startButton.disabled = false;
+  startButton.addEventListener('click', startAttempt, { once:true });
+} catch (error) {
+  showError(error);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) runner?.markPageHidden();
+});
+
+window.addEventListener('pagehide', () => {
+  clearDeadline();
+  bundle?.release();
+}, { once:true });
+</script>
+</body>
+</html>
