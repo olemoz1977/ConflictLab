@@ -15,7 +15,7 @@ on:
       - 'docs/architecture/adr/ADR-012-*'
       - 'tests/test_future_session_baseline.py'
       - 'tests/*.test.mjs'
-      - 'tests/future_session_api_validation_test.php'
+      - 'tests/future_session_*_test.php'
 
 jobs:
   legacy-python:
@@ -62,9 +62,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: PHP version
         run: php --version
-      - name: Lint validation layer
-        run: php -l server/future-session/validation.php
-      - name: Lint validation contract tests
-        run: php -l tests/future_session_api_validation_test.php
+      - name: Lint future-session server files
+        run: |
+          php -l server/future-session/validation.php
+          php -l server/future-session/persistence.php
+          php -l server/future-session/api_v2.php
+          php -l server/future-session/config.example.php
+      - name: Lint PHP contract tests
+        run: |
+          php -l tests/future_session_api_validation_test.php
+          php -l tests/future_session_persistence_contract_test.php
       - name: Future-session API validation contract
         run: php tests/future_session_api_validation_test.php
+      - name: Future-session persistence contract
+        run: php tests/future_session_persistence_contract_test.php
