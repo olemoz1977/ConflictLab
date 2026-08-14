@@ -40,6 +40,30 @@ function makeAttempt(attemptNumber = 1, priorExposureCounts = {}) {
   assert.equal(result.event.blockElapsedMsAtEvent, 5999);
 }
 
+// Full-precision clock decides validity; persisted telemetry is floored to integer ms.
+{
+  const a = makeAttempt();
+  a.markPairReady(0.25);
+  const result = a.recordChoice('A', 6000.0); // precise elapsed = 5999.75
+  assert.equal(result.status, 'CHOICE_RECORDED');
+  assert.equal(result.event.blockElapsedMsAtEvent, 5999);
+  assert.equal(result.event.visualChoiceLatencyMs, 5999);
+  assert.equal(result.event.pairReadyElapsedMs, 0);
+  assert.equal(result.event.remainingBudgetAtPairStartMs, 6000);
+}
+
+// Configured block budget is an integer transport/storage contract.
+{
+  assert.throws(
+    () => new RapidBlockAttempt({
+      sessionId: 's', blockId: 'b', blockAttemptId: 'a', attemptNumber: 1,
+      blockBudgetMs: 6000.5, pairs: makePairs(), protocolVersion: 'p',
+      stimulusSetVersion: 's', eventIdFactory: () => 'e',
+    }),
+    /blockBudgetMs must be a positive integer/
+  );
+}
+
 // Exactly at deadline becomes timeout, not a late A/B choice.
 {
   const a = makeAttempt();
