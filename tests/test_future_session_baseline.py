@@ -12,6 +12,19 @@ def load_json(name):
         return json.load(fh)
 
 
+def test_stimulus_set_waits_for_freeze_and_defines_stable_ab_identity():
+    stimulus = load_json("stimulus-set-v1.json")
+    assert stimulus["stimulus_set_version"] == "stimulus-set-v1"
+    assert stimulus["lifecycle"] == "DRAFT"
+    assert stimulus["content_status"] == "PENDING_STIMULUS_FREEZE"
+    assert stimulus["pairs"] == []
+    assert set(stimulus["required_pair_fields"]) == {
+        "pair_id",
+        "asset_a_id",
+        "asset_b_id",
+    }
+
+
 def test_gate_d_starts_non_interpretive():
     gate_d = load_json("gate-d-v1.json")
     assert gate_d["mapping_version"] == "gate-d-v1"
@@ -59,6 +72,16 @@ def test_retry_schema_supports_multiple_attempts_per_logical_block():
     assert "CHECK (block_attempt_number BETWEEN 1 AND 3)" in sql
 
 
+def test_raw_pair_events_preserve_stable_assets_and_separate_position():
+    sql = SCHEMA.read_text(encoding="utf-8")
+    assert "asset_a_id" in sql
+    assert "asset_b_id" in sql
+    assert "asset_a_position" in sql
+    assert "asset_b_position" in sql
+    assert "CHECK (asset_a_id <> asset_b_id)" in sql
+    assert "CHECK (asset_a_position <> asset_b_position)" in sql
+
+
 def test_timeout_and_non_exposure_are_distinguishable():
     sql = SCHEMA.read_text(encoding="utf-8")
     assert "pair_presented" in sql
@@ -74,8 +97,6 @@ def test_page_hidden_semantics_are_block_summary_plus_event_snapshot():
     sql = SCHEMA.read_text(encoding="utf-8")
     assert "page_hidden_during_block" in sql
     assert "page_hidden_before_event" in sql
-    # The pair table must not falsely claim that an earlier immutable event knows
-    # what happened later in the whole block.
     rapid_pair_section = sql.split("CREATE TABLE rapid_pair_events", 1)[1].split(
         "CREATE TABLE reflection_reason_events", 1
     )[0]
