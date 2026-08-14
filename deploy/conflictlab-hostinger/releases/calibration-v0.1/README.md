@@ -103,7 +103,7 @@ Research image bytes are not resampled or rewritten.
 
 ## Updating the existing LAB deployment
 
-Extract the exact-head CI artifact over the existing versioned LAB directory with overwrite enabled.
+Use the exact-head successful push CI artifact and extract it over the existing versioned LAB directory with overwrite enabled.
 
 Important:
 
