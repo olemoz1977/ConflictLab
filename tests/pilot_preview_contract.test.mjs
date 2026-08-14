@@ -27,7 +27,7 @@ test('pilot preview preserves rapid protocol boundaries', () => {
   assert.ok(source.includes("runner.recordChoice(choice.id"));
   assert.ok(source.includes('runner.markPairReady(readyAt)'));
   assert.ok(source.includes("ready.status === 'TIMEOUT'"));
-  assert.ok(source.includes('runner.markPageHidden()'));
+  assert.ok(source.includes('runner?.markPageHidden()'));
   assert.ok(source.includes('allowDraft: true'));
   assert.ok(!source.includes('no_clear_choice'));
   assert.ok(!source.includes('interpretability_class'));
