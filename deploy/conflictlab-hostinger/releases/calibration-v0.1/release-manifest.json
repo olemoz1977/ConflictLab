@@ -20,20 +20,34 @@
     "stimulus_set": "stimulus-set-v1",
     "reason_map": "reason-map-v1",
     "timing_calibration": "timing-calibration-v1",
-    "candidate_budget_ms": 6000
+    "candidate_budget_ms": 6000,
+    "participant_languages": ["lt", "en"],
+    "product_shaped_pilot": true
   },
   "research_boundary": {
-    "purpose": "MECHANICAL_TIMING_ONLY",
+    "purpose": "MECHANICAL_TIMING_CALIBRATION_WITH_PRODUCT_SHAPED_LOCAL_FLOW",
     "gate_d": "NONE",
     "gate_e": "NONE",
-    "participant_result": "NONE",
+    "participant_result": "FAIL_CLOSED_NOT_ESTIMABLE",
     "training_upload": false,
     "reflection_upload": false,
+    "reason_response_latency_upload": false,
+    "intensity_upload": false,
+    "intensity_response_latency_upload": false,
     "selected_a_b_identity_stored": false,
     "persistent_participant_id": false,
     "wave1_storage_reuse": false,
     "run_type_server_controlled": true,
-    "technical_runs_enter_calibration_n": false
+    "technical_runs_enter_calibration_n": false,
+    "local_response_channels": [
+      "reason_id",
+      "optional_free_text",
+      "reason_response_latency_ms",
+      "intensity_1_5",
+      "intensity_response_latency_ms",
+      "reflection_total_elapsed_ms"
+    ],
+    "server_timing_channel": "visual_choice_latency_ms"
   },
   "storage": {
     "tables": [
