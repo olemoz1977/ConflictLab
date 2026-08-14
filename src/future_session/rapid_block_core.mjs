@@ -299,7 +299,7 @@ export class RapidBlockAttempt {
       visualChoiceLatencyMs,
       blockElapsedMsAtEvent,
       remainingBudgetAtPairStartMs,
-      pageHiddenDuringBlock: this.pageHiddenDuringBlock,
+      pageHiddenBeforeEvent: this.pageHiddenDuringBlock,
       isTraining: this.isTraining,
       protocolVersion: this.protocolVersion,
     };
