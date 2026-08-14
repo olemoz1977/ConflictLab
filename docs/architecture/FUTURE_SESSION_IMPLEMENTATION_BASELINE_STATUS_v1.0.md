@@ -40,7 +40,7 @@ reflection total elapsed            IMPLEMENTED / LOCAL ONLY
 Calculation Engine                  WIRED INTO PILOT
 Evidence Engine                     WIRED INTO PILOT
 participant result                  FAIL-CLOSED / NOT_ESTIMABLE
-research collection scope           REVIEW REQUIRED BEFORE REAL PARTICIPANTS
+research collection scope           REVIEW REQUIRED BEFORE CALIBRATION MODE
 Gate D                              NONE
 Gate E                              NONE
 owner product-pilot smoke           PENDING AFTER HOSTINGER PATCH
@@ -52,8 +52,6 @@ production product deployment       NOT AUTHORIZED
 ```
 
 ## Product-shaped pilot flow
-
-Repository LAB release now implements:
 
 ```text
 LT / EN language selection
@@ -67,7 +65,7 @@ LT / EN language selection
 -> fail-closed result screen
 ```
 
-Language is selected before training and remains fixed for that session. The reason map supplies paired LT/EN participant text.
+Language is selected before training and remains fixed for that session.
 
 ## Three independent response-time channels
 
@@ -90,7 +88,7 @@ No latency value is allowed to imply confidence, impulsivity, depth, decisivenes
 
 ## Reflection / intensity semantics
 
-Reason and intensity are sequential. Current local response model distinguishes:
+Current local response model distinguishes:
 
 ```text
 reason_status     = ANSWERED | SKIPPED | NOT_REACHED
@@ -132,7 +130,7 @@ Those product-shaped reflection/result channels are local-first in this build.
 
 ### Research-collection decision before CALIBRATION mode
 
-Because scarce fresh testers are intended to contribute to more than timing UX, the current timing-only server boundary must be reviewed **before** real participant collection.
+Because scarce fresh testers are intended to contribute to more than timing UX, the current timing-only server boundary must be reviewed before real participant collection.
 
 Do not silently broaden the calibration API. Explicitly decide which hypotheses require aggregate research data and whether a separately consented research channel is justified. Candidate channels to evaluate later include A/B response identity and reason metadata; intensity requires its own explicit purpose/consent decision. Free text remains local-first by default.
 
@@ -185,9 +183,9 @@ The isolated LAB path remains:
 https://omesg360.eu/conflictlab/releases/calibration-v0.1/
 ```
 
-The currently deployed bytes predate the product-shaped pilot changes. A validated overwrite artifact must be applied to this versioned LAB path before owner testing of LT/EN + reason/intensity + result-shell behavior.
+The currently deployed bytes predate the product-shaped pilot changes. Use an exact-head successful push CI artifact to overwrite this versioned LAB path before owner testing of the new flow.
 
-No DB migration is required for this product-shaped UI update.
+No DB migration is required for this product-shaped UI update. Existing secret `server/config.php` must remain in place and `collection_mode` must remain `TECHNICAL`.
 
 ## Public safety
 
@@ -205,9 +203,9 @@ No merge, public switch or production product deployment is authorized.
 
 ## Immediate next gate
 
-1. package the CI-validated product-shaped LAB overwrite artifact;
-2. owner uploads it only to `/conflictlab/releases/calibration-v0.1/`;
-3. keep `collection_mode = TECHNICAL`;
+1. obtain the exact-head successful push CI artifact;
+2. owner extracts it only into `/conflictlab/releases/calibration-v0.1/` with overwrite;
+3. preserve `server/config.php` and keep `collection_mode = TECHNICAL`;
 4. owner smoke-tests LT and EN flows;
 5. verify admin gains only TECHNICAL runs and N/20 stays 0;
 6. record owner UX findings;
