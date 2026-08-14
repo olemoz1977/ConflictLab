@@ -12,12 +12,25 @@ def load_json(name):
         return json.load(fh)
 
 
-def test_stimulus_set_waits_for_freeze_and_defines_stable_ab_identity():
+def test_stimulus_set_binds_six_current_wave1_pairs_without_releasing_them():
     stimulus = load_json("stimulus-set-v1.json")
     assert stimulus["stimulus_set_version"] == "stimulus-set-v1"
     assert stimulus["lifecycle"] == "DRAFT"
     assert stimulus["content_status"] == "PENDING_STIMULUS_FREEZE"
-    assert stimulus["pairs"] == []
+    assert stimulus["f1_asset_identity_status"] == "COMPLETE"
+    assert stimulus["released_at"] is None
+    assert stimulus["source_protocol"] == "wave1-v0.3"
+    assert stimulus["source_manifest_version"] == "wave1-candidates-v0.2"
+    assert len(stimulus["pairs"]) == 6
+    assert {p["pair_id"] for p in stimulus["pairs"]} == {
+        "CS-PR-01",
+        "CS-RE-01",
+        "CS-CA-01",
+        "CR-PZ-01",
+        "CR-FS-01",
+        "CR-PO-01",
+    }
+    assert all(p["is_training"] is False for p in stimulus["pairs"])
     assert set(stimulus["required_pair_fields"]) == {
         "pair_id",
         "asset_a_id",
