@@ -89,7 +89,7 @@ The current wording intentionally:
 - provides a non-forced `UNRESOLVED` option;
 - provides a local-only `Another reason` path so the structured catalog is not exhaustive by design.
 
-## Display policy
+## Proposed display policy
 
 For a given pair+anchor:
 
@@ -98,7 +98,7 @@ R01/R02/R03 -> randomized
 R04 UNRESOLVED -> last
 ```
 
-The selected anchor image should be shown again in Reflection UI, but the rapid-block pair must not be re-run or re-timed during reflection.
+The current proposal is to show the selected anchor image again in Reflection UI, but the rapid-block pair must not be re-run or re-timed during reflection. This display detail remains subject to UI review.
 
 ## Data boundary
 
@@ -119,7 +119,7 @@ Before `reason-map-v1` can become `RELEASED`:
 1. human review of Lithuanian wording for naturalness and unintended leading;
 2. English parity review;
 3. manual visual check that each R01/R02 sentence accurately refers to the exact frozen A/B asset, not only to the pair family name;
-4. explicit review of the five `CROSS_DOMAIN_REASON` codings above;
+4. explicit review of the six `CROSS_DOMAIN_REASON` codings above;
 5. confirmation that 4 options per anchor is acceptable in the Reflection UX;
 6. confirmation that `Another reason` free text remains local-only;
 7. reason-map contract tests remain green.
