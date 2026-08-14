@@ -31,6 +31,7 @@ result                           FAIL-CLOSED / NOT_ESTIMABLE
 Hostinger product-shaped patch   PENDING OWNER UPLOAD
 collection_mode                  TECHNICAL
 calibration N/20                 0 / 20 at last owner check
+research collection scope       REVIEW REQUIRED BEFORE CALIBRATION MODE
 Gate D                           NONE
 Gate E                           NONE
 public /wave1                    UNCHANGED
@@ -375,7 +376,23 @@ Detailed implementation record:
 
 `docs/architecture/worklog/2026-08-14_PRODUCT_SHAPED_PILOT_IMPLEMENTATION.md`
 
-## 17. Immediate next gate
+## 17. Research-collection scope gate
+
+The current server dataset remains timing-only. Therefore product-shaped local reflection/intensity data are **not** automatically available for aggregate hypothesis validation.
+
+Before real participant collection, explicitly decide whether any additional consented research channel is needed. Do not silently broaden the timing calibration payload.
+
+Potential channels may be evaluated later, not yet authorized:
+
+```text
+A/B response identity as research telemetry
+reason_id under explicit research consent
+intensity under an explicitly justified research purpose/consent
+```
+
+Free text remains local-first by default.
+
+## 18. Immediate next gate
 
 Do **not** switch the server to `CALIBRATION` yet.
 
@@ -387,10 +404,10 @@ Next sequence:
 4. owner smoke-test EN flow;
 5. verify admin records only TECHNICAL runs and N/20 remains 0;
 6. record UX findings and any data-boundary gap;
-7. decide whether the planned real-participant research hypotheses require an explicit opt-in research channel beyond timing telemetry;
+7. close the research-collection scope/consent decision;
 8. only then consider `CALIBRATION` collection for fresh participants.
 
-## 18. Public safety state
+## 19. Public safety state
 
 ```text
 Hostinger versioned LAB path       DEPLOYED / OLD BUILD UNTIL NEXT PATCH
@@ -408,7 +425,7 @@ live /wave1                        UNCHANGED
 production product deployment      NOT AUTHORIZED
 ```
 
-## 19. Logging rule going forward
+## 20. Logging rule going forward
 
 Material changes should be added to this worklog or a dated file under `docs/architecture/worklog/` when they affect any of the following:
 
