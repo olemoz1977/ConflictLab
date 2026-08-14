@@ -26,8 +26,18 @@ function assertPair(pair, index) {
   if (!pair || typeof pair.pairId !== 'string' || !pair.pairId) {
     throw new Error(`pairs[${index}].pairId is required`);
   }
+  if (typeof pair.assetAId !== 'string' || !pair.assetAId ||
+      typeof pair.assetBId !== 'string' || !pair.assetBId) {
+    throw new Error(`pairs[${index}] stable assetAId and assetBId are required`);
+  }
+  if (pair.assetAId === pair.assetBId) {
+    throw new Error(`pairs[${index}] assetAId and assetBId must differ`);
+  }
   if (!pair.assetAPosition || !pair.assetBPosition) {
     throw new Error(`pairs[${index}] asset positions are required`);
+  }
+  if (pair.assetAPosition === pair.assetBPosition) {
+    throw new Error(`pairs[${index}] asset positions must differ`);
   }
 }
 
@@ -296,6 +306,8 @@ export class RapidBlockAttempt {
       stimulusSetVersion: this.stimulusSetVersion,
       positionInBlock,
       pairExposureNumber: exposureNumber,
+      assetAId: pair.assetAId,
+      assetBId: pair.assetBId,
       assetAPosition: pair.assetAPosition,
       assetBPosition: pair.assetBPosition,
       pairPresented,
