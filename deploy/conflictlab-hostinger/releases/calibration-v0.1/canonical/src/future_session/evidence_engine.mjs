@@ -106,6 +106,7 @@ export function evaluateEvidenceStatus({ calcResult, gateEConfig, context = {} }
     narrativeConstraints.push('distinguish_retry_anchored_reflection');
   }
 
+  // The Evidence Engine is claim-limiting only. It never mutates the calculation.
   const base = {
     aggregationGateVersion: gateEConfig.aggregation_gate_version,
     gateEStatus,
@@ -120,7 +121,10 @@ export function evaluateEvidenceStatus({ calcResult, gateEConfig, context = {} }
       ...base,
       evidenceStatus: 'INSUFFICIENT',
       allowedClaimLevel: CLAIM_LEVEL.RAW_OBSERVATION,
-      narrativeConstraints: [...narrativeConstraints, 'do_not_describe_directional_pattern'],
+      narrativeConstraints: [
+        ...narrativeConstraints,
+        'do_not_describe_directional_pattern',
+      ],
     };
   }
 
@@ -130,7 +134,11 @@ export function evaluateEvidenceStatus({ calcResult, gateEConfig, context = {} }
       evidenceStatus: 'DESCRIPTIVE_ONLY',
       allowedClaimLevel: CLAIM_LEVEL.RAW_OBSERVATION,
       flags: [...flags, 'single_observation_only'],
-      narrativeConstraints: [...narrativeConstraints, 'single_observation_language_only', 'do_not_use_repeated_pattern_language'],
+      narrativeConstraints: [
+        ...narrativeConstraints,
+        'single_observation_language_only',
+        'do_not_use_repeated_pattern_language',
+      ],
     };
   }
 
@@ -140,7 +148,11 @@ export function evaluateEvidenceStatus({ calcResult, gateEConfig, context = {} }
       evidenceStatus: 'DESCRIPTIVE_ONLY',
       allowedClaimLevel: CLAIM_LEVEL.SPECIFIC_REPEATED_OBSERVATION,
       flags: [...flags, 'gate_e_not_passed'],
-      narrativeConstraints: [...narrativeConstraints, 'specific_pairs_only', 'do_not_generalize_to_domain'],
+      narrativeConstraints: [
+        ...narrativeConstraints,
+        'specific_pairs_only',
+        'do_not_generalize_to_domain',
+      ],
     };
   }
 
@@ -148,7 +160,11 @@ export function evaluateEvidenceStatus({ calcResult, gateEConfig, context = {} }
     ...base,
     evidenceStatus: 'DOMAIN_INTERPRETABLE',
     allowedClaimLevel: CLAIM_LEVEL.DOMAIN_SUPPORTED_PATTERN,
-    narrativeConstraints: [...narrativeConstraints, 'domain_language_allowed_but_not_trait_language', 'do_not_claim_stable_person_characteristic'],
+    narrativeConstraints: [
+      ...narrativeConstraints,
+      'domain_language_allowed_but_not_trait_language',
+      'do_not_claim_stable_person_characteristic',
+    ],
   };
 }
 
