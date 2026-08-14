@@ -62,11 +62,15 @@ def test_gate_e_blocks_domain_interpretation_by_default():
     assert gate_e["domains"]["CR"]["status"] == "NONE"
 
 
-def test_reason_map_waits_for_stimulus_freeze():
+def test_reason_map_is_bound_to_f1_stimulus_set_but_remains_draft():
     reason_map = load_json("reason-map-v1.json")
-    assert reason_map["stimulus_set_version"] is None
-    assert reason_map["content_status"] == "PENDING_STIMULUS_FREEZE"
-    assert reason_map["items"] == []
+    assert reason_map["stimulus_set_version"] == "stimulus-set-v1"
+    assert reason_map["lifecycle"] == "DRAFT"
+    assert reason_map["content_status"] == "DRAFT_CONTENT_REVIEW_REQUIRED"
+    assert reason_map["released_at"] is None
+    assert len(reason_map["items"]) == 48
+    assert reason_map["content_policy"]["other_reason_free_text"] == "LOCAL_ONLY_OPTIONAL"
+    assert reason_map["content_policy"]["participant_facing_labels_hidden"] is True
     assert set(reason_map["allowed_interpretability_classes"]) == {
         "DOMAIN_CONSISTENT_REASON",
         "CROSS_DOMAIN_REASON",
