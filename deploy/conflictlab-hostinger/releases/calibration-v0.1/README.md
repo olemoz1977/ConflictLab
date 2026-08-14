@@ -73,7 +73,9 @@ Existing Wave1 storage is not reused.
 
 The product-shaped UX now captures reason/intensity channels locally, but the timing-only server boundary does **not** make those local channels available for aggregate research analysis.
 
-Before switching to real `CALIBRATION` collection, explicitly decide whether the planned hypotheses require a separate consented research channel (for example A/B response identity and/or reason metadata) rather than silently broadening the timing dataset. Until that decision is made, this build remains owner/technical testing only.
+Before switching to real `CALIBRATION` collection, explicitly decide whether the planned hypotheses require a separate consented research channel rather than silently broadening the timing dataset. Candidate channels to evaluate later include A/B response identity and reason metadata. Intensity requires an explicitly justified research purpose/consent decision. Free text remains local-first by default.
+
+Until this decision is closed, keep the deployment in `TECHNICAL` mode.
 
 ## TECHNICAL vs CALIBRATION
 
