@@ -440,3 +440,19 @@ Material changes should be added to this worklog or a dated file under `docs/arc
 - test evidence and current next gate.
 
 Small mechanical commits do not need prose-by-prose duplication; the log captures decisions and state transitions, while Git history captures exact file changes.
+
+## 21. Admin data export requirement
+
+The owner explicitly requires data export through the admin interface. This is a product/research operations requirement, not an optional convenience.
+
+Planned admin export behavior:
+
+- export must be initiated from the authenticated admin page;
+- export must preserve the `TECHNICAL` vs `CALIBRATION` distinction;
+- filters applied in admin should be usable for export where practical;
+- export must not silently include local-only reflection free text, reason/intensity data, or derived personal results unless a later explicit research-scope/consent decision authorizes those fields;
+- timing-calibration exports should include only fields already justified for the server dataset;
+- CSV is the minimum required format; additional formats may be added later if useful;
+- export structure/version should be documented so later analysis is reproducible.
+
+This requirement must be revisited when the admin is extended beyond timing-only telemetry.
