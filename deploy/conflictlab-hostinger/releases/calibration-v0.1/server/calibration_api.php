@@ -94,6 +94,18 @@ $blockBudgetMs = require_int($payload, 'blockBudgetMs', 1, 60000);
 $technicalPreloadOk = require_bool($payload, 'technicalPreloadOk');
 $deviceCategory = require_string($payload, 'deviceCategory', 16);
 
+$consentVersion = null;
+$researchConsent = null;
+$age18Confirmed = null;
+$hasAnyConsentField = array_key_exists('consentVersion', $payload)
+    || array_key_exists('researchConsent', $payload)
+    || array_key_exists('age18Confirmed', $payload);
+if ($hasAnyConsentField || $runType === 'CALIBRATION') {
+    $consentVersion = require_string($payload, 'consentVersion', 64);
+    $researchConsent = require_bool($payload, 'researchConsent');
+    $age18Confirmed = require_bool($payload, 'age18Confirmed');
+}
+
 if ($schema !== EXPECTED_SCHEMA) fail(422, 'SCHEMA_MISMATCH', 'unsupported schema');
 if (!is_uuid($messageId) || !is_uuid($sessionId)) fail(422, 'INVALID_UUID', 'messageId/sessionId must be UUIDs');
 if ($releaseId !== ($config['release_id'] ?? null)) fail(422, 'RELEASE_MISMATCH', 'unexpected release');
@@ -103,6 +115,14 @@ if ($blockBudgetMs !== (int)($config['block_budget_ms'] ?? 0)) fail(422, 'BUDGET
 if (!$technicalPreloadOk) fail(422, 'PRELOAD_NOT_CONFIRMED', 'research attempt requires successful preload');
 if (!array_key_exists($formId, ALLOWED_FORMS)) fail(422, 'INVALID_FORM', 'unknown form');
 if (!in_array($deviceCategory, ALLOWED_DEVICE_CATEGORIES, true)) fail(422, 'INVALID_DEVICE_CATEGORY', 'unsupported device category');
+
+if ($runType === 'CALIBRATION') {
+    $expectedConsentVersion = (string)($config['consent_version'] ?? '');
+    if ($expectedConsentVersion === '') fail(503, 'SERVER_NOT_CONFIGURED', 'consent version not configured');
+    if ($consentVersion !== $expectedConsentVersion) fail(422, 'CONSENT_VERSION_MISMATCH', 'unexpected consent version');
+    if ($researchConsent !== true) fail(422, 'RESEARCH_CONSENT_REQUIRED', 'affirmative research consent required');
+    if ($age18Confirmed !== true) fail(422, 'AGE_CONFIRMATION_REQUIRED', '18+ confirmation required');
+}
 
 $attempts = $payload['attempts'] ?? null;
 $events = $payload['events'] ?? null;
@@ -230,12 +250,14 @@ try {
 
     $insertRun = $pdo->prepare(
         'INSERT INTO cl_calibration_runs '
-        . '(message_id, session_id, release_id, run_type, form_id, protocol_version, stimulus_set_version, block_budget_ms, device_category, technical_preload_ok, clean_primary, exclusion_reason) '
-        . 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'
+        . '(message_id, session_id, release_id, run_type, form_id, protocol_version, stimulus_set_version, block_budget_ms, device_category, technical_preload_ok, clean_primary, exclusion_reason, consent_version, research_consent, age_18_confirmed) '
+        . 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
     );
     $insertRun->execute([
         $messageId, $sessionId, $releaseId, $runType, $formId, $protocolVersion, $stimulusSetVersion,
         $blockBudgetMs, $deviceCategory, 1, $cleanPrimary ? 1 : 0, $exclusionReason,
+        $consentVersion, $researchConsent === null ? null : ($researchConsent ? 1 : 0),
+        $age18Confirmed === null ? null : ($age18Confirmed ? 1 : 0),
     ]);
     $runId = (int)$pdo->lastInsertId();
 
