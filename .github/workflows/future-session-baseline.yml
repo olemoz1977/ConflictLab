@@ -73,6 +73,8 @@ jobs:
         run: node tests/product_reflection_flow.test.mjs
       - name: Product result fail-closed gate
         run: node tests/product_result_gate.test.mjs
+      - name: Product-shaped release contract
+        run: node tests/product_pilot_release_contract.test.mjs
       - name: Session orchestrator
         run: node tests/session_orchestrator.test.mjs
       - name: Training orchestrator
