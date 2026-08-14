@@ -7,12 +7,15 @@ on:
   pull_request:
     paths:
       - 'src/future_session/**'
+      - 'server/future-session/**'
       - 'config/future-session/**'
       - 'docs/architecture/FUTURE_SESSION_SERVER_SCHEMA_v0.2.sql'
       - 'docs/architecture/adr/ADR-010-*'
       - 'docs/architecture/adr/ADR-011-*'
+      - 'docs/architecture/adr/ADR-012-*'
       - 'tests/test_future_session_baseline.py'
       - 'tests/*.test.mjs'
+      - 'tests/future_session_api_validation_test.php'
 
 jobs:
   legacy-python:
@@ -52,3 +55,16 @@ jobs:
         run: node tests/evidence_engine.test.mjs
       - name: Event outbox
         run: node tests/event_outbox.test.mjs
+
+  future-php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP version
+        run: php --version
+      - name: Lint validation layer
+        run: php -l server/future-session/validation.php
+      - name: Lint validation contract tests
+        run: php -l tests/future_session_api_validation_test.php
+      - name: Future-session API validation contract
+        run: php tests/future_session_api_validation_test.php
