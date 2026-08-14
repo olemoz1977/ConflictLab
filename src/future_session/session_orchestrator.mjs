@@ -41,6 +41,7 @@ export class FutureSessionOrchestrator {
     blockBudgetMs,
     protocolVersion,
     stimulusSetVersion,
+    isTraining = false,
     now = () => performance.now(),
     eventIdFactory = defaultUuid,
     blockAttemptIdFactory = defaultUuid,
@@ -69,6 +70,7 @@ export class FutureSessionOrchestrator {
     this.blockBudgetMs = blockBudgetMs;
     this.protocolVersion = protocolVersion;
     this.stimulusSetVersion = stimulusSetVersion;
+    this.isTraining = Boolean(isTraining);
     this.now = now;
     this.eventIdFactory = eventIdFactory;
     this.blockAttemptIdFactory = blockAttemptIdFactory;
@@ -99,7 +101,7 @@ export class FutureSessionOrchestrator {
       pairs: this.sessionPlan.pairs,
       protocolVersion: this.protocolVersion,
       stimulusSetVersion: this.stimulusSetVersion,
-      isTraining: false,
+      isTraining: this.isTraining,
       priorExposureCounts: exposureCountsFromEvents(this.events),
       now: this.now,
       eventIdFactory: this.eventIdFactory,
@@ -147,6 +149,9 @@ export class FutureSessionOrchestrator {
   }
 
   reflectionAnchors() {
+    if (this.isTraining) {
+      throw new Error('training blocks do not produce reflection anchors');
+    }
     if (this.phase !== 'REFLECTION_READY' && this.phase !== 'COMPLETE') {
       throw new Error('reflection anchors are available only after the rapid block is terminal');
     }
@@ -154,6 +159,9 @@ export class FutureSessionOrchestrator {
   }
 
   markReflectionComplete() {
+    if (this.isTraining) {
+      throw new Error('training blocks do not have reflection');
+    }
     if (this.phase !== 'REFLECTION_READY') {
       throw new Error('reflection is not ready');
     }
@@ -165,6 +173,7 @@ export class FutureSessionOrchestrator {
       sessionId: this.sessionId,
       blockId: this.blockId,
       phase: this.phase,
+      isTraining: this.isTraining,
       attempts: this.summaries.map(summary => ({ ...summary })),
       events: this.events.map(event => ({ ...event })),
     };
@@ -184,9 +193,13 @@ export class FutureSessionOrchestrator {
     this.events.push(...this.activeAttempt.events.map(event => ({ ...event })));
 
     if (result.status === 'COMPLETE') {
-      this.phase = 'REFLECTION_READY';
+      this.phase = this.isTraining ? 'COMPLETE' : 'REFLECTION_READY';
     } else if (result.status === 'TIMEOUT') {
-      this.phase = result.next === 'RETRY' ? 'RETRY_READY' : 'REFLECTION_READY';
+      if (result.next === 'RETRY') {
+        this.phase = 'RETRY_READY';
+      } else {
+        this.phase = this.isTraining ? 'TRAINING_RESTART_REQUIRED' : 'REFLECTION_READY';
+      }
     } else {
       throw new Error(`terminal attempt returned unsupported status: ${result.status}`);
     }

@@ -12,10 +12,11 @@ main{width:min(100%,640px);margin:auto;padding:calc(18px + env(safe-area-inset-t
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.center{text-align:center}.status{color:var(--muted);line-height:1.5}
 button{font:inherit}.primary{border:0;border-radius:11px;background:var(--accent);color:#07100c;padding:13px 18px;font-weight:700;cursor:pointer}.primary:disabled{opacity:.35;cursor:not-allowed}
 .secondary{border:1px solid #34343c;border-radius:11px;background:#19191d;color:var(--text);padding:12px 16px;cursor:pointer}
+.intro h2,.retry h2,.done h2{font-size:23px;font-weight:560;margin:0 0 8px}.intro p,.retry p,.done p{color:#bcb7ae;line-height:1.5}.intro .boundary{font-size:12px;color:var(--muted)}
 .rapid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:12px}.rapid-stage{display:grid;gap:10px}
 .visual-choice{display:block;width:100%;padding:0;background:#111114;border:1px solid #2b2b31;border-radius:16px;overflow:hidden;cursor:pointer;touch-action:manipulation}
 .visual-choice:active{transform:scale(.995)}.visual-choice:disabled{cursor:default;opacity:.9}.visual-choice img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
-.retry h2,.done h2{font-size:23px;font-weight:560;margin:0 0 8px}.retry p,.done p{color:#bcb7ae;line-height:1.5}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.actions.centered{justify-content:center}
 details{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}summary{cursor:pointer;color:var(--muted);font-size:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;color:#aaa59c}
 .error{color:#e0a1a1;background:#241617;border:1px solid #583133;border-radius:12px;padding:12px}
 .cl-reflection{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.cl-reflection__progress{font-size:12px;color:var(--accent)}
@@ -32,61 +33,102 @@ details{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}summar
 <body>
 <main>
   <div class="brand">ConflictLab · internal pilot</div>
-  <div class="draft">DRAFT preview. 6000 ms is an unvalidated timing hypothesis. Gate D / Gate E are NONE. Nothing on this page is sent to a server.</div>
+  <div class="draft">DRAFT preview. Training is local-only. 6000 ms is an unvalidated timing hypothesis. Gate D / Gate E are NONE. Nothing on this page is sent to a server.</div>
   <div id="app" class="card center">
     <p id="boot-status" class="status">Ruošiami vaizdai…</p>
-    <button id="start" class="primary" disabled>Pradėti</button>
   </div>
 </main>
 
 <script type="module">
 import { createTwoSessionCycle, preloadPathsForSession } from '../../src/future_session/presentation_plan.mjs';
+import { createTrainingPlan, preloadPathsForTraining } from '../../src/future_session/training_plan.mjs';
 import { preloadAssetBundle } from '../../src/future_session/asset_preloader.mjs';
 import { FutureSessionOrchestrator } from '../../src/future_session/session_orchestrator.mjs';
 import { buildReflectionItems } from '../../src/future_session/reflection_model.mjs';
 import { mountReflectionUI } from '../../src/future_session/reflection_ui.mjs';
 
 const app = document.getElementById('app');
-const startButton = document.getElementById('start');
-const bootStatus = document.getElementById('boot-status');
 const rootPrefix = '../../';
 const language = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'lt';
 
 const copy = language === 'en' ? {
-  ready:'Images ready. The timer begins only after the first pair is interactive.',
-  start:'Start',
+  trainingTitle:'Short practice',
+  trainingIntro:'You will see 3 image pairs one after another. Choose the image you would pick first. One shared 6-second budget covers all three choices and starts when the first pair becomes interactive.',
+  trainingBoundary:'Practice choices are marked as training and are excluded from analysis, timing calibration, Gate D/E and server upload.',
+  trainingStart:'Start practice',
+  trainingAttempt:'Practice',
+  trainingTimeoutTitle:'Practice time expired',
+  trainingRetryText:'Repeat the same practice block. The goal is only to get used to the interaction and shared timer.',
+  trainingRetry:'Repeat practice',
+  trainingRestart:'Restart practice',
+  trainingComplete:'Practice complete',
+  trainingCompleteText:'The interaction is the same. The next start begins the fresh measured pilot block.',
+  mainStart:'Start main session',
   attempt:'Attempt',
   timeoutTitle:'Time expired',
   retryText:'Repeat the same three-pair block. Pair order and image positions stay unchanged.',
   retry:'Try again',
   done:'Session complete',
-  doneText:'This internal preview keeps all reflection text local and sends nothing to a server.',
+  doneText:'This internal preview keeps telemetry and reflection text local and sends nothing to a server.',
+  export:'Download UX telemetry JSON',
   debug:'Internal preview data',
   noAnchor:'No completed A/B choice was available for reflection.',
   error:'Technical preview error',
 } : {
-  ready:'Vaizdai paruošti. Laikas prasidės tik tada, kai pirmoji pora bus aktyvi.',
-  start:'Pradėti',
+  trainingTitle:'Trumpa treniruotė',
+  trainingIntro:'Pamatysi 3 vaizdų poras viena po kitos. Kiekvieną kartą pasirink vaizdą, kurį rinktumeisi pirmiau. Visoms trims poroms skirtas vienas bendras 6 sekundžių laikas, kuris prasideda, kai pirmoji pora tampa aktyvi.',
+  trainingBoundary:'Treniruotės pasirinkimai žymimi kaip training ir nepatenka į analizę, 6000 ms kalibravimą, Gate D/E ar serverį.',
+  trainingStart:'Pradėti treniruotę',
+  trainingAttempt:'Treniruotė',
+  trainingTimeoutTitle:'Treniruotės laikas baigėsi',
+  trainingRetryText:'Pakartok tą patį treniruotės bloką. Tikslas čia tik priprasti prie sąveikos ir bendro laiko.',
+  trainingRetry:'Pakartoti treniruotę',
+  trainingRestart:'Pradėti treniruotę iš naujo',
+  trainingComplete:'Treniruotė baigta',
+  trainingCompleteText:'Veiksmas bus toks pats. Kitas startas jau pradės naują pagrindinį piloto bloką.',
+  mainStart:'Pradėti pagrindinę sesiją',
   attempt:'Bandymas',
   timeoutTitle:'Laikas baigėsi',
   retryText:'Pakartok tą patį trijų porų bloką. Porų tvarka ir vaizdų pozicijos nesikeičia.',
   retry:'Bandyti dar kartą',
   done:'Sesija baigta',
-  doneText:'Šiame vidiniame preview refleksijos tekstas lieka lokaliai ir niekas nesiunčiama į serverį.',
+  doneText:'Šiame vidiniame preview telemetrija ir refleksijos tekstas lieka lokaliai ir niekas nesiunčiama į serverį.',
+  export:'Atsisiųsti UX telemetrijos JSON',
   debug:'Vidiniai preview duomenys',
   noAnchor:'Refleksijai neliko nė vieno užbaigto A/B pasirinkimo.',
   error:'Techninė preview klaida',
 };
 
 let bundle = null;
+let activeRunner = null;
+let activeMode = 'BOOT';
 let runner = null;
+let trainingRunner = null;
 let sessionPlan = null;
+let trainingPlan = null;
 let deadlineTimer = null;
 let attemptClockStart = null;
+let trainingRuns = [];
+let trainingCompleted = false;
 let reflectionSelections = [];
+let deviceContextAtStart = null;
 
 function uuid() {
   return crypto.randomUUID();
+}
+
+function captureDeviceContext() {
+  return {
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+    screenWidth: window.screen?.width ?? null,
+    screenHeight: window.screen?.height ?? null,
+    devicePixelRatio: window.devicePixelRatio ?? null,
+    maxTouchPoints: navigator.maxTouchPoints ?? null,
+    coarsePointer: window.matchMedia?.('(pointer: coarse)').matches ?? null,
+    language: navigator.language ?? null,
+    userAgent: navigator.userAgent ?? null,
+  };
 }
 
 function clearDeadline() {
@@ -95,18 +137,24 @@ function clearDeadline() {
   attemptClockStart = null;
 }
 
+function activeBudgetMs() {
+  return activeMode === 'TRAINING'
+    ? trainingSet.protocol.shared_budget_ms
+    : rapidProtocol.timing.block_budget_ms;
+}
+
 function scheduleDeadline(startAt, budgetMs) {
   attemptClockStart = startAt;
 
   function check() {
-    if (!runner || runner.phase !== 'RAPID') return;
+    if (!activeRunner || activeRunner.phase !== 'RAPID') return;
     const remaining = budgetMs - (performance.now() - attemptClockStart);
     if (remaining > 0) {
       deadlineTimer = setTimeout(check, Math.max(4, remaining + 1));
       return;
     }
     try {
-      const result = runner.expire(performance.now());
+      const result = activeRunner.expire(performance.now());
       handleTerminal(result);
     } catch (error) {
       showError(error);
@@ -125,7 +173,7 @@ function pairProgress(index) {
 }
 
 function renderPair() {
-  const pair = runner.currentPair();
+  const pair = activeRunner.currentPair();
   if (!pair) return;
 
   app.className = '';
@@ -135,10 +183,12 @@ function renderPair() {
   head.className = 'rapid-head';
 
   const progress = document.createElement('span');
-  progress.textContent = pairProgress(runner.activeAttempt.currentIndex + 1);
+  progress.textContent = pairProgress(activeRunner.activeAttempt.currentIndex + 1);
 
   const attempt = document.createElement('span');
-  attempt.textContent = `${copy.attempt} ${runner.activeAttempt.attemptNumber}/3`;
+  attempt.textContent = activeMode === 'TRAINING'
+    ? `${copy.trainingAttempt} ${activeRunner.activeAttempt.attemptNumber}/3`
+    : `${copy.attempt} ${activeRunner.activeAttempt.attemptNumber}/3`;
 
   head.append(progress, attempt);
 
@@ -166,7 +216,7 @@ function renderPair() {
     button.addEventListener('click', () => {
       for (const candidate of stage.querySelectorAll('button')) candidate.disabled = true;
       try {
-        const result = runner.recordChoice(choice.id, performance.now());
+        const result = activeRunner.recordChoice(choice.id, performance.now());
         if (result.status === 'CHOICE_RECORDED') {
           renderPair();
         } else if (result.status === 'COMPLETE' || result.status === 'TIMEOUT') {
@@ -183,44 +233,149 @@ function renderPair() {
   app.append(head, stage);
 
   const readyAt = performance.now();
-  const ready = runner.markPairReady(readyAt);
+  const ready = activeRunner.markPairReady(readyAt);
   if (ready.status === 'TIMEOUT') {
     handleTerminal(ready);
     return;
   }
   if (ready.positionInBlock === 1) {
-    scheduleDeadline(readyAt, rapidProtocol.timing.block_budget_ms);
+    scheduleDeadline(readyAt, activeBudgetMs());
   }
 }
 
 function startAttempt() {
   clearDeadline();
-  runner.startAttempt();
+  activeRunner.startAttempt();
   renderPair();
+}
+
+function createTrainingRunner() {
+  return new FutureSessionOrchestrator({
+    sessionId: ownerSessionId,
+    blockId: uuid(),
+    sessionPlan: trainingPlan,
+    blockBudgetMs: trainingSet.protocol.shared_budget_ms,
+    protocolVersion: 'training-familiarization-v1',
+    stimulusSetVersion: trainingSet.training_set_version,
+    isTraining: true,
+  });
+}
+
+function showTrainingIntro() {
+  const card = document.createElement('section');
+  card.className = 'card intro';
+  const title = document.createElement('h2');
+  title.textContent = copy.trainingTitle;
+  const p = document.createElement('p');
+  p.textContent = copy.trainingIntro;
+  const boundary = document.createElement('p');
+  boundary.className = 'boundary';
+  boundary.textContent = copy.trainingBoundary;
+  const actions = document.createElement('div');
+  actions.className = 'actions centered';
+  const button = document.createElement('button');
+  button.className = 'primary';
+  button.type = 'button';
+  button.textContent = copy.trainingStart;
+  button.addEventListener('click', () => {
+    trainingRunner = createTrainingRunner();
+    activeRunner = trainingRunner;
+    activeMode = 'TRAINING';
+    startAttempt();
+  }, { once:true });
+  actions.append(button);
+  card.append(title, p, boundary, actions);
+  app.className = '';
+  app.replaceChildren(card);
+}
+
+function showMeasuredIntro() {
+  trainingCompleted = true;
+  trainingRuns.push(trainingRunner.telemetry());
+
+  const card = document.createElement('section');
+  card.className = 'card intro';
+  const title = document.createElement('h2');
+  title.textContent = copy.trainingComplete;
+  const p = document.createElement('p');
+  p.textContent = copy.trainingCompleteText;
+  const actions = document.createElement('div');
+  actions.className = 'actions centered';
+  const button = document.createElement('button');
+  button.className = 'primary';
+  button.type = 'button';
+  button.textContent = copy.mainStart;
+  button.addEventListener('click', () => {
+    runner = new FutureSessionOrchestrator({
+      sessionId: ownerSessionId,
+      blockId: uuid(),
+      sessionPlan,
+      blockBudgetMs: rapidProtocol.timing.block_budget_ms,
+      protocolVersion: rapidProtocol.protocol_version,
+      stimulusSetVersion: stimulusSet.stimulus_set_version,
+    });
+    activeRunner = runner;
+    activeMode = 'MEASURED';
+    startAttempt();
+  }, { once:true });
+  actions.append(button);
+  card.append(title, p, actions);
+  app.className = '';
+  app.replaceChildren(card);
+}
+
+function showRetry({ training, restart = false } = {}) {
+  const card = document.createElement('section');
+  card.className = 'card retry center';
+  const title = document.createElement('h2');
+  title.textContent = training ? copy.trainingTimeoutTitle : copy.timeoutTitle;
+  const p = document.createElement('p');
+  p.textContent = training ? copy.trainingRetryText : copy.retryText;
+  const button = document.createElement('button');
+  button.className = 'primary';
+  button.type = 'button';
+  button.textContent = training
+    ? (restart ? copy.trainingRestart : copy.trainingRetry)
+    : copy.retry;
+
+  button.addEventListener('click', () => {
+    if (training && restart) {
+      trainingRuns.push(trainingRunner.telemetry());
+      trainingRunner = createTrainingRunner();
+      activeRunner = trainingRunner;
+    }
+    startAttempt();
+  });
+
+  card.append(title,p,button);
+  app.className = '';
+  app.replaceChildren(card);
 }
 
 function handleTerminal(result) {
   clearDeadline();
 
-  if (runner.phase === 'RETRY_READY') {
-    const card = document.createElement('section');
-    card.className = 'card retry center';
-    const title = document.createElement('h2');
-    title.textContent = copy.timeoutTitle;
-    const p = document.createElement('p');
-    p.textContent = copy.retryText;
-    const button = document.createElement('button');
-    button.className = 'primary';
-    button.type = 'button';
-    button.textContent = copy.retry;
-    button.addEventListener('click', startAttempt);
-    card.append(title,p,button);
-    app.className = '';
-    app.replaceChildren(card);
+  if (activeMode === 'TRAINING') {
+    if (activeRunner.phase === 'RETRY_READY') {
+      showRetry({ training:true });
+      return;
+    }
+    if (activeRunner.phase === 'TRAINING_RESTART_REQUIRED') {
+      showRetry({ training:true, restart:true });
+      return;
+    }
+    if (activeRunner.phase === 'COMPLETE') {
+      showMeasuredIntro();
+      return;
+    }
+  }
+
+  if (activeRunner.phase === 'RETRY_READY') {
+    showRetry({ training:false });
     return;
   }
 
-  if (runner.phase === 'REFLECTION_READY') {
+  if (activeRunner.phase === 'REFLECTION_READY') {
     beginReflection();
   }
 }
@@ -257,8 +412,58 @@ function beginReflection() {
   });
 }
 
+function buildOwnerExport(selections) {
+  return {
+    schema: 'conflictlab.owner-ux-export.v2',
+    exportedAtUtc: new Date().toISOString(),
+    calibrationAssessment: 'NOT_EVALUATED_IN_UI',
+    boundary: {
+      serverUpload: false,
+      GateD: 'NONE',
+      GateE: 'NONE',
+      participantResult: 'NONE',
+      trainingExcludedFromCalibration: true,
+    },
+    deviceContext: {
+      atStart: deviceContextAtStart,
+      atFinish: captureDeviceContext(),
+    },
+    training: {
+      completed: trainingCompleted,
+      trainingSetVersion: trainingSet.training_set_version,
+      sourcePairIds: trainingPlan.pairs.map(pair => pair.pairId),
+      runs: trainingRuns,
+    },
+    measured: {
+      sessionPlan: {
+        formId: sessionPlan.formId,
+        pairs: sessionPlan.pairs.map(pair => ({
+          pairId: pair.pairId,
+          assetAPosition: pair.assetAPosition,
+          assetBPosition: pair.assetBPosition,
+        })),
+      },
+      telemetry: runner?.telemetry() ?? null,
+    },
+    reflectionSelections: selections,
+  };
+}
+
+function downloadJson(payload) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `ConflictLab_OWNER_UX_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 function finish(selections, extra = '') {
   clearDeadline();
+  const exportPayload = buildOwnerExport(selections);
 
   const card = document.createElement('section');
   card.className = 'card done';
@@ -267,25 +472,23 @@ function finish(selections, extra = '') {
   const p = document.createElement('p');
   p.textContent = extra || copy.doneText;
 
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  const exportButton = document.createElement('button');
+  exportButton.className = 'secondary';
+  exportButton.type = 'button';
+  exportButton.textContent = copy.export;
+  exportButton.addEventListener('click', () => downloadJson(exportPayload));
+  actions.append(exportButton);
+
   const details = document.createElement('details');
   const summary = document.createElement('summary');
   summary.textContent = copy.debug;
   const pre = document.createElement('pre');
-  pre.textContent = JSON.stringify({
-    sessionPlan: {
-      formId: sessionPlan.formId,
-      pairs: sessionPlan.pairs.map(pair => ({
-        pairId: pair.pairId,
-        assetAPosition: pair.assetAPosition,
-        assetBPosition: pair.assetBPosition,
-      })),
-    },
-    telemetry: runner.telemetry(),
-    reflectionSelections: selections,
-  }, null, 2);
+  pre.textContent = JSON.stringify(exportPayload, null, 2);
 
   details.append(summary, pre);
-  card.append(title, p, details);
+  card.append(title, p, actions, details);
   app.className = '';
   app.replaceChildren(card);
 }
@@ -302,12 +505,15 @@ function showError(error) {
 let stimulusSet;
 let rapidProtocol;
 let reasonMap;
+let trainingSet;
+const ownerSessionId = uuid();
 
 try {
-  [stimulusSet, rapidProtocol, reasonMap] = await Promise.all([
+  [stimulusSet, rapidProtocol, reasonMap, trainingSet] = await Promise.all([
     fetch('../../config/future-session/stimulus-set-v1.json').then(r => r.json()),
     fetch('../../config/future-session/rapid-presentation-v1.json').then(r => r.json()),
     fetch('../../config/future-session/reason-map-v1.json').then(r => r.json()),
+    fetch('../../config/future-session/training-set-v1.json').then(r => r.json()),
   ]);
 
   const cycle = createTwoSessionCycle({
@@ -315,32 +521,27 @@ try {
     stimulusSet,
   });
   sessionPlan = cycle.sessions[0];
+  trainingPlan = createTrainingPlan({ trainingSet });
 
-  bundle = await preloadAssetBundle(preloadPathsForSession(sessionPlan), {
+  const preloadPaths = [
+    ...preloadPathsForTraining(trainingPlan),
+    ...preloadPathsForSession(sessionPlan),
+  ];
+
+  bundle = await preloadAssetBundle([...new Set(preloadPaths)], {
     fetchFn(path, options) {
       return fetch(rootPrefix + path, options);
     },
   });
 
-  runner = new FutureSessionOrchestrator({
-    sessionId: uuid(),
-    blockId: uuid(),
-    sessionPlan,
-    blockBudgetMs: rapidProtocol.timing.block_budget_ms,
-    protocolVersion: rapidProtocol.protocol_version,
-    stimulusSetVersion: stimulusSet.stimulus_set_version,
-  });
-
-  bootStatus.textContent = copy.ready;
-  startButton.textContent = copy.start;
-  startButton.disabled = false;
-  startButton.addEventListener('click', startAttempt, { once:true });
+  deviceContextAtStart = captureDeviceContext();
+  showTrainingIntro();
 } catch (error) {
   showError(error);
 }
 
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) runner?.markPageHidden();
+  if (document.hidden) activeRunner?.markPageHidden();
 });
 
 window.addEventListener('pagehide', () => {

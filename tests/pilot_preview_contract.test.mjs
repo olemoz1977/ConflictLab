@@ -7,13 +7,15 @@ const source = fs.readFileSync(
   'utf8'
 );
 
-test('pilot preview composes the actual future-session modules without a server endpoint', () => {
+test('pilot preview composes training and measured future-session modules without a server endpoint', () => {
   for (const required of [
     'presentation_plan.mjs',
+    'training_plan.mjs',
     'asset_preloader.mjs',
     'session_orchestrator.mjs',
     'reflection_model.mjs',
     'reflection_ui.mjs',
+    'training-set-v1.json',
   ]) {
     assert.ok(source.includes(required), `missing preview integration: ${required}`);
   }
@@ -23,14 +25,28 @@ test('pilot preview composes the actual future-session modules without a server 
   }
 });
 
-test('pilot preview preserves rapid protocol boundaries', () => {
-  assert.ok(source.includes("runner.recordChoice(choice.id"));
-  assert.ok(source.includes('runner.markPairReady(readyAt)'));
+test('pilot preview requires completed training before a fresh measured block', () => {
+  assert.ok(source.includes("activeMode = 'TRAINING'"));
+  assert.ok(source.includes('isTraining: true'));
+  assert.ok(source.includes('showMeasuredIntro()'));
+  assert.ok(source.includes('trainingCompleted = true'));
+  assert.ok(source.includes("activeMode = 'MEASURED'"));
+  assert.ok(source.includes('trainingExcludedFromCalibration: true'));
+});
+
+test('pilot preview preserves rapid protocol and calibration-quality telemetry boundaries', () => {
+  assert.ok(source.includes('activeRunner.recordChoice(choice.id'));
+  assert.ok(source.includes('activeRunner.markPairReady(readyAt)'));
   assert.ok(source.includes("ready.status === 'TIMEOUT'"));
-  assert.ok(source.includes('runner?.markPageHidden()'));
+  assert.ok(source.includes('activeRunner?.markPageHidden()'));
   assert.ok(source.includes('allowDraft: true'));
+  assert.ok(source.includes("schema: 'conflictlab.owner-ux-export.v2'"));
+  assert.ok(source.includes("calibrationAssessment: 'NOT_EVALUATED_IN_UI'"));
+  assert.ok(source.includes('deviceContextAtStart'));
+  assert.ok(source.includes('runner?.telemetry()'));
+  assert.ok(source.includes('new Blob(['));
   assert.ok(!source.includes('no_clear_choice'));
   assert.ok(!source.includes('interpretability_class'));
   assert.ok(!source.includes('grid-template-columns:1fr 1fr'));
-  assert.ok(source.includes('scheduleDeadline(readyAt, rapidProtocol.timing.block_budget_ms)'));
+  assert.ok(source.includes('scheduleDeadline(readyAt, activeBudgetMs())'));
 });
