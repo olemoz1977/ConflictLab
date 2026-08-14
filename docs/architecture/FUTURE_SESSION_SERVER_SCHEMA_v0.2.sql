@@ -128,6 +128,7 @@ CREATE TABLE reflection_reason_events (
     reason_id                          VARCHAR(80) NOT NULL,
     reason_map_version                 VARCHAR(40) NOT NULL,
     consent_version                    VARCHAR(40) NOT NULL,
+    protocol_version                   VARCHAR(40) NOT NULL,
     server_received_at                 TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (event_id),
