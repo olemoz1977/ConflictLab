@@ -117,3 +117,21 @@ jobs:
         run: php tests/future_session_api_validation_test.php
       - name: Future-session persistence contract
         run: php tests/future_session_persistence_contract_test.php
+
+  calibration-package:
+    needs:
+      - legacy-python
+      - baseline-python
+      - future-js
+      - future-php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish validated calibration-v0.1 Hostinger LAB package
+        uses: actions/upload-artifact@v4
+        with:
+          name: conflictlab-calibration-v0.1-${{ github.sha }}
+          path: deploy/conflictlab-hostinger/releases/calibration-v0.1/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
