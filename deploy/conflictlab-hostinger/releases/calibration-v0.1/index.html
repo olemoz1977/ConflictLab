@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>ConflictLab · eksperimentinis savirefleksijos įrankis</title>
+<style>
+:root{color-scheme:dark;--bg:#0c0c0f;--card:#141417;--line:#29292f;--text:#e8e4dc;--muted:#918d86;--accent:#83a998}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}
+main{width:min(100%,640px);margin:auto;min-height:100dvh;padding:calc(18px + env(safe-area-inset-top)) 14px calc(48px + env(safe-area-inset-bottom))}
+.brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}.note{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.center{text-align:center}.status{color:var(--muted);line-height:1.5}
+body.rapid-mode{overflow:hidden}body.rapid-mode main{padding:calc(8px + env(safe-area-inset-top)) 10px calc(8px + env(safe-area-inset-bottom));min-height:100dvh}body.rapid-mode .brand,body.rapid-mode .note{display:none}
+button{font:inherit}.primary{border:0;border-radius:11px;background:var(--accent);color:#07100c;padding:13px 18px;font-weight:700;cursor:pointer}.primary:disabled{opacity:.35;cursor:not-allowed}.secondary{border:1px solid #34343c;border-radius:11px;background:#19191d;color:var(--text);padding:12px 16px;cursor:pointer}
+.intro h2,.retry h2,.done h2{font-size:23px;font-weight:560;margin:0 0 8px}.intro p,.retry p,.done p{color:#bcb7ae;line-height:1.5}.intro .boundary{font-size:12px;color:var(--muted)}
+.rapid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px;color:var(--muted);font-size:12px}.rapid-head span:last-child{text-align:right}.rapid-stage{display:grid;gap:10px}.visual-choice{display:block;width:100%;padding:0;background:#111114;border:1px solid #2b2b31;border-radius:16px;overflow:hidden;cursor:pointer;touch-action:manipulation}.visual-choice:active{transform:scale(.995)}.visual-choice:disabled{cursor:default;opacity:.9}.visual-choice img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
+.rapid-shell{height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);display:flex;flex-direction:column;padding:12px;border-radius:16px}.rapid-shell .rapid-stage{flex:1;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:10px}.rapid-shell .visual-choice{height:100%}.rapid-shell .visual-choice img{height:100%;width:100%;aspect-ratio:auto;object-fit:contain}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.actions.centered{justify-content:center}.error{color:#e0a1a1;background:#241617;border:1px solid #583133;border-radius:12px;padding:12px}.warn{color:#e5c58f;font-size:13px}.ok{color:#9fcab5;font-size:13px}
+.cl-reflection{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.cl-reflection__progress{font-size:12px;color:var(--accent)}.cl-reflection__title{font-size:24px;font-weight:550;margin:8px 0}.cl-reflection__prompt{color:#c7c2b9;line-height:1.45}.cl-reflection__image{display:block;width:min(100%,430px);aspect-ratio:1/1;object-fit:contain;margin:16px auto;border-radius:14px;background:#0b0b0d}.cl-reflection__options{border:0;padding:0;margin:0;display:grid;gap:10px}.cl-reflection__option{display:flex;gap:10px;align-items:flex-start;border:1px solid #303038;border-radius:12px;padding:12px;cursor:pointer}.cl-reflection__radio{margin-top:3px}.cl-reflection__other{margin-top:12px}.cl-reflection__local-note{font-size:12px;color:var(--muted)}.cl-reflection__textarea{width:100%;background:#0d0d10;color:var(--text);border:1px solid #303038;border-radius:10px;padding:10px;font:inherit}.cl-reflection__actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}.cl-reflection__actions button{border-radius:10px;padding:11px 16px;font:inherit}.cl-reflection__back{background:#19191d;color:#ddd8ce;border:1px solid #303038}.cl-reflection__next{background:var(--accent);color:#0b0b0d;border:0;font-weight:650}.cl-reflection__sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">ConflictLab · eksperimentinis savirefleksijos įrankis</div>
+  <div class="note">Ankstyvas bandymas. Tai nėra asmenybės testas, diagnostika ar vertinimas. Nėra teisingų ar neteisingų pasirinkimų.</div>
+  <div id="app" class="card center"><p class="status">Ruošiami vaizdai…</p></div>
+</main>
+<script type="module">
+import { createTwoSessionCycle, preloadPathsForSession } from './canonical/src/future_session/presentation_plan.mjs';
+import { createTrainingPlan, preloadPathsForTraining } from './canonical/src/future_session/training_plan.mjs';
+import { preloadAssetBundle } from './canonical/src/future_session/asset_preloader.mjs';
+import { FutureSessionOrchestrator } from './canonical/src/future_session/session_orchestrator.mjs';
+import { buildReflectionItems } from './canonical/src/future_session/reflection_model.mjs';
+import { mountReflectionUI } from './canonical/src/future_session/reflection_ui.mjs';
+
+const RELEASE_ID = 'calibration-v0.1';
+const app = document.getElementById('app');
+const rootPrefix = './canonical/';
+const params = new URLSearchParams(location.search);
+const requestedForm = ['F2-A','F2-B'].includes(params.get('form')) ? params.get('form') : null; // LAB owner override only.
+const uploadMessageId = crypto.randomUUID();
+const sessionId = crypto.randomUUID();
+
+let bundle=null, runner=null, trainingRunner=null, activeRunner=null, activeMode='BOOT';
+let stimulusSet, rapidProtocol, reasonMap, trainingSet, sessionPlan, trainingPlan;
+let deadlineTimer=null, attemptClockStart=null, reflectionStarted=false;
+let uploadState={status:'NOT_STARTED',error:null,response:null};
+
+function uuid(){return crypto.randomUUID()}
+function setRapidMode(on){document.body.classList.toggle('rapid-mode',Boolean(on))}
+function clearDeadline(){if(deadlineTimer!==null)clearTimeout(deadlineTimer);deadlineTimer=null;attemptClockStart=null}
+function assetUrl(path){return bundle.get(path).objectUrl}
+function activeBudgetMs(){return activeMode==='TRAINING'?trainingSet.protocol.shared_budget_ms:rapidProtocol.timing.block_budget_ms}
+function deviceCategory(){const w=window.innerWidth;if(!Number.isFinite(w))return'unknown';if(w<=767)return'mobile';if(w<=1024)return'tablet';return'desktop'}
+function pairProgress(i){return `${i} iš 3`}
+
+function scheduleDeadline(startAt,budgetMs){
+  attemptClockStart=startAt;
+  function check(){
+    if(!activeRunner||activeRunner.phase!=='RAPID')return;
+    const remaining=budgetMs-(performance.now()-attemptClockStart);
+    if(remaining>0){deadlineTimer=setTimeout(check,Math.max(4,remaining+1));return}
+    try{handleTerminal(activeRunner.expire(performance.now()))}catch(error){showError(error)}
+  }
+  deadlineTimer=setTimeout(check,budgetMs+1);
+}
+
+function renderPair(){
+  const pair=activeRunner.currentPair();if(!pair)return;
+  setRapidMode(true);app.className='card rapid-shell';app.replaceChildren();
+  const head=document.createElement('div');head.className='rapid-head';
+  const progress=document.createElement('span');progress.textContent=pairProgress(activeRunner.activeAttempt.currentIndex+1);
+  const attempt=document.createElement('span');attempt.textContent=activeMode==='TRAINING'?`Treniruotė ${activeRunner.activeAttempt.attemptNumber}/3`:`Bandymas ${activeRunner.activeAttempt.attemptNumber}/3`;
+  head.append(progress,attempt);
+  const stage=document.createElement('div');stage.className='rapid-stage';
+  const choices=[{id:'A',path:pair.assetAPath,position:pair.assetAPosition},{id:'B',path:pair.assetBPath,position:pair.assetBPosition}].sort((a,b)=>a.position==='top'?-1:1);
+  for(const choice of choices){
+    const button=document.createElement('button');button.className='visual-choice';button.type='button';button.setAttribute('aria-label',choice.position==='top'?'Pirmas vaizdas':'Antras vaizdas');
+    const image=document.createElement('img');image.src=assetUrl(choice.path);image.alt='';button.appendChild(image);
+    button.addEventListener('click',()=>{
+      for(const candidate of stage.querySelectorAll('button'))candidate.disabled=true;
+      try{const result=activeRunner.recordChoice(choice.id,performance.now());if(result.status==='CHOICE_RECORDED')renderPair();else handleTerminal(result)}catch(error){showError(error)}
+    });
+    stage.appendChild(button);
+  }
+  app.append(head,stage);
+  const readyAt=performance.now();const ready=activeRunner.markPairReady(readyAt);
+  if(ready.status==='TIMEOUT'){handleTerminal(ready);return}
+  if(ready.positionInBlock===1)scheduleDeadline(readyAt,activeBudgetMs());
+}
+
+function startAttempt(){clearDeadline();activeRunner.startAttempt();renderPair()}
+function createTrainingRunner(){return new FutureSessionOrchestrator({sessionId,blockId:uuid(),sessionPlan:trainingPlan,blockBudgetMs:trainingSet.protocol.shared_budget_ms,protocolVersion:'training-familiarization-v1',stimulusSetVersion:trainingSet.training_set_version,isTraining:true})}
+
+function showTrainingIntro(){
+  setRapidMode(false);const card=document.createElement('section');card.className='card intro';
+  card.innerHTML='<h2>Trumpa treniruotė</h2><p>Pamatysi 3 vaizdų poras viena po kitos. Kiekvieną kartą pasirink vaizdą, kurį rinktumeisi pirmiau. <b>Visoms trims poroms skirtas vienas bendras 6 sekundžių laikas.</b></p><p class="boundary">Tai tik praktika. Treniruotės pasirinkimai nėra siunčiami ir nepatenka į kalibravimo duomenis.</p>';
+  const actions=document.createElement('div');actions.className='actions centered';const button=document.createElement('button');button.className='primary';button.textContent='Pradėti treniruotę';button.onclick=()=>{trainingRunner=createTrainingRunner();activeRunner=trainingRunner;activeMode='TRAINING';startAttempt()};actions.append(button);card.append(actions);app.className='';app.replaceChildren(card);
+}
+
+function showMeasuredIntro(){
+  setRapidMode(false);const card=document.createElement('section');card.className='card intro';
+  card.innerHTML='<h2>Treniruotė baigta</h2><p>Veiksmas bus toks pats. Kitas paspaudimas pradės pagrindinę sesiją. Rinkis natūraliai ir nebandyk specialiai „suspėti“.</p><p class="boundary">Kalibravimui išsaugoma tik techninė pagrindinio bloko laiko telemetrija. Refleksijos atsakymai į šį kalibravimo rinkinį nesiunčiami.</p>';
+  const actions=document.createElement('div');actions.className='actions centered';const button=document.createElement('button');button.className='primary';button.textContent='Pradėti pagrindinę sesiją';button.onclick=()=>{runner=new FutureSessionOrchestrator({sessionId,blockId:uuid(),sessionPlan,blockBudgetMs:rapidProtocol.timing.block_budget_ms,protocolVersion:rapidProtocol.protocol_version,stimulusSetVersion:stimulusSet.stimulus_set_version});activeRunner=runner;activeMode='MEASURED';startAttempt()};actions.append(button);card.append(actions);app.className='';app.replaceChildren(card);
+}
+
+function showRetry({training,restart=false}){
+  setRapidMode(false);const card=document.createElement('section');card.className='card retry center';
+  const title=document.createElement('h2');title.textContent=training?'Treniruotės laikas baigėsi':'Laikas baigėsi';
+  const p=document.createElement('p');p.textContent=training?'Pakartok treniruotę. Tikslas tik priprasti prie sąveikos ir bendro laiko.':'Pakartok tą patį trijų porų bloką. Porų tvarka ir vaizdų pozicijos nesikeičia.';
+  const button=document.createElement('button');button.className='primary';button.textContent=training?(restart?'Pradėti treniruotę iš naujo':'Pakartoti treniruotę'):'Bandyti dar kartą';
+  button.onclick=()=>{if(training&&restart){trainingRunner=createTrainingRunner();activeRunner=trainingRunner}startAttempt()};card.append(title,p,button);app.className='';app.replaceChildren(card);
+}
+
+function handleTerminal(){
+  clearDeadline();
+  if(activeMode==='TRAINING'){
+    if(activeRunner.phase==='RETRY_READY'){showRetry({training:true});return}
+    if(activeRunner.phase==='TRAINING_RESTART_REQUIRED'){showRetry({training:true,restart:true});return}
+    if(activeRunner.phase==='COMPLETE'){showMeasuredIntro();return}
+  }
+  if(activeRunner.phase==='RETRY_READY'){showRetry({training:false});return}
+  if(activeRunner.phase==='REFLECTION_READY'&&!reflectionStarted){reflectionStarted=true;saveCalibrationThenReflect()}
+}
+
+function buildCalibrationPayload(){
+  const telemetry=runner.telemetry();
+  return {
+    schema:'conflictlab.calibration-run.v1',messageId:uploadMessageId,sessionId,releaseId:RELEASE_ID,
+    formId:sessionPlan.formId,protocolVersion:rapidProtocol.protocol_version,stimulusSetVersion:stimulusSet.stimulus_set_version,
+    blockBudgetMs:rapidProtocol.timing.block_budget_ms,technicalPreloadOk:Boolean(bundle),deviceCategory:deviceCategory(),
+    attempts:telemetry.attempts.map(a=>({blockAttemptId:a.blockAttemptId,blockAttemptNumber:a.blockAttemptNumber,blockBudgetMs:a.blockBudgetMs,blockElapsedMsFinal:a.blockElapsedMsFinal,blockTimedOut:a.blockTimedOut,pageHiddenDuringBlock:a.pageHiddenDuringBlock,isTraining:a.isTraining,protocolVersion:a.protocolVersion,stimulusSetVersion:a.stimulusSetVersion})),
+    events:telemetry.events.map(e=>({eventId:e.eventId,blockAttemptId:e.blockAttemptId,blockAttemptNumber:e.blockAttemptNumber,pairId:e.pairId,positionInBlock:e.positionInBlock,pairExposureNumber:e.pairExposureNumber,pairPresented:e.pairPresented,pairReadyElapsedMs:e.pairReadyElapsedMs,responseStatus:e.choice==='timeout'?'timeout':'choice',visualChoiceLatencyMs:e.visualChoiceLatencyMs,blockElapsedMsAtEvent:e.blockElapsedMsAtEvent,remainingBudgetAtPairStartMs:e.remainingBudgetAtPairStartMs,pageHiddenBeforeEvent:e.pageHiddenBeforeEvent}))
+  };
+}
+
+async function postCalibration(){
+  const payload=buildCalibrationPayload();let lastError=null;
+  uploadState={status:'SAVING',error:null,response:null};
+  for(const wait of [0,500,1500]){
+    if(wait)await new Promise(r=>setTimeout(r,wait));
+    try{
+      const response=await fetch('./server/calibration_api.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store',credentials:'same-origin'});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.code||`HTTP_${response.status}`);
+      uploadState={status:'SAVED',error:null,response:data};return true;
+    }catch(error){lastError=error}
+  }
+  uploadState={status:'FAILED',error:String(lastError?.message||lastError),response:null};return false;
+}
+
+async function saveCalibrationThenReflect(){
+  setRapidMode(false);app.className='card center';app.innerHTML='<p class="status">Išsaugoma techninė sesijos informacija…</p>';
+  await postCalibration();beginReflection();
+}
+
+function beginReflection(){
+  setRapidMode(false);const anchors=runner.reflectionAnchors();if(!anchors.length){finish('Refleksijai neliko užbaigto pasirinkimo.');return}
+  const items=buildReflectionItems({anchors,stimulusSet,reasonMap,locale:'lt',allowDraft:true});app.className='';app.replaceChildren();
+  mountReflectionUI({root:app,items,locale:'lt',assetUrlResolver:path=>assetUrl(path),onComplete(selections){runner.markReflectionComplete();finish('')}});
+}
+
+async function finish(extra=''){
+  setRapidMode(false);clearDeadline();
+  if(uploadState.status==='FAILED')await postCalibration();
+  const card=document.createElement('section');card.className='card done';
+  const title=document.createElement('h2');title.textContent='Ačiū';
+  const p=document.createElement('p');p.textContent=extra||'Bandymas baigtas.';card.append(title,p);
+  const info=document.createElement('p');
+  if(uploadState.status==='SAVED'){info.className='ok';info.textContent='Techniniai kalibravimo duomenys išsaugoti.'}
+  else{info.className='warn';info.textContent='Techninių duomenų išsaugoti nepavyko. Jei galite, praneškite tyrimo autoriui.'}
+  card.append(info);
+  const boundary=document.createElement('p');boundary.className='status';boundary.textContent='Šis etapas nepateikia asmenybės, diagnostinio ar psichologinio rezultato.';card.append(boundary);
+  app.className='';app.replaceChildren(card);
+}
+
+function showError(error){setRapidMode(false);clearDeadline();const box=document.createElement('div');box.className='error';box.textContent=`Techninė klaida: ${error?.message||error}`;app.className='';app.replaceChildren(box)}
+
+try{
+  [stimulusSet,rapidProtocol,reasonMap,trainingSet]=await Promise.all([
+    fetch('./canonical/config/future-session/stimulus-set-v1.json').then(r=>{if(!r.ok)throw new Error('stimulus config');return r.json()}),
+    fetch('./canonical/config/future-session/rapid-presentation-v1.json').then(r=>{if(!r.ok)throw new Error('rapid config');return r.json()}),
+    fetch('./canonical/config/future-session/reason-map-v1.json').then(r=>{if(!r.ok)throw new Error('reason config');return r.json()}),
+    fetch('./canonical/config/future-session/training-set-v1.json').then(r=>{if(!r.ok)throw new Error('training config');return r.json()}),
+  ]);
+  const cycle=createTwoSessionCycle({protocol:rapidProtocol,stimulusSet});sessionPlan=requestedForm?cycle.sessions.find(s=>s.formId===requestedForm):cycle.sessions[0];if(!sessionPlan)throw new Error('Sesijos forma nepasiekiama');
+  trainingPlan=createTrainingPlan({trainingSet});
+  const preloadPaths=[...preloadPathsForTraining(trainingPlan),...preloadPathsForSession(sessionPlan)];
+  bundle=await preloadAssetBundle([...new Set(preloadPaths)],{fetchFn(path,options){return fetch(rootPrefix+path,options)}});
+  showTrainingIntro();
+}catch(error){showError(error)}
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden)activeRunner?.markPageHidden()});
+window.addEventListener('pagehide',()=>{clearDeadline();bundle?.release()},{once:true});
+</script>
+</body>
+</html>

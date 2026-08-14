@@ -1,0 +1,53 @@
+{
+  "schema": "conflictlab.hostinger-release-manifest.v1",
+  "release_id": "calibration-v0.1",
+  "lifecycle": "LAB",
+  "source_methodology_commit_sha": "c1635b5802843d5d4960f12eb5c206800444cc3f",
+  "package_commit_sha": null,
+  "deploy_path": "/conflictlab/releases/calibration-v0.1/",
+  "stable_public_entrypoint": "/wave1/",
+  "owner_approval": {
+    "status": "PENDING",
+    "approved_at": null
+  },
+  "public_switch": {
+    "authorized": false,
+    "authorized_at": null
+  },
+  "protocol": {
+    "rapid": "future-rapid-v1",
+    "training": "training-set-v1",
+    "stimulus_set": "stimulus-set-v1",
+    "reason_map": "reason-map-v1",
+    "timing_calibration": "timing-calibration-v1",
+    "candidate_budget_ms": 6000
+  },
+  "research_boundary": {
+    "purpose": "MECHANICAL_TIMING_ONLY",
+    "gate_d": "NONE",
+    "gate_e": "NONE",
+    "participant_result": "NONE",
+    "training_upload": false,
+    "reflection_upload": false,
+    "selected_a_b_identity_stored": false,
+    "persistent_participant_id": false,
+    "wave1_storage_reuse": false
+  },
+  "storage": {
+    "tables": [
+      "cl_calibration_runs",
+      "cl_calibration_attempts",
+      "cl_calibration_pair_events"
+    ],
+    "separate_from_wave1": true
+  },
+  "rollback": {
+    "previous_public_release": "wave1-v0.3",
+    "entrypoint_backup_required": true
+  },
+  "integrity": {
+    "package_sealed": false,
+    "release_manifest_sha256": null,
+    "artifact_inventory_sha256": null
+  }
+}

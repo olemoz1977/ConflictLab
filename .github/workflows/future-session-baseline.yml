@@ -16,6 +16,7 @@ on:
       - 'docs/architecture/adr/ADR-012-*'
       - 'docs/architecture/adr/ADR-013-*'
       - 'docs/architecture/adr/ADR-014-*'
+      - 'deploy/conflictlab-hostinger/releases/calibration-v0.1/**'
       - 'tests/test_future_session_baseline.py'
       - 'tests/test_future_stimulus_asset_verifier.py'
       - 'tests/*.test.mjs'
@@ -74,6 +75,8 @@ jobs:
         run: node tests/session_orchestrator_training.test.mjs
       - name: Pilot preview contract
         run: node tests/pilot_preview_contract.test.mjs
+      - name: Calibration release contract
+        run: node tests/calibration_release_contract.test.mjs
       - name: Rapid block core
         run: node tests/rapid_block_core.test.mjs
       - name: Calculation engine
@@ -101,6 +104,11 @@ jobs:
           php -l server/future-session/persistence.php
           php -l server/future-session/api_v2.php
           php -l server/future-session/config.example.php
+      - name: Lint calibration release server files
+        run: |
+          php -l deploy/conflictlab-hostinger/releases/calibration-v0.1/server/calibration_api.php
+          php -l deploy/conflictlab-hostinger/releases/calibration-v0.1/server/admin.php
+          php -l deploy/conflictlab-hostinger/releases/calibration-v0.1/server/config.example.php
       - name: Lint PHP contract tests
         run: |
           php -l tests/future_session_api_validation_test.php

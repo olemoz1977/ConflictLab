@@ -1,0 +1,16 @@
+<?php
+declare(strict_types=1);
+
+return [
+    'db' => [
+        'dsn' => 'mysql:host=localhost;dbname=CHANGE_ME;charset=utf8mb4',
+        'user' => 'CHANGE_ME',
+        'password' => 'CHANGE_ME',
+    ],
+    // Create with: php -r "echo password_hash('CHANGE_ME', PASSWORD_DEFAULT), PHP_EOL;"
+    'admin_password_hash' => 'CHANGE_ME_PASSWORD_HASH',
+    'release_id' => 'calibration-v0.1',
+    'protocol_version' => 'future-rapid-v1',
+    'stimulus_set_version' => 'stimulus-set-v1',
+    'block_budget_ms' => 6000,
+];
