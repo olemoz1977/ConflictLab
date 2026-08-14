@@ -9,6 +9,13 @@ function defaultEventId() {
   throw new Error('eventIdFactory is required when crypto.randomUUID is unavailable');
 }
 
+function floorMs(value) {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error('duration must be a non-negative finite number');
+  }
+  return Math.floor(value);
+}
+
 function assertPositiveInteger(value, name) {
   if (!Number.isInteger(value) || value < 1) {
     throw new Error(`${name} must be a positive integer`);
@@ -95,9 +102,7 @@ export class RapidBlockAttempt {
     if (attemptNumber > MAX_BLOCK_ATTEMPTS) {
       throw new Error(`attemptNumber cannot exceed ${MAX_BLOCK_ATTEMPTS}`);
     }
-    if (!Number.isFinite(blockBudgetMs) || blockBudgetMs <= 0) {
-      throw new Error('blockBudgetMs must be > 0');
-    }
+    assertPositiveInteger(blockBudgetMs, 'blockBudgetMs');
     if (!Array.isArray(pairs) || pairs.length !== 3) {
       throw new Error('future-session rapid block requires exactly 3 pairs');
     }
@@ -140,8 +145,8 @@ export class RapidBlockAttempt {
       this.blockStartMs = atMs;
     }
 
-    const elapsed = atMs - this.blockStartMs;
-    if (elapsed >= this.blockBudgetMs) {
+    const elapsedPrecise = atMs - this.blockStartMs;
+    if (elapsedPrecise >= this.blockBudgetMs) {
       return this.expire(atMs);
     }
 
@@ -151,8 +156,8 @@ export class RapidBlockAttempt {
 
     this.currentPairReady = {
       atMs,
-      elapsedMs: elapsed,
-      remainingBudgetMs: this.blockBudgetMs - elapsed,
+      elapsedPrecise,
+      remainingBudgetPrecise: this.blockBudgetMs - elapsedPrecise,
       exposureNumber,
     };
 
@@ -161,7 +166,7 @@ export class RapidBlockAttempt {
       pairId: pair.pairId,
       positionInBlock: this.currentIndex + 1,
       pairExposureNumber: exposureNumber,
-      remainingBudgetMs: this.currentPairReady.remainingBudgetMs,
+      remainingBudgetMs: floorMs(this.currentPairReady.remainingBudgetPrecise),
     };
   }
 
@@ -174,8 +179,8 @@ export class RapidBlockAttempt {
       throw new Error('pair is not ready');
     }
 
-    const elapsed = atMs - this.blockStartMs;
-    if (elapsed >= this.blockBudgetMs) {
+    const elapsedPrecise = atMs - this.blockStartMs;
+    if (elapsedPrecise >= this.blockBudgetMs) {
       return this.expire(atMs);
     }
 
@@ -186,10 +191,10 @@ export class RapidBlockAttempt {
       choice,
       pairPresented: true,
       exposureNumber: this.currentPairReady.exposureNumber,
-      pairReadyElapsedMs: this.currentPairReady.elapsedMs,
-      remainingBudgetAtPairStartMs: this.currentPairReady.remainingBudgetMs,
-      visualChoiceLatencyMs: atMs - this.currentPairReady.atMs,
-      blockElapsedMsAtEvent: elapsed,
+      pairReadyElapsedMs: floorMs(this.currentPairReady.elapsedPrecise),
+      remainingBudgetAtPairStartMs: floorMs(this.currentPairReady.remainingBudgetPrecise),
+      visualChoiceLatencyMs: floorMs(atMs - this.currentPairReady.atMs),
+      blockElapsedMsAtEvent: floorMs(elapsedPrecise),
     });
 
     this.events.push(event);
@@ -198,7 +203,7 @@ export class RapidBlockAttempt {
 
     if (this.currentIndex === this.pairs.length) {
       this.done = true;
-      this.finalElapsedMs = elapsed;
+      this.finalElapsedMs = floorMs(elapsedPrecise);
       return { status: 'COMPLETE', event, next: 'REFLECTION' };
     }
 
@@ -211,8 +216,8 @@ export class RapidBlockAttempt {
       throw new Error('block clock has not started');
     }
 
-    const elapsed = atMs - this.blockStartMs;
-    if (elapsed < this.blockBudgetMs) {
+    const elapsedPrecise = atMs - this.blockStartMs;
+    if (elapsedPrecise < this.blockBudgetMs) {
       throw new Error('cannot expire block before monotonic deadline');
     }
 
@@ -230,8 +235,8 @@ export class RapidBlockAttempt {
         choice: 'timeout',
         pairPresented,
         exposureNumber: pairPresented ? ready.exposureNumber : null,
-        pairReadyElapsedMs: pairPresented ? ready.elapsedMs : null,
-        remainingBudgetAtPairStartMs: pairPresented ? ready.remainingBudgetMs : null,
+        pairReadyElapsedMs: pairPresented ? floorMs(ready.elapsedPrecise) : null,
+        remainingBudgetAtPairStartMs: pairPresented ? floorMs(ready.remainingBudgetPrecise) : null,
         visualChoiceLatencyMs: null,
         blockElapsedMsAtEvent: this.blockBudgetMs,
       });
