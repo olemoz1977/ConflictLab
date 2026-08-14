@@ -39,6 +39,7 @@
     "wave1_storage_reuse": false,
     "run_type_server_controlled": true,
     "technical_runs_enter_calibration_n": false,
+    "real_participant_research_scope": "REVIEW_REQUIRED_BEFORE_CALIBRATION_MODE",
     "local_response_channels": [
       "reason_id",
       "optional_free_text",
