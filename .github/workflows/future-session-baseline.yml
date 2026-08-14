@@ -48,3 +48,5 @@ jobs:
         run: node tests/rapid_block_core.test.mjs
       - name: Calculation engine
         run: node tests/calculation_engine.test.mjs
+      - name: Evidence engine
+        run: node tests/evidence_engine.test.mjs
