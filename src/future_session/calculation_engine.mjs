@@ -6,9 +6,22 @@ function assertDirection(value, field) {
   }
 }
 
+function assertStableAssets(mapping) {
+  if (typeof mapping.asset_a_id !== 'string' || !mapping.asset_a_id ||
+      typeof mapping.asset_b_id !== 'string' || !mapping.asset_b_id) {
+    throw new Error(`Gate D stable asset identities are required for ${mapping.pair_id}`);
+  }
+  if (mapping.asset_a_id === mapping.asset_b_id) {
+    throw new Error(`Gate D asset identities must differ for ${mapping.pair_id}`);
+  }
+}
+
 export function indexGateD(gateDConfig) {
   if (!gateDConfig || !Array.isArray(gateDConfig.mappings)) {
     throw new Error('gateDConfig.mappings must be an array');
+  }
+  if (gateDConfig.mappings.length > 0 && !gateDConfig.stimulus_set_version) {
+    throw new Error('Gate D stimulus_set_version is required when mappings exist');
   }
 
   const index = new Map();
@@ -18,6 +31,11 @@ export function indexGateD(gateDConfig) {
     if (index.has(mapping.pair_id)) {
       throw new Error(`duplicate Gate D mapping for ${mapping.pair_id}`);
     }
+    if (!gateDConfig.allowed_mapping_status?.includes(mapping.mapping_status)) {
+      throw new Error(`unsupported Gate D mapping_status for ${mapping.pair_id}`);
+    }
+
+    assertStableAssets(mapping);
 
     if (mapping.mapping_status === 'VALIDATED') {
       assertDirection(mapping.asset_a_direction, 'asset_a_direction');
@@ -33,6 +51,17 @@ export function indexGateD(gateDConfig) {
   }
 
   return index;
+}
+
+function assertEventMatchesMapping(event, mapping, gateDConfig) {
+  if (event.stimulusSetVersion !== gateDConfig.stimulus_set_version) {
+    throw new Error(
+      `Gate D stimulus-set mismatch for ${event.pairId}: event=${event.stimulusSetVersion}, mapping=${gateDConfig.stimulus_set_version}`
+    );
+  }
+  if (event.assetAId !== mapping.asset_a_id || event.assetBId !== mapping.asset_b_id) {
+    throw new Error(`Gate D asset identity mismatch for ${event.pairId}`);
+  }
 }
 
 export function calculateDirectionalBalance({ events, gateDConfig, domain }) {
@@ -59,6 +88,8 @@ export function calculateDirectionalBalance({ events, gateDConfig, domain }) {
       continue;
     }
 
+    assertEventMatchesMapping(event, mapping, gateDConfig);
+
     const presented = event.pairPresented === true;
     if (presented) nEligiblePresentations += 1;
 
@@ -75,6 +106,9 @@ export function calculateDirectionalBalance({ events, gateDConfig, domain }) {
     perPair.push({
       eventId: event.eventId,
       pairId: event.pairId,
+      stimulusSetVersion: event.stimulusSetVersion,
+      assetAId: event.assetAId,
+      assetBId: event.assetBId,
       choice: event.choice,
       pairPresented: presented,
       direction,
@@ -91,6 +125,7 @@ export function calculateDirectionalBalance({ events, gateDConfig, domain }) {
   if (nDirectionalChoices === 0) {
     return {
       mappingVersion: gateDConfig.mapping_version,
+      stimulusSetVersion: gateDConfig.stimulus_set_version,
       domain,
       nPos: 0,
       nNeg: 0,
@@ -107,6 +142,7 @@ export function calculateDirectionalBalance({ events, gateDConfig, domain }) {
 
   return {
     mappingVersion: gateDConfig.mapping_version,
+    stimulusSetVersion: gateDConfig.stimulus_set_version,
     domain,
     nPos,
     nNeg,
