@@ -4,12 +4,31 @@
   "lifecycle": "DRAFT",
   "content_status": "PENDING_STIMULUS_FREEZE",
   "released_at": null,
-  "description": "Canonical future-session pair and asset identity catalog. A/B are stable asset identities; screen position is randomized/counterbalanced separately per event.",
+  "description": "Canonical future-session pair and asset identity catalog. A/B are stable asset identities; screen position is randomized/counterbalanced separately per event. Every configured asset is bound to a repository path and SHA-256 before release.",
   "required_pair_fields": [
     "pair_id",
     "asset_a_id",
     "asset_b_id",
-    "is_training"
+    "asset_a_path",
+    "asset_b_path",
+    "asset_a_sha256",
+    "asset_b_sha256",
+    "asset_a_mime_type",
+    "asset_b_mime_type",
+    "is_training",
+    "source_family"
+  ],
+  "asset_freeze_invariants": {
+    "path": "repository-relative canonical asset path; no traversal or remote URL",
+    "sha256": "64 lowercase hexadecimal characters matching exact file bytes",
+    "mime_type": "must match an allowed image MIME type and the canonical file extension",
+    "identity": "asset_a_id and asset_b_id are stable identities and must differ",
+    "release": "RELEASED requires at least one pair, content_status=FROZEN, released_at, and all assets passing the repository verifier"
+  },
+  "allowed_mime_types": [
+    "image/webp",
+    "image/png",
+    "image/jpeg"
   ],
   "pairs": []
 }
