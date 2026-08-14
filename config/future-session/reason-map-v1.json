@@ -101,17 +101,17 @@
       "pair_id": "CS-RE-01",
       "anchor_choice": "A",
       "reason_id": "CS-RE-01-A-R01",
-      "text_lt": "Ryšys tarp objektų buvo aiškiau matomas.",
-      "text_en": "The relationship between the objects was more clearly visible.",
+      "text_lt": "Patiko, kad jungtyje buvo matyti daugiau detalių apie tai, kaip objektai susieti.",
+      "text_en": "I liked that the connector showed more detail about how the objects were linked.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {
       "pair_id": "CS-RE-01",
       "anchor_choice": "A",
       "reason_id": "CS-RE-01-A-R02",
-      "text_lt": "Elementai atrodė labiau susieti ir sutvarkyti.",
-      "text_en": "The elements looked more connected and organized.",
-      "interpretability_class": "CROSS_DOMAIN_REASON"
+      "text_lt": "Skaidri jungtis atrodė vizualiai lengvesnė.",
+      "text_en": "The transparent connector looked visually lighter.",
+      "interpretability_class": "OTHER_REASON"
     },
     {
       "pair_id": "CS-RE-01",
@@ -134,16 +134,16 @@
       "pair_id": "CS-RE-01",
       "anchor_choice": "B",
       "reason_id": "CS-RE-01-B-R01",
-      "text_lt": "Patiko, kad ryšį tarp objektų reikėjo daugiau numanyti.",
-      "text_en": "I liked that the relationship between the objects had to be inferred more.",
+      "text_lt": "Patiko, kad vientisa jungtis atskleidė mažiau detalių apie tai, kaip objektai susieti.",
+      "text_en": "I liked that the solid-looking connector revealed less detail about how the objects were linked.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {
       "pair_id": "CS-RE-01",
       "anchor_choice": "B",
       "reason_id": "CS-RE-01-B-R02",
-      "text_lt": "Kompozicija atrodė ramesnė ir paprastesnė.",
-      "text_en": "The composition felt calmer and simpler.",
+      "text_lt": "Matinė jungtis atrodė ramesnė ir paprastesnė.",
+      "text_en": "The matte connector looked calmer and simpler.",
       "interpretability_class": "OTHER_REASON"
     },
     {
@@ -167,8 +167,8 @@
       "pair_id": "CS-CA-01",
       "anchor_choice": "A",
       "reason_id": "CS-CA-01-A-R01",
-      "text_lt": "Buvo lengviau suprasti vaizdą, nes jame buvo daugiau konteksto ar orientyrų.",
-      "text_en": "The image was easier to understand because it provided more context or reference cues.",
+      "text_lt": "Vertikali riba padėjo aiškiau suvokti erdvės kontekstą.",
+      "text_en": "The vertical boundary helped me read the spatial context more clearly.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {
@@ -200,8 +200,8 @@
       "pair_id": "CS-CA-01",
       "anchor_choice": "B",
       "reason_id": "CS-CA-01-B-R01",
-      "text_lt": "Patiko, kad mažiau konteksto paliko daugiau vietos interpretacijai.",
-      "text_en": "I liked that less context left more room for interpretation.",
+      "text_lt": "Patiko, kad be papildomos vertikalios ribos vaizdas paliko daugiau vietos interpretacijai.",
+      "text_en": "I liked that without the extra vertical boundary the image left more room for interpretation.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {
@@ -332,16 +332,16 @@
       "pair_id": "CR-FS-01",
       "anchor_choice": "B",
       "reason_id": "CR-FS-01-B-R01",
-      "text_lt": "Patiko, kad erdvė buvo vientisa, be atskirų fiksuotų vietų.",
-      "text_en": "I liked that the space was continuous, without separate fixed places.",
+      "text_lt": "Patiko, kad plokštuma nebuvo suskirstyta į atskiras vietas elementams.",
+      "text_en": "I liked that the surface was not divided into separate places for the elements.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {
       "pair_id": "CR-FS-01",
       "anchor_choice": "B",
       "reason_id": "CR-FS-01-B-R02",
-      "text_lt": "Atrodė, kad tokioje erdvėje galima sutalpinti daugiau.",
-      "text_en": "It looked as if more could fit into that kind of space.",
+      "text_lt": "Vaizdas atrodė atviresnis ir paprastesnis.",
+      "text_en": "The image looked more open and simpler.",
       "interpretability_class": "OTHER_REASON"
     },
     {
@@ -365,8 +365,8 @@
       "pair_id": "CR-PO-01",
       "anchor_choice": "A",
       "reason_id": "CR-PO-01-A-R01",
-      "text_lt": "Patiko, kad erdvė buvo aiškiai padalinta į atskiras dalis.",
-      "text_en": "I liked that the space was clearly divided into separate sections.",
+      "text_lt": "Patiko atskiros aiškios sekcijos skirtingoms funkcijoms.",
+      "text_en": "I liked the separate, clearly defined sections for different functions.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {
@@ -398,8 +398,8 @@
       "pair_id": "CR-PO-01",
       "anchor_choice": "B",
       "reason_id": "CR-PO-01-B-R01",
-      "text_lt": "Patiko, kad erdvė buvo atvira ir nepadalinta į atskiras dalis.",
-      "text_en": "I liked that the space was open and not divided into separate sections.",
+      "text_lt": "Patiko atvira erdvė be vidinių pertvarų.",
+      "text_en": "I liked the open space without internal partitions.",
       "interpretability_class": "DOMAIN_CONSISTENT_REASON"
     },
     {

@@ -61,6 +61,10 @@ jobs:
         run: node tests/timing_calibration.test.mjs
       - name: Reason-map contract
         run: node tests/reason_map_contract.test.mjs
+      - name: Reflection model
+        run: node tests/reflection_model.test.mjs
+      - name: Reflection UI contract
+        run: node tests/reflection_ui_contract.test.mjs
       - name: Rapid block core
         run: node tests/rapid_block_core.test.mjs
       - name: Calculation engine
