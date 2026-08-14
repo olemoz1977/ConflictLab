@@ -1,9 +1,9 @@
 # ConflictLab calibration-v0.1 — versioned Hostinger LAB
 
 **Lifecycle:** LAB  
-**Hostinger LAB:** DEPLOYED / owner-operated  
-**Current repository build:** PRODUCT-SHAPED UPDATE READY FOR LAB OVERWRITE  
-**Public switch:** NOT AUTHORIZED
+**Public switch:** NOT AUTHORIZED  
+**External CALIBRATION collection:** BLOCKED pending live activation checklist  
+**Required live collection mode during all deployment/smoke work:** `TECHNICAL`
 
 Versioned LAB path:
 
@@ -11,156 +11,191 @@ Versioned LAB path:
 /conflictlab/releases/calibration-v0.1/
 ```
 
-This directory must not replace or modify the existing public `/wave1/` entrypoint without a separate explicit PUBLIC authorization.
+This release does not replace or modify `/wave1/`.
 
-## Current product-shaped flow
+## Current participant flow
 
 ```text
-LT / EN language selection
+LT / EN
 -> Stage 0 familiarization
--> rapid 3-pair A/B block / shared 6000 ms candidate budget
--> timing-only calibration upload
--> reason reflection
--> intensity 1-5
--> local Calculation Engine
--> local Evidence Engine
--> fail-closed result screen
+-> explicit timing-research choice
+   -> 18+ declaration
+   -> voluntary opt-in + privacy link
+   OR local-only continuation
+-> rapid 3-pair block / shared 6000 ms candidate budget
+-> consented timing-only upload OR no upload
+-> local reason reflection
+-> local intensity 1-5
+-> local Calculation / Evidence
+-> fail-closed NOT_ESTIMABLE result
+-> if upload succeeded: one-time participant deletion code
 ```
 
-The release keeps three distinct response-time channels:
+Gate D and Gate E remain `NONE`. No directional or psychological participant result is authorized.
+
+## Server research boundary
+
+The calibration DB stores only data required for mechanical timing research and governance:
 
 ```text
-visual_choice_latency_ms           server timing telemetry
-reason_response_latency_ms         local only
-intensity_response_latency_ms      local only
+random ingestion/session UUIDs
+run type
+release/protocol/stimulus/form versions
+coarse device category
+timing/missingness/retry/page-hidden telemetry
+consent version + affirmative-consent evidence + 18+ declaration
+SHA-256 hash of participant deletion code
 ```
 
-`reflection_total_elapsed_ms` is local-only UX/process telemetry.
-
-Reason and intensity controls remain disabled until the selected reflection image is decoded and visually ready.
-
-## Result boundary
-
-Gate D and Gate E remain `NONE`.
-
-Therefore real participant execution remains:
+It does not store:
 
 ```text
-NOT_ESTIMABLE
+name / email / phone / employer
+precise location
+research-use IP or full user-agent
+selected A/B identity for construct interpretation
+reason_id or reflection free text
+intensity
+reason/intensity response times
+participant directional result
+persistent cross-study participant ID
+plaintext deletion code
 ```
 
-No directional or psychological participant result is authorized by this LAB build.
-
-## Server boundary
-
-The isolated calibration API stores only mechanical timing data needed by the 6000 ms calibration decision. It does not store:
-
-- training selections/telemetry;
-- A/B choice identity in the timing calibration dataset;
-- reason selections;
-- reflection free text;
-- reaction intensity;
-- reason/intensity response times;
-- derived participant result;
-- persistent participant ID;
-- exact viewport or user-agent fingerprint.
-
-Only coarse device category plus the timing fields required by `timing-calibration-v1` are stored.
-
-Existing Wave1 storage is not reused.
-
-### Research-collection gate before fresh participants
-
-The product-shaped UX captures reason/intensity channels locally, but the timing-only server boundary does **not** make those local channels available for aggregate research analysis.
-
-Before switching to real `CALIBRATION` collection, explicitly decide whether the planned hypotheses require a separate consented research channel rather than silently broadening the timing dataset. Candidate channels to evaluate later include A/B response identity and reason metadata. Intensity requires an explicitly justified research purpose/consent decision. Free text remains local-first by default.
-
-Until this decision is closed, keep the deployment in `TECHNICAL` mode.
+Local reflection data remain local-only.
 
 ## TECHNICAL vs CALIBRATION
 
-`cl_calibration_runs.run_type` is assigned by server configuration and separates owner engineering runs from real timing calibration.
+`cl_calibration_runs.run_type` is assigned by the server, not by the browser.
 
-Keep this in local `server/config.php` during owner testing:
+During deployment and owner testing keep the secret Hostinger `server/config.php` at:
 
 ```php
 'collection_mode' => 'TECHNICAL',
 ```
 
-TECHNICAL runs are visible in admin but never enter N/20.
+TECHNICAL runs never enter confirmatory N/20.
 
-Do not switch to `CALIBRATION` until fresh-participant collection is explicitly authorized.
+Do not switch to `CALIBRATION` until `docs/privacy/CALIBRATION_ACTIVATION_CHECKLIST_v0.2.md` is closed and an explicit activation record + owner authorization exist.
+
+## IMPORTANT — DB migrations required before this build can be smoke-tested
+
+This build changes the run table. Before overwriting the LAB application bytes, apply these migrations to the isolated calibration database in order:
+
+```text
+1. server/migration_002_consent_fields.sql
+2. server/migration_003_deletion_token.sql
+```
+
+They add nullable fields for existing TECHNICAL rows and do not turn old owner runs into calibration evidence.
+
+After the migrations, update the existing secret `server/config.php` manually with:
+
+```php
+'consent_version' => 'timing-research-consent-v0.1',
+'retention_days' => 90,
+```
+
+Do not overwrite the real DB credentials/password hash and do not change `collection_mode` from `TECHNICAL`.
+
+## New privacy-control endpoints
+
+Authenticated data operations:
+
+```text
+/server/data_admin.php
+```
+
+Capabilities:
+- lookup and transactional deletion by participant deletion code;
+- timing-only CSV export;
+- filters by run type, form, device and eligibility;
+- export schema `timing-export-v0.1`;
+- no persistent generated CSV file.
+
+Participant self-service deletion:
+
+```text
+/server/delete_my_data.php
+```
+
+The participant enters the one-time 32-character code manually. The plaintext code is not placed in the URL or stored in the database.
+
+Retention cleanup:
+
+```text
+/server/retention_cleanup.php
+```
+
+This script is CLI-only and must be scheduled/verified through Hostinger cron before external CALIBRATION activation.
+
+## Retention
+
+Configured target for pseudonymous timing-study records:
+
+```text
+90 days maximum
+```
+
+The cleanup script deletes child pair events, then attempts, then the run in one transaction. A declared retention period is not considered operationally verified until Hostinger cron has been configured and tested with disposable TECHNICAL records.
 
 ## Canonical and Hostinger-compatible modules
 
-The subtree `canonical/` carries deployment copies of required source/config/assets.
+The `canonical/` subtree contains deployment copies of the required source/config/assets.
 
-Research/config `.mjs` copies that are declared canonical are checked against repository source bytes in CI.
+Because the Hostinger environment previously served `.mjs` with an unsuitable MIME type, Hostinger-compatible `.js` copies remain present and `index.php` rewrites module references at delivery time. Research image bytes are not resampled or rewritten.
 
-Because the deployed Hostinger environment served `.mjs` as `text/plain`, the package also contains Hostinger-compatible `.js` modules. `index.php` rewrites module references from `.mjs` to `.js` at delivery time.
-
-Research image bytes are not resampled or rewritten.
-
-## Updating the existing LAB deployment
-
-Use the exact-head successful push CI artifact and extract it over the existing versioned LAB directory with overwrite enabled.
-
-Important:
-
-- extract **inside** `public_html/conflictlab/releases/calibration-v0.1/`;
-- do not create an extra nested release directory;
-- do not delete the existing local `server/config.php`;
-- the repository/artifact does not contain the secret `server/config.php`;
-- no DB migration is required for this product-shaped participant-flow update;
-- keep `collection_mode = TECHNICAL` during owner smoke testing;
-- do not touch `/wave1/` or the OMESG360 root.
-
-## Required owner smoke checks
-
-1. LT flow loads and completes.
-2. EN flow loads and completes.
-3. reason screen shows the selected image and localized reason options.
-4. intensity 1-5 appears only after reason selection.
-5. fail-closed result screen reports that directional result is not available yet.
-6. timing save succeeds.
-7. admin records new runs as `TECHNICAL`.
-8. calibration `N/20` remains `0/20` during owner testing.
-
-## Isolated server storage
-
-Tables:
+## Safe LAB deployment order
 
 ```text
-cl_calibration_runs
-cl_calibration_attempts
-cl_calibration_pair_events
+1. confirm current live collection_mode = TECHNICAL
+2. back up the current versioned LAB directory and isolated calibration DB
+3. apply migration_002_consent_fields.sql
+4. apply migration_003_deletion_token.sql
+5. update secret config.php with consent_version + retention_days
+6. extract the exact-head successful-CI artifact over
+   public_html/conflictlab/releases/calibration-v0.1/
+7. preserve the existing secret server/config.php
+8. verify collection_mode is still TECHNICAL
+9. run LT/EN/mobile TECHNICAL smoke tests
+10. test consented upload and local-only no-upload path
+11. test participant deletion code + admin deletion
+12. test self-service deletion
+13. test timing CSV export
+14. configure/test retention cron
+15. keep CALIBRATION disabled until the activation checklist is closed
 ```
 
-Admin:
+Do not create an extra nested release directory. Do not touch the OMESG360 root or `/wave1/` during this LAB overwrite.
 
-```text
-/conflictlab/releases/calibration-v0.1/server/admin.php
-```
+## Required TECHNICAL smoke checks
 
-Admin v2 separates TECHNICAL and CALIBRATION evidence and reports N/20 plus timing diagnostics.
+1. LT and EN flows complete.
+2. Training remains non-uploaded.
+3. Consent screen appears after training with unchecked boxes.
+4. Privacy link opens `/privacy.html` in the selected language.
+5. Local-only continuation completes without creating a research DB run.
+6. Consented TECHNICAL path stores timing data plus consent metadata/hash.
+7. Deletion code is shown only after a successful upload.
+8. `data_admin.php` finds/deletes a disposable run by code.
+9. `delete_my_data.php` can delete a separate disposable run by code.
+10. CSV export matches `timing-export-v0.1` and excludes deletion/session/message identifiers.
+11. Existing timing dashboard still reports owner runs as TECHNICAL.
+12. Calibration N/20 remains `0/20` throughout owner testing.
+
+## Release metadata
+
+`release-manifest.json` is the deployment metadata source for this release. The GitHub Actions run/artifact metadata provides the exact source `head_sha`; do not infer package provenance from an artifact filename alone.
 
 ## Promotion boundary
 
-LAB deployment does not modify:
+This LAB work does not authorize:
 
 ```text
-omesg360.eu/
-omesg360.eu/wave1/
-deploy/wave1-hostinger/
+merge to main
+/wave1/ replacement
+external CALIBRATION collection
+Gate D mapping
+Gate E aggregation
+participant directional interpretation
 ```
-
-Owner approval of the versioned LAB still does not authorize a stable `/wave1/` public switch.
-
-## Canonical references
-
-- `docs/architecture/FUTURE_SESSION_IMPLEMENTATION_BASELINE_STATUS_v1.0.md`
-- `docs/architecture/FUTURE_SESSION_WORKLOG.md`
-- `docs/architecture/worklog/2026-08-14_PRODUCT_SHAPED_PILOT_IMPLEMENTATION.md`
-- `config/future-session/timing-calibration-v1.json`
-- `config/future-session/gate-d-v1.json`
-- `config/future-session/gate-e-v1.json`
