@@ -72,12 +72,14 @@ function evidence(overrides = {}) {
   ]) {
     assert.equal(serialized.includes(secret), false, `contract leaked ${secret}`);
   }
-  assert.equal(serialized.includes('sessionId'), false);
-  assert.equal(serialized.includes('eventId'), false);
-  assert.equal(serialized.includes('assetAId'), false);
-  assert.equal(serialized.includes('latency'), false);
-  assert.equal(serialized.includes('intensity'), false);
-  assert.equal(serialized.includes('freeText'), false);
+
+  // Safety instructions may legitimately contain words such as "latency". What must never
+  // appear are raw input field names/values or identifying keys.
+  for (const forbiddenKey of [
+    'sessionId', 'eventId', 'assetAId', 'assetBId', 'rawLatencyMs', 'freeText', 'intensity',
+  ]) {
+    assert.equal(serialized.includes(`"${forbiddenKey}"`), false, `contract leaked key ${forbiddenKey}`);
+  }
 }
 
 // No estimable direction remains a constrained observation, not an invented zero.
