@@ -22,7 +22,14 @@ def test_stimulus_set_waits_for_freeze_and_defines_stable_ab_identity():
         "pair_id",
         "asset_a_id",
         "asset_b_id",
+        "asset_a_path",
+        "asset_b_path",
+        "asset_a_sha256",
+        "asset_b_sha256",
+        "asset_a_mime_type",
+        "asset_b_mime_type",
         "is_training",
+        "source_family",
     }
 
 
