@@ -58,6 +58,11 @@
     "separate_from_wave1": true,
     "default_collection_mode": "TECHNICAL"
   },
+  "deployment_state": {
+    "repository_build": "READY_FOR_OWNER_LAB_OVERWRITE",
+    "hostinger_product_shaped_bytes": "PENDING_OWNER_UPLOAD",
+    "db_migration_required": false
+  },
   "rollback": {
     "previous_public_release": "wave1-v0.3",
     "entrypoint_backup_required": true
