@@ -122,6 +122,7 @@ CREATE TABLE reflection_reason_events (
     session_id                         CHAR(36) NOT NULL,
     rapid_event_id                     CHAR(36) NOT NULL,
     pair_id                            VARCHAR(40) NOT NULL,
+    stimulus_set_version               VARCHAR(40) NOT NULL,
     reflection_anchor_choice           ENUM('A','B') NOT NULL,
     reflection_anchor_source           ENUM('PRIMARY','FIRST_COMPLETED_RETRY') NOT NULL,
     reason_id                          VARCHAR(80) NOT NULL,
