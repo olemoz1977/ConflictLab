@@ -32,6 +32,7 @@ For a shown pair with no selection before deadline:
 ```text
 choice = timeout
 pair_presented = true
+pair_exposure_number != null
 pair_ready_elapsed_ms != null
 visual_choice_latency_ms = null
 ```
@@ -41,6 +42,7 @@ For a later pair never shown because the shared budget was already exhausted:
 ```text
 choice = timeout
 pair_presented = false
+pair_exposure_number = null
 pair_ready_elapsed_ms = null
 visual_choice_latency_ms = null
 remaining_budget_at_pair_start_ms = null
@@ -51,7 +53,10 @@ For A/B selections:
 ```text
 choice = A | B
 pair_presented = true
+pair_exposure_number != null
 ```
+
+`pair_exposure_number` counts actual interactive exposures of that pair. A retry can therefore be attempt 2 while still being exposure 1 for a pair that was never shown in attempt 1.
 
 ## Coverage consequence
 
