@@ -41,6 +41,16 @@ test('owner preview can explicitly select an unexposed form without changing the
   assert.ok(source.includes('staticReadOnlyFetches: true'));
 });
 
+test('rapid mobile layout keeps both vertical choices inside one dynamic viewport', () => {
+  assert.ok(source.includes('body.rapid-mode{overflow:hidden}'));
+  assert.ok(source.includes('body.rapid-mode .brand,body.rapid-mode .draft{display:none}'));
+  assert.ok(source.includes('height:calc(100dvh'));
+  assert.ok(source.includes('grid-template-rows:repeat(2,minmax(0,1fr))'));
+  assert.ok(source.includes("setRapidMode(true)"));
+  assert.ok(source.includes("app.className = 'card rapid-shell'"));
+  assert.ok(source.includes("setRapidMode(false)"));
+});
+
 test('pilot preview preserves rapid protocol and calibration-quality telemetry boundaries', () => {
   assert.ok(source.includes('activeRunner.recordChoice(choice.id'));
   assert.ok(source.includes('activeRunner.markPairReady(readyAt)'));
