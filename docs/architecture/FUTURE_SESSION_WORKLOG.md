@@ -7,6 +7,37 @@
 
 > This file records what was done, why it was done, what was observed, what remains unvalidated, and the next gate. It does **not** override ADRs, versioned methodology configs, or released specifications. When this log conflicts with a versioned architecture/methodology source, the versioned source wins and the conflict must be resolved explicitly.
 
+## Current implementation addendum
+
+The product-shaped pilot described below as the next gate has now been implemented in the repository. Detailed implementation record:
+
+`docs/architecture/worklog/2026-08-14_PRODUCT_SHAPED_PILOT_IMPLEMENTATION.md`
+
+Current status snapshot:
+
+`docs/architecture/FUTURE_SESSION_IMPLEMENTATION_BASELINE_STATUS_v1.0.md`
+
+At this point:
+
+```text
+product-shaped pilot code        IMPLEMENTED IN REPOSITORY
+LT / EN                           IMPLEMENTED
+reason -> intensity 1-5          IMPLEMENTED / SEQUENTIAL
+visual-choice latency            IMPLEMENTED / SERVER TIMING CHANNEL
+reason-response latency          IMPLEMENTED / LOCAL ONLY
+intensity-response latency       IMPLEMENTED / LOCAL ONLY
+Calculation/Evidence pipeline    WIRED LOCALLY
+result                           FAIL-CLOSED / NOT_ESTIMABLE
+Hostinger product-shaped patch   PENDING OWNER UPLOAD
+collection_mode                  TECHNICAL
+calibration N/20                 0 / 20 at last owner check
+Gate D                           NONE
+Gate E                           NONE
+public /wave1                    UNCHANGED
+```
+
+The historical notes below are retained because they explain how this state was reached.
+
 ## 1. Permanent project boundaries
 
 - ConflictLab remains an epistemic reflection framework, not a personality test, diagnosis, prediction, or psychological scoring instrument.
@@ -243,7 +274,7 @@ While Gate D/E remain NONE, the real-participant result layer must remain fail-c
 
 ## 12. Language requirement
 
-The current LAB is LT-only. Before fresh-participant N/20 collection, the product-shaped pilot should support LT and EN across the complete flow:
+The original LAB was LT-only. The product-shaped repository build now supports LT and EN across the complete flow:
 
 - language selection before training;
 - training copy;
@@ -253,11 +284,11 @@ The current LAB is LT-only. Before fresh-participant N/20 collection, the produc
 - technical/error messages;
 - result/fail-closed presentation.
 
-Language should remain fixed within a started session.
+Language remains fixed within a started session.
 
 ## 13. Three separate response-time channels
 
-The next product-shaped pilot should treat timing as three separate process signals rather than one combined reflection time.
+The product-shaped pilot treats timing as three separate process signals rather than one combined reflection time.
 
 ### 13.1 Visual choice latency
 
@@ -267,7 +298,7 @@ pair fully ready/rendered
 = visual_choice_latency_ms
 ```
 
-This already exists and is used only as timing/process telemetry.
+This is server-side timing/process telemetry for the calibration purpose.
 
 ### 13.2 Reason response latency
 
@@ -277,7 +308,7 @@ selected image + all reason options fully ready
 = reason_response_latency_ms
 ```
 
-No time limit. This must not be interpreted psychologically without separate validation.
+No time limit. Local-only in this build. This must not be interpreted psychologically without separate validation.
 
 ### 13.3 Intensity response latency
 
@@ -287,9 +318,9 @@ intensity question becomes active after reason selection
 = intensity_response_latency_ms
 ```
 
-No time limit. This must not be interpreted as confidence/strength/decisiveness without validation.
+No time limit. Local-only in this build. This must not be interpreted as confidence/strength/decisiveness without validation.
 
-A useful additional UX diagnostic is `reflection_total_elapsed_ms`, again as process telemetry only.
+`reflection_total_elapsed_ms` is retained as local UX/process telemetry.
 
 ## 14. Reflection/intensity data semantics
 
@@ -304,48 +335,65 @@ retry events never enter directional balance
 reflection class never changes direction
 ```
 
-Reason and intensity should be sequential rather than displayed simultaneously, so their response latencies remain separable.
+Reason and intensity are sequential rather than displayed simultaneously, so their response latencies remain separable.
 
 Local-first boundary remains the default:
 
 - reason/free text: local by default;
 - reaction intensity: local by default;
+- reason/intensity response latencies: local by default;
 - derived personal result: local by default;
 - timing calibration server receives only justified mechanical telemetry.
 
 ## 15. Partial reflection / abandonment semantics
 
-A participant who completes the rapid block but does not finish reflection must not automatically invalidate otherwise eligible timing evidence.
+A participant who completes the rapid block but does not finish reflection does not automatically invalidate otherwise eligible timing evidence because timing upload occurs before reflection.
 
-Planned local statuses should distinguish at least:
+Current implemented local statuses distinguish:
 
 ```text
-reason_status = ANSWERED | NO_RESPONSE | ABANDONED | NOT_REACHED
-intensity_status = ANSWERED | NO_RESPONSE | ABANDONED | NOT_REACHED
+reason_status = ANSWERED | SKIPPED | NOT_REACHED
+intensity_status = ANSWERED | SKIPPED | NOT_REACHED
 ```
 
-Rapid timing eligibility and reflection completeness are separate dimensions.
+Explicit `ABANDONED` persistence remains a future local-session refinement if required; it is not needed for timing eligibility.
 
-## 16. Immediate next gate
+## 16. Product-shaped implementation gate
+
+Implemented in repository:
+
+1. complete LT/EN participant flow;
+2. sequential reason -> intensity 1-5 interaction;
+3. independent visual-choice, reason-response and intensity-response latencies;
+4. local-first reason/intensity storage boundary;
+5. actual Calculation Engine / Evidence Engine wiring;
+6. fail-closed result shell with Gate D/E NONE;
+7. response controls disabled until selected reflection image is decoded and visually ready;
+8. CI contracts for the product-shaped release and result boundary.
+
+Detailed implementation record:
+
+`docs/architecture/worklog/2026-08-14_PRODUCT_SHAPED_PILOT_IMPLEMENTATION.md`
+
+## 17. Immediate next gate
 
 Do **not** switch the server to `CALIBRATION` yet.
 
-Before fresh-participant collection:
+Next sequence:
 
-1. extend the LAB into the product-shaped pilot;
-2. add full LT/EN support;
-3. add sequential reason → intensity 1–5 interaction;
-4. measure visual-choice, reason-response and intensity-response latencies independently;
-5. retain reason/intensity local-first by default;
-6. keep Gate D/E fail-closed;
-7. test Calculation Engine / Evidence Engine / result UX with fixtures/synthetic cases;
-8. run owner smoke tests as `TECHNICAL` only;
-9. only after owner approval intentionally change `collection_mode` to `CALIBRATION` for fresh participants.
+1. use the exact-head CI artifact to update only the versioned Hostinger LAB path;
+2. keep `collection_mode = TECHNICAL`;
+3. owner smoke-test LT flow;
+4. owner smoke-test EN flow;
+5. verify admin records only TECHNICAL runs and N/20 remains 0;
+6. record UX findings and any data-boundary gap;
+7. decide whether the planned real-participant research hypotheses require an explicit opt-in research channel beyond timing telemetry;
+8. only then consider `CALIBRATION` collection for fresh participants.
 
-## 17. Public safety state
+## 18. Public safety state
 
 ```text
-Hostinger versioned LAB path       DEPLOYED / OWNER TESTING
+Hostinger versioned LAB path       DEPLOYED / OLD BUILD UNTIL NEXT PATCH
 calibration DB                     CREATED / ISOLATED
 calibration admin v2               DEPLOYED / OWNER VERIFIED
 collection mode                    TECHNICAL
@@ -360,9 +408,9 @@ live /wave1                        UNCHANGED
 production product deployment      NOT AUTHORIZED
 ```
 
-## 18. Logging rule going forward
+## 19. Logging rule going forward
 
-Material changes should be added to this worklog when they affect any of the following:
+Material changes should be added to this worklog or a dated file under `docs/architecture/worklog/` when they affect any of the following:
 
 - architecture or methodology boundary;
 - participant flow;
@@ -374,4 +422,4 @@ Material changes should be added to this worklog when they affect any of the fol
 - newly discovered technical incompatibility;
 - test evidence and current next gate.
 
-Small mechanical commits do not need prose-by-prose duplication; the log should capture decisions and state transitions, while Git history captures the exact file changes.
+Small mechanical commits do not need prose-by-prose duplication; the log captures decisions and state transitions, while Git history captures exact file changes.
