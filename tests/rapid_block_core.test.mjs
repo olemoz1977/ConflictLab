@@ -8,9 +8,18 @@ import {
 
 function makePairs() {
   return [
-    { pairId: 'P1', assetAPosition: 'left', assetBPosition: 'right' },
-    { pairId: 'P2', assetAPosition: 'left', assetBPosition: 'right' },
-    { pairId: 'P3', assetAPosition: 'left', assetBPosition: 'right' },
+    {
+      pairId: 'P1', assetAId: 'P1-A', assetBId: 'P1-B',
+      assetAPosition: 'left', assetBPosition: 'right',
+    },
+    {
+      pairId: 'P2', assetAId: 'P2-A', assetBId: 'P2-B',
+      assetAPosition: 'left', assetBPosition: 'right',
+    },
+    {
+      pairId: 'P3', assetAId: 'P3-A', assetBId: 'P3-B',
+      assetAPosition: 'left', assetBPosition: 'right',
+    },
   ];
 }
 
@@ -28,6 +37,32 @@ function makeAttempt(attemptNumber = 1, priorExposureCounts = {}) {
     priorExposureCounts,
     eventIdFactory: () => `e-${attemptNumber}-${++id}`,
   });
+}
+
+// Stable A/B identities are raw facts and are independent from screen position.
+{
+  const a = makeAttempt();
+  a.markPairReady(0);
+  const event = a.recordChoice('A', 100).event;
+  assert.equal(event.assetAId, 'P1-A');
+  assert.equal(event.assetBId, 'P1-B');
+  assert.equal(event.assetAPosition, 'left');
+  assert.equal(event.assetBPosition, 'right');
+  assert.equal(event.choice, 'A');
+}
+
+// Pair definitions without stable distinct asset identities are rejected.
+{
+  const badPairs = makePairs();
+  delete badPairs[0].assetAId;
+  assert.throws(
+    () => new RapidBlockAttempt({
+      sessionId: 's', blockId: 'b', blockAttemptId: 'a', attemptNumber: 1,
+      blockBudgetMs: 6000, pairs: badPairs, protocolVersion: 'p',
+      stimulusSetVersion: 's', eventIdFactory: () => 'e',
+    }),
+    /stable assetAId and assetBId are required/
+  );
 }
 
 // Boundary: strictly before the deadline is valid.
