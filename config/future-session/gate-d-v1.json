@@ -1,0 +1,10 @@
+{
+  "schema": "conflictlab.gate-d.v1",
+  "mapping_version": "gate-d-v1",
+  "lifecycle": "DRAFT",
+  "released_at": null,
+  "description": "Pair-level directional mapping catalog. No pair contributes directional evidence unless mapping_status is VALIDATED.",
+  "allowed_domains": ["CS", "CR"],
+  "allowed_mapping_status": ["VALIDATED", "PENDING", "NONE"],
+  "mappings": []
+}
