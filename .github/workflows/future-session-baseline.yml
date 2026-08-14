@@ -55,6 +55,8 @@ jobs:
         run: node tests/evidence_engine.test.mjs
       - name: Event outbox
         run: node tests/event_outbox.test.mjs
+      - name: HTTP transport
+        run: node tests/http_transport.test.mjs
 
   future-php:
     runs-on: ubuntu-latest
