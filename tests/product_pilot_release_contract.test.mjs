@@ -31,6 +31,10 @@ assert.match(ui, /Reaction intensity/);
 assert.match(ui, /Reakcijos stiprumas/);
 assert.match(ui, /value <= 5/);
 assert.match(ui, /selectedAt = now\(\)/);
+assert.match(ui, /input\.disabled = true/);
+assert.match(ui, /button\.disabled = true/);
+assert.match(ui, /markReadyAfterImage\(image, \(\) => \{/);
+assert.match(ui, /controller\.markStageReady\(now\(\)\)/);
 
 const exactCopies = [
   ['config/future-session/gate-d-v1.json', `${release}/canonical/config/future-session/gate-d-v1.json`],
