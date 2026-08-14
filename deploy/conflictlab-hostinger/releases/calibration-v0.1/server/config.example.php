@@ -15,4 +15,6 @@ return [
     'protocol_version' => 'future-rapid-v1',
     'stimulus_set_version' => 'stimulus-set-v1',
     'block_budget_ms' => 6000,
+    // CALIBRATION uploads must present this exact affirmative-consent version.
+    'consent_version' => 'timing-research-consent-v0.1',
 ];
