@@ -57,6 +57,8 @@ jobs:
         run: node tests/event_outbox.test.mjs
       - name: HTTP transport
         run: node tests/http_transport.test.mjs
+      - name: LLM generation contract
+        run: node tests/llm_contract.test.mjs
 
   future-php:
     runs-on: ubuntu-latest
