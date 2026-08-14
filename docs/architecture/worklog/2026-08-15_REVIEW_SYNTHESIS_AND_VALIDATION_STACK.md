@@ -189,7 +189,7 @@ Gate E may legitimately remain `NONE` permanently. If aggregation fails but exem
 
 ## Research data / consent scope completed
 
-Created:
+Created initially:
 
 `docs/architecture/RESEARCH_DATA_AND_CONSENT_SCOPE_v0.1.md`
 
@@ -220,6 +220,61 @@ derived participant result = not research upload
 
 No database payload expansion is authorized until the relevant research purpose and participant consent/disclosure are frozen.
 
+## EU data-protection baseline and DPIA gate
+
+After reviewing current European Commission, EDPB and Lithuanian VDAI guidance, the project adopted a conservative privacy-by-design baseline:
+
+`docs/architecture/EU_DATA_PROTECTION_BASELINE_v0.1.md`
+
+and a DPIA screening gate:
+
+`docs/architecture/DPIA_SCREENING_v0.1.md`
+
+Key decisions:
+
+- event-level research records are treated as pseudonymous personal data, not automatically anonymous data;
+- no direct identifiers are needed for the current method-validation program;
+- server-side open free text is prohibited by default for the next beta;
+- no special-category data are intentionally collected;
+- no third-party non-essential analytics/marketing tracking is authorized;
+- external research beta is 18+ only;
+- Hostinger processor/DPA, actual hosting region, subprocessors/transfers and security boundary must be documented before real participant upload;
+- participant/controller identity and contact must be real and transparent in the privacy notice;
+- a DPIA-style assessment is an internal gate before Gate D/E behavioural research even if a later qualified legal opinion concludes that a statutory Article 35 DPIA is not mandatory at current scale;
+- behavioural research consent is not a blanket permission to collect future-use data.
+
+## Conservative next-study privacy decision
+
+A stricter scope was created for the next external participant cycle:
+
+`docs/architecture/RESEARCH_DATA_AND_CONSENT_SCOPE_v0.2.md`
+
+Decision:
+
+```text
+NEXT EXTERNAL SERVER STUDY = TIMING / UX MECHANICS ONLY
+```
+
+The server may collect only the minimum pseudonymous timing/completion payload needed by `timing-calibration-v1` plus purpose/version/consent provenance.
+
+For that next study the server must not collect:
+
+```text
+names / emails / employer
+open reflection text
+reason_id
+intensity
+reason or intensity response latency
+persistent participant identifier
+participant psychological/directional result
+```
+
+The product-shaped reflection flow may still operate locally, but reflection content must not enter the research database or routine telemetry.
+
+Gate D, Gate E and reflection-content research are now explicitly separate future studies requiring their own preregistration, privacy notice/purpose, DPIA update, payload and retention decision.
+
+This supersedes the earlier operational possibility of combining timing plus behavioural-validation server collection in the first external participant cycle.
+
 ## Current safety state
 
 Unchanged:
@@ -234,7 +289,7 @@ public /wave1                UNCHANGED
 
 No public switch or construct claim was authorized by this methodological work.
 
-## Methodology sequence status
+## Methodology and compliance sequence status
 
 Completed:
 
@@ -242,13 +297,21 @@ Completed:
 2. `GATE_D_VALIDATION_CONTRACT_v0.1`
 3. `GATE_E_VALIDATION_CONTRACT_v0.1`
 4. `RESEARCH_DATA_AND_CONSENT_SCOPE_v0.1`
+5. `EU_DATA_PROTECTION_BASELINE_v0.1`
+6. `DPIA_SCREENING_v0.1`
+7. `RESEARCH_DATA_AND_CONSENT_SCOPE_v0.2`
 
-Next:
+Before first real external timing participant:
 
-1. neutral alias / blind-validation dataset specification;
-2. first study-specific preregistration;
-3. participant information / consent wording for the chosen study;
-4. authenticated admin CSV export implementation/documentation;
-5. only then decide whether the next fresh-participant cycle is timing-only or timing + separately consented validation research.
+1. freeze actual data-controller identity/contact;
+2. freeze participant privacy notice and timing-research consent copy;
+3. document lawful basis for technical/security processing and timing research;
+4. freeze concrete retention/deletion rule;
+5. review Hostinger DPA, actual hosting region and subprocessor/transfer route;
+6. implement/verify withdrawal/deletion mechanism without unnecessary direct identifiers;
+7. confirm non-essential trackers are OFF;
+8. harden/document admin/export security;
+9. finish timing-study DPIA screening/mitigations;
+10. only then authorize switch from `TECHNICAL` to timing `CALIBRATION`.
 
-The next fresh-participant study must be able to produce a real negative methodological result that remains negative for that exact protocol/version.
+The next fresh-participant study must remain mechanically scoped and must not later be repurposed as Gate D/E evidence.
