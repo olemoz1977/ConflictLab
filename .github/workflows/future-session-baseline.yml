@@ -15,30 +15,36 @@ on:
       - 'tests/*.test.mjs'
 
 jobs:
-  test:
+  legacy-python:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Existing behavior-translation tests
+        run: python -m pytest -q tests/test_behavior_translation.py
 
-      - name: Install Python test runner
-        run: python -m pip install pytest
+  baseline-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Future-session architecture invariants
+        run: python -m pytest -q tests/test_future_session_baseline.py
 
-      - name: Run Python tests
-        run: python -m pytest -q
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+  future-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Test rapid block core
+      - name: Rapid block core
         run: node tests/rapid_block_core.test.mjs
-
-      - name: Test calculation engine
+      - name: Calculation engine
         run: node tests/calculation_engine.test.mjs
