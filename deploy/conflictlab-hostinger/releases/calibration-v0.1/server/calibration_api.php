@@ -28,6 +28,10 @@ function is_uuid(string $value): bool {
     return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $value) === 1;
 }
 
+function is_sha256_hex(string $value): bool {
+    return preg_match('/^[0-9a-f]{64}$/', $value) === 1;
+}
+
 function require_string(array $src, string $key, int $max = 128): string {
     $value = $src[$key] ?? null;
     if (!is_string($value) || $value === '' || strlen($value) > $max) {
@@ -97,13 +101,17 @@ $deviceCategory = require_string($payload, 'deviceCategory', 16);
 $consentVersion = null;
 $researchConsent = null;
 $age18Confirmed = null;
+$deletionTokenHash = null;
 $hasAnyConsentField = array_key_exists('consentVersion', $payload)
     || array_key_exists('researchConsent', $payload)
-    || array_key_exists('age18Confirmed', $payload);
+    || array_key_exists('age18Confirmed', $payload)
+    || array_key_exists('deletionTokenHash', $payload);
 if ($hasAnyConsentField || $runType === 'CALIBRATION') {
     $consentVersion = require_string($payload, 'consentVersion', 64);
     $researchConsent = require_bool($payload, 'researchConsent');
     $age18Confirmed = require_bool($payload, 'age18Confirmed');
+    $deletionTokenHash = require_string($payload, 'deletionTokenHash', 64);
+    if (!is_sha256_hex($deletionTokenHash)) fail(422, 'INVALID_DELETION_TOKEN_HASH', 'deletionTokenHash must be lowercase SHA-256 hex');
 }
 
 if ($schema !== EXPECTED_SCHEMA) fail(422, 'SCHEMA_MISMATCH', 'unsupported schema');
@@ -122,6 +130,7 @@ if ($runType === 'CALIBRATION') {
     if ($consentVersion !== $expectedConsentVersion) fail(422, 'CONSENT_VERSION_MISMATCH', 'unexpected consent version');
     if ($researchConsent !== true) fail(422, 'RESEARCH_CONSENT_REQUIRED', 'affirmative research consent required');
     if ($age18Confirmed !== true) fail(422, 'AGE_CONFIRMATION_REQUIRED', '18+ confirmation required');
+    if ($deletionTokenHash === null) fail(422, 'DELETION_TOKEN_REQUIRED', 'deletion token hash required');
 }
 
 $attempts = $payload['attempts'] ?? null;
@@ -250,14 +259,14 @@ try {
 
     $insertRun = $pdo->prepare(
         'INSERT INTO cl_calibration_runs '
-        . '(message_id, session_id, release_id, run_type, form_id, protocol_version, stimulus_set_version, block_budget_ms, device_category, technical_preload_ok, clean_primary, exclusion_reason, consent_version, research_consent, age_18_confirmed) '
-        . 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+        . '(message_id, session_id, release_id, run_type, form_id, protocol_version, stimulus_set_version, block_budget_ms, device_category, technical_preload_ok, clean_primary, exclusion_reason, consent_version, research_consent, age_18_confirmed, deletion_token_hash) '
+        . 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
     );
     $insertRun->execute([
         $messageId, $sessionId, $releaseId, $runType, $formId, $protocolVersion, $stimulusSetVersion,
         $blockBudgetMs, $deviceCategory, 1, $cleanPrimary ? 1 : 0, $exclusionReason,
         $consentVersion, $researchConsent === null ? null : ($researchConsent ? 1 : 0),
-        $age18Confirmed === null ? null : ($age18Confirmed ? 1 : 0),
+        $age18Confirmed === null ? null : ($age18Confirmed ? 1 : 0), $deletionTokenHash,
     ]);
     $runId = (int)$pdo->lastInsertId();
 
