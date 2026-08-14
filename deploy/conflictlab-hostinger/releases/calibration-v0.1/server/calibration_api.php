@@ -8,6 +8,7 @@ header('X-Content-Type-Options: nosniff');
 const MAX_BODY_BYTES = 131072;
 const EXPECTED_SCHEMA = 'conflictlab.calibration-run.v1';
 const ALLOWED_DEVICE_CATEGORIES = ['mobile', 'tablet', 'desktop', 'unknown'];
+const ALLOWED_RUN_TYPES = ['TECHNICAL', 'CALIBRATION'];
 const ALLOWED_FORMS = [
     'F2-A' => ['CS-CA-01', 'CR-PZ-01', 'CR-PO-01'],
     'F2-B' => ['CS-PR-01', 'CS-RE-01', 'CR-FS-01'],
@@ -79,6 +80,8 @@ $configPath = __DIR__ . '/config.php';
 if (!is_file($configPath)) fail(503, 'SERVER_NOT_CONFIGURED', 'calibration server is not configured');
 $config = require $configPath;
 if (!is_array($config) || !isset($config['db'])) fail(503, 'SERVER_NOT_CONFIGURED', 'invalid server config');
+$runType = strtoupper((string)($config['collection_mode'] ?? 'TECHNICAL'));
+if (!in_array($runType, ALLOWED_RUN_TYPES, true)) fail(503, 'SERVER_NOT_CONFIGURED', 'invalid collection mode');
 
 $schema = require_string($payload, 'schema');
 $messageId = require_string($payload, 'messageId', 36);
@@ -227,11 +230,11 @@ try {
 
     $insertRun = $pdo->prepare(
         'INSERT INTO cl_calibration_runs '
-        . '(message_id, session_id, release_id, form_id, protocol_version, stimulus_set_version, block_budget_ms, device_category, technical_preload_ok, clean_primary, exclusion_reason) '
-        . 'VALUES (?,?,?,?,?,?,?,?,?,?,?)'
+        . '(message_id, session_id, release_id, run_type, form_id, protocol_version, stimulus_set_version, block_budget_ms, device_category, technical_preload_ok, clean_primary, exclusion_reason) '
+        . 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'
     );
     $insertRun->execute([
-        $messageId, $sessionId, $releaseId, $formId, $protocolVersion, $stimulusSetVersion,
+        $messageId, $sessionId, $releaseId, $runType, $formId, $protocolVersion, $stimulusSetVersion,
         $blockBudgetMs, $deviceCategory, 1, $cleanPrimary ? 1 : 0, $exclusionReason,
     ]);
     $runId = (int)$pdo->lastInsertId();
@@ -269,7 +272,8 @@ try {
     respond(201, [
         'ok' => true,
         'idempotent' => false,
-        'calibrationEligiblePrimary' => $cleanPrimary,
+        'runType' => $runType,
+        'calibrationEligiblePrimary' => ($runType === 'CALIBRATION' && $cleanPrimary),
         'exclusionReason' => $exclusionReason,
     ]);
 } catch (PDOException $e) {
