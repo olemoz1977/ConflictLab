@@ -62,10 +62,24 @@ def test_retry_schema_supports_multiple_attempts_per_logical_block():
 def test_timeout_and_non_exposure_are_distinguishable():
     sql = SCHEMA.read_text(encoding="utf-8")
     assert "pair_presented" in sql
+    assert "pair_exposure_number                  TINYINT UNSIGNED NULL" in sql
     assert "pair_ready_elapsed_ms" in sql
     assert "CHECK (choice = 'timeout' OR pair_presented = 1)" in sql
+    assert "CHECK (pair_presented = 1 OR pair_exposure_number IS NULL)" in sql
     assert "CHECK (pair_presented = 1 OR pair_ready_elapsed_ms IS NULL)" in sql
     assert "CHECK (pair_presented = 1 OR visual_choice_latency_ms IS NULL)" in sql
+
+
+def test_page_hidden_semantics_are_block_summary_plus_event_snapshot():
+    sql = SCHEMA.read_text(encoding="utf-8")
+    assert "page_hidden_during_block" in sql
+    assert "page_hidden_before_event" in sql
+    # The pair table must not falsely claim that an earlier immutable event knows
+    # what happened later in the whole block.
+    rapid_pair_section = sql.split("CREATE TABLE rapid_pair_events", 1)[1].split(
+        "CREATE TABLE reflection_reason_events", 1
+    )[0]
+    assert "page_hidden_during_block" not in rapid_pair_section
 
 
 def test_reason_server_table_is_structured_opt_in_only():
