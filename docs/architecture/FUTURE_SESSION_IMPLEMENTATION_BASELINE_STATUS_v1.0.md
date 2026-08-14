@@ -40,6 +40,7 @@ reflection total elapsed            IMPLEMENTED / LOCAL ONLY
 Calculation Engine                  WIRED INTO PILOT
 Evidence Engine                     WIRED INTO PILOT
 participant result                  FAIL-CLOSED / NOT_ESTIMABLE
+research collection scope           REVIEW REQUIRED BEFORE REAL PARTICIPANTS
 Gate D                              NONE
 Gate E                              NONE
 owner product-pilot smoke           PENDING AFTER HOSTINGER PATCH
@@ -66,11 +67,9 @@ LT / EN language selection
 -> fail-closed result screen
 ```
 
-Language is selected before training and remains fixed for that session. The reason map already supplies paired LT/EN participant text.
+Language is selected before training and remains fixed for that session. The reason map supplies paired LT/EN participant text.
 
 ## Three independent response-time channels
-
-The pilot keeps the three timings separate:
 
 ```text
 visual_choice_latency_ms
@@ -118,6 +117,7 @@ Calibration server continues to receive only the mechanical timing fields requir
 It does **not** receive:
 
 ```text
+A/B identity in the timing dataset
 reason selection
 reflection free text
 reason_response_latency_ms
@@ -130,11 +130,19 @@ persistent participant ID
 
 Those product-shaped reflection/result channels are local-first in this build.
 
+### Research-collection decision before CALIBRATION mode
+
+Because scarce fresh testers are intended to contribute to more than timing UX, the current timing-only server boundary must be reviewed **before** real participant collection.
+
+Do not silently broaden the calibration API. Explicitly decide which hypotheses require aggregate research data and whether a separately consented research channel is justified. Candidate channels to evaluate later include A/B response identity and reason metadata; intensity requires its own explicit purpose/consent decision. Free text remains local-first by default.
+
+Until that decision is closed, keep `collection_mode = TECHNICAL`.
+
 ## Result pipeline boundary
 
-The pilot now executes the actual Calculation Engine and Evidence Engine locally after reflection.
+The pilot executes the actual Calculation Engine and Evidence Engine locally after reflection.
 
-Current Gate D config remains:
+Current Gate D:
 
 ```text
 lifecycle = DRAFT
@@ -142,14 +150,14 @@ mappings = []
 Gate D = NONE
 ```
 
-Current Gate E config remains:
+Current Gate E:
 
 ```text
 CS = NONE
 CR = NONE
 ```
 
-Therefore the real participant result is intentionally:
+Therefore real participant result is intentionally:
 
 ```text
 NOT_ESTIMABLE
@@ -167,7 +175,7 @@ ADJUST_AND_RETEST
 REJECT_6000
 ```
 
-`TECHNICAL` owner runs never enter N/20. Current server mode remains `TECHNICAL` until an explicit switch after owner product-pilot smoke testing.
+`TECHNICAL` owner runs never enter N/20.
 
 ## Hostinger state
 
@@ -177,9 +185,9 @@ The isolated LAB path remains:
 https://omesg360.eu/conflictlab/releases/calibration-v0.1/
 ```
 
-The currently deployed bytes predate the product-shaped pilot changes in this status. A validated overwrite patch must be applied to this versioned LAB path before owner testing of LT/EN + reason/intensity + result-shell behavior.
+The currently deployed bytes predate the product-shaped pilot changes. A validated overwrite artifact must be applied to this versioned LAB path before owner testing of LT/EN + reason/intensity + result-shell behavior.
 
-No DB migration is required for this product-shaped patch because the newly added reflection/intensity channels remain local-only and the existing timing API/schema are unchanged.
+No DB migration is required for this product-shaped UI update.
 
 ## Public safety
 
@@ -197,10 +205,11 @@ No merge, public switch or production product deployment is authorized.
 
 ## Immediate next gate
 
-1. package the CI-validated product-shaped LAB overwrite patch;
+1. package the CI-validated product-shaped LAB overwrite artifact;
 2. owner uploads it only to `/conflictlab/releases/calibration-v0.1/`;
 3. keep `collection_mode = TECHNICAL`;
 4. owner smoke-tests LT and EN flows;
 5. verify admin gains only TECHNICAL runs and N/20 stays 0;
-6. record owner UX findings in the worklog;
-7. only then decide whether the data-collection boundary is sufficient for the planned research hypotheses before switching to `CALIBRATION`.
+6. record owner UX findings;
+7. close the explicit research-collection scope/consent decision;
+8. only then consider switching to `CALIBRATION` for fresh participants.
