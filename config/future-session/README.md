@@ -7,6 +7,7 @@ This directory contains versioned methodological artifacts for the post-Wave-1 a
 The JSON files in this directory are canonical public configuration for:
 
 - stimulus-set pair and stable A/B asset identities;
+- training/familiarization stimulus references and exclusion boundaries;
 - rapid-presentation protocol mechanics and timing hypothesis;
 - Gate D pair-level directional mappings;
 - Gate E domain aggregation validity;
@@ -70,6 +71,34 @@ CR-PO-01
 
 The older `wave1-candidate-manifest-v0.1.json` is superseded and must not be used as the current Wave 1 inventory.
 
+## Training / familiarization
+
+`training-set-v1.json` defines only the pre-measurement interaction familiarization stage.
+
+It references the existing Pair P0 assets in place:
+
+```text
+P0-001
+P0-002
+P0-003
+```
+
+Source paths remain under `docs/experiments/pair-p0/images/`; the P0 files and their historical semantics are not moved, renamed or rewritten.
+
+Training is explicitly fail-closed:
+
+```text
+is_training = true
+analysis_eligible = false
+timing_calibration_eligible = false
+Gate D = NOT_APPLICABLE
+Gate E = NOT_APPLICABLE
+server_upload = false
+participant_result = NONE
+```
+
+A successful training block is required before the fresh measured pilot block in the isolated owner preview.
+
 ## Local-first boundary
 
 These files are public methodological configuration. They contain no participant data.
@@ -84,18 +113,21 @@ Current state:
 
 ```text
 stimulus-set-v1.json         DRAFT; 6 pairs / 12 exact assets materialized
+training-set-v1.json         DRAFT; P0-001/002/003 familiarization references
 rapid-presentation-v1.json   DRAFT; rapid mechanics complete for pilot
 6000 ms shared budget        hypothesis only; real calibration data pending
 reason-map-v1.json           DRAFT; 48 pair+anchor-specific items
 exact-asset reason review    COMPLETE
 Reflection model/UI          IMPLEMENTED AS DRAFT in isolated preview
-owner UX approval            PENDING
+Stage 0 training             IMPLEMENTED / LOCAL-ONLY / CALIBRATION-EXCLUDED
+owner telemetry export       IMPLEMENTED / schema conflictlab.owner-ux-export.v2
+owner UX approval            PENDING — Run 002 next
 Gate D                       NONE
 Gate E                       NONE
 production deploy            NOT AUTHORIZED
 ```
 
-The exact stimulus bytes are repository-bound and SHA-256 verified. This factual identity does not authorize directional interpretation.
+The exact research stimulus bytes are repository-bound and SHA-256 verified. This factual identity does not authorize directional interpretation.
 
 The current branch status source is:
 
