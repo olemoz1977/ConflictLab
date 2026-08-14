@@ -72,6 +72,7 @@ export function calculateDirectionalBalance({ events, gateDConfig, domain }) {
 
   const mappings = indexGateD(gateDConfig);
 
+  // Hard evidence boundary: only non-training first-attempt events enter primary calculation.
   const primaryEvents = events.filter(
     event => event.blockAttemptNumber === 1 && !event.isTraining
   );
