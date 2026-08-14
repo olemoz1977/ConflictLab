@@ -59,6 +59,8 @@ jobs:
         run: node tests/asset_preloader.test.mjs
       - name: Timing calibration gate
         run: node tests/timing_calibration.test.mjs
+      - name: Reason-map contract
+        run: node tests/reason_map_contract.test.mjs
       - name: Rapid block core
         run: node tests/rapid_block_core.test.mjs
       - name: Calculation engine
