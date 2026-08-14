@@ -196,8 +196,9 @@ def test_same_asset_id_cannot_point_to_different_bytes(tmp_path):
         verifier.verify_config(config, tmp_path)
 
 
-def test_cli_current_repo_draft_config_passes_without_assets():
+def test_current_repo_draft_config_verifies_six_pairs_and_twelve_assets():
     config = json.loads((ROOT / "config/future-session/stimulus-set-v1.json").read_text())
     result = verifier.verify_config(config, ROOT)
     assert result["lifecycle"] == "DRAFT"
-    assert result["verified_pair_count"] == 0
+    assert result["verified_pair_count"] == 6
+    assert result["verified_asset_count"] == 12
