@@ -36,14 +36,12 @@ try {
         ]
     );
 
-    // Database/server time is authoritative for the cutoff. Select only IDs; do not print them.
-    $stmt = $pdo->prepare(
-        'SELECT id FROM cl_calibration_runs '
-        . 'WHERE received_at < (CURRENT_TIMESTAMP(6) - INTERVAL ? DAY) '
-        . 'ORDER BY id ASC LIMIT 500'
-    );
-    $stmt->execute([$retentionDays]);
-    $runIds = array_map('intval', array_column($stmt->fetchAll(), 'id'));
+    // $retentionDays is a validated integer, so it is safe to embed in the INTERVAL expression.
+    // Database/server time remains authoritative for the cutoff. Select only IDs; do not print them.
+    $sql = 'SELECT id FROM cl_calibration_runs '
+        . 'WHERE received_at < (CURRENT_TIMESTAMP(6) - INTERVAL ' . $retentionDays . ' DAY) '
+        . 'ORDER BY id ASC LIMIT 500';
+    $runIds = array_map('intval', array_column($pdo->query($sql)->fetchAll(), 'id'));
 
     if (!$runIds) {
         fwrite(STDOUT, "retention_cleanup deleted_runs=0\n");
