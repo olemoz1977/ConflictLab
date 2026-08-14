@@ -22,12 +22,14 @@ def test_stimulus_set_waits_for_freeze_and_defines_stable_ab_identity():
         "pair_id",
         "asset_a_id",
         "asset_b_id",
+        "is_training",
     }
 
 
 def test_gate_d_starts_non_interpretive():
     gate_d = load_json("gate-d-v1.json")
     assert gate_d["mapping_version"] == "gate-d-v1"
+    assert gate_d["stimulus_set_version"] is None
     assert gate_d["lifecycle"] == "DRAFT"
     assert gate_d["mappings"] == []
     assert set(gate_d["allowed_domains"]) == {"CS", "CR"}
@@ -42,6 +44,7 @@ def test_gate_e_blocks_domain_interpretation_by_default():
 
 def test_reason_map_waits_for_stimulus_freeze():
     reason_map = load_json("reason-map-v1.json")
+    assert reason_map["stimulus_set_version"] is None
     assert reason_map["content_status"] == "PENDING_STIMULUS_FREEZE"
     assert reason_map["items"] == []
     assert set(reason_map["allowed_interpretability_classes"]) == {
@@ -103,8 +106,13 @@ def test_page_hidden_semantics_are_block_summary_plus_event_snapshot():
     assert "page_hidden_during_block" not in rapid_pair_section
 
 
-def test_reason_server_table_is_structured_opt_in_only():
+def test_reason_server_table_is_structured_opt_in_only_and_versioned():
     sql = SCHEMA.read_text(encoding="utf-8")
-    assert "CREATE TABLE reflection_reason_events" in sql
-    assert "reason_id" in sql
-    assert "consent_version" in sql
+    reason_section = sql.split("CREATE TABLE reflection_reason_events", 1)[1]
+    assert "reason_id" in reason_section
+    assert "consent_version" in reason_section
+    assert "stimulus_set_version" in reason_section
+    assert "reason_map_version" in reason_section
+    assert "protocol_version" in reason_section
+    assert "free_text" not in reason_section
+    assert "reaction_intensity" not in reason_section
