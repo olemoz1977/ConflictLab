@@ -6,5 +6,18 @@
   "description": "Pair-level directional mapping catalog. No pair contributes directional evidence unless mapping_status is VALIDATED.",
   "allowed_domains": ["CS", "CR"],
   "allowed_mapping_status": ["VALIDATED", "PENDING", "NONE"],
+  "required_mapping_fields": [
+    "pair_id",
+    "domain",
+    "mapping_status",
+    "asset_a_direction",
+    "asset_b_direction",
+    "evidence_reference"
+  ],
+  "mapping_invariants": {
+    "VALIDATED": "asset_a_direction and asset_b_direction must each be +1 or -1 and must be opposite",
+    "PENDING": "directions must be null",
+    "NONE": "directions must be null"
+  },
   "mappings": []
 }
