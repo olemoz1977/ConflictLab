@@ -1,6 +1,6 @@
 -- ConflictLab future-session server schema v0.2
 -- Architecture baseline only — NOT a production migration.
--- Source: RESULT_CALCULATION_ARCH_v0.2 + ADR-010 + ADR-011.
+-- Source: RESULT_CALCULATION_ARCH_v0.2 + ADR-010 + ADR-011 + ADR-012.
 --
 -- Hard boundaries:
 --   * Existing Wave 1 `responses` table is untouched.
@@ -43,6 +43,8 @@ CREATE TABLE rapid_block_attempts (
 -- No FK to rapid_block_attempts: asynchronous local-first upload may deliver pair events
 -- before the attempt summary. Consistency is checked by ingestion/research diagnostics.
 --
+-- A/B are stable asset identities from the versioned stimulus set. They are not screen sides.
+-- Concrete presentation position is stored separately on every event.
 -- `pair_presented` distinguishes a shown pair that timed out from a later pair that was
 -- never exposed because the shared block budget had already expired (ADR-011).
 -- `page_hidden_before_event` is an immutable event-time snapshot. The attempt-level
@@ -57,6 +59,8 @@ CREATE TABLE rapid_pair_events (
     stimulus_set_version                  VARCHAR(40) NOT NULL,
     position_in_block                     TINYINT UNSIGNED NOT NULL,
     pair_exposure_number                  TINYINT UNSIGNED NULL,
+    asset_a_id                            VARCHAR(80) NOT NULL,
+    asset_b_id                            VARCHAR(80) NOT NULL,
     asset_a_position                      ENUM('top','bottom','left','right') NOT NULL,
     asset_b_position                      ENUM('top','bottom','left','right') NOT NULL,
     pair_presented                        TINYINT(1) NOT NULL,
@@ -86,6 +90,10 @@ CREATE TABLE rapid_pair_events (
         CHECK (position_in_block BETWEEN 1 AND 3),
     CONSTRAINT chk_pair_exposure_number
         CHECK (pair_exposure_number IS NULL OR pair_exposure_number >= 1),
+    CONSTRAINT chk_distinct_asset_ids
+        CHECK (asset_a_id <> asset_b_id),
+    CONSTRAINT chk_distinct_asset_positions
+        CHECK (asset_a_position <> asset_b_position),
     CONSTRAINT chk_choice_requires_presentation
         CHECK (choice = 'timeout' OR pair_presented = 1),
     CONSTRAINT chk_presented_has_exposure
