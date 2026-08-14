@@ -7,7 +7,7 @@ const source = fs.readFileSync(
   'utf8'
 );
 
-test('pilot preview composes training and measured future-session modules without a server endpoint', () => {
+test('pilot preview composes training and measured future-session modules without a response-data endpoint', () => {
   for (const required of [
     'presentation_plan.mjs',
     'training_plan.mjs',
@@ -21,7 +21,7 @@ test('pilot preview composes training and measured future-session modules withou
   }
 
   for (const forbidden of ['api.php', 'api_v2.php', 'reflectionReasonEnvelope', 'createFutureSessionTransport']) {
-    assert.ok(!source.includes(forbidden), `preview must stay server-isolated: ${forbidden}`);
+    assert.ok(!source.includes(forbidden), `preview must stay response-write isolated: ${forbidden}`);
   }
 });
 
@@ -32,6 +32,13 @@ test('pilot preview requires completed training before a fresh measured block', 
   assert.ok(source.includes('trainingCompleted = true'));
   assert.ok(source.includes("activeMode = 'MEASURED'"));
   assert.ok(source.includes('trainingExcludedFromCalibration: true'));
+});
+
+test('owner preview can explicitly select an unexposed form without changing the protocol config', () => {
+  assert.ok(source.includes("['F2-A', 'F2-B'].includes(params.get('form'))"));
+  assert.ok(source.includes('cycle.sessions.find(session => session.formId === requestedForm)'));
+  assert.ok(source.includes('ownerFormOverride: requestedForm'));
+  assert.ok(source.includes('staticReadOnlyFetches: true'));
 });
 
 test('pilot preview preserves rapid protocol and calibration-quality telemetry boundaries', () => {
@@ -45,6 +52,7 @@ test('pilot preview preserves rapid protocol and calibration-quality telemetry b
   assert.ok(source.includes('deviceContextAtStart'));
   assert.ok(source.includes('runner?.telemetry()'));
   assert.ok(source.includes('new Blob(['));
+  assert.ok(!source.includes('Nothing on this page is sent to a server.'));
   assert.ok(!source.includes('no_clear_choice'));
   assert.ok(!source.includes('interpretability_class'));
   assert.ok(!source.includes('grid-template-columns:1fr 1fr'));
