@@ -31,7 +31,9 @@
     "reflection_upload": false,
     "selected_a_b_identity_stored": false,
     "persistent_participant_id": false,
-    "wave1_storage_reuse": false
+    "wave1_storage_reuse": false,
+    "run_type_server_controlled": true,
+    "technical_runs_enter_calibration_n": false
   },
   "storage": {
     "tables": [
@@ -39,7 +41,8 @@
       "cl_calibration_attempts",
       "cl_calibration_pair_events"
     ],
-    "separate_from_wave1": true
+    "separate_from_wave1": true,
+    "default_collection_mode": "TECHNICAL"
   },
   "rollback": {
     "previous_public_release": "wave1-v0.3",
