@@ -1,0 +1,14 @@
+{
+  "schema": "conflictlab.stimulus-set.v1",
+  "stimulus_set_version": "stimulus-set-v1",
+  "lifecycle": "DRAFT",
+  "content_status": "PENDING_STIMULUS_FREEZE",
+  "released_at": null,
+  "description": "Canonical future-session pair and asset identity catalog. A/B are stable asset identities; screen position is randomized/counterbalanced separately per event.",
+  "required_pair_fields": [
+    "pair_id",
+    "asset_a_id",
+    "asset_b_id"
+  ],
+  "pairs": []
+}
