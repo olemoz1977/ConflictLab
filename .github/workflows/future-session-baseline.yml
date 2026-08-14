@@ -1,0 +1,44 @@
+name: Future Session Baseline
+
+on:
+  push:
+    branches:
+      - arch/result-v0.2-implementation-baseline
+  pull_request:
+    paths:
+      - 'src/future_session/**'
+      - 'config/future-session/**'
+      - 'docs/architecture/FUTURE_SESSION_SERVER_SCHEMA_v0.2.sql'
+      - 'docs/architecture/adr/ADR-010-*'
+      - 'docs/architecture/adr/ADR-011-*'
+      - 'tests/test_future_session_baseline.py'
+      - 'tests/*.test.mjs'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python test runner
+        run: python -m pip install pytest
+
+      - name: Run Python tests
+        run: python -m pytest -q
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test rapid block core
+        run: node tests/rapid_block_core.test.mjs
+
+      - name: Test calculation engine
+        run: node tests/calculation_engine.test.mjs
