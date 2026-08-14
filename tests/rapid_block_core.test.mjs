@@ -52,6 +52,16 @@ function makeAttempt(attemptNumber = 1, priorExposureCounts = {}) {
   assert.equal(result.events[2].pairPresented, false);
 }
 
+// A scheduling bug must not be able to expire the block early.
+{
+  const a = makeAttempt();
+  a.markPairReady(0);
+  assert.throws(
+    () => a.expire(5999),
+    /cannot expire block before monotonic deadline/
+  );
+}
+
 // If P1 was chosen and the budget expires before P2 becomes interactive,
 // P2/P3 are non-exposures, not shown timeouts.
 {
