@@ -3,9 +3,9 @@
 **Date:** 2026-08-14  
 **Branch:** `arch/result-v0.2-implementation-baseline`  
 **PR:** Draft PR #2  
-**Status:** VERSIONED HOSTINGER LAB DEPLOYED / TECHNICAL MODE / PUBLIC SWITCH NOT AUTHORIZED
+**Status:** PRODUCT-SHAPED PILOT IMPLEMENTED IN REPOSITORY / HOSTINGER PATCH PENDING / PUBLIC SWITCH NOT AUTHORIZED
 
-Detailed decisions, owner findings, rejected alternatives and next-gate context are maintained in:
+Detailed decisions and owner findings are maintained in:
 
 `docs/architecture/FUTURE_SESSION_WORKLOG.md`
 
@@ -15,24 +15,30 @@ Detailed decisions, owner findings, rejected alternatives and next-gate context 
 M1-M7 architecture decisions       CLOSED
 F1 exact stimulus identity          COMPLETE AS DRAFT
 F2 rapid mechanics                  COMPLETE FOR PILOT
-Stage 0 training                    IMPLEMENTED
-training calibration eligibility    EXCLUDED
+Stage 0 training                    IMPLEMENTED / EXCLUDED FROM CALIBRATION
 mobile rapid viewport fit           IMPLEMENTED / OWNER VISIBILITY PASS
-6000 ms timing gate                 READY / clean real data pending
-Hostinger LAB                       DEPLOYED AT VERSIONED PATH
-Hostinger JS compatibility          RESOLVED FOR LAB (.js deploy modules / index.php)
+Hostinger versioned LAB             DEPLOYED / PREVIOUS LAB BUILD CURRENTLY LIVE
+Hostinger JS compatibility          RESOLVED (.js deployment modules + index.php)
 calibration DB                      CREATED / ISOLATED FROM WAVE1
-calibration API                     END-TO-END OWNER SMOKE TEST PASS
+calibration API                     END-TO-END OWNER SMOKE PASS
 calibration admin v2                DEPLOYED / OWNER VERIFIED
 run classification                  TECHNICAL vs CALIBRATION IMPLEMENTED
 collection mode                     TECHNICAL
-technical owner runs                >= 1
 calibration N/20                    0 / 20 at last owner check
-product-shaped pilot                NEXT DEVELOPMENT GATE
-LT                                  CURRENT LAB AVAILABLE
-EN                                  REQUIRED BEFORE REAL COLLECTION
+6000 ms timing gate                 INSUFFICIENT_DATA / REAL DATA PENDING
+product-shaped pilot code           IMPLEMENTED IN REPOSITORY
+LT / EN                              IMPLEMENTED IN PRODUCT-SHAPED BUILD
+reason -> intensity 1-5             IMPLEMENTED / SEQUENTIAL
+visual choice latency               IMPLEMENTED / SERVER TIMING TELEMETRY
+reason response latency             IMPLEMENTED / LOCAL ONLY
+intensity response latency          IMPLEMENTED / LOCAL ONLY
+reflection total elapsed            IMPLEMENTED / LOCAL ONLY
+Calculation Engine                  WIRED INTO PILOT
+Evidence Engine                     WIRED INTO PILOT
+participant result                  FAIL-CLOSED / NOT_ESTIMABLE
 Gate D                              NONE
 Gate E                              NONE
+owner product-pilot smoke           PENDING AFTER HOSTINGER PATCH
 owner public approval               NOT GRANTED
 public /wave1 switch                NOT AUTHORIZED
 omesg360.eu root                    UNCHANGED
@@ -40,160 +46,57 @@ live /wave1                         UNCHANGED
 production product deployment       NOT AUTHORIZED
 ```
 
-## Release routing boundary
+## Product-shaped pilot flow
 
-The already-published URL remains a stable entrypoint:
-
-```text
-https://omesg360.eu/wave1/
-```
-
-It has not been changed.
-
-Versioned LAB releases use:
-
-```text
-/conflictlab/releases/<release-id>/
-```
-
-Current owner-operated LAB deployment:
-
-```text
-https://omesg360.eu/conflictlab/releases/calibration-v0.1/
-```
-
-Promotion remains explicit:
-
-```text
-LAB
--> OWNER APPROVAL of exact deployed release
--> separate PUBLIC switch authorization
--> optional ROLLBACK to previous public entrypoint
-```
-
-`OWNER_APPROVED` never implies `PUBLIC`.
-
-## Current Hostinger LAB boundary
-
-The LAB package uses an isolated future-session calibration database and does not reuse Wave1 response storage.
-
-Tables:
-
-```text
-cl_calibration_runs
-cl_calibration_attempts
-cl_calibration_pair_events
-```
-
-The initial owner end-to-end smoke run confirmed:
-
-```text
-browser
--> preload
--> Stage 0 training
--> measured 3-pair rapid block
--> calibration API
--> MySQL
--> Reflection
--> finish
-```
-
-That owner run is retained as `run_type = TECHNICAL` and cannot enter calibration N/20.
-
-Server collection mode remains:
-
-```text
-TECHNICAL
-```
-
-Only fresh-participant collection may use:
-
-```text
-CALIBRATION
-```
-
-and that switch requires an intentional owner action after the next pilot gate is complete.
-
-## Calibration admin v2
-
-Admin v2 separates engineering runs from calibration evidence.
-
-It reports:
-
-- server mode;
-- calibration-eligible clean `N / 20`;
-- technical/owner run count;
-- excluded calibration run count;
-- primary completion;
-- P3 missing;
-- P3 never presented;
-- P3-P1 missingness gradient;
-- retry diagnostic;
-- filters by run type, form, device and status;
-- per-run primary elapsed/retry state;
-- detailed attempts and P1/P2/P3 timing events;
-- pair missingness and positional diagnostics from eligible calibration runs only.
-
-At the last owner check the dashboard correctly showed:
-
-```text
-SERVER MODE: TECHNICAL
-technical runs: 1
-calibration eligible: 0 / 20
-excluded calibration: 0
-decision: INSUFFICIENT_DATA
-```
-
-## Timing gate
-
-The shared 6000 ms budget remains an unvalidated pilot hypothesis.
-
-At least 20 clean primary CALIBRATION blocks are required before the timing gate may produce:
-
-```text
-KEEP_6000
-ADJUST_AND_RETEST
-REJECT_6000
-```
-
-Primary timeout is evidence about the budget, not automatically an exclusion. Page-hidden primary remains excluded. Retries are diagnostic only.
-
-Timing/latency must not be interpreted as confidence, impulsivity, depth, decisiveness or another psychological characteristic without separate validation.
-
-## Product-shaped pilot — next development gate
-
-Because fresh testers are scarce, the next step is **not** to start N/20 immediately.
-
-The current LAB should first evolve into a product-shaped pilot so each fresh participant contributes to multiple independent validation layers in one coherent future-product flow.
-
-Target flow:
+Repository LAB release now implements:
 
 ```text
 LT / EN language selection
 -> Stage 0 training
--> rapid A/B block
+-> rapid A/B block / shared 6000 ms candidate budget
+-> timing-only server save
 -> reason reflection
 -> intensity 1-5
--> local calculation pipeline
--> evidence gate
--> result / fail-closed presentation
+-> local Calculation Engine
+-> local Evidence Engine
+-> fail-closed result screen
 ```
 
-Three response-time channels should remain distinct:
+Language is selected before training and remains fixed for that session. The reason map already supplies paired LT/EN participant text.
+
+## Three independent response-time channels
+
+The pilot keeps the three timings separate:
 
 ```text
 visual_choice_latency_ms
+  pair visually ready -> A/B choice
+
 reason_response_latency_ms
+  selected image + reason controls visually ready -> final reason selection
+
 intensity_response_latency_ms
+  selected image + intensity controls visually ready -> 1-5 selection
 ```
 
-`reflection_total_elapsed_ms` may be retained as UX/process telemetry.
+`reflection_total_elapsed_ms` is retained as a local UX/process diagnostic.
 
-Reason and intensity should be sequential so their response latencies remain separable.
+Reason and intensity stages have no time limit. Their controls remain disabled until the selected image is decoded and the UI is visually ready, so their clocks cannot begin before the participant can actually respond.
 
-## Calculation and local-first boundary
+No latency value is allowed to imply confidence, impulsivity, depth, decisiveness or another psychological characteristic without separate validation.
 
-The current v0.2 calculation constraints remain unchanged:
+## Reflection / intensity semantics
+
+Reason and intensity are sequential. Current local response model distinguishes:
+
+```text
+reason_status     = ANSWERED | SKIPPED | NOT_REACHED
+intensity_status  = ANSWERED | SKIPPED | NOT_REACHED
+```
+
+Reaction intensity is an independent self-report channel and does not enter Directional Balance.
+
+Current calculation invariants remain:
 
 ```text
 intensity never enters directional balance
@@ -202,51 +105,98 @@ retry events never enter directional balance
 reflection class never changes direction
 ```
 
-Reaction intensity remains an independent self-report channel. Reflection reasons/free text, intensity and derived personal results remain local-first by default.
+The rapid timing save occurs before reflection, so incomplete reflection does not automatically invalidate otherwise eligible timing evidence.
 
-Rapid timing eligibility and reflection completeness are separate dimensions. A participant who finishes the rapid block but abandons reflection does not automatically invalidate otherwise eligible timing evidence.
+## Local-first / server boundary
 
-## Gate and interpretation boundary
+Calibration server continues to receive only the mechanical timing fields required for the 6000 ms decision plus coarse device category.
 
-Still unchanged:
+It does **not** receive:
 
 ```text
-Gate D pair mapping          NONE
-Gate E aggregation           NONE
-stimulus lifecycle           DRAFT
-reason-map lifecycle         DRAFT
-participant directional claim NOT AUTHORIZED
-psychological result claim   NOT AUTHORIZED
+reason selection
+reflection free text
+reason_response_latency_ms
+intensity 1-5
+intensity_response_latency_ms
+reflection_total_elapsed_ms
+derived participant result
+persistent participant ID
 ```
 
-Real participant result presentation therefore remains fail-closed while Gate D/E are NONE. Calculation Engine / Evidence Engine / result UX can be developed using fixtures/synthetic cases without treating real participant direction as validated.
+Those product-shaped reflection/result channels are local-first in this build.
 
-## Immediate next operational step
+## Result pipeline boundary
 
-Do not change `/wave1/` and do not switch collection mode to `CALIBRATION` yet.
+The pilot now executes the actual Calculation Engine and Evidence Engine locally after reflection.
 
-Next development sequence:
+Current Gate D config remains:
 
-1. add complete LT/EN participant flow;
-2. add sequential reason -> intensity 1-5 reflection;
-3. record visual-choice, reason-response and intensity-response latencies independently;
-4. preserve local-first boundary for reason/intensity;
-5. wire the real Calculation Engine / Evidence Engine / fail-closed result shell;
-6. test scoring/result paths with fixtures/synthetic cases;
-7. owner smoke-test the complete product-shaped pilot in `TECHNICAL` mode;
-8. only after owner approval switch to `CALIBRATION` and begin fresh-participant N/20 collection.
+```text
+lifecycle = DRAFT
+mappings = []
+Gate D = NONE
+```
 
-## Production safety
+Current Gate E config remains:
+
+```text
+CS = NONE
+CR = NONE
+```
+
+Therefore the real participant result is intentionally:
+
+```text
+NOT_ESTIMABLE
+```
+
+The result screen explains that no directional/psychological conclusion is available yet. Synthetic/fixture cases may be used to develop result-processing and presentation behavior without treating real participant direction as validated.
+
+## Timing calibration boundary
+
+At least 20 clean primary `CALIBRATION` blocks are still required before the 6000 ms candidate can produce:
+
+```text
+KEEP_6000
+ADJUST_AND_RETEST
+REJECT_6000
+```
+
+`TECHNICAL` owner runs never enter N/20. Current server mode remains `TECHNICAL` until an explicit switch after owner product-pilot smoke testing.
+
+## Hostinger state
+
+The isolated LAB path remains:
+
+```text
+https://omesg360.eu/conflictlab/releases/calibration-v0.1/
+```
+
+The currently deployed bytes predate the product-shaped pilot changes in this status. A validated overwrite patch must be applied to this versioned LAB path before owner testing of LT/EN + reason/intensity + result-shell behavior.
+
+No DB migration is required for this product-shaped patch because the newly added reflection/intensity channels remain local-only and the existing timing API/schema are unchanged.
+
+## Public safety
 
 Still untouched:
 
 ```text
-omesg360.eu root
-live /wave1/ entrypoint
-frozen deploy/wave1-hostinger source mirror
-current Wave1 API
-existing Wave1 response storage
+https://omesg360.eu/
+https://omesg360.eu/wave1/
+current Wave1 API and response storage
+frozen deploy/wave1-hostinger mirror
 Pair P0 source files and paths
 ```
 
-No merge or public/production switch is authorized.
+No merge, public switch or production product deployment is authorized.
+
+## Immediate next gate
+
+1. package the CI-validated product-shaped LAB overwrite patch;
+2. owner uploads it only to `/conflictlab/releases/calibration-v0.1/`;
+3. keep `collection_mode = TECHNICAL`;
+4. owner smoke-tests LT and EN flows;
+5. verify admin gains only TECHNICAL runs and N/20 stays 0;
+6. record owner UX findings in the worklog;
+7. only then decide whether the data-collection boundary is sufficient for the planned research hypotheses before switching to `CALIBRATION`.
