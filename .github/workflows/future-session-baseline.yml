@@ -50,3 +50,5 @@ jobs:
         run: node tests/calculation_engine.test.mjs
       - name: Evidence engine
         run: node tests/evidence_engine.test.mjs
+      - name: Event outbox
+        run: node tests/event_outbox.test.mjs
