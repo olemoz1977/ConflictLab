@@ -69,6 +69,12 @@ Only coarse device category plus the timing fields required by `timing-calibrati
 
 Existing Wave1 storage is not reused.
 
+### Research-collection gate before fresh participants
+
+The product-shaped UX now captures reason/intensity channels locally, but the timing-only server boundary does **not** make those local channels available for aggregate research analysis.
+
+Before switching to real `CALIBRATION` collection, explicitly decide whether the planned hypotheses require a separate consented research channel (for example A/B response identity and/or reason metadata) rather than silently broadening the timing dataset. Until that decision is made, this build remains owner/technical testing only.
+
 ## TECHNICAL vs CALIBRATION
 
 `cl_calibration_runs.run_type` is assigned by server configuration and separates owner engineering runs from real timing calibration.
