@@ -1,6 +1,6 @@
 -- ConflictLab future-session server schema v0.2
 -- Architecture baseline only — NOT a production migration.
--- Source: RESULT_CALCULATION_ARCH_v0.2 + ADR-010.
+-- Source: RESULT_CALCULATION_ARCH_v0.2 + ADR-010 + ADR-011.
 --
 -- Hard boundaries:
 --   * Existing Wave 1 `responses` table is untouched.
@@ -42,6 +42,9 @@ CREATE TABLE rapid_block_attempts (
 -- Append-only pair events.
 -- No FK to rapid_block_attempts: asynchronous local-first upload may deliver pair events
 -- before the attempt summary. Consistency is checked by ingestion/research diagnostics.
+--
+-- `pair_presented` distinguishes a shown pair that timed out from a later pair that was
+-- never exposed because the shared block budget had already expired (ADR-011).
 CREATE TABLE rapid_pair_events (
     event_id                              CHAR(36) NOT NULL,
     session_id                            CHAR(36) NOT NULL,
@@ -54,6 +57,8 @@ CREATE TABLE rapid_pair_events (
     pair_exposure_number                  TINYINT UNSIGNED NOT NULL,
     asset_a_position                      ENUM('top','bottom','left','right') NOT NULL,
     asset_b_position                      ENUM('top','bottom','left','right') NOT NULL,
+    pair_presented                        TINYINT(1) NOT NULL,
+    pair_ready_elapsed_ms                 INT UNSIGNED NULL,
     choice                                ENUM('A','B','timeout') NOT NULL,
     visual_choice_latency_ms              INT UNSIGNED NULL,
     block_elapsed_ms_at_event             INT UNSIGNED NOT NULL,
@@ -71,13 +76,20 @@ CREATE TABLE rapid_pair_events (
     KEY idx_pair (pair_id),
     KEY idx_attempt_number (block_attempt_number),
     KEY idx_pair_position (pair_id, position_in_block),
+    KEY idx_pair_presented (pair_id, pair_presented),
 
     CONSTRAINT chk_pair_attempt_number
         CHECK (block_attempt_number BETWEEN 1 AND 3),
     CONSTRAINT chk_position_in_block
         CHECK (position_in_block BETWEEN 1 AND 3),
     CONSTRAINT chk_pair_exposure_number
-        CHECK (pair_exposure_number >= 1)
+        CHECK (pair_exposure_number >= 1),
+    CONSTRAINT chk_choice_requires_presentation
+        CHECK (choice = 'timeout' OR pair_presented = 1),
+    CONSTRAINT chk_unpresented_has_no_ready_time
+        CHECK (pair_presented = 1 OR pair_ready_elapsed_ms IS NULL),
+    CONSTRAINT chk_unpresented_has_no_latency
+        CHECK (pair_presented = 1 OR visual_choice_latency_ms IS NULL)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -116,5 +128,11 @@ CREATE TABLE reflection_reason_events (
 --   gate_e_mappings DB table
 --
 -- Primary directional evidence is derived as:
---   block_attempt_number = 1 AND choice IN ('A','B')
+--   block_attempt_number = 1
+--   AND pair_presented = 1
+--   AND choice IN ('A','B')
+--
+-- Coverage denominator uses Gate-D-eligible presentations where pair_presented = 1.
+-- Never-presented timeout placeholders preserve missingness provenance but do not count as
+-- participant exposures.
 -- Retry events remain process evidence only.
