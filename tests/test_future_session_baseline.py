@@ -108,7 +108,9 @@ def test_page_hidden_semantics_are_block_summary_plus_event_snapshot():
 
 def test_reason_server_table_is_structured_opt_in_only_and_versioned():
     sql = SCHEMA.read_text(encoding="utf-8")
-    reason_section = sql.split("CREATE TABLE reflection_reason_events", 1)[1]
+    reason_section = sql.split("CREATE TABLE reflection_reason_events", 1)[1].split(
+        ") ENGINE=InnoDB", 1
+    )[0]
     assert "reason_id" in reason_section
     assert "consent_version" in reason_section
     assert "stimulus_set_version" in reason_section
