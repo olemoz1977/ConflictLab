@@ -9,6 +9,10 @@ Detailed decisions and owner findings are maintained in:
 
 `docs/architecture/FUTURE_SESSION_WORKLOG.md`
 
+Detailed product-shaped implementation record:
+
+`docs/architecture/worklog/2026-08-14_PRODUCT_SHAPED_PILOT_IMPLEMENTATION.md`
+
 ## Current state
 
 ```text
