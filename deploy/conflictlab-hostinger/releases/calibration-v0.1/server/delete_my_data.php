@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $copy = $lang === 'en' ? [
     'title'=>'Delete my calibration data',
-    'lead'=>'Enter the 32-character deletion code shown after your successful timing-research upload.',
+    'lead'=>'Enter the 32-character deletion code shown before your main timing-research block. If you used this browser and local storage is available, the latest saved code may be filled in automatically.',
     'label'=>'Deletion code',
     'confirm'=>'I understand that this permanently deletes the server-side timing data for the matching session.',
     'button'=>'Delete matching session data',
@@ -65,11 +65,48 @@ $copy = $lang === 'en' ? [
     'contact'=>'If you prefer, you can also email info@omesg360.eu and provide the deletion code.'
 ] : [
     'title'=>'Ištrinti mano kalibravimo duomenis',
-    'lead'=>'Įveskite 32 simbolių ištrynimo kodą, parodytą po sėkmingo timing tyrimo duomenų įkėlimo.',
+    'lead'=>'Įveskite 32 simbolių ištrynimo kodą, parodytą prieš pagrindinį timing tyrimo bloką. Jei naudojate tą pačią naršyklę ir vietinis saugojimas prieinamas, naujausias kodas gali būti įrašytas automatiškai.',
     'label'=>'Duomenų ištrynimo kodas',
     'confirm'=>'Suprantu, kad bus negrįžtamai ištrinti atitinkančios sesijos serverio timing duomenys.',
     'button'=>'Ištrinti atitinkančios sesijos duomenis',
     'privacy'=>'Privatumo informacija',
     'contact'=>'Jei patogiau, taip pat galite parašyti info@omesg360.eu ir pateikti ištrynimo kodą.'
 ];
-?><!doctype html><html lang="<?=h($lang)?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0c0c0f"><title><?=h($copy['title'])?> · ConflictLab</title><style>:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0c0c0f;color:#e8e4dc;font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.55}.wrap{width:min(calc(100% - 28px),620px);margin:8vh auto}.card{background:#141417;border:1px solid #29292f;border-radius:18px;padding:20px}h1{font-size:26px;margin:0 0 10px}p{color:#aaa59c}label{display:block;margin:16px 0}.code{width:100%;font:inherit;background:#0d0d10;color:#eee;border:1px solid #3a3a42;border-radius:10px;padding:12px}.check{display:flex;gap:10px;align-items:flex-start;color:#c7c2b9}.check input{margin-top:5px}button{font:inherit;width:100%;padding:12px;border:0;border-radius:10px;background:#84aa99;color:#07100c;font-weight:750;cursor:pointer}.ok{color:#9fd0b8}.err{color:#e8a5a5}.small{font-size:13px}a{color:#a9c9ba}</style></head><body><div class="wrap"><div class="card"><h1><?=h($copy['title'])?></h1><p><?=h($copy['lead'])?></p><?php if($message):?><p class="ok"><?=h($message)?></p><?php endif;?><?php if($error):?><p class="err"><?=h($error)?></p><?php endif;?><?php if(!$message):?><form method="post" autocomplete="off"><input type="hidden" name="lang" value="<?=h($lang)?>"><label><?=h($copy['label'])?><input class="code" type="text" name="deletion_code" minlength="32" maxlength="32" pattern="[0-9a-fA-F]{32}" required></label><label class="check"><input type="checkbox" name="confirm_delete" value="yes" required><span><?=h($copy['confirm'])?></span></label><button><?=h($copy['button'])?></button></form><?php endif;?><p class="small"><a href="/privacy.html?lang=<?=h($lang)?>"><?=h($copy['privacy'])?></a></p><p class="small"><?=h($copy['contact'])?></p></div></div></body></html>
+?><!doctype html><html lang="<?=h($lang)?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0c0c0f"><title><?=h($copy['title'])?> · ConflictLab</title><style>:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0c0c0f;color:#e8e4dc;font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.55}.wrap{width:min(calc(100% - 28px),620px);margin:8vh auto}.card{background:#141417;border:1px solid #29292f;border-radius:18px;padding:20px}h1{font-size:26px;margin:0 0 10px}p{color:#aaa59c}label{display:block;margin:16px 0}.code{width:100%;font:inherit;background:#0d0d10;color:#eee;border:1px solid #3a3a42;border-radius:10px;padding:12px}.check{display:flex;gap:10px;align-items:flex-start;color:#c7c2b9}.check input{margin-top:5px}button{font:inherit;width:100%;padding:12px;border:0;border-radius:10px;background:#84aa99;color:#07100c;font-weight:750;cursor:pointer}.ok{color:#9fd0b8}.err{color:#e8a5a5}.small{font-size:13px}a{color:#a9c9ba}</style></head><body><div class="wrap"><div class="card"><h1><?=h($copy['title'])?></h1><p><?=h($copy['lead'])?></p><?php if($message):?><p class="ok"><?=h($message)?></p><?php endif;?><?php if($error):?><p class="err"><?=h($error)?></p><?php endif;?><?php if(!$message):?><form id="delete-form" method="post" autocomplete="off"><input type="hidden" name="lang" value="<?=h($lang)?>"><label><?=h($copy['label'])?><input id="deletion-code" class="code" type="text" name="deletion_code" minlength="32" maxlength="32" pattern="[0-9a-fA-F]{32}" required></label><label class="check"><input type="checkbox" name="confirm_delete" value="yes" required><span><?=h($copy['confirm'])?></span></label><button><?=h($copy['button'])?></button></form><?php endif;?><p class="small"><a href="/privacy.html?lang=<?=h($lang)?>"><?=h($copy['privacy'])?></a></p><p class="small"><?=h($copy['contact'])?></p></div></div><script>
+(()=>{
+  const storageKey='conflictlab_calibration_deletion_codes_v1';
+  const pendingKey='conflictlab_calibration_pending_delete_v1';
+  function readCodes(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(storageKey)||'[]');
+      return Array.isArray(parsed)?parsed.filter(x=>x&&/^[0-9a-f]{32}$/.test(x.code||'')):[];
+    }catch(_){return []}
+  }
+  function writeCodes(list){
+    try{localStorage.setItem(storageKey,JSON.stringify(list.slice(-12)))}catch(_){}
+  }
+  const input=document.getElementById('deletion-code');
+  if(input&&!input.value){
+    const codes=readCodes();
+    const latest=codes[codes.length-1];
+    if(latest)input.value=latest.code;
+  }
+  const form=document.getElementById('delete-form');
+  if(form&&input){
+    form.addEventListener('submit',()=>{
+      const code=(input.value||'').trim().toLowerCase();
+      if(/^[0-9a-f]{32}$/.test(code)){
+        try{sessionStorage.setItem(pendingKey,code)}catch(_){}
+      }
+    });
+  }
+  const completed=<?= $message ? 'true' : 'false' ?>;
+  if(completed){
+    let submitted='';
+    try{submitted=sessionStorage.getItem(pendingKey)||'';sessionStorage.removeItem(pendingKey)}catch(_){}
+    if(/^[0-9a-f]{32}$/.test(submitted)){
+      writeCodes(readCodes().filter(item=>item.code!==submitted));
+    }
+  }
+})();
+</script></body></html>
