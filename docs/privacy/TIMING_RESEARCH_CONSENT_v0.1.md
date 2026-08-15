@@ -1,7 +1,7 @@
 # ConflictLab — Timing Research Consent v0.1
 
 **Date:** 2026-08-15  
-**Status:** DRAFT / participant-facing copy to implement only after privacy release blockers close  
+**Status:** DRAFT ALIGNED WITH LIVE TECHNICAL FLOW / NOT AUTHORIZED FOR EXTERNAL CALIBRATION YET  
 **Purpose:** explicit opt-in consent for the first external mechanical timing / UX calibration study.
 
 ---
@@ -21,11 +21,15 @@ Jei sutinkate dalyvauti, į tyrimų serverį bus perduodami tik minimalūs pseud
 Duomenų valdytojas: **Oleg Mozochin**  
 Kontaktas: **info@omesg360.eu**
 
-Pseudoniminiai timing tyrimo įvykiai planuojami saugoti ne ilgiau kaip **90 dienų**, nebent jie būtų ištrinti arba negrįžtamai anonimizuoti anksčiau.
+Pseudoniminiai timing tyrimo įvykiai aktyvioje tyrimo DB planuojami saugoti ne ilgiau kaip **90 dienų**, nebent jie būtų ištrinti anksčiau. Hostinger atsarginėse kopijose likutinė kopija gali išlikti iki įprastos backup rotacijos, kaip paaiškinta pilname privatumo pranešime.
 
-Dalyvavimas yra savanoriškas. Sutikimą dėl būsimo sutikimu grindžiamo tvarkymo galite atšaukti. Po dalyvavimo sistema turi parodyti atsitiktinį duomenų ištrynimo / atšaukimo kodą, kurį galėsite pateikti el. paštu `info@omesg360.eu`.
+Dalyvavimas yra savanoriškas. Sutikimą dėl būsimo sutikimu grindžiamo tvarkymo galite atšaukti.
 
-Pilną informaciją pateikia `Timing Research Privacy Notice v0.1`.
+Jei pasirenkate dalyvauti, **prieš pagrindinį timing bloką** jūsų naršyklė sugeneruoja atsitiktinį 32 simbolių duomenų ištrynimo kodą. Kodas parodomas jums ir, jei vietinis naršyklės saugojimas prieinamas, išsaugomas tik tame įrenginyje kaip ištrynimo / atšaukimo patogumo priemonė. Šis plaintext kodas nėra siunčiamas į tyrimo DB; sėkmingo upload atveju serveris saugo tik jo SHA-256 hash.
+
+Kodu galima pasinaudoti per savitarnos ištrynimo puslapį arba pateikti jį el. paštu `info@omesg360.eu`. Jei vietinis saugojimas neprieinamas, kodą reikia išsisaugoti pačiam prieš tęsiant.
+
+Pilną informaciją pateikia `Timing Research Privacy Notice v0.3`.
 
 ### Dalyvio veiksmai
 
@@ -43,7 +47,7 @@ Primary action:
 Sutinku ir dalyvauju timing tyrime
 ```
 
-Alternative action, where the implementation supports local-only continuation:
+Alternative action:
 
 ```text
 Tęsti be tyrimo duomenų įkėlimo
@@ -54,6 +58,8 @@ Rules:
 - consent is not bundled with general site terms;
 - no countdown, visual coercion or guilt language around refusal;
 - the research upload must not begin before affirmative consent;
+- deletion-code local storage must not occur before affirmative research opt-in;
+- local deletion-code storage is not a research-data channel and must not be uploaded/exported/analyzed;
 - store the exact consent version/state with the research run;
 - refusal must not be encoded as a psychological result.
 
@@ -74,11 +80,15 @@ The research database will not receive your name, email address, employer, date 
 Data controller: **Oleg Mozochin**  
 Contact: **info@omesg360.eu**
 
-Pseudonymous timing-study event data are planned to be retained for no more than **90 days**, unless deleted or irreversibly anonymised earlier.
+Pseudonymous timing-study event data are planned to remain in the active research database for no more than **90 days**, unless deleted earlier. Residual copies may remain in Hostinger backups until normal backup rotation, as described in the full privacy notice.
 
-Participation is voluntary. You may withdraw consent for future consent-based processing. After participation, the system must display a random withdrawal/deletion code that can be submitted to `info@omesg360.eu`.
+Participation is voluntary. You may withdraw consent for future consent-based processing.
 
-Full information is provided in `Timing Research Privacy Notice v0.1`.
+If you choose to participate, **before the main timing block** your browser creates a random 32-character deletion code. The code is shown to you and, where browser local storage is available, is stored only on that device as a withdrawal/deletion convenience. The plaintext code is not sent to the research database; after a successful upload the server stores only its SHA-256 hash.
+
+The code can be used through the self-service deletion page or provided by email to `info@omesg360.eu`. If local storage is unavailable, you should save the code yourself before continuing.
+
+Full information is provided in `Timing Research Privacy Notice v0.3`.
 
 ### Participant actions
 
@@ -96,7 +106,7 @@ Primary action:
 I consent and participate in timing research
 ```
 
-Alternative action, where the implementation supports local-only continuation:
+Alternative action:
 
 ```text
 Continue without research upload
@@ -107,6 +117,8 @@ Rules:
 - consent is separate from general terms;
 - no countdown, visual coercion, or guilt language around refusal;
 - research upload starts only after affirmative consent;
+- deletion-code local storage must not occur before affirmative research opt-in;
+- local deletion-code storage is not a research-data channel and must not be uploaded/exported/analyzed;
 - store exact consent version/state with the run;
 - refusal is never encoded as a psychological result.
 
@@ -114,14 +126,16 @@ Rules:
 
 ## Release blockers
 
-This participant copy is not authorized for live collection until:
+This participant copy is not authorized for external CALIBRATION collection until:
 
 ```text
-Privacy Notice is frozen
+Privacy Notice v0.3 is frozen and reflected in live /privacy.html
 Hostinger processor/transfer review is closed
 technical/security LIA is complete
 withdrawal/deletion code works end-to-end
-90-day deletion/anonymisation process is tested
+90-day retention control is operational
 exact research payload is verified
-consent screen matches this text and records its version
+final LT/EN + local-only smoke checks pass
+activation record is created
+owner explicitly authorizes CALIBRATION
 ```
