@@ -48,20 +48,33 @@ $html = replace_once(
 );
 
 $preUploadGate = <<<'JS'
+const DELETION_CODES_STORAGE_KEY='conflictlab_calibration_deletion_codes_v1';
+function storeDeletionCodeLocally(code){
+  if(!/^[0-9a-f]{32}$/.test(code))return false;
+  try{
+    const parsed=JSON.parse(localStorage.getItem(DELETION_CODES_STORAGE_KEY)||'[]');
+    const list=Array.isArray(parsed)?parsed:[];
+    const withoutSame=list.filter(item=>item&&item.code!==code);
+    withoutSame.push({code,createdAt:new Date().toISOString(),releaseId:RELEASE_ID});
+    localStorage.setItem(DELETION_CODES_STORAGE_KEY,JSON.stringify(withoutSame.slice(-12)));
+    return true;
+  }catch(_){return false}
+}
 function showPreUploadDeletionCode(){
   if(researchChoice.mode!=='CONSENTED'||!deletionToken){showError(new Error('deletion code unavailable'));return}
+  const storedLocally=storeDeletionCodeLocally(deletionToken);
   setRapidMode(false);const card=document.createElement('section');card.className='card intro';
   const isLt=locale==='lt';
   const title=document.createElement('h2');title.textContent=isLt?'Išsisaugok duomenų ištrynimo kodą':'Save your data-deletion code';
   const help=document.createElement('p');help.textContent=isLt
-    ?'Šis kodas sukurtas tavo naršyklėje prieš siunčiant bet kokius timing tyrimo duomenis. Išsisaugok jį prieš tęsiant. Jei užbaigto bloko duomenys bus sėkmingai įkelti, kodas leis vėliau rasti ir ištrinti tą pseudoniminę sesiją.'
-    :'This code is created in your browser before any timing-research data are sent. Save it before continuing. If the completed block is uploaded successfully, the code will let you later locate and delete that pseudonymous session.';
+    ?(storedLocally?'Šis kodas sukurtas tavo naršyklėje ir automatiškai išsaugotas tik šiame įrenginyje prieš siunčiant bet kokius timing tyrimo duomenis. Vis tiek rekomenduojame jį nukopijuoti. Jei užbaigto bloko duomenys bus sėkmingai įkelti, kodas leis vėliau rasti ir ištrinti tą pseudoniminę sesiją.':'Šis kodas sukurtas tavo naršyklėje prieš siunčiant bet kokius timing tyrimo duomenis. Naršyklė neleido jo automatiškai išsaugoti, todėl būtinai nukopijuok kodą prieš tęsiant. Jei užbaigto bloko duomenys bus sėkmingai įkelti, kodas leis vėliau rasti ir ištrinti tą pseudoniminę sesiją.')
+    :(storedLocally?'This code was created in your browser and automatically saved only on this device before any timing-research data are sent. We still recommend copying it. If the completed block is uploaded successfully, the code will let you later locate and delete that pseudonymous session.':'This code was created in your browser before any timing-research data are sent. Your browser did not allow automatic local saving, so copy the code before continuing. If the completed block is uploaded successfully, the code will let you later locate and delete that pseudonymous session.');
   const box=document.createElement('div');box.className='withdrawal-box';
   const code=document.createElement('code');code.textContent=deletionToken;
   const copy=document.createElement('button');copy.type='button';copy.className='secondary';copy.textContent=t('copyCode');
   const savedLabel=document.createElement('label');savedLabel.className='consent-row';
   const saved=document.createElement('input');saved.type='checkbox';saved.checked=false;
-  const savedText=document.createElement('span');savedText.className='consent-copy';savedText.textContent=isLt?'Patvirtinu, kad kodą išsisaugojau.':'I confirm that I saved the code.';
+  const savedText=document.createElement('span');savedText.className='consent-copy';savedText.textContent=isLt?'Patvirtinu, kad žinau, kur rasti arba išsisaugojau kodą.':'I confirm that I know where to find or have saved the code.';
   savedLabel.append(saved,savedText);
   const actions=document.createElement('div');actions.className='actions';
   const next=document.createElement('button');next.className='primary';next.type='button';next.textContent=isLt?'Tęsti į pagrindinę sesiją':'Continue to main session';next.disabled=true;
