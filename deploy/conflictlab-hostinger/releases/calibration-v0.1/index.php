@@ -30,13 +30,13 @@ $html = str_replace('.mjs', '.js', $html);
 $html = replace_once(
     $html,
     "consentHint:'Varnelės nepažymėtos iš anksto. Atsisakymas nėra vertinamas kaip psichologinis signalas. Po sėkmingo įkėlimo gausi atsitiktinį duomenų ištrynimo kodą.'",
-    "consentHint:'Varnelės nepažymėtos iš anksto. Atsisakymas nėra vertinamas kaip psichologinis signalas. Prieš pagrindinį tyrimo bloką gausi atsitiktinį duomenų ištrynimo kodą.'",
+    "consentHint:'Varnelės nepažymėtos iš anksto. Atsisakymas nėra vertinamas kaip psichologinis signalas. Jei pasirinksi dalyvauti, prieš pagrindinį bloką naršyklė sukurs atsitiktinį ištrynimo kodą ir, jei vietinis saugojimas prieinamas, išsaugos jį tik šiame įrenginyje. Plaintext kodas į tyrimo serverį nesiunčiamas.'",
     'LT consent hint'
 );
 $html = replace_once(
     $html,
     "consentHint:'Checkboxes are unticked by default. Refusal is not treated as a psychological signal. After a successful upload you will receive a random data-deletion code.'",
-    "consentHint:'Checkboxes are unticked by default. Refusal is not treated as a psychological signal. Before the main research block you will receive a random data-deletion code.'",
+    "consentHint:'Checkboxes are unticked by default. Refusal is not treated as a psychological signal. If you choose to participate, before the main block your browser will create a random deletion code and, where local storage is available, save it only on this device. The plaintext code is not sent to the research server.'",
     'EN consent hint'
 );
 
