@@ -1,4 +1,6 @@
-# ConflictLab
+# 2Pair
+
+**Formerly ConflictLab.** The public product name is now **2Pair**. The GitHub repository remains named `ConflictLab` for technical continuity and historical links.
 
 **Epistemic Reflection Framework** — eksperimentinė savirefleksijos sistema, skirta stebėti spontaniškas reakcijas į kontroliuojamus vizualinius skirtumus, o ne klasifikuoti žmogų.
 
@@ -49,7 +51,7 @@ AW statinių vaizdų programa sustabdyta. Galimas domain-specific response traje
 
 ---
 
-## Wave 1 šeimos
+## Human Wave 1 šeimos
 
 ### CS
 1. `CS-PR-01` — Partial Reveal
@@ -121,7 +123,7 @@ Naujas žmogus ar AI turėtų skaityti tokia tvarka:
 ## Repo struktūra
 
 ```text
-ConflictLab/
+ConflictLab/                      ← techninis repo pavadinimas; viešas produktas = 2Pair
 ├── PROJECT_STATE.md
 ├── README.md
 ├── REPOSITORY_INVENTORY.md
@@ -148,7 +150,7 @@ ConflictLab/
 
 ---
 
-## Ko ConflictLab nėra
+## Ko 2Pair nėra
 
 - psichologinis testas
 - diagnostika
@@ -156,4 +158,4 @@ ConflictLab/
 - elgesio prognozavimo sistema
 - automatinis žmogaus „scoringas“ pagal vieną pasirinkimą
 
-**ConflictLab — stebėjimas, ne nuosprendis.**
+**2Pair — stebėjimas, ne nuosprendis.**
