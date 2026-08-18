@@ -29,6 +29,15 @@ Browser tools removed from active `docs/` paths because they are no longer part 
 - `review-single-image.html` — old single-image stimulus review precursor
 - `generator.html` — legacy stimulus generator with previously documented CORS limitations
 
+### `future-session-development-history/`
+Superseded intermediate documents from the post-Wave-1 future-session implementation work. They are retained for decision traceability but are not current implementation truth.
+
+Subgroups:
+
+- `implementation-status/` — superseded baseline status snapshots v0.2–v0.8; current status remains under `docs/architecture/`.
+- `stimulus-audits/` — superseded F1 candidate audits v0.1–v0.2; corrected current audit remains under `docs/architecture/`.
+- `reason-map-reviews/` — superseded reason-map editorial review v0.1; current review remains under `docs/architecture/`.
+
 ---
 
 ## Why archive instead of delete?

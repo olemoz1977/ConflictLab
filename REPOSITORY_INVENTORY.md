@@ -1,15 +1,15 @@
 # ConflictLab — Repository Inventory
 
-**Date:** 2026-08-13  
-**Scope:** current `main` state + Human Wave 1 v0.3 deployment freeze  
-**Purpose:** prevent current, frozen and historical artifacts from being mixed into one methodology.
+**Date:** 2026-08-14  
+**Scope:** working branch `arch/result-v0.2-implementation-baseline` + frozen Human Wave 1 v0.3 deployment  
+**Purpose:** prevent current, frozen, experimental and historical artifacts from being mixed into one methodology.
 
 ## Classification
 
-- **CURRENT** — current operational/methodological truth
-- **ACTIVE-EXPERIMENT** — being tested now; not validated truth
+- **CURRENT** — current operational/methodological truth for the stated scope
+- **ACTIVE-EXPERIMENT** — being implemented/tested now; not validated truth
 - **FROZEN-REFERENCE** — technically useful, must not be silently rewritten
-- **HISTORICAL-PROTOTYPE** — records earlier design/logic; not current v0.8 truth
+- **HISTORICAL-PROTOTYPE** — records earlier design/logic; not current v0.8/future-session truth
 - **SUPPORTING** — useful evidence, audit or tooling
 - **ARCHIVE** — intentionally removed from active paths
 - **EXTERNAL-LIVE** — deployed outside GitHub
@@ -21,16 +21,19 @@
 
 | Path | Class | Purpose / note |
 |---|---|---|
-| `PROJECT_STATE.md` | **CURRENT** | read first; current milestone, methodology boundary, deployment status |
+| `PROJECT_STATE.md` | **CURRENT** | project-level milestone and methodology boundary; Wave 1 remains frozen |
 | `README.md` | **CURRENT** | public project overview aligned to v0.8 Human Wave 1 |
 | `REPOSITORY_INVENTORY.md` | **CURRENT** | this status map |
-| `WHY_CONFLICTLAB.md` | HISTORICAL-PROTOTYPE / SUPPORTING | valuable rationale, but several v0.7-era claims are not current v0.8 truth |
+| `WHY_CONFLICTLAB.md` | HISTORICAL-PROTOTYPE / SUPPORTING | valuable rationale, but several v0.7-era claims are not current truth |
 | `.gitignore` | CURRENT | local/tooling ignores; deployment secrets must remain untracked |
 | `archive/` | ARCHIVE | historical project material |
-| `docs/` | MIXED | frozen baseline + active experiments + methodology |
-| `src/` | FROZEN-REFERENCE | v0.7 Python engine |
+| `config/future-session/` | **ACTIVE-EXPERIMENT** | versioned DRAFT future-session methodology/config artifacts; Gate D/E remain NONE |
+| `deploy/` | MIXED | frozen Wave 1 mirror + separate candidate deployment material |
+| `docs/` | MIXED | frozen baseline + active experiments + methodology + architecture |
+| `server/future-session/` | **ACTIVE-EXPERIMENT** | isolated future-session server prototype; not deployed |
+| `src/` | MIXED | v0.7 frozen engine + isolated future-session implementation |
 | `stimuli/` | FROZEN-REFERENCE | v0.7 provisional stimulus library |
-| `tests/` | SUPPORTING | engine/prototype tests |
+| `tests/` | MIXED / SUPPORTING | frozen-engine tests + active future-session contract tests |
 
 Top-level `validation/` was v0.4-era stale material and was moved to `archive/v0.4-validation/` in the 2026-08-13 housekeeping pass.
 
@@ -175,7 +178,7 @@ Keep as reference; do not actively develop unless explicitly reopened.
 | `docs/index.html` | FROZEN-REFERENCE |
 | `docs/methodology/` | FROZEN-REFERENCE |
 | `docs/media/` | FROZEN-REFERENCE |
-| `docs/architecture/` | FROZEN-REFERENCE / historical ADRs |
+| `docs/architecture/` | MIXED — v0.7 historical material + active future-session architecture/docs |
 | `src/engine/behavior_translation/` | FROZEN-REFERENCE |
 | `stimuli/ST-001–010/` | FROZEN-REFERENCE |
 | `tests/test_behavior_translation.py` | SUPPORTING |
@@ -183,6 +186,40 @@ Keep as reference; do not actively develop unless explicitly reopened.
 | `docs/product_experience_audit_v1.md` | SUPPORTING / historical UX audit |
 
 `docs/index.html` still contains the old direct-browser Claude API architecture; this is not the Human Wave 1 deployment.
+
+---
+
+## 6A. FUTURE SESSION v0.2 IMPLEMENTATION BASELINE — DRAFT / ISOLATED
+
+This working branch contains an isolated post-Wave-1 implementation path. It does not replace or modify the frozen Human Wave 1 deployment.
+
+| Path | Class | Note |
+|---|---|---|
+| `docs/architecture/FUTURE_SESSION_IMPLEMENTATION_BASELINE_STATUS_v0.9.md` | **CURRENT** | current future-session branch status |
+| `config/future-session/` | **ACTIVE-EXPERIMENT** | DRAFT stimulus/presentation/reason configs; Gate D/E NONE |
+| `src/future_session/` | **ACTIVE-EXPERIMENT** | rapid block, presentation, reflection, orchestration and result/evidence plumbing |
+| `server/future-session/` | **ACTIVE-EXPERIMENT** | isolated server prototype; NOT DEPLOYED |
+| `docs/experiments/future-session-pilot-preview.html` | **ACTIVE-EXPERIMENT** | server-isolated end-to-end participant-flow preview |
+| `docs/experiments/future-session-reflection-preview.html` | ACTIVE-EXPERIMENT / SUPPORTING | Reflection preview |
+| `docs/experiments/reflection-reason-review.html` | SUPPORTING | exact-asset reason review tool |
+| `archive/future-session-development-history/` | ARCHIVE | superseded implementation status/audit/review snapshots |
+
+Current future-session state:
+
+```text
+stimulus-set             DRAFT / 6 pairs / 12 exact assets
+rapid mechanics          COMPLETE FOR PILOT
+6000 ms budget           UNVALIDATED / real telemetry pending
+reason map               48 DRAFT items
+exact-asset review       COMPLETE
+Reflection UI            IMPLEMENTED AS DRAFT
+owner UX approval        PENDING
+Gate D                   NONE
+Gate E                   NONE
+production deploy        NOT AUTHORIZED
+```
+
+No participant result claim is authorized. A/B asset identity is factual provenance only and must not be treated as +1/-1 direction.
 
 ---
 
@@ -200,7 +237,9 @@ Do not use these as Human Wave 1 participant instructions.
 
 ---
 
-## 8. ARCHIVED IN 2026-08-13 HOUSEKEEPING
+## 8. ARCHIVED HOUSEKEEPING
+
+### 2026-08-13
 
 Moved without changing content:
 
@@ -224,7 +263,24 @@ Rationale:
 - `docs/review.html` is an obsolete single-image review precursor, superseded by `docs/experiments/stimulus-validation/pair-review.html`
 - `docs/generator.html` is a legacy generator with the documented CORS problem and is not part of current Wave 1 production
 
-Historical Git tags/commits preserve their original locations.
+### 2026-08-14
+
+Superseded future-session development snapshots moved without changing their archived content:
+
+```text
+docs/architecture/FUTURE_SESSION_IMPLEMENTATION_BASELINE_STATUS_v0.2–v0.8.md
+    → archive/future-session-development-history/implementation-status/
+
+docs/architecture/FUTURE_SESSION_STIMULUS_FREEZE_CANDIDATE_AUDIT_v0.1–v0.2.md
+    → archive/future-session-development-history/stimulus-audits/
+
+docs/architecture/FUTURE_SESSION_REASON_MAP_DRAFT_REVIEW_v0.1.md
+    → archive/future-session-development-history/reason-map-reviews/
+```
+
+Current status/audit/review documents remain under `docs/architecture/`.
+
+Historical Git tags/commits preserve original locations.
 
 ---
 
@@ -236,21 +292,23 @@ Historical Git tags/commits preserve their original locations.
 | `archive/v0.7-freeze/` | old engines, theory material, v0.4/v0.7-era files |
 | `archive/v0.4-validation/` | former stale root validation package |
 | `archive/legacy-tools/` | obsolete browser tools removed from active `docs/` paths |
+| `archive/future-session-development-history/` | superseded future-session implementation status, stimulus audit and reason-review snapshots |
 | `archive/README.md` | archive interpretation rules |
 
 ---
 
 ## 10. CURRENT SOURCE-CONTROL RULES
 
-1. Current truth must be explicit; old files are not made current merely because they remain in `main`.
+1. Current truth must be explicit; old files are not made current merely because they remain in the repository.
 2. Freeze technically useful historical paths when moving them could break milestone traceability.
-3. Archive only confirmed obsolete artifacts with no active dependency.
+3. Archive only confirmed obsolete artifacts with no active runtime/config/test dependency.
 4. Never commit Hostinger passwords, API keys, live DB credentials, live `config.php`, or participant data.
 5. `deploy/wave1-hostinger/` is the non-secret v0.3 deployment mirror; asset binaries remain canonical under `docs/experiments/stimulus-validation/assets/`.
 6. Human Wave 1 data itself must not be committed into this public repository.
 7. Treat `wave1-v0.3` as frozen for real participant collection. Participant-facing wording, presentation, capture semantics or stimulus changes require a new protocol version and documented delta.
 8. Exclude known technical/pre-pilot sessions from Human Wave 1 research analysis.
-9. Before a methodology change, update `PROJECT_STATE.md` and the relevant canonical spec/checkpoint rather than accumulating contradictory notes.
+9. Before a methodology change, update the relevant canonical spec/checkpoint rather than accumulating contradictory notes.
+10. For the current future-session working branch, start with `docs/architecture/FUTURE_SESSION_IMPLEMENTATION_BASELINE_STATUS_v0.9.md`; archived intermediate status files must not override it.
 
 ---
 
