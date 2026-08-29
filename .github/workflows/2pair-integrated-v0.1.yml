@@ -66,3 +66,19 @@ jobs:
         run: |
           set -euo pipefail
           for f in deploy/2pair-integrated-v0.1/server/*.php; do php -l "$f"; done
+
+  integrated-package:
+    needs:
+      - integrated-contract
+      - integrated-php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish validated Hostinger TECHNICAL candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: 2pair-integrated-v0.1-${{ github.sha }}
+          path: deploy/2pair-integrated-v0.1/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
