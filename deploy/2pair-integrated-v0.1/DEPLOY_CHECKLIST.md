@@ -2,15 +2,16 @@
 
 ## A. Before Hostinger
 
-- [ ] JS tests PASS.
-- [ ] PHP syntax PASS.
-- [ ] six research pair asset bytes match frozen Wave 1 Git blobs.
-- [ ] three training pair asset bytes match frozen P0 Git blobs.
-- [ ] protocol/release/consent versions frozen.
-- [ ] integrated privacy notice approved for deployment.
+- [x] JS tests PASS — GitHub Actions `2Pair Integrated v0.1` run #1.
+- [x] PHP syntax PASS — GitHub Actions `2Pair Integrated v0.1` run #1.
+- [x] six research pair asset bytes match frozen Wave 1 source bytes — exact `cmp` PASS in CI and Git blob identities independently checked.
+- [x] three training pair asset bytes match frozen P0 source bytes — exact `cmp` PASS in CI and Git blob identities independently checked.
+- [x] protocol/release/consent versions frozen for the TECHNICAL candidate package.
+- [ ] integrated privacy notice approved and made live before any external RESEARCH activation. The current notice remains DRAFT and does not block owner-only TECHNICAL deployment/smoke.
 
 ## B. Hostinger TECHNICAL deployment
 
+- [ ] **OWNER DEPLOY DECISION REQUIRED BEFORE THIS SECTION.**
 - [ ] create a new release directory; do not overwrite `/wave1/` or `calibration-v0.1`.
 - [ ] create/use integrated MySQL tables from `server/schema.sql`.
 - [ ] create `server/config.php` from `config.example.php` with real DB credentials and admin password hash.
@@ -28,8 +29,8 @@
 - [ ] `no_clear_choice` immediate timing capture.
 - [ ] A/B immediate tap timing capture; no Next-button latency contamination.
 - [ ] local-only path creates no DB rows.
-- [ ] TECHNICAL research-like path stores two blocks but is excluded from Wave 1 export (`excluded=1`).
-- [ ] partial session after only block 1 remains analyzable as incomplete.
+- [ ] TECHNICAL research-like path stores two blocks but is excluded from Wave 1 analysis (`excluded=1`).
+- [ ] partial session after only block 1 remains analyzable as incomplete in Timing/UX data and does not masquerade as a completed Wave 1 response set.
 - [ ] reflection free text / intensity / hard_to_identify persist for primary anchors.
 - [ ] retry-only reflection is not accepted into research storage.
 
@@ -37,9 +38,11 @@
 
 - [ ] Timing export opens and preserves Calibration-style variables.
 - [ ] Wave 1 export runs through existing `tools/analyze_wave1_export.py` without schema changes.
+- [ ] Wave 1 export includes only reflection-submitted rows, preserving historical Wave 1 row semantics.
 - [ ] admin TIMING / UX panel matches a hand-checked smoke run.
 - [ ] admin STIMULUS VALIDATION panel matches a hand-checked smoke run.
-- [ ] no combined psychological score appears anywhere.
+- [ ] retry diagnostic denominator matches clean-primary Timing/UX blocks.
+- [x] no combined psychological score appears in automated analysis-boundary CI checks.
 
 ## E. Rights / retention
 
