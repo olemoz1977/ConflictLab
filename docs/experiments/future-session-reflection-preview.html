@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ConflictLab — Future Reflection Preview</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0c0c0f;color:#e7e3da;font-family:Inter,system-ui,sans-serif}
+main{max-width:620px;margin:auto;padding:24px 16px 64px}.note{font-size:13px;color:#9a958d;line-height:1.5;margin-bottom:18px}
+.cl-reflection{background:#141417;border:1px solid #29292f;border-radius:18px;padding:18px}.cl-reflection__progress{font-size:12px;color:#83a998}
+.cl-reflection__title{font-size:24px;font-weight:550;margin:8px 0}.cl-reflection__prompt{color:#c7c2b9;line-height:1.45}
+.cl-reflection__image{display:block;width:min(100%,430px);aspect-ratio:1/1;object-fit:contain;margin:16px auto;border-radius:14px;background:#0b0b0d}
+.cl-reflection__options{border:0;padding:0;margin:0;display:grid;gap:10px}.cl-reflection__option{display:flex;gap:10px;align-items:flex-start;border:1px solid #303038;border-radius:12px;padding:12px;cursor:pointer}
+.cl-reflection__radio{margin-top:3px}.cl-reflection__other{margin-top:12px}.cl-reflection__local-note{font-size:12px;color:#8f8a82}
+.cl-reflection__textarea{width:100%;background:#0d0d10;color:#e7e3da;border:1px solid #303038;border-radius:10px;padding:10px;font:inherit}
+.cl-reflection__actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}.cl-reflection__actions button{border-radius:10px;padding:11px 16px;font:inherit}
+.cl-reflection__back{background:#19191d;color:#ddd8ce;border:1px solid #303038}.cl-reflection__next{background:#83a998;color:#0b0b0d;border:0;font-weight:650}.cl-reflection__next:hover{filter:brightness(1.05)}
+.cl-reflection__sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+pre{white-space:pre-wrap;background:#111114;border:1px solid #29292f;border-radius:12px;padding:12px;font-size:12px;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+  <div class="note">
+    Internal DRAFT preview only. Gate D / Gate E remain NONE. This page does not send reflection data to a server.
+  </div>
+  <div id="app"></div>
+  <pre id="output" hidden></pre>
+</main>
+<script type="module">
+import { buildReflectionItems } from '../../src/future_session/reflection_model.mjs';
+import { mountReflectionUI } from '../../src/future_session/reflection_ui.mjs';
+
+const [stimulusSet, reasonMap] = await Promise.all([
+  fetch('../../config/future-session/stimulus-set-v1.json').then(r => r.json()),
+  fetch('../../config/future-session/reason-map-v1.json').then(r => r.json()),
+]);
+
+const anchors = [
+  {
+    pairId: 'CS-RE-01',
+    rapidEventId: '11111111-1111-4111-8111-111111111111',
+    anchorChoice: 'A',
+    anchorSource: 'PRIMARY',
+  },
+  {
+    pairId: 'CR-PZ-01',
+    rapidEventId: '22222222-2222-4222-8222-222222222222',
+    anchorChoice: 'B',
+    anchorSource: 'PRIMARY',
+  },
+  {
+    pairId: 'CR-PO-01',
+    rapidEventId: '33333333-3333-4333-8333-333333333333',
+    anchorChoice: 'B',
+    anchorSource: 'FIRST_COMPLETED_RETRY',
+  },
+];
+
+const items = buildReflectionItems({
+  anchors,
+  stimulusSet,
+  reasonMap,
+  locale: 'lt',
+  allowDraft: true,
+});
+
+mountReflectionUI({
+  root: document.getElementById('app'),
+  items,
+  locale: 'lt',
+  assetUrlResolver: path => '../../' + path,
+  onComplete(selections) {
+    const out = document.getElementById('output');
+    out.hidden = false;
+    out.textContent = JSON.stringify(selections, null, 2);
+  },
+});
+</script>
+</body>
+</html>

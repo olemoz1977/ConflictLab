@@ -1,0 +1,145 @@
+name: Future Session Baseline
+
+on:
+  push:
+    branches:
+      - arch/result-v0.2-implementation-baseline
+  pull_request:
+    paths:
+      - 'src/future_session/**'
+      - 'server/future-session/**'
+      - 'config/future-session/**'
+      - 'docs/experiments/future-session-pilot-preview.html'
+      - 'docs/architecture/FUTURE_SESSION_SERVER_SCHEMA_v0.2.sql'
+      - 'docs/architecture/adr/ADR-010-*'
+      - 'docs/architecture/adr/ADR-011-*'
+      - 'docs/architecture/adr/ADR-012-*'
+      - 'docs/architecture/adr/ADR-013-*'
+      - 'docs/architecture/adr/ADR-014-*'
+      - 'deploy/conflictlab-hostinger/releases/calibration-v0.1/**'
+      - 'tests/test_future_session_baseline.py'
+      - 'tests/test_future_stimulus_asset_verifier.py'
+      - 'tests/*.test.mjs'
+      - 'tests/future_session_*_test.php'
+      - 'tools/verify_future_stimulus_assets.py'
+
+jobs:
+  legacy-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Existing behavior-translation tests
+        run: python -m pytest -q tests/test_behavior_translation.py
+
+  baseline-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Future-session architecture and stimulus invariants
+        run: python -m pytest -q tests/test_future_session_baseline.py tests/test_future_stimulus_asset_verifier.py
+      - name: Verify exact six-pair repository asset bytes
+        run: python tools/verify_future_stimulus_assets.py
+
+  future-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Training plan
+        run: node tests/training_plan.test.mjs
+      - name: Rapid presentation planner
+        run: node tests/presentation_plan.test.mjs
+      - name: Asset preloader
+        run: node tests/asset_preloader.test.mjs
+      - name: Timing calibration gate
+        run: node tests/timing_calibration.test.mjs
+      - name: Reason-map contract
+        run: node tests/reason_map_contract.test.mjs
+      - name: Reflection model
+        run: node tests/reflection_model.test.mjs
+      - name: Reflection UI contract
+        run: node tests/reflection_ui_contract.test.mjs
+      - name: Product reflection timing flow
+        run: node tests/product_reflection_flow.test.mjs
+      - name: Product result fail-closed gate
+        run: node tests/product_result_gate.test.mjs
+      - name: Product-shaped release contract
+        run: node tests/product_pilot_release_contract.test.mjs
+      - name: Session orchestrator
+        run: node tests/session_orchestrator.test.mjs
+      - name: Training orchestrator
+        run: node tests/session_orchestrator_training.test.mjs
+      - name: Pilot preview contract
+        run: node tests/pilot_preview_contract.test.mjs
+      - name: Calibration release contract
+        run: node tests/calibration_release_contract.test.mjs
+      - name: Calibration admin v2 contract
+        run: node tests/calibration_admin_v2_contract.test.mjs
+      - name: Rapid block core
+        run: node tests/rapid_block_core.test.mjs
+      - name: Calculation engine
+        run: node tests/calculation_engine.test.mjs
+      - name: Evidence engine
+        run: node tests/evidence_engine.test.mjs
+      - name: Event outbox
+        run: node tests/event_outbox.test.mjs
+      - name: HTTP transport
+        run: node tests/http_transport.test.mjs
+      - name: LLM generation contract
+        run: node tests/llm_contract.test.mjs
+      - name: Local result pipeline
+        run: node tests/result_pipeline.test.mjs
+
+  future-php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP version
+        run: php --version
+      - name: Lint future-session server files
+        run: |
+          php -l server/future-session/validation.php
+          php -l server/future-session/persistence.php
+          php -l server/future-session/api_v2.php
+          php -l server/future-session/config.example.php
+      - name: Lint calibration release server files
+        run: |
+          php -l deploy/conflictlab-hostinger/releases/calibration-v0.1/server/calibration_api.php
+          php -l deploy/conflictlab-hostinger/releases/calibration-v0.1/server/admin.php
+          php -l deploy/conflictlab-hostinger/releases/calibration-v0.1/server/config.example.php
+      - name: Lint PHP contract tests
+        run: |
+          php -l tests/future_session_api_validation_test.php
+          php -l tests/future_session_persistence_contract_test.php
+      - name: Future-session API validation contract
+        run: php tests/future_session_api_validation_test.php
+      - name: Future-session persistence contract
+        run: php tests/future_session_persistence_contract_test.php
+
+  calibration-package:
+    needs:
+      - legacy-python
+      - baseline-python
+      - future-js
+      - future-php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish validated calibration-v0.1 Hostinger LAB package
+        uses: actions/upload-artifact@v4
+        with:
+          name: conflictlab-calibration-v0.1-${{ github.sha }}
+          path: deploy/conflictlab-hostinger/releases/calibration-v0.1/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14

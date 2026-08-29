@@ -1,0 +1,31 @@
+{
+  "schema": "conflictlab.hostinger-release-manifest.v1",
+  "release_id": "calibration-v0.1",
+  "lifecycle": "LAB",
+  "source_commit_sha": null,
+  "deploy_path": "/conflictlab/releases/calibration-v0.1/",
+  "stable_public_entrypoint": "/wave1/",
+  "owner_approval": {
+    "status": "PENDING",
+    "approved_at": null
+  },
+  "public_switch": {
+    "authorized": false,
+    "authorized_at": null
+  },
+  "rollback": {
+    "previous_public_release": "wave1-v0.3",
+    "entrypoint_backup_required": true
+  },
+  "research_boundary": {
+    "purpose": "timing-calibration",
+    "gate_d": "NONE",
+    "gate_e": "NONE",
+    "participant_result": "NONE",
+    "wave1_storage_reuse": false
+  },
+  "integrity": {
+    "release_manifest_sha256": null,
+    "artifact_inventory_sha256": null
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "conflictlab.future-stimulus-candidate-manifest.v2",
+  "manifest_version": "wave1-candidates-v0.2",
+  "status": "F0_REPO_BOUND_CANDIDATE_INVENTORY",
+  "source_protocol": "wave1-v0.3",
+  "source_commit_sha": "44426f715103a90bc79967d2655b75c1f33bbd2c",
+  "source_pair_manifest_path": "deploy/wave1-hostinger/index.html",
+  "description": "Corrected factual inventory of the six pairs currently used by Wave 1. Repository paths and Git blob SHAs bind the exact source bytes. Design-family labels are provenance only and authorize no participant signal mapping.",
+  "pairs": [
+    {
+      "pair_id": "CS-PR-01",
+      "source_family": "CS-PR",
+      "source_asset_a_path": "docs/experiments/stimulus-validation/assets/CS-PR-01/more-reveal.webp",
+      "source_asset_b_path": "docs/experiments/stimulus-validation/assets/CS-PR-01/less-reveal.jpg",
+      "source_asset_a_git_blob_sha": "f3038382a24acafb5bd8167bfd1efc421d52806d",
+      "source_asset_b_git_blob_sha": "74d90342bde788e28325c8d5b5d25284d4bdaa06",
+      "asset_a_mime_type": "image/webp",
+      "asset_b_mime_type": "image/jpeg",
+      "asset_a_id": "CS-PR-01-A",
+      "asset_b_id": "CS-PR-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CS-RE-01",
+      "source_family": "CS-RE",
+      "source_asset_a_path": "docs/experiments/stimulus-validation/assets/CS-RE-01/more-evidence.png",
+      "source_asset_b_path": "docs/experiments/stimulus-validation/assets/CS-RE-01/less-evidence.png",
+      "source_asset_a_git_blob_sha": "fba4321b170e4e2ce3aa8fd6a728116ad4be0a37",
+      "source_asset_b_git_blob_sha": "3c8147c49923ea8b93c44e82f6c6c98fbd239bd3",
+      "asset_a_mime_type": "image/png",
+      "asset_b_mime_type": "image/png",
+      "asset_a_id": "CS-RE-01-A",
+      "asset_b_id": "CS-RE-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CS-CA-01",
+      "source_family": "CS-CA",
+      "source_asset_a_path": "docs/experiments/stimulus-validation/assets/CS-CA-01/more-reference.png",
+      "source_asset_b_path": "docs/experiments/stimulus-validation/assets/CS-CA-01/less-reference.png",
+      "source_asset_a_git_blob_sha": "271ce63f3fda25b976cebb956e3db2c4e5bbdffd",
+      "source_asset_b_git_blob_sha": "2ab50c4356f6fbaf503f5b1c43031883ee6b3517",
+      "asset_a_mime_type": "image/png",
+      "asset_b_mime_type": "image/png",
+      "asset_a_id": "CS-CA-01-A",
+      "asset_b_id": "CS-CA-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CR-PZ-01",
+      "source_family": "CR-PZ",
+      "source_asset_a_path": "docs/experiments/stimulus-validation/assets/CR-PZ-01/no-predefined-zones.png",
+      "source_asset_b_path": "docs/experiments/stimulus-validation/assets/CR-PZ-01/predefined-zones.png",
+      "source_asset_a_git_blob_sha": "af80b0b61c9ca563d6ab0be384ed4a2f245910a1",
+      "source_asset_b_git_blob_sha": "87de44ad45678b52b4d16b455fb8a85e8a567cd7",
+      "asset_a_mime_type": "image/png",
+      "asset_b_mime_type": "image/png",
+      "asset_a_id": "CR-PZ-01-A",
+      "asset_b_id": "CR-PZ-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CR-FS-01",
+      "source_family": "CR-FS",
+      "source_asset_a_path": "docs/experiments/stimulus-validation/assets/CR-FS-01/fixed-slots.png",
+      "source_asset_b_path": "docs/experiments/stimulus-validation/assets/CR-FS-01/continuous-capacity.png",
+      "source_asset_a_git_blob_sha": "cf49fcdd514add6021ecdb67960ccc76882d6361",
+      "source_asset_b_git_blob_sha": "30a8e6940a0b1e048731b3d12f282446d46576fc",
+      "asset_a_mime_type": "image/png",
+      "asset_b_mime_type": "image/png",
+      "asset_a_id": "CR-FS-01-A",
+      "asset_b_id": "CR-FS-01-B",
+      "is_training": false
+    },
+    {
+      "pair_id": "CR-PO-01",
+      "source_family": "CR-PO",
+      "source_asset_a_path": "docs/experiments/stimulus-validation/assets/CR-PO-01/partitioned-space.png",
+      "source_asset_b_path": "docs/experiments/stimulus-validation/assets/CR-PO-01/open-space.png",
+      "source_asset_a_git_blob_sha": "5c0aa34067c2eb65e2445456218e920bafd7c494",
+      "source_asset_b_git_blob_sha": "ec80c06de4ae5ef1c2e00672584f167e4b2ad69f",
+      "asset_a_mime_type": "image/png",
+      "asset_b_mime_type": "image/png",
+      "asset_a_id": "CR-PO-01-A",
+      "asset_b_id": "CR-PO-01-B",
+      "is_training": false
+    }
+  ],
+  "interpretation_boundary": {
+    "gate_d_mapping": "NONE_BY_THIS_MANIFEST",
+    "gate_e_aggregation": "NOT_ADDRESSED",
+    "note": "This manifest identifies current Wave 1 source bytes and neutral stable IDs only. It must never be used to derive +1/-1 direction."
+  }
+}
