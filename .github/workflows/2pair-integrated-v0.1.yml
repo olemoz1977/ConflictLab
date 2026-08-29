@@ -55,7 +55,10 @@ jobs:
         run: |
           set -euo pipefail
           grep -F "JOIN tp_integrated_reflections r ON r.pair_event_id=e.id" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
-          grep -F "a.attempt_number>1 WHERE s.run_type='RESEARCH' AND b.clean_primary=1" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
+          grep -F "e.attempt_number=1" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
+          grep -F "a.attempt_number>1" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
+          grep -F "b.clean_primary=1" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
+          grep -F "function filter_sql" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
           ! grep -E "subconscious score|personality score|choice.*latency.*intensity.*score" deploy/2pair-integrated-v0.1/server/data_admin.php deploy/2pair-integrated-v0.1/app.js
 
   integrated-php:
