@@ -1,0 +1,68 @@
+name: 2Pair Integrated v0.1
+
+on:
+  push:
+    branches:
+      - feature/2pair-integrated-v0.1
+    paths:
+      - 'deploy/2pair-integrated-v0.1/**'
+      - 'docs/product/2PAIR_INTEGRATED_*.md'
+      - 'docs/privacy/PRIVACY_NOTICE_2PAIR_INTEGRATED_v0.1.md'
+      - '.github/workflows/2pair-integrated-v0.1.yml'
+  pull_request:
+    paths:
+      - 'deploy/2pair-integrated-v0.1/**'
+      - 'docs/product/2PAIR_INTEGRATED_*.md'
+      - 'docs/privacy/PRIVACY_NOTICE_2PAIR_INTEGRATED_v0.1.md'
+      - '.github/workflows/2pair-integrated-v0.1.yml'
+
+jobs:
+  integrated-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Integrated rapid-core tests
+        run: node --test deploy/2pair-integrated-v0.1/tests/integrated_core.test.mjs
+      - name: JavaScript syntax checks
+        run: |
+          node --check deploy/2pair-integrated-v0.1/integrated_core.mjs
+          node --check deploy/2pair-integrated-v0.1/app.js
+      - name: Exact stimulus byte reuse
+        run: |
+          set -euo pipefail
+          cmp docs/experiments/stimulus-validation/assets/CS-PR-01/more-reveal.webp deploy/2pair-integrated-v0.1/assets/research/CS-PR-01/more-reveal.webp
+          cmp docs/experiments/stimulus-validation/assets/CS-PR-01/less-reveal.jpg deploy/2pair-integrated-v0.1/assets/research/CS-PR-01/less-reveal.jpg
+          cmp docs/experiments/stimulus-validation/assets/CS-RE-01/more-evidence.png deploy/2pair-integrated-v0.1/assets/research/CS-RE-01/more-evidence.png
+          cmp docs/experiments/stimulus-validation/assets/CS-RE-01/less-evidence.png deploy/2pair-integrated-v0.1/assets/research/CS-RE-01/less-evidence.png
+          cmp docs/experiments/stimulus-validation/assets/CS-CA-01/more-reference.png deploy/2pair-integrated-v0.1/assets/research/CS-CA-01/more-reference.png
+          cmp docs/experiments/stimulus-validation/assets/CS-CA-01/less-reference.png deploy/2pair-integrated-v0.1/assets/research/CS-CA-01/less-reference.png
+          cmp docs/experiments/stimulus-validation/assets/CR-PZ-01/no-predefined-zones.png deploy/2pair-integrated-v0.1/assets/research/CR-PZ-01/no-predefined-zones.png
+          cmp docs/experiments/stimulus-validation/assets/CR-PZ-01/predefined-zones.png deploy/2pair-integrated-v0.1/assets/research/CR-PZ-01/predefined-zones.png
+          cmp docs/experiments/stimulus-validation/assets/CR-FS-01/fixed-slots.png deploy/2pair-integrated-v0.1/assets/research/CR-FS-01/fixed-slots.png
+          cmp docs/experiments/stimulus-validation/assets/CR-FS-01/continuous-capacity.png deploy/2pair-integrated-v0.1/assets/research/CR-FS-01/continuous-capacity.png
+          cmp docs/experiments/stimulus-validation/assets/CR-PO-01/partitioned-space.png deploy/2pair-integrated-v0.1/assets/research/CR-PO-01/partitioned-space.png
+          cmp docs/experiments/stimulus-validation/assets/CR-PO-01/open-space.png deploy/2pair-integrated-v0.1/assets/research/CR-PO-01/open-space.png
+          cmp docs/experiments/pair-p0/images/p0-001-a.png deploy/2pair-integrated-v0.1/assets/training/p0-001-a.png
+          cmp docs/experiments/pair-p0/images/p0-001-b.png deploy/2pair-integrated-v0.1/assets/training/p0-001-b.png
+          cmp docs/experiments/pair-p0/images/p0-002-a.png deploy/2pair-integrated-v0.1/assets/training/p0-002-a.png
+          cmp docs/experiments/pair-p0/images/p0-002-b.png deploy/2pair-integrated-v0.1/assets/training/p0-002-b.png
+          cmp docs/experiments/pair-p0/images/p0-003-a.png deploy/2pair-integrated-v0.1/assets/training/p0-003-a.png
+          cmp docs/experiments/pair-p0/images/p0-003-b.png deploy/2pair-integrated-v0.1/assets/training/p0-003-b.png
+      - name: Analysis-boundary contract
+        run: |
+          set -euo pipefail
+          grep -F "JOIN tp_integrated_reflections r ON r.pair_event_id=e.id" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
+          grep -F "a.attempt_number>1 WHERE s.run_type='RESEARCH' AND b.clean_primary=1" deploy/2pair-integrated-v0.1/server/data_admin.php >/dev/null
+          ! grep -E "subconscious score|personality score|choice.*latency.*intensity.*score" deploy/2pair-integrated-v0.1/server/data_admin.php deploy/2pair-integrated-v0.1/app.js
+
+  integrated-php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax checks
+        run: |
+          set -euo pipefail
+          for f in deploy/2pair-integrated-v0.1/server/*.php; do php -l "$f"; done
