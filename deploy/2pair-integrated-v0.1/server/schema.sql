@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS tp_integrated_pair_events (
   position_in_block TINYINT UNSIGNED NOT NULL,
   session_presentation_index TINYINT UNSIGNED NOT NULL,
   pair_presented TINYINT(1) NOT NULL,
+  pair_exposure_number TINYINT UNSIGNED DEFAULT NULL,
   pair_ready_elapsed_ms INT UNSIGNED DEFAULT NULL,
   asset_a_id VARCHAR(32) NOT NULL,
   asset_b_id VARCHAR(32) NOT NULL,
