@@ -8,6 +8,7 @@ const CONSENT_VERSION = '2pair-integrated-research-consent-v0.1';
 const API = './server/integrated_api.php';
 const PRIVACY = '/privacy.html';
 const app = document.getElementById('app');
+const homeLink = document.getElementById('homeLink');
 const sessionId = crypto.randomUUID();
 
 const state = {
@@ -45,7 +46,7 @@ const C = {
     traceTitle: 'Tavo pasirinkimų pėdsakas', traceText: 'Tai tavo šios sesijos pasirinkimų seka. Ji nėra asmenybės rezultatas ar diagnozė.',
     noClear: 'Nėra aiškaus pasirinkimo', done: 'Baigta',
     codeTitle: 'Duomenų ištrynimo kodas', codeHelp: 'Jei dalyvavai su įkėlimu, išsisaugok kodą. Jis leidžia pašalinti šios sesijos duomenis neatskleidžiant tavo vardo.',
-    restartSession: 'Pradėti iš naujo', technical: 'Techninė klaida'
+    restartSession: 'Pradėti iš naujo', home: 'Grįžti į 2RASI', technical: 'Techninė klaida'
   },
   en: {
     chooseLang: 'Choose language',
@@ -74,7 +75,7 @@ const C = {
     traceTitle: 'Your choice trace', traceText: 'This is the sequence of your choices in this session. It is not a personality result or diagnosis.',
     noClear: 'No clear choice', done: 'Done',
     codeTitle: 'Data deletion code', codeHelp: 'If you participated with upload, keep this code. It can be used to remove this session without revealing your name.',
-    restartSession: 'Start again', technical: 'Technical error'
+    restartSession: 'Start again', home: 'Back to 2RASI', technical: 'Technical error'
   }
 };
 const t = k => C[state.lang][k] || k;
@@ -88,6 +89,12 @@ function deviceCategory() {
 function setRapid(v) { document.body.classList.toggle('rapid', v); }
 function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
 function setCard(center = false) { setRapid(false); app.className = 'card' + (center ? ' center' : ''); app.replaceChildren(); }
+function syncHomeLink() {
+  if (!homeLink) return;
+  homeLink.href = state.lang === 'lt' ? 'https://2rasi.lt/' : 'https://2rasi.com/';
+  homeLink.textContent = `← ${t('home')}`;
+  homeLink.hreflang = state.lang;
+}
 function sleepFrame() { return new Promise(r => requestAnimationFrame(() => r())); }
 function randomHex(bytes = 16) { const a = new Uint8Array(bytes); crypto.getRandomValues(a); return [...a].map(x => x.toString(16).padStart(2, '0')).join(''); }
 async function sha256hex(s) { const b = new TextEncoder().encode(s); const d = new Uint8Array(await crypto.subtle.digest('SHA-256', b)); return [...d].map(x => x.toString(16).padStart(2, '0')).join(''); }
@@ -104,6 +111,7 @@ async function post(payload) {
 }
 
 function showLanguage() {
+  syncHomeLink();
   setCard(true);
   app.append(el('h1', '', t('chooseLang')), el('p', '', t('intro')));
   const g = el('div', 'lang');
