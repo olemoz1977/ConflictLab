@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Decision Drivers · 8×8 prototype</title>
+<style>
+:root{
+  --bg:#090b0f; --panel:#10151d; --panel2:#151b25; --line:#26313f;
+  --text:#f2f6fa; --muted:#8795a7; --soft:#c6d0da; --accent:#55d6be;
+  --blue:#8ea7ff; --amber:#efc06f; --red:#ed8585;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+radial-gradient(900px 520px at 50% -180px,#17263a 0%,transparent 66%),var(--bg);
+color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button{font:inherit}.app{width:min(1080px,100%);margin:auto;min-height:100vh;padding:max(18px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.working{font-weight:850;letter-spacing:.02em}.working em{font-style:normal;color:var(--accent)}
+.badge{font-size:11px;color:var(--muted);padding:7px 10px;border-radius:999px;border:1px solid var(--line);background:#0d1117}.screen{display:none}.screen.active{display:block}
+.hero{max-width:760px;margin:8vh auto 0;text-align:center}.kicker{text-transform:uppercase;letter-spacing:.15em;font-size:12px;color:var(--accent);font-weight:850}
+h1{font-size:clamp(35px,7vw,67px);line-height:.98;letter-spacing:-.05em;margin:17px 0}.lead{font-size:clamp(17px,2.4vw,22px);line-height:1.5;color:var(--soft);max-width:700px;margin:auto}
+.note{max-width:660px;margin:24px auto 0;padding:13px 15px;border:1px solid var(--line);border-radius:16px;background:rgba(16,21,29,.8);color:var(--muted);font-size:13px;line-height:1.5}
+.primary,.secondary{cursor:pointer;border-radius:15px;padding:14px 19px;font-weight:850}.primary{margin-top:27px;border:0;background:var(--accent);color:#05211d;min-width:190px}.secondary{border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.choice{max-width:920px;margin:auto}.progressrow{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:4px 0 12px}.rail{height:5px;flex:1;max-width:430px;background:#222b36;border-radius:99px;overflow:hidden}.rail i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .2s}
+.prompt{text-align:center;font-size:clamp(26px,4vw,40px);font-weight:850;letter-spacing:-.035em;margin:12px 0 5px}.sub{text-align:center;color:var(--muted);font-size:13px;margin:0 0 18px}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:12px}.option{position:relative;display:block;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--panel);padding:0;cursor:pointer;aspect-ratio:1/1;box-shadow:0 14px 38px rgba(0,0,0,.27)}
+.option img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .22s,filter .22s;background:#111821}.option:hover img{transform:scale(1.012)}.option:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.option.picked{border-color:var(--accent);box-shadow:0 0 0 2px rgba(85,214,190,.2),0 18px 55px rgba(0,0,0,.34)}
+.option .pick{position:absolute;bottom:10px;right:10px;border-radius:999px;padding:7px 10px;background:rgba(5,9,13,.73);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);font-size:11px;color:#e8eef4}.option.picked .pick{background:var(--accent);color:#05211d;font-weight:850}
+.option .err{display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:18px;background:#121821;color:var(--muted);font-size:12px}.none{display:block;margin:15px auto 0;padding:10px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer}.none:hover{color:var(--text)}
+.result{max-width:920px;margin:2vh auto 0}.result h1{font-size:clamp(35px,6vw,58px)}.resultlead{font-size:17px;line-height:1.5;color:var(--soft);max-width:800px}.headline{border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#111823,#0d1219);padding:20px;margin:24px 0}.headline small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.headline strong{display:block;font-size:clamp(25px,4vw,38px);margin-top:8px;letter-spacing:-.03em}.headline p{margin:8px 0 0;color:var(--soft);line-height:1.5}
+.drivergrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0 28px}.driver{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:15px;min-height:136px}.driver .rank{font-size:11px;color:var(--muted);letter-spacing:.08em}.driver b{display:block;font-size:17px;margin-top:5px}.driver .eng{font-size:11px;color:var(--muted);margin-top:2px}.driver .score{font-size:27px;font-weight:900;margin-top:11px}.driver .bar{height:6px;border-radius:99px;background:#222b36;overflow:hidden;margin-top:8px}.driver .bar i{height:100%;display:block;border-radius:99px;background:var(--accent)}.driver p{font-size:12px;color:var(--muted);line-height:1.4;margin:9px 0 0}
+.sectiontitle{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:850;margin:27px 0 10px}.duellist{display:grid;gap:9px}.duelrow{border:1px solid var(--line);border-radius:15px;background:#0f141c;padding:13px 14px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}.duelrow .a{text-align:right}.duelrow .b{text-align:left}.duelrow .winner{color:var(--text);font-weight:800}.duelrow .loser{color:var(--muted)}.duelrow .vs{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 7px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:25px}.details{margin-top:24px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:12px;line-height:1.5}.details summary{color:var(--soft);font-weight:800;cursor:pointer}.tech{width:100%;border-collapse:collapse;margin-top:10px;font-size:11px}.tech th,.tech td{padding:7px;border-bottom:1px solid #202a36;text-align:left;vertical-align:top}.tech th{color:var(--muted)}.quality{display:inline-block;border-radius:999px;padding:2px 6px;border:1px solid var(--line);font-size:10px}.q-seed{color:#9ae2c2}.q-exp{color:#edca83}.q-weak{color:#ee9898}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(12px);opacity:0;pointer-events:none;transition:.2s;padding:9px 13px;border-radius:999px;background:#151d26;border:1px solid var(--line);color:var(--soft);font-size:12px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:760px){.app{padding-left:11px;padding-right:11px}.badge{font-size:9px}.duel{gap:7px}.option{border-radius:16px}.drivergrid{grid-template-columns:repeat(2,1fr)}.duelrow{font-size:12px;padding:11px 9px}.hero{margin-top:5vh}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="working"><em>◉</em> Decision Drivers</div><div class="badge">OWNER PROTOTYPE · 8/8 · NO DATA UPLOAD</div></header>
+
+  <section id="intro" class="screen active">
+    <div class="hero">
+      <div class="kicker">darbinis pavadinimas</div>
+      <h1>Kas stumia tavo pasirinkimus?</h1>
+      <p class="lead">Matysi dvi alternatyvas. Neieškok logikos ir nebandyk suprasti, ką jos „matuoja“. Tiesiog rinkis tą, kuri <b>dabar labiau traukia</b>.</p>
+      <div class="note">12 trumpų dvikovų. 8 kandidatės kryptys. Tai produkto ir metodikos prototipas, o ne validuotas psichologinis testas. Rezultatai lieka tik šiame naršyklės lange.</div>
+      <button id="start" class="primary">Pradėti</button>
+    </div>
+  </section>
+
+  <section id="choice" class="screen">
+    <div class="choice">
+      <div class="progressrow"><span id="count">1 / 12</span><div class="rail"><i id="rail"></i></div><span>Dvikova</span></div>
+      <div class="prompt">Kurį renkiesi dabar?</div>
+      <p class="sub">Pirmas impulsas. Nėra teisingo atsakymo.</p>
+      <div class="duel">
+        <button class="option" id="left"><img alt="Pasirinkimo vaizdas A"><span class="err">Vaizdas nepasiekiamas</span><span class="pick">← renkuosi</span></button>
+        <button class="option" id="right"><img alt="Pasirinkimo vaizdas B"><span class="err">Vaizdas nepasiekiamas</span><span class="pick">renkuosi →</span></button>
+      </div>
+      <button id="none" class="none">Neturiu aiškaus pasirinkimo</button>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="result">
+      <div class="kicker">Tavo šios sesijos pėdsakas</div>
+      <h1>Kas dažniau nusvėrė?</h1>
+      <p class="resultlead">Ne „kas tu esi“, o <b>kas šiose dvikovose dažniau laimėjo</b>. Kiekviena kryptis šiame prototipe susidūrė su trimis skirtingais oponentais.</p>
+      <div class="headline" id="headline"></div>
+      <div class="sectiontitle">8 kryptys · laimėta / aiškių dvikovų</div>
+      <div class="drivergrid" id="driverGrid"></div>
+      <div class="sectiontitle">Tavo dvikovos</div>
+      <div class="duellist" id="duelList"></div>
+      <div class="actions"><button class="secondary" id="again">Kartoti</button><button class="secondary" id="export">Eksportuoti JSON</button></div>
+      <div class="details"><details><summary>Owner technical view</summary>
+        <p><b>Svarbu:</b> 8/8 čia reiškia produkto architektūros prototipą, ne 8 validuotus konstruktus. Stipriausi seni seed'ai pažymėti SEED; kitur sąmoningai naudojama eksperimentinė senų assetų reinterpretacija. Ypač silpnas dabartinis <b>Poveikio</b> vizualinis padengimas.</p>
+        <table class="tech"><thead><tr><th>ID</th><th>Hipotezė</th><th>Kokybė</th><th>Šaltinis</th><th>Pasirinkta</th><th>ms</th></tr></thead><tbody id="techBody"></tbody></table>
+      </details></div>
+    </div>
+  </section>
+</div>
+<div id="toast" class="toast">JSON paruoštas</div>
+<script>
+const RAW='https://raw.githubusercontent.com/olemoz1977/ConflictLab/feature/2pair-integrated-v0.1/';
+const N0=RAW+'docs/experiments/pair-p0/images/';
+const MEDIA=RAW+'docs/media/';
+const W1=RAW+'docs/experiments/stimulus-validation/assets/';
+
+const D={
+ AUT:{name:'Laisvė rinktis',en:'Autonomy',desc:'palikti sau erdvės rinktis ir keisti kryptį'},
+ CER:{name:'Aiškumas',en:'Certainty',desc:'matyti daugiau apibrėžtumo ir žinoti, ko tikėtis'},
+ EXP:{name:'Tyrinėjimas',en:'Exploration',desc:'eiti į tai, kas dar neatskleista ar nežinoma'},
+ MAS:{name:'Meistriškumas',en:'Mastery',desc:'gilinti gebėjimą, susitelkti į atlikimą ir progresą'},
+ CON:{name:'Ryšys',en:'Connection',desc:'išlaikyti kontaktą, bendrumą ar sąsają su kitais'},
+ INF:{name:'Poveikis',en:'Influence',desc:'turėti balsą, matomumą ar galimybę paveikti rezultatą'},
+ PRO:{name:'Apsauga',en:'Protection',desc:'mažinti galimą nuostolį, riziką ar pažeidžiamumą'},
+ OPP:{name:'Galimybė',en:'Opportunity',desc:'judėti ten, kur gali atsiverti nauja nauda ar kelias'}
+};
+
+// 3-regular graph: every driver appears exactly 3 times across 12 duels.
+// A/B mappings are prototype hypotheses only; quality is shown only in Owner view.
+const DUELS=[
+ {id:'DD-AUT-CER-01',a:'AUT',b:'CER',aimg:W1+'CR-PO-01/open-space.png',bimg:W1+'CR-PO-01/partitioned-space.png',quality:'SEED',source:'Wave1 CR-PO-01 · open / partitioned space'},
+ {id:'DD-CER-EXP-01',a:'CER',b:'EXP',aimg:N0+'p0-003-b.png',bimg:N0+'p0-003-a.png',quality:'SEED',source:'P0-003 · opened / closed box'},
+ {id:'DD-EXP-MAS-01',a:'EXP',b:'MAS',aimg:N0+'n0-004-a.webp',bimg:MEDIA+'p5_person_laptop.png',quality:'EXPERIMENTAL',source:'N0-004 path continuation × historical work-focus image'},
+ {id:'DD-MAS-CON-01',a:'MAS',b:'CON',aimg:MEDIA+'v2_p3_notebook.png',bimg:MEDIA+'p1_phone_table.png',quality:'EXPERIMENTAL',source:'historical notebook × phone/waiting-contact scenes'},
+ {id:'DD-CON-INF-01',a:'CON',b:'INF',aimg:MEDIA+'p4_empty_table.png',bimg:N0+'n0-009-a-prototype-v0.png',quality:'WEAK',source:'historical social-waiting scene × N0-009 front-facing presence'},
+ {id:'DD-INF-PRO-01',a:'INF',b:'PRO',aimg:N0+'n0-009-a-prototype-v0.png',bimg:N0+'n0-009-b-prototype-v0.png',quality:'WEAK',source:'N0-009 front-facing / backs-to-camera reinterpretation'},
+ {id:'DD-PRO-OPP-01',a:'PRO',b:'OPP',aimg:N0+'p0-002-a.png',bimg:N0+'p0-002-b.png',quality:'SEED',source:'P0-002 · closed / open gate'},
+ {id:'DD-OPP-AUT-01',a:'OPP',b:'AUT',aimg:MEDIA+'v2_p2_corridor.png',bimg:N0+'p0-001-b.png',quality:'EXPERIMENTAL',source:'historical transition corridor × P0-001 casual/freedom cue'},
+ {id:'DD-AUT-MAS-01',a:'AUT',b:'MAS',aimg:N0+'p0-001-b.png',bimg:MEDIA+'p5_person_laptop.png',quality:'EXPERIMENTAL',source:'P0-001 casual/freedom cue × historical work-focus image'},
+ {id:'DD-CER-CON-01',a:'CER',b:'CON',aimg:W1+'CS-PR-01/more-reveal.webp',bimg:MEDIA+'p3_chat_screen.png',quality:'WEAK',source:'Wave1 more-reveal × historical communication/contact scene'},
+ {id:'DD-EXP-PRO-01',a:'EXP',b:'PRO',aimg:W1+'CS-PR-01/less-reveal.jpg',bimg:N0+'n0-009-b-prototype-v0.png',quality:'WEAK',source:'Wave1 partial reveal × N0-009 reduced-exposure reinterpretation'},
+ {id:'DD-INF-OPP-01',a:'INF',b:'OPP',aimg:N0+'p0-001-a.png',bimg:N0+'p0-002-b.png',quality:'WEAK',source:'P0-001 formal-role/status cue × P0-002 open gate'}
+];
+
+let queue=[],idx=0,events=[],t0=0;
+function shuffle(x){x=[...x];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
+function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function prepImg(button,src){const img=button.querySelector('img'),err=button.querySelector('.err');err.style.display='none';img.style.display='block';img.onload=()=>{err.style.display='none';img.style.display='block'};img.onerror=()=>{img.style.display='none';err.style.display='flex'};img.src=src}
+function showDuel(){const d=queue[idx],flip=Math.random()<.5;d._left=flip?{driver:d.b,img:d.bimg}:{driver:d.a,img:d.aimg};d._right=flip?{driver:d.a,img:d.aimg}:{driver:d.b,img:d.bimg};
+  const l=document.getElementById('left'),r=document.getElementById('right');l.classList.remove('picked');r.classList.remove('picked');prepImg(l,d._left.img);prepImg(r,d._right.img);
+  document.getElementById('count').textContent=`${idx+1} / ${queue.length}`;document.getElementById('rail').style.width=`${((idx+1)/queue.length)*100}%`;t0=performance.now();}
+function choose(side){const d=queue[idx],lat=Math.round(performance.now()-t0),driver=side==='none'?null:d['_'+side].driver;events.push({id:d.id,a:d.a,b:d.b,quality:d.quality,source:d.source,choice:driver,side,latency_ms:lat});if(side!=='none')document.getElementById(side).classList.add('picked');setTimeout(()=>{idx++;idx<queue.length?showDuel():showResult()},150)}
+function start(){queue=shuffle(DUELS);idx=0;events=[];showScreen('choice');showDuel()}
+function stats(){const s={};Object.keys(D).forEach(k=>s[k]={shown:0,clear:0,wins:0});events.forEach(e=>{s[e.a].shown++;s[e.b].shown++;if(e.choice){s[e.a].clear++;s[e.b].clear++;s[e.choice].wins++;}});return s}
+function fmt(n){return Number.isInteger(n)?String(n):n.toFixed(1)}
+function showResult(){showScreen('result');const s=stats();const ranked=Object.keys(D).sort((x,y)=>{const rx=s[x].clear?s[x].wins/s[x].clear:-1,ry=s[y].clear?s[y].wins/s[y].clear:-1;return ry-rx || s[y].wins-s[x].wins});
+  const top=ranked[0],second=ranked[1],ts=s[top];const pct=ts.clear?Math.round(100*ts.wins/ts.clear):0;document.getElementById('headline').innerHTML=`<small>stipriausia šios sesijos kryptis</small><strong>${D[top].name}</strong><p>Ji laimėjo ${ts.wins} iš ${ts.clear} aiškių susidūrimų. Kita dažniau laimėjusi kryptis: <b>${D[second].name}</b>. Tai sesijos pasirinkimų rezultatas, ne tavo asmenybės etiketė.</p>`;
+  const grid=document.getElementById('driverGrid');grid.innerHTML='';ranked.forEach((k,i)=>{const x=s[k],rate=x.clear?x.wins/x.clear:0;const el=document.createElement('div');el.className='driver';el.innerHTML=`<span class="rank">#${i+1}</span><b>${D[k].name}</b><span class="eng">${D[k].en}</span><div class="score">${x.wins}/${x.clear}</div><div class="bar"><i style="width:${Math.round(rate*100)}%"></i></div><p>${D[k].desc}</p>`;grid.appendChild(el)});
+  const dl=document.getElementById('duelList');dl.innerHTML='';events.forEach(e=>{const a=e.a,b=e.b;const el=document.createElement('div');el.className='duelrow';if(!e.choice){el.innerHTML=`<div class="a loser">${D[a].name}</div><div class="vs">?</div><div class="b loser">${D[b].name}</div>`}else{el.innerHTML=`<div class="a ${e.choice===a?'winner':'loser'}">${D[a].name}</div><div class="vs">${e.choice===a?'←':'→'}</div><div class="b ${e.choice===b?'winner':'loser'}">${D[b].name}</div>`}dl.appendChild(el)});
+  const tb=document.getElementById('techBody');tb.innerHTML='';events.forEach(e=>{const tr=document.createElement('tr');const qc=e.quality==='SEED'?'q-seed':e.quality==='EXPERIMENTAL'?'q-exp':'q-weak';tr.innerHTML=`<td>${e.id}</td><td>${D[e.a].en} ↔ ${D[e.b].en}</td><td><span class="quality ${qc}">${e.quality}</span></td><td>${e.source}</td><td>${e.choice?D[e.choice].en:'NCC'}</td><td>${e.latency_ms}</td>`;tb.appendChild(tr)});}
+function exportJSON(){const blob=new Blob([JSON.stringify({prototype:'decision-drivers-8x8-v0.2',created_at:new Date().toISOString(),drivers:D,events,summary:stats()},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='decision-drivers-prototype-run.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1200)}
+document.getElementById('start').onclick=start;document.getElementById('again').onclick=start;document.getElementById('left').onclick=()=>choose('left');document.getElementById('right').onclick=()=>choose('right');document.getElementById('none').onclick=()=>choose('none');document.getElementById('export').onclick=exportJSON;
+document.addEventListener('keydown',e=>{if(!document.getElementById('choice').classList.contains('active'))return;if(e.key==='ArrowLeft')choose('left');if(e.key==='ArrowRight')choose('right');if(e.key==='ArrowDown')choose('none')});
+</script>
+</body></html>
