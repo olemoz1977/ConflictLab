@@ -1,0 +1,157 @@
+<?php
+declare(strict_types=1);
+ini_set('session.use_strict_mode','1');
+session_set_cookie_params(['httponly'=>true,'secure'=>true,'samesite'=>'Strict']);
+session_start();
+header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: no-referrer');
+
+const TIMING_EXPORT='2pair-timing-export-v0.1';
+const WAVE1_EXPORT='2pair-wave1-export-v0.1';
+const FILES=[
+  'CS-PR-01'=>['A'=>'more-reveal.webp','B'=>'less-reveal.jpg'],
+  'CS-RE-01'=>['A'=>'more-evidence.png','B'=>'less-evidence.png'],
+  'CS-CA-01'=>['A'=>'more-reference.png','B'=>'less-reference.png'],
+  'CR-PZ-01'=>['A'=>'no-predefined-zones.png','B'=>'predefined-zones.png'],
+  'CR-FS-01'=>['A'=>'fixed-slots.png','B'=>'continuous-capacity.png'],
+  'CR-PO-01'=>['A'=>'partitioned-space.png','B'=>'open-space.png'],
+];
+
+function h(mixed $v):string{return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
+function pct(?float $v):string{return $v===null?'—':number_format($v*100,1).'%';}
+function med(array $v):?float{if(!$v)return null;sort($v);$n=count($v);$m=intdiv($n,2);return $n%2?(float)$v[$m]:($v[$m-1]+$v[$m])/2;}
+function fmt(?float $v,int $d=0):string{return $v===null?'—':number_format($v,$d,'.','');}
+function csrf():string{if(!isset($_SESSION['tp_admin_csrf']))$_SESSION['tp_admin_csrf']=bin2hex(random_bytes(32));return(string)$_SESSION['tp_admin_csrf'];}
+function require_csrf():void{$a=(string)($_POST['csrf']??'');$b=(string)($_SESSION['tp_admin_csrf']??'');if($b===''||!hash_equals($b,$a)){http_response_code(403);exit('Invalid CSRF token.');}}
+function valid_code(string $v):bool{return preg_match('/^[0-9a-f]{32}$/',$v)===1;}
+function filter_sql(string $alias,string $type):array{return $type==='ALL'?['1=1',[]]:["$alias.run_type = ?",[$type]];}
+
+$configPath=__DIR__.'/config.php';
+if(!is_file($configPath)){http_response_code(503);exit('2Pair server not configured.');}
+$config=require $configPath;
+if(!is_array($config)||!isset($config['db'])){http_response_code(503);exit('Invalid config.');}
+
+if(isset($_POST['logout'])){require_csrf();$_SESSION=[];session_destroy();header('Location: data_admin.php');exit;}
+$loginError=null;
+if(!($_SESSION['tp_integrated_admin']??false)){
+  if($_SERVER['REQUEST_METHOD']==='POST'&&isset($_POST['password'])){
+    $hash=(string)($config['admin_password_hash']??'');
+    if($hash!==''&&$hash!=='CHANGE_ME_PASSWORD_HASH'&&password_verify((string)$_POST['password'],$hash)){
+      session_regenerate_id(true);$_SESSION['tp_integrated_admin']=true;csrf();header('Location: data_admin.php');exit;
+    }
+    usleep(650000);$loginError='Neteisingas slaptažodis.';
+  }
+  ?><!doctype html><html lang="lt"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2Pair admin</title><style>body{font-family:system-ui;background:#0c0c0f;color:#eee;padding:24px}.card{max-width:430px;margin:10vh auto;background:#17171b;border:1px solid #303038;border-radius:16px;padding:20px}input,button{width:100%;font:inherit;padding:12px;margin-top:10px;border-radius:10px;background:#111;color:#eee;border:1px solid #444}button{background:#8fc7ae;color:#07100c;font-weight:700}</style><div class="card"><h1>2Pair Integrated admin</h1><p>Timing / UX + Wave 1 stimulus validation. No combined score.</p><?php if($loginError):?><p><?=h($loginError)?></p><?php endif;?><form method="post"><input type="password" name="password" required autocomplete="current-password"><button>Prisijungti</button></form></div></html><?php exit;
+}
+
+$pdo=new PDO((string)$config['db']['dsn'],(string)$config['db']['user'],(string)$config['db']['password'],[
+  PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
+  PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,
+  PDO::ATTR_EMULATE_PREPARES=>false,
+]);
+$token=csrf();
+$defaultType=strtoupper((string)($config['collection_mode']??'TECHNICAL'));
+if(!in_array($defaultType,['TECHNICAL','RESEARCH'],true))$defaultType='TECHNICAL';
+$type=strtoupper((string)($_GET['type']??$defaultType));
+if(!in_array($type,['ALL','TECHNICAL','RESEARCH'],true))$type=$defaultType;
+
+if(($_GET['export']??'')==='timing'){
+  [$cond,$args]=filter_sql('s',$type);
+  $sql='SELECT s.id session_db_id,s.received_at session_received_at,s.run_type,s.protocol_version,s.stimulus_set_version,s.consent_version,s.research_consent,s.age_18_confirmed,s.device_category,b.id block_record_id,b.block_index,b.form_id,b.block_budget_ms,b.clean_primary,b.exclusion_reason,a.attempt_number,a.block_elapsed_ms_final,a.block_timed_out,a.page_hidden_during_block,e.pair_id,e.position_in_block,e.pair_presented,e.pair_exposure_number,e.pair_ready_elapsed_ms,e.choice_identity,e.visual_choice_latency_ms,e.block_elapsed_ms_at_event,e.remaining_budget_at_pair_start_ms,e.page_hidden_before_event FROM tp_integrated_sessions s JOIN tp_integrated_blocks b ON b.session_id=s.id JOIN tp_integrated_attempts a ON a.block_id=b.id JOIN tp_integrated_pair_events e ON e.attempt_id=a.id WHERE '.$cond.' ORDER BY s.id,b.block_index,a.attempt_number,e.position_in_block';
+  $st=$pdo->prepare($sql);$st->execute($args);
+  header('Content-Type: text/csv; charset=utf-8');
+  header('Content-Disposition: attachment; filename="2pair-'.TIMING_EXPORT.'-'.gmdate('Ymd-His').'.csv"');
+  header('X-2Pair-Export-Schema: '.TIMING_EXPORT);
+  $o=fopen('php://output','wb');
+  $hdr=['export_schema_version','run_id','received_at','run_type','clean_primary','exclusion_reason','form_id','device_category','release_id','protocol_version','stimulus_set_version','block_budget_ms','consent_version','research_consent','age_18_confirmed','block_record_id','block_index','attempt_number','block_elapsed_ms_final','block_timed_out','page_hidden_during_block','pair_id','position_in_block','pair_presented','pair_exposure_number','pair_ready_elapsed_ms','response_status','visual_choice_latency_ms','block_elapsed_ms_at_event','remaining_budget_at_pair_start_ms','page_hidden_before_event'];
+  fputcsv($o,$hdr);
+  while($r=$st->fetch())fputcsv($o,[TIMING_EXPORT,$r['session_db_id'],$r['session_received_at'],$r['run_type'],$r['clean_primary'],$r['exclusion_reason'],$r['form_id'],$r['device_category'],$config['release_id'],$r['protocol_version'],$r['stimulus_set_version'],$r['block_budget_ms'],$r['consent_version'],$r['research_consent'],$r['age_18_confirmed'],$r['block_record_id'],$r['block_index'],$r['attempt_number'],$r['block_elapsed_ms_final'],$r['block_timed_out'],$r['page_hidden_during_block'],$r['pair_id'],$r['position_in_block'],$r['pair_presented'],$r['pair_exposure_number'],$r['pair_ready_elapsed_ms'],$r['choice_identity']==='timeout'?'timeout':'choice',$r['visual_choice_latency_ms'],$r['block_elapsed_ms_at_event'],$r['remaining_budget_at_pair_start_ms'],$r['page_hidden_before_event']]);
+  fclose($o);exit;
+}
+
+if(($_GET['export']??'')==='wave1'){
+  [$cond,$args]=filter_sql('s',$type);
+  $sql="SELECT s.session_uuid,s.protocol_version,s.language,s.run_type,e.pair_id,e.session_presentation_index,e.asset_a_position,e.asset_b_position,e.choice_identity,e.visual_choice_latency_ms,e.received_at,r.free_text,r.intensity,r.hard_to_identify FROM tp_integrated_sessions s JOIN tp_integrated_blocks b ON b.session_id=s.id JOIN tp_integrated_pair_events e ON e.block_id=b.id AND e.attempt_number=1 JOIN tp_integrated_reflections r ON r.pair_event_id=e.id WHERE e.choice_identity <> 'timeout' AND $cond ORDER BY s.id,e.session_presentation_index";
+  $st=$pdo->prepare($sql);$st->execute($args);
+  header('Content-Type: text/csv; charset=utf-8');
+  header('Content-Disposition: attachment; filename="2pair-'.WAVE1_EXPORT.'-'.gmdate('Ymd-His').'.csv"');
+  header('X-2Pair-Export-Schema: '.WAVE1_EXPORT);
+  $o=fopen('php://output','wb');
+  $hdr=['participant_id','candidate_id','protocol_version','language','presentation_index','top_asset','bottom_asset','choice_position','chosen_asset','free_text','intensity','hard_to_identify','latency_ms','created_at','excluded'];fputcsv($o,$hdr);
+  while($r=$st->fetch()){
+    $pair=$r['pair_id'];$a=FILES[$pair]['A'];$b=FILES[$pair]['B'];
+    $top=$r['asset_a_position']==='top'?$a:$b;$bottom=$r['asset_a_position']==='bottom'?$a:$b;$choice=$r['choice_identity'];
+    if($choice==='no_clear_choice'){$pos='no_clear_choice';$chosen='no_clear_choice';}
+    elseif($choice==='A'){$pos=$r['asset_a_position'];$chosen=$a;}
+    else{$pos=$r['asset_b_position'];$chosen=$b;}
+    fputcsv($o,[$r['session_uuid'],$pair,$r['protocol_version'],$r['language'],$r['session_presentation_index'],$top,$bottom,$pos,$chosen,$r['free_text'],$r['intensity'],$r['hard_to_identify'],$r['visual_choice_latency_ms'],$r['received_at'],$r['run_type']==='TECHNICAL'?1:0]);
+  }
+  fclose($o);exit;
+}
+
+$message=null;$error=null;$candidate=null;
+if($_SERVER['REQUEST_METHOD']==='POST'&&isset($_POST['lookup_code'])){
+  require_csrf();$code=strtolower(trim((string)$_POST['lookup_code']));
+  if(!valid_code($code)){$error='Kodas turi būti 32 šešioliktainių simbolių.';unset($_SESSION['tp_delete_candidate']);}
+  else{$hash=hash('sha256',$code);$st=$pdo->prepare('SELECT id,run_type,received_at,protocol_version FROM tp_integrated_sessions WHERE deletion_token_hash=? LIMIT 1');$st->execute([$hash]);$candidate=$st->fetch()?:null;if($candidate)$_SESSION['tp_delete_candidate']=['id'=>(int)$candidate['id'],'hash'=>$hash];else{$error='Pagal šį kodą įrašo nerasta.';unset($_SESSION['tp_delete_candidate']);}}
+}
+if($_SERVER['REQUEST_METHOD']==='POST'&&isset($_POST['confirm_delete'])){
+  require_csrf();$c=$_SESSION['tp_delete_candidate']??null;
+  if(!is_array($c))$error='Nėra patvirtinto kandidato.';
+  else{
+    try{
+      $pdo->beginTransaction();$v=$pdo->prepare('SELECT id FROM tp_integrated_sessions WHERE id=? AND deletion_token_hash=? FOR UPDATE');$v->execute([$c['id'],$c['hash']]);if(!$v->fetch())throw new RuntimeException('changed');
+      $pdo->prepare('DELETE r FROM tp_integrated_reflections r WHERE r.session_id=?')->execute([$c['id']]);
+      $pdo->prepare('DELETE e FROM tp_integrated_pair_events e JOIN tp_integrated_blocks b ON b.id=e.block_id WHERE b.session_id=?')->execute([$c['id']]);
+      $pdo->prepare('DELETE a FROM tp_integrated_attempts a JOIN tp_integrated_blocks b ON b.id=a.block_id WHERE b.session_id=?')->execute([$c['id']]);
+      $pdo->prepare('DELETE FROM tp_integrated_blocks WHERE session_id=?')->execute([$c['id']]);
+      $d=$pdo->prepare('DELETE FROM tp_integrated_sessions WHERE id=? AND deletion_token_hash=?');$d->execute([$c['id'],$c['hash']]);if($d->rowCount()!==1)throw new RuntimeException('not deleted');
+      $pdo->commit();unset($_SESSION['tp_delete_candidate']);$message='Visa integruota sesija ištrinta.';
+    }catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();$error='Ištrynimas nepavyko.';}
+  }
+}
+
+$researchSessions=(int)$pdo->query("SELECT COUNT(*) FROM tp_integrated_sessions WHERE run_type='RESEARCH'")->fetchColumn();
+$technicalSessions=(int)$pdo->query("SELECT COUNT(*) FROM tp_integrated_sessions WHERE run_type='TECHNICAL'")->fetchColumn();
+[$cond,$args]=filter_sql('s',$type);
+
+$st=$pdo->prepare("SELECT COUNT(*) FROM (SELECT s.id,COUNT(DISTINCT b.id) n FROM tp_integrated_sessions s JOIN tp_integrated_blocks b ON b.session_id=s.id WHERE $cond GROUP BY s.id HAVING n=2) x");$st->execute($args);$completeSessions=(int)$st->fetchColumn();
+$st=$pdo->prepare("SELECT COUNT(*) FROM (SELECT s.id,COUNT(*) n FROM tp_integrated_sessions s JOIN tp_integrated_blocks b ON b.session_id=s.id JOIN tp_integrated_pair_events e ON e.block_id=b.id AND e.attempt_number=1 JOIN tp_integrated_reflections r ON r.pair_event_id=e.id WHERE $cond AND e.choice_identity<>'timeout' GROUP BY s.id HAVING n=6) x");$st->execute($args);$completeSix=(int)$st->fetchColumn();
+
+$st=$pdo->prepare("SELECT b.id,b.form_id,b.clean_primary,a.block_timed_out FROM tp_integrated_blocks b JOIN tp_integrated_sessions s ON s.id=b.session_id JOIN tp_integrated_attempts a ON a.block_id=b.id AND a.attempt_number=1 WHERE $cond");$st->execute($args);$blocks=$st->fetchAll();
+$clean=array_values(array_filter($blocks,fn($b)=>(int)$b['clean_primary']===1));$nBlocks=count($clean);$completed=0;foreach($clean as$b)if((int)$b['block_timed_out']===0)$completed++;$completionRate=$nBlocks?$completed/$nBlocks:null;
+
+$st=$pdo->prepare("SELECT e.* FROM tp_integrated_pair_events e JOIN tp_integrated_blocks b ON b.id=e.block_id JOIN tp_integrated_sessions s ON s.id=b.session_id WHERE $cond AND b.clean_primary=1 AND e.attempt_number=1");$st->execute($args);$events=$st->fetchAll();
+$p1m=$p3m=$p3never=0;$lat=[1=>[],2=>[],3=>[]];$remaining=[1=>[],2=>[],3=>[]];$pairStats=[];
+foreach($events as$e){$p=(int)$e['position_in_block'];$missing=$e['choice_identity']==='timeout';if($p===1&&$missing)$p1m++;if($p===3&&$missing)$p3m++;if($p===3&&(int)$e['pair_presented']===0)$p3never++;if($e['visual_choice_latency_ms']!==null)$lat[$p][]=(int)$e['visual_choice_latency_ms'];if($e['remaining_budget_at_pair_start_ms']!==null)$remaining[$p][]=(int)$e['remaining_budget_at_pair_start_ms'];$pair=$e['pair_id'];$pairStats[$pair]??=['n'=>0,'missing'=>0];$pairStats[$pair]['n']++;if($missing)$pairStats[$pair]['missing']++;}
+$p1=$nBlocks?$p1m/$nBlocks:null;$p3=$nBlocks?$p3m/$nBlocks:null;$p3n=$nBlocks?$p3never/$nBlocks:null;$grad=$p1!==null&&$p3!==null?$p3-$p1:null;
+
+$st=$pdo->prepare("SELECT COUNT(DISTINCT b.id) FROM tp_integrated_blocks b JOIN tp_integrated_sessions s ON s.id=b.session_id JOIN tp_integrated_attempts a ON a.block_id=b.id AND a.attempt_number>1 WHERE $cond AND b.clean_primary=1");$st->execute($args);$retry=(int)$st->fetchColumn();$retryRate=$nBlocks?$retry/$nBlocks:null;
+$st=$pdo->prepare("SELECT s.device_category,COUNT(*) n FROM tp_integrated_sessions s WHERE $cond GROUP BY s.device_category ORDER BY s.device_category");$st->execute($args);$devices=$st->fetchAll();
+
+$st=$pdo->prepare("SELECT e.pair_id,e.choice_identity,e.visual_choice_latency_ms,r.free_text,r.intensity,r.hard_to_identify FROM tp_integrated_pair_events e JOIN tp_integrated_blocks b ON b.id=e.block_id JOIN tp_integrated_sessions s ON s.id=b.session_id JOIN tp_integrated_reflections r ON r.pair_event_id=e.id WHERE $cond AND e.attempt_number=1 AND e.choice_identity<>'timeout' ORDER BY e.pair_id");$st->execute($args);$stim=$st->fetchAll();
+$stimStats=[];
+foreach($stim as$r){$p=$r['pair_id'];$stimStats[$p]??=['n'=>0,'A'=>0,'B'=>0,'ncc'=>0,'hard'=>0,'text'=>0,'lat'=>[],'int'=>[]];$x=&$stimStats[$p];$x['n']++;if($r['choice_identity']==='A')$x['A']++;elseif($r['choice_identity']==='B')$x['B']++;else$x['ncc']++;if((int)$r['hard_to_identify']===1)$x['hard']++;if(trim((string)($r['free_text']??''))!=='')$x['text']++;if($r['visual_choice_latency_ms']!==null)$x['lat'][]=(int)$r['visual_choice_latency_ms'];if($r['intensity']!==null)$x['int'][]=(int)$r['intensity'];unset($x);}
+ksort($pairStats);ksort($stimStats);
+
+?><!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2Pair · Data & analysis</title><style>
+:root{color-scheme:dark;--bg:#0c0c0f;--card:#17171b;--line:#303038;--text:#f2eee7;--muted:#b3aa98;--accent:#8fc7ae}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}main{max-width:1120px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.brand{color:var(--accent);font-size:14px}.muted{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}.metric,.panel{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px}.metric strong{font-size:30px;display:block}.panel{margin-top:12px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.filter{margin:12px 0 18px}select,input,button,a.btn{font:inherit;color:var(--text);background:#111;border:1px solid #444;border-radius:9px;padding:9px 11px;text-decoration:none}button{cursor:pointer}.logout{background:#222}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{text-align:left;padding:8px;border-bottom:1px solid #303038;vertical-align:top}.timing-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:12px 0}.timing-grid strong{font-size:26px;display:block}.ok{color:#a7d6bf}.err{color:#f0a7ad}.note{padding:10px;border:1px solid #38403c;border-radius:10px;margin:10px 0}.danger{border-color:#6a3439}@media(max-width:800px){main{padding:14px}.grid{grid-template-columns:repeat(2,1fr)}.timing-grid{grid-template-columns:repeat(2,1fr)}table{font-size:12px;display:block;overflow-x:auto}.top{flex-direction:column}}
+</style></head><body><main>
+<div class="top"><div><div class="brand">2Pair · Integrated v0.1</div><h1>Data & analysis</h1><div class="muted">SERVER MODE: <?=h($config['collection_mode']??'')?> · Gate D/E = NONE · no combined psychological score</div></div><form method="post"><input type="hidden" name="csrf" value="<?=h($token)?>"><button class="logout" name="logout" value="1">Atsijungti</button></form></div>
+
+<form class="filter row" method="get"><label for="type">Rodyti:</label><select id="type" name="type" onchange="this.form.submit()"><option value="TECHNICAL" <?=$type==='TECHNICAL'?'selected':''?>>TECHNICAL</option><option value="RESEARCH" <?=$type==='RESEARCH'?'selected':''?>>RESEARCH</option><option value="ALL" <?=$type==='ALL'?'selected':''?>>ALL</option></select><span class="muted">Visos žemiau esančios metrikos naudoja šį filtrą. Metodai nesikeičia.</span></form>
+
+<div class="grid"><div class="metric"><strong><?=$researchSessions?></strong><span>research sessions</span></div><div class="metric"><strong><?=$technicalSessions?></strong><span>technical sessions</span></div><div class="metric"><strong><?=$completeSessions?></strong><span>sessions with 2 blocks · <?=h($type)?></span></div><div class="metric"><strong><?=$completeSix?></strong><span>6/6 reflected Wave 1 rows · <?=h($type)?></span></div></div>
+
+<section class="panel"><h2>TIMING / UX</h2><p class="muted">Existing Calibration lens. Descriptive only for the integrated protocol; no automatic KEEP/REJECT rule. Filter: <?=h($type)?></p><div class="timing-grid"><div><strong><?=$nBlocks?></strong><span>clean primary blocks</span></div><div><strong><?=pct($completionRate)?></strong><span>primary completion</span></div><div><strong><?=pct($p3n)?></strong><span>P3 never presented</span></div><div><strong><?=pct($p3)?></strong><span>P3 missing</span></div><div><strong><?=pct($grad)?></strong><span>P3-P1 gradient</span></div><div><strong><?=pct($retryRate)?></strong><span>retry diagnostic</span></div></div>
+<p>Median visual choice latency: P1 <?=fmt(med($lat[1]))?> ms · P2 <?=fmt(med($lat[2]))?> ms · P3 <?=fmt(med($lat[3]))?> ms</p><p>Median remaining budget at pair start: P1 <?=fmt(med($remaining[1]))?> ms · P2 <?=fmt(med($remaining[2]))?> ms · P3 <?=fmt(med($remaining[3]))?> ms</p>
+<table><thead><tr><th>Pair</th><th>Primary N</th><th>Missing</th></tr></thead><tbody><?php foreach($pairStats as$p=>$x):?><tr><td><?=h($p)?></td><td><?=$x['n']?></td><td><?=$x['missing']?> (<?=pct($x['n']?$x['missing']/$x['n']:null)?>)</td></tr><?php endforeach;?></tbody></table><p class="muted">Devices: <?php if(!$devices):?>—<?php else:?><?php foreach($devices as$i=>$d):?><?=$i?' · ':''?><?=h($d['device_category'])?> <?=$d['n']?><?php endforeach;?><?php endif;?></p></section>
+
+<section class="panel"><h2>STIMULUS VALIDATION</h2><p class="muted">Existing Wave 1 lens. Only reflection-submitted primary-attempt rows are counted, matching the current integrated data contract. A/B counts have no CS/CR polarity. Filter: <?=h($type)?></p><table><thead><tr><th>Pair</th><th>N</th><th>A</th><th>B</th><th>No clear</th><th>Hard</th><th>Free text</th><th>Median latency</th><th>Median intensity</th></tr></thead><tbody><?php foreach($stimStats as$p=>$x):?><tr><td><?=h($p)?></td><td><?=$x['n']?></td><td><?=$x['A']?></td><td><?=$x['B']?></td><td><?=$x['ncc']?></td><td><?=$x['hard']?></td><td><?=$x['text']?></td><td><?=fmt(med($x['lat']))?> ms</td><td><?=fmt(med($x['int']),1)?></td></tr><?php endforeach;?></tbody></table></section>
+
+<section class="panel"><h2>Eksportai</h2><p class="muted">Du atskiri analizės srautai iš tos pačios sesijos. Jokio trečio scoring metodo.</p><div class="row"><a class="btn" href="?type=<?=urlencode($type)?>&export=timing">Timing CSV · <?=h($type)?></a><a class="btn" href="?type=<?=urlencode($type)?>&export=wave1">Wave 1 CSV · <?=h($type)?></a></div></section>
+
+<section class="panel"><h2>Duomenų ištrynimas</h2><?php if($message):?><div class="note ok"><?=h($message)?></div><?php endif;?><?php if($error):?><div class="note err"><?=h($error)?></div><?php endif;?><form class="row" method="post"><input type="hidden" name="csrf" value="<?=h($token)?>"><input name="lookup_code" maxlength="32" pattern="[0-9a-fA-F]{32}" placeholder="32 simbolių kodas"><button>Rasti</button></form><?php if($candidate):?><div class="note danger"><p>Rasta sesija #<?=h($candidate['id'])?> · <?=h($candidate['run_type'])?> · <?=h($candidate['received_at'])?> · <?=h($candidate['protocol_version'])?></p><form method="post"><input type="hidden" name="csrf" value="<?=h($token)?>"><button name="confirm_delete" value="1">Patvirtinti visos sesijos ištrynimą</button></form></div><?php endif;?></section>
+</main></body></html>

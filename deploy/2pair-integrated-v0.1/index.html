@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>2Pair · Integrated Pilot v0.1</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0e12;--card:#15171c;--line:#2c3038;--text:#f0ece5;--muted:#a09b92;--accent:#8fc7ae;--accent-strong:#b9ead3;--warn:#e4bd7c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}
+main{width:min(100%,660px);min-height:100dvh;margin:auto;padding:18px 14px 48px}
+.brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.note{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.center{text-align:center}
+h1,h2{font-weight:620;margin:0 0 10px}
+p{line-height:1.5;color:#c9c4bb}.muted{color:var(--muted);font-size:13px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.actions.center{justify-content:center}
+button{font:inherit;cursor:pointer}.primary,.secondary{border-radius:11px;padding:12px 16px}
+.primary{border:0;background:var(--accent);color:#07100c;font-weight:700}
+.secondary{border:1px solid #3b4049;background:#1c1f25;color:var(--text)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.lang{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.consent{display:grid;gap:12px;text-align:left;margin-top:16px}.consent label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);padding:12px;border-radius:12px}.consent input{margin-top:4px}
+.rapid main,.rapid-shell{height:100dvh}.rapid main{padding:8px 10px}.rapid .brand,.rapid .note{display:none}.rapid-shell{display:flex;flex-direction:column;padding:10px}
+.rapid-head{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}
+.pair-stage{display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:8px;flex:1;min-height:0}
+.pair-stage.with-ncc{grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);gap:7px}
+.visual{padding:0;border:2px solid transparent;border-radius:15px;overflow:hidden;background:#0c0d10;min-height:0;touch-action:manipulation}
+.visual img{display:block;width:100%;height:100%;object-fit:contain}
+.ncc{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #535966;background:#16191f;color:#d7d2c9;font-size:13px;line-height:1.2;touch-action:manipulation}
+.reflection-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.reflection-pair figure{position:relative;margin:0;border:2px solid #343943;border-radius:12px;overflow:hidden;background:#0c0d10;transition:border-color .12s,box-shadow .12s}.reflection-pair figure.chosen{border:4px solid var(--accent-strong);box-shadow:0 0 0 2px rgba(185,234,211,.22)}
+.reflection-pair figure.chosen::after{content:'✓';position:absolute;right:8px;top:8px;width:27px;height:27px;border-radius:999px;display:grid;place-items:center;background:var(--accent-strong);color:#07100c;font-weight:900;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.reflection-pair img{width:100%;aspect-ratio:1/1;object-fit:contain;display:block}
+textarea{width:100%;min-height:86px;background:#0d0f13;color:var(--text);border:1px solid #353a43;border-radius:10px;padding:10px;font:inherit}
+.toggle{width:100%;margin-top:10px}.toggle.active{border-color:var(--accent-strong);background:var(--accent);color:#07100c;font-weight:800;box-shadow:0 0 0 2px rgba(143,199,174,.2)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.scale button{min-height:48px;border:1px solid #3b4049;border-radius:10px;background:#1c1f25;color:var(--text)}.scale button.active{border-color:var(--accent-strong);background:var(--accent);color:#07100c;font-weight:900;box-shadow:0 0 0 2px rgba(143,199,174,.2)}
+.next-action{display:inline-flex;align-items:center;justify-content:center;background:#20242a;border-color:#4a505b;color:#ded9d0;font-weight:650;padding:10px 14px}
+.trace{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.trace-item{min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0c0d10}.trace-item img{width:100%;aspect-ratio:1/1;object-fit:contain;display:block}.trace-no-clear{display:grid;place-items:center;aspect-ratio:1/1}.trace-no-clear-text{padding:12px;text-align:center;color:var(--muted);font-size:13px;line-height:1.25}.deletion-card{padding:14px}.deletion-card h2{font-size:18px}.quiet-action{margin-top:18px;background:transparent;color:var(--muted);border-color:#353a43;padding:9px 13px;font-size:13px}
+.home-link{display:inline-flex;margin-top:18px;padding:8px 2px;color:var(--muted);font-size:13px;text-decoration:none}.home-link:hover{color:var(--text);text-decoration:underline}.rapid .home-link{display:none}
+.error{border:1px solid #6a3439;background:#26171a;color:#efb2b8;padding:12px;border-radius:12px}.warn{color:var(--warn)}a{color:#a7d6bf}
+@media(max-width:699px){main{padding:16px 12px 38px}.card{padding:16px}.rapid main{padding:6px}.rapid-shell{padding:7px}.rapid-head{font-size:11px;margin-bottom:5px}.pair-stage.with-ncc{gap:5px}.ncc{padding:7px 9px;font-size:12px}.reflection-pair{gap:8px}.trace{gap:8px}.trace-no-clear-text{font-size:12px;padding:8px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">2Pair · Integrated Pilot v0.1</div>
+  <div class="note">Eksperimentinis 2Pair pilotas. Ši patirtis nėra asmenybės diagnozė.</div>
+  <div id="app" class="card center"><p class="muted">Ruošiama…</p></div>
+  <a id="homeLink" class="home-link" href="https://2rasi.lt/">← Grįžti į 2RASI</a>
+</main>
+<script type="module" src="./app.js?v=ux3"></script>
+</body>
+</html>
