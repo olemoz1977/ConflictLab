@@ -1,14 +1,40 @@
-# 2Pair Integrated v0.1 — TECHNICAL deploy manifest
+# 2Pair Integrated Pilot v0.1 — TECHNICAL deployment state
 
-**Status:** CANDIDATE / DO NOT DEPLOY UNTIL OWNER APPROVAL
+**Status:** LIVE / OWNER TECHNICAL deployment
 
-Target package:
+Live participant URL:
 
 ```text
-deploy/2pair-integrated-v0.1/
+https://omesg360.eu/2pair/releases/2pair-integrated-v0.1/
 ```
 
-Required Hostinger state for the first deployment:
+Live research/timing admin:
+
+```text
+https://omesg360.eu/2pair/releases/2pair-integrated-v0.1/server/admin.php
+```
+
+Interest funnel admin after the telemetry patch is deployed:
+
+```text
+https://omesg360.eu/2pair/releases/2pair-integrated-v0.1/server/interest_admin.php
+```
+
+Hostinger release directory:
+
+```text
+public_html/2pair/releases/2pair-integrated-v0.1/
+```
+
+Repository source:
+
+```text
+repo: olemoz1977/ConflictLab
+branch: feature/2pair-integrated-v0.1
+package: deploy/2pair-integrated-v0.1/
+```
+
+Current server boundary:
 
 ```text
 collection_mode = TECHNICAL
@@ -21,8 +47,8 @@ block_budget_ms = 6000
 retention_days = 90
 ```
 
-The first deployment must use new integrated tables from `server/schema.sql`. Do not point this build at historical Wave 1 or Calibration tables and do not overwrite their application directories.
+Integrated research/timing storage remains in the separate `tp_integrated_*` tables. Historical Wave 1 and Calibration tables are not modified.
 
-Do not publish the integrated privacy DRAFT as active and do not switch to `RESEARCH` during the TECHNICAL deployment/smoke stage.
+Minimal public-interest telemetry is intentionally separate from research evidence. It uses only daily aggregate counters in `tp_interest_daily`; no IP, persistent visitor ID, fingerprint, research session UUID, name or email is stored. See `INTEREST_TELEMETRY.md`.
 
-Required post-deploy evidence is defined in `DEPLOY_CHECKLIST.md` and includes LT/EN flow, rapid/retry/NCC behavior, local-only no-write, two exports, deletion, admin metrics, and retention cleanup.
+Do not switch the live deployment from `TECHNICAL` to `RESEARCH` until the remaining activation checks and explicit owner authorization are complete.
